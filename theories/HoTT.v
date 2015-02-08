@@ -57,6 +57,7 @@ Require Export Modalities.Closed.
 Require Export Modalities.Fracture.
 
 Require Export Comodalities.CoreflectiveSubuniverse.
+Require Export Comodalities.Comodality.
 
 Require Export Spaces.Nat.
 Require Export Spaces.Int.
