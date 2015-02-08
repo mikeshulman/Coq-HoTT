@@ -58,6 +58,8 @@ Require Export Modalities.Fracture.
 
 Require Export Comodalities.CoreflectiveSubuniverse.
 Require Export Comodalities.Comodality.
+Require Export Comodalities.ModalityM.
+Require Export Comodalities.Shape.
 
 Require Export Spaces.Nat.
 Require Export Spaces.Int.

@@ -66,6 +66,8 @@ theories/Modalities/Fracture.v
 theories/Spaces/Int.v
 theories/Comodalities/CoreflectiveSubuniverse.v
 theories/Comodalities/Comodality.v
+theories/Comodalities/ModalityM.v
+theories/Comodalities/Shape.v
 theories/hit/Circle.v
 theories/hit/Truncations.v
 theories/hit/TruncImpliesFunext.v
