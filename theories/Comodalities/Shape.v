@@ -32,11 +32,10 @@ Module Shape_Theory (ShapeM : ModalityM).
 
     (** ** Closure properties *)
 
-    (** Since the discrete types contain [Unit], they also contain [Bool] and [nat]. *)
-    Module Discrete_Bool_M := isinF_Bool_M isinF_unit_M.
-    Module Discrete_Bool <: InM Discrete BoolM := Discrete_Bool_M.mM.
-    Module Discrete_Nat_M := isinF_Nat_M isinF_unit_M.
-    Module Discrete_Nat <: InM Discrete NatM := Discrete_Nat_M.mM.
+    (** Since the discrete types contain [Unit], they also contain [Bool] and [nat] and [S1]. *)
+    Module Discrete_Bool <: InM Discrete BoolM  := isinF_Bool_M isinF_unit_M.
+    Module Discrete_Nat <: InM Discrete NatM := isinF_Nat_M isinF_unit_M.
+    Module Discrete_S1 <: InM Discrete S1M := isinF_S1_M isinF_unit_M.
 
     (** And since the discrete types are closed under products, the coreflector [Flat] preserves products and hprops. *)
     Module isequiv_Flat_prod_cmp_M

@@ -1,7 +1,8 @@
 (* -*- mode: coq; mode: visual-line -*- *)
-Require Import HoTT.Basics.Overture HoTT.Basics.Equivalences.
-Require Import HoTT.Types.Bool HoTT.Types.Prod.
+Require Import HoTT.Basics.
+Require Import HoTT.Types.Bool HoTT.Types.Prod HoTT.Types.Paths.
 Require Import HoTT.HProp.
+Require Import HoTT.hit.Circle.
 
 Local Open Scope path_scope.
 
@@ -208,6 +209,10 @@ Module NatM <: TypeM.
   Definition m : Type2@{j i} := nat.
 End NatM.
 
+Module S1M <: TypeM.
+  Definition m : Type2@{j i} := S1@{j}.
+End S1M.
+
 (** And, as promised, the smallest (non-[Set]) universe. *)
 Module Type1M <: TypeM.
   (** Confusingly, although the universe annotation on [Unit] and [Empty] specifies the universe *in* which they live, the universe annotation on [Type1] specifies the universe that it *is*, which must be smaller than the one in which it lives. *)
@@ -358,14 +363,16 @@ Module Type CoindpathsM (F : Subuniverse)
   (** All intermediate modules have to be given names, so in order to hypothesize a closed homotopy from [f o h] to [f o k], we have to give names to those [FunctionM]s. *)
   Module domM := ComposeM XM YM ZM fM hM.
   Module codM := ComposeM XM YM ZM fM kM.
-  (** The module name [mM] means that this module is the "content" of the wrapper [CoindpathsM], but that it itself has to be a module because it needs to take an extra module parameter. *)
-  Declare Module mM (pM : HomotopyM XM ZM domM codM)
+  (** Now we hypothesize the lift.  This has to be another module, because it has to take a closed homotopy as an extra module parameter. *)
+  Declare Module liftM (pM : HomotopyM XM ZM domM codM)
     : HomotopyM XM YM hM kM.
-  (** Again, we include the computation law in the same module wrapper. *)
-  Module m_betaM (pM : HomotopyM XM ZM domM codM).
-    Module liftM := mM pM.
-    Parameter m : forall x:XM.m, ap fM.m (liftM.m x) = pM.m x.
-  End m_betaM.
+  (** Users of [CoindpathsM] should not invoke [liftM] directly; instead they should use the following module which [Include]s it.  The module name [mM] means that this module is the "content" of the wrapper [CoindpathsM], but that it itself has to be a module because it needs to take an extra module parameter. *)
+  Module mM (pM : HomotopyM XM ZM domM codM).
+    Module mM := liftM pM.
+    Include mM.
+    (** The reason to use this module [mM] rather than [liftM] is that here we include also the computation rule.  Because module functions are productive, if a user applies [liftM] to a homotopy [pM] themselves, then this computation rule won't apply to it because our local application [liftM pM] will be different. *)
+    Parameter m_beta : forall x:XM.m, ap fM.m (m x) = pM.m x.
+  End mM.
 End CoindpathsM.
 
 (** ** Comodalities *)
@@ -507,7 +514,7 @@ Module Comodality_Theory (InF : Subuniverse) (F : Comodality InF).
   (** *** Bool *)
 
   (** In particular, if [F] contains [Unit], then it also contains [Bool].  It's easier to prove this directly than derive it from [Bool <~> Unit + Unit]. *)
-  Module isinF_Bool_M (isinF_UnitM : InF_Unit_M InF).
+  Module isinF_Bool_M (isinF_UnitM : InF_Unit_M InF) : InM InF BoolM.
     Module FBoolM := F BoolM.
     Module trueM <: FunctionM UnitM BoolM.
       Definition m : UnitM.m -> BoolM.m := fun _ => true.
@@ -529,14 +536,14 @@ Module Comodality_Theory (InF : Subuniverse) (F : Comodality InF).
         - apply sfM.m_beta.
       Defined.
     End HM.
-    Module mM : InM InF BoolM
-      := inF_from_F_section_M BoolM FBoolM sM HM.
+    Module mM := inF_from_F_section_M BoolM FBoolM sM HM.
+    Include mM.
   End isinF_Bool_M.
 
   (** *** Nat *)
 
   (** Although [nat] is not necessarily an external colimit, the same arguments work for it. *)
-  Module isinF_Nat_M (isinF_UnitM : InF_Unit_M InF).
+  Module isinF_Nat_M (isinF_UnitM : InF_Unit_M InF) : InM InF NatM.
     Module FNatM := F NatM.
     Module zeroM <: FunctionM UnitM NatM.
       Definition m : UnitM.m@{i j} -> NatM.m@{i j} := fun _ => 0.
@@ -564,9 +571,55 @@ Module Comodality_Theory (InF : Subuniverse) (F : Comodality InF).
         - refine (ssM.m_beta _ @ ap S IH).
       Defined.
     End HM.
-    Module mM : InM InF NatM
-      := inF_from_F_section_M NatM FNatM sM HM.
+    Module mM := inF_from_F_section_M NatM FNatM sM HM.
+    Include mM.
   End isinF_Nat_M.
+
+  (** *** The circle *)
+
+  Module isinF_S1_M (isinF_UnitM : InF_Unit_M InF) : InM InF S1M.
+    Module FS1M := F S1M.
+    Module baseM <: FunctionM UnitM S1M.
+      Definition m : UnitM.m@{i j} -> S1M.m@{i j} := fun _ => base.
+    End baseM.
+    Module loopM <: HomotopyM UnitM S1M baseM baseM.
+      Definition m : baseM.m@{i j} == baseM.m@{i j}
+        := fun _ => loop.
+    End loopM.
+    Module sbM := FS1M.corecM UnitM isinF_UnitM baseM.
+    Module slhM := FS1M.coindpathsM UnitM isinF_UnitM sbM sbM.
+    Module from_slhM <: HomotopyM UnitM S1M slhM.domM slhM.codM.
+      Definition m : slhM.domM.m == slhM.codM.m.
+      Proof.
+        intros x.
+        unfold slhM.domM.m, slhM.codM.m.
+        refine (sbM.m_beta x @ loop @ (sbM.m_beta x)^).
+      Defined.
+    End from_slhM.
+    Module slM <: HomotopyM UnitM FS1M sbM sbM := slhM.mM from_slhM.
+    Module sM <: FunctionM S1M FS1M.
+      Definition m : S1M.m -> FS1M.m
+        := S1_rec FS1M.m (sbM.m tt) (slM.m tt).
+    End sM.
+    Module HM <: SectM S1M FS1M sM FS1M.fromM.
+      Definition m : Sect@{i i} sM.m@{i j} FS1M.fromM.m@{i j}.
+      Proof.
+        refine (S1_ind _ _ _).
+        - simpl. apply sbM.m_beta.
+        - rewrite transport_paths_FFlr.
+          unfold sM.m.
+          rewrite S1_rec_beta_loop.
+          rewrite (slM.m_beta tt).
+          unfold from_slhM.m.
+          rewrite !inv_pp, inv_V, !concat_pp_p.
+          apply moveR_Mp, moveR_Vp.
+          rewrite concat_Vp, concat_p1.
+          apply concat_V_pp.
+      Qed.
+    End HM.
+    Module mM := inF_from_F_section_M S1M FS1M sM HM.
+    Include mM.
+  End isinF_S1_M.
 
   (** ** Functoriality *)
 
