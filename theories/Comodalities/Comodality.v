@@ -343,7 +343,9 @@ For now, we stick with [n=2], which is enough for everything we've needed so far
 
 Note also that the hypothesis that [XM.m] lies in [F] is again internal rather than external.  This is again obtainable from an internal definition as [IsEquiv fromF].
 
-We will generally apply these modules to four arguments, namely the subuniverse, a type, its coreflection, and the counit map, and then assert them universally quantified over the remaining data, giving the universal property of the counit.  To indicate this, we add the comment [forall] in between the first four arguments and the remaining ones. *)
+We will generally apply these modules to four arguments, namely the subuniverse, a type, its coreflection, and the counit map, and then assert them universally quantified over the remaining data, giving the universal property of the counit.  To indicate this, we add the comment [forall] in between the first four arguments and the remaining ones.
+
+TODO: It might be better to allow corecursion and coinduction for families as long as the indexing type lies in the subuniverse. *)
 Module Type CorecM (InF : Subuniverse)
        (YM ZM : TypeM) (fM : FunctionM YM ZM)
        (** forall *)
