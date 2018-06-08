@@ -4,6 +4,7 @@ Require Import Types.Paths Types.Forall Types.Sigma Types.Arrow Types.Universe T
 Require Import HSet TruncType.
 Require Export HIT.Coeq.
 Require Import HIT.Truncations.
+Import TrM.
 Local Open Scope path_scope.
 
 
@@ -132,3 +133,66 @@ Section SetCone.
 
   Definition setcone_point : setcone := tr (push (inr tt)).
 End SetCone.
+
+
+(* The pushout of an injection between sets is a set *)
+
+Section SPM.
+  Context {A B C : Type}
+          {aset : IsHSet A} {bset : IsHSet B} {cset : IsHSet C}
+          (f : A -> B) (g : A -> C) {fmono : isinj f}
+          {ua : Univalence}.
+
+  Definition P := pushout f g.
+
+  Definition code : P -> P -> Type.
+  Proof.
+    transparent assert (codeb : (B -> P -> Type)).
+    { intros b. 
+      transparent assert (codebb : (B -> Type)).
+      { intros b'.
+        pose (X := { a : A & ((b = f a) * (b' = f a)) }).
+        pose (Y := { a : A & { a' : A & ((b = f a) * (b' = f a') * (g a = g a')) } }).
+        pose (gamma := (fun x:X => (fst x.2) @ (snd x.2)^) : X -> (b = b')).
+        pose (lambda := (fun x:X => (x.1 ; (x.1 ; (fst x.2 , snd x.2 , idpath )))) : X -> Y).
+        exact (pushout gamma lambda).
+      } 
+      transparent assert (codebc : (C -> Type)).
+      { exact (fun c => { a:A & (b = f a) * (c = g a)}). }
+      refine (pushout_rec _ codebb codebc _).
+      intros a.
+      subst codebb codebc.
+      cbn.
+      admit.
+    }
+    transparent assert (codec : (C -> P -> Type)).
+    { clear codeb.
+      intros c.
+      pose (codecb := (fun b => { a:A & (c = g a) * (b = f a)}) : (B -> Type)).
+      pose (codecc := (fun c' => (c = c')) : (C -> Type)).
+      refine (pushout_rec _ codecb codecc _).
+      intros a.
+      subst codecb codecc.
+      cbn.
+      apply path_universe_uncurried.
+      transparent assert (h : ({a0 : A & (c = g a0) * (f a = f a0)} -> (c = g a))).
+      { intros x.
+        destruct x as [a' [p q]].
+        exact (p @ (ap g (fmono a a' q))^).
+      }
+      transparent assert (k : ((c = g a) -> {a0 : A & (c = g a0) * (f a = f a0)})).
+      { intros p.
+        exact (a ; (p , idpath)).
+      }
+      refine (equiv_adjointify h k _ _).
+      { intros x.
+        subst h k. cbn.
+        apply path_ishprop.
+      }
+      { intros y.
+        destruct y as [a' [p q]].
+        subst h k. cbn.
+        admit. }
+    }
+    refine (pushout_rec _ codeb codec _).
+    
