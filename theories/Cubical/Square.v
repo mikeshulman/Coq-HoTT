@@ -153,3 +153,35 @@ Proof.
   destruct pi0, pi1, s, p0i.
   exact (Square q0i q1i qi0 qi1).
 Defined.
+
+Definition ap_Square {A B : Type}
+  {a00 a01 a10 a11 : A}
+  {p0i : a00 = a01} {p1i : a10 = a11} 
+  {pi0 : a00 = a10} {pi1 : a01 = a11}
+  (f : A -> B)
+  (s : Square p0i p1i pi0 pi1)
+  : Square (ap f p0i) (ap f p1i) (ap f pi0) (ap f pi1).
+Proof.
+  destruct pi0, pi1, s, p0i; reflexivity.
+Defined.
+
+Definition pair_Square {A B} 
+  {a00 a01 a10 a11 : A}
+  {p0i : a00 = a01} {p1i : a10 = a11} 
+  {pi0 : a00 = a10} {pi1 : a01 = a11}
+  (s : Square p0i p1i pi0 pi1)
+  {b00 b01 b10 b11 : B}
+  {q0i : b00 = b01} {q1i : b10 = b11} 
+  {qi0 : b00 = b10} {qi1 : b01 = b11}
+  (t : Square q0i q1i qi0 qi1)
+  : Square (path_prod' p0i q0i) (path_prod' p1i q1i)
+      (path_prod' pi0 qi0) (path_prod' pi1 qi1).
+Proof.
+  destruct pi1, pi0, s, p0i, qi1, qi0, t, q0i.
+  reflexivity.
+Defined.
+
+
+
+
+
