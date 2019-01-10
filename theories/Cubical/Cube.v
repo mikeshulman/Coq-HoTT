@@ -44,12 +44,12 @@ Proof.
   - assumption.
 Defined.
 
-Definition sqsx_compose {X A B C} (i : X -> A)
+Definition sq_sx_compose {X A B C} (i : X -> A)
            (f : A -> B) {g : B -> C} {k : A -> C}
            (h : g o f == k) {x y : X} (p : x = y)
-  : Cube (sqsx (f o i) (fun x => h (i x)) p)
-         (sqsx f h (ap i p))
-         (sqid (h (i x))) (sqid (h (i y)))
+  : Cube (sq_sx (f o i) (fun x => h (i x)) p)
+         (sq_sx f h (ap i p))
+         (sq_id (h (i x))) (sq_id (h (i y)))
          (ap (ap g) (ap_compose i f p)) (ap_compose i k p).
 Proof.
   destruct p; reflexivity.
@@ -69,7 +69,7 @@ Definition cubetr {A} {x000 x010 x100 x110 x001 x011 x101 x111 : A}
           {si0i : Square p00i p10i pi00 pi01}
           {si1i : Square p01i p11i pi10 pi11}
           (c : Cube s0ii s1ii sii0 sii1 si0i si1i)
-  : Cube sii0 sii1 s0ii s1ii (sqtr si0i) (sqtr si1i).
+  : Cube sii0 sii1 s0ii s1ii (sq_tr si0i) (sq_tr si1i).
 Proof.
   destruct pi00, pi01, pi10, pi11; cbn in *.
   destruct sii0, sii1, si0i, si1i; cbn in *.
@@ -93,7 +93,7 @@ Definition cuberot {A} {x000 x010 x100 x110 x001 x011 x101 x111 : A}
           {si0i : Square p00i p10i pi00 pi01}
           {si1i : Square p01i p11i pi10 pi11}
           (c : Cube s0ii s1ii sii0 sii1 si0i si1i)
-  : Cube (sqtr sii0) (sqtr sii1) (sqtr si0i) (sqtr si1i) s0ii s1ii.
+  : Cube (sq_tr sii0) (sq_tr sii1) (sq_tr si0i) (sq_tr si1i) s0ii s1ii.
 Proof.
   destruct pi00, pi01, pi10, pi11; cbn in *.
   destruct sii0, sii1, si0i, si1i; cbn in *.
