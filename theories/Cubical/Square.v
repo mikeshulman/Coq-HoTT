@@ -154,18 +154,7 @@ Proof.
   exact (Square q0i q1i qi0 qi1).
 Defined.
 
-Definition ap_Square {A B : Type}
-  {a00 a01 a10 a11 : A}
-  {p0i : a00 = a01} {p1i : a10 = a11} 
-  {pi0 : a00 = a10} {pi1 : a01 = a11}
-  (f : A -> B)
-  (s : Square p0i p1i pi0 pi1)
-  : Square (ap f p0i) (ap f p1i) (ap f pi0) (ap f pi1).
-Proof.
-  destruct pi0, pi1, s, p0i; reflexivity.
-Defined.
-
-Definition pair_Square {A B} 
+Definition square_prod {A B} 
   {a00 a01 a10 a11 : A}
   {p0i : a00 = a01} {p1i : a10 = a11} 
   {pi0 : a00 = a10} {pi1 : a01 = a11}
