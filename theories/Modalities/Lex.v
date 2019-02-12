@@ -377,35 +377,16 @@ Module Accessible_Lex_Modalities_Theory
             : Lex_Theory.Os_Theory.RSU.IsConnected O A
          := H.
 
-  (** Here is the Anel-Biederman-Finster-Joyal characterization of when an accessible presentation yields a lex modalty: it's enough for path spaces of the *generators* to be connected. *)
-  Class LexGen (O : Modality)
-    := isconnected_paths_gen :
-         forall (i : ngen_indices (acc_gen O)) (x y : ngen_type (acc_gen O) i),
-             IsConnected O (x = y).
-
-  (** Of course, for this it suffices that the family of generators be closed under path spaces.  (And we can "close up" any family of generators under path spaces.) *)
-  Definition lexgen_path_closed (O : Modality)
-    : (forall (i : ngen_indices (acc_gen O)) (x y : ngen_type (acc_gen O) i),
-          { j : ngen_indices (acc_gen O) & ngen_type (acc_gen O) j = (x = y) })
-      -> LexGen O.
-  Proof.
-    intros H i x y; destruct (H i x y) as [j e].
-    refine (transport (IsConnected O) e _).
-  Defined.
-
-  (** The proof goes via a universe and a version of [modal_over_connected_isconst_lex] restricted to the generators.  First we show that if this property holds, then the universe is modal.  Here by "the universe" we mean a universe large enough to contain the generating family; this is why we need accessibility. *)
-  Definition inO_typeO_modal_over_gen_isconst
-         `{Univalence} (O : Modality)
-         (gc : forall (i : ngen_indices (acc_gen O))
-                      (P : ngen_type (acc_gen O) i -> Type)
-                      (inO_P : forall x, In O (P x)),
-             {Q : Type & In O Q * forall x, P x <~> Q})
-    : In O (Type_ O).
+  (** Probably the most important thing about an accessible lex modality is that the universe of modal types is again modal.  Here by "the universe" we mean a universe large enough to contain the generating family; this is why we need accessibility. *)
+  Global Instance inO_typeO `{Univalence} (O : Modality) `{Lex O}
+  : In O (Type_ O).
   Proof.
     apply (snd (inO_iff_isnull O _)); intros i n; simpl in *.
     destruct n; [ exact tt | split ].
     - intros P.
-      destruct (gc i P _) as [Q [QinO f]].
+      (** The case [n=0] is basically just one of the above characterizations of lex-ness. *)
+      destruct (modal_over_connected_isconst_lex O (acc_gen O i) P)
+        as [Q [QinO f]].
       exists (fun _ => (Q ; QinO)).
       intros x; symmetry; apply path_TypeO. 
       refine (path_universe (f x)).
@@ -420,15 +401,7 @@ Module Accessible_Lex_Modalities_Theory
       (** Typeclass magic! *)
   Defined.
 
-  (** In particular, using [modal_over_connected_isconst_lex] itself, this implies perhaps the most important fact about an accessible lex modality: that the universe of modal types is again modal.   *)
-  Global Instance inO_typeO `{Univalence} (O : Modality) `{Lex O}
-  : In O (Type_ O).
-  Proof.
-    apply inO_typeO_modal_over_gen_isconst; intros i P ?.
-    refine (modal_over_connected_isconst_lex O _ _).
-  Defined.
-
-  (** [inO_typeO] is also an equivalent characterization of lex-ness for a modality, by the converse of [modal_over_connected_isconst_lex]. *)
+  (** [inO_typeO] is also an equivalent characterization of lex-ness for a modality, by the converse of the characterization of lex-ness we used above. *)
   Definition lex_inO_typeO (O : Modality) `{In O (Type_ O)}
   : Lex O.
   Proof.
@@ -440,86 +413,5 @@ Module Accessible_Lex_Modalities_Theory
     apply equiv_path. 
     exact (ap pr1 (f x)).
   Defined.
-
-  (** Finally the ABFJ result; LexGen implies Lex by way of this fact. *)
-  Section ABFJ.
-    Context `{Univalence} (O : Modality) `{LexGen O}.
-
-    Definition modal_over_gen_retract_const
-               (i : ngen_indices (acc_gen O))
-               (P : ngen_type (acc_gen O) i -> Type)
-               (inO_P : forall x, In O (P x))
-      : { Q : Type &
-             In O Q *
-        { s : forall x, P x -> Q &
-        { r : forall x, Q -> P x &
-          forall x, Sect (s x) (r x) } } }.
-    Proof.
-      set (A := ngen_type (acc_gen O)) in *.
-      exists (O { x : A i & P x}); split; [ exact _ | ].
-      exists (fun x u => to O _ (x ; u)).
-      unshelve (refine (_ ; _)); [ intros a | ].
-      - apply O_rec; intros [x u].
-        pose (isconnected_paths_gen i x a).
-        refine ((isconnected_elim O (P a) _).1); intros e.
-        exact (transport P e u).
-      - intros x u; cbn.
-        abstract (
-            rewrite O_rec_beta;
-            rewrite (@contr _ (@isconnected_contr_O O (x = x) _)
-                            (to O _ (idpath x)));
-            rewrite O_rec_beta; reflexivity).
-    Defined.
-
-    Definition modal_over_gen_isconst 
-               (i : ngen_indices (acc_gen O))
-               (P : ngen_type (acc_gen O) i -> Type)
-               (inO_P : forall x, In O (P x))
-    : {Q : Type & In O Q * forall x, P x <~> Q}.
-    Proof.
-      set (A := ngen_type (acc_gen O)) in *.
-      (* We do a roundabout [destruct] to retain the value of [Q]. *)
-      pose (m := modal_over_gen_retract_const i P _).
-      pose (Q := m.1).
-      pose (inO_Q := fst m.2).
-      pose (s := (snd m.2).1).
-      pose (r := (snd m.2).2.1).
-      pose (rs := (snd m.2).2.2).
-      subst m.
-      fold Q in inO_Q, s, r, rs.
-      exists Q; split; [ exact _ | intros a ].
-      refine (equiv_adjointify (s a) (r a) _ (rs a)).
-      intros u; cbn in Q; revert u. 
-      refine (O_ind (fun u => s a (r a u) = u) _).
-      fold A; intros [y u]; revert u.
-      destruct (modal_over_gen_retract_const
-                  i (fun y':A i => forall u : P y',
-                         s a (r a (to O {x : A i & P x} (y';u)))
-                         = to O {x : A i & P x} (y';u)) _)
-        as [Q1 [? [s1 [r1 rs1]]]].
-      fold A in s1, r1, rs1.
-      apply (r1 y).
-      refine ((isconnected_elim O (A := a = y) Q1 _).1).
-      { exact (isconnected_paths_gen i a y). }
-      intros e.
-      apply (s1 y); intros u.
-      destruct e.
-      subst s r; cbn.
-      apply ap, ap.
-      abstract (
-          rewrite O_rec_beta;
-          rewrite (@contr _ (@isconnected_contr_O O (a = a) _)
-                          (to O _ (idpath a)));
-          rewrite O_rec_beta; reflexivity).
-    Defined.
-
-    Global Instance lex_lexgen : Lex O.
-    Proof.
-      apply lex_inO_typeO.
-      apply inO_typeO_modal_over_gen_isconst.
-      apply modal_over_gen_isconst.
-    Defined.
-
-  End ABFJ.
 
 End Accessible_Lex_Modalities_Theory.
