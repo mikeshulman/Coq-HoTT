@@ -378,27 +378,33 @@ Module Accessible_Lex_Modalities_Theory
          := H.
 
   (** Probably the most important thing about an accessible lex modality is that the universe of modal types is again modal.  Here by "the universe" we mean a universe large enough to contain the generating family; this is why we need accessibility. *)
-  Global Instance inO_typeO `{Univalence} (O : Modality) `{Lex O}
-  : In O (Type_ O).
+
+  (** The case [n>0] actually doesn't need lex-ness, using univalence and the fact that modal types are closed under [Equiv]. *)
+  Definition inO_typeO_genext `{Univalence} (O : Modality)
+             (e : forall i (P : (acc_gen O) i -> Type_ O),
+                 { Q : Type & In O Q * forall x, P x <~> Q })
+    : In O (Type_ O).
   Proof.
     apply (snd (inO_iff_isnull O _)); intros i n; simpl in *.
-    destruct n; [ exact tt | split ].
-    - intros P.
-      (** The case [n=0] is basically just one of the above characterizations of lex-ness. *)
-      destruct (modal_over_connected_isconst_lex O (acc_gen O i) P)
-        as [Q [QinO f]].
+    destruct n; [ exact tt | split; [ intros P | intros A B ] ].
+    - destruct (e i P) as [Q [QinO f]].
       exists (fun _ => (Q ; QinO)).
       intros x; symmetry; apply path_TypeO. 
       refine (path_universe (f x)).
-    - intros A B.
-      (** The case [n>0] is actually quite easy, using univalence and the fact that modal types are closed under [Equiv]. *)
-      refine (extendable_postcompose' n _ _ _
+    - refine (extendable_postcompose' n _ _ _
                 (fun b => (equiv_path_TypeO O (A b) (B b))
-                            oE (equiv_path_universe (A b) (B b)))
-                _).
+                            oE (equiv_path_universe (A b) (B b))) _).
       refine (extendable_conn_map_inO O n (@const (acc_gen O i) Unit tt)
                                       (fun b => A b <~> B b)).
-      (** Typeclass magic! *)
+    (** Typeclass magic! *)
+  Defined.
+
+  (** The case [n=0] is basically just one of the above characterizations of lex-ness, restricted to the generators. *)
+  Global Instance inO_typeO `{Univalence} (O : Modality) `{Lex O}
+  : In O (Type_ O).
+  Proof.
+    apply inO_typeO_genext; intros i P.
+    apply (modal_over_connected_isconst_lex O (acc_gen O i) P).
   Defined.
 
   (** [inO_typeO] is also an equivalent characterization of lex-ness for a modality, by the converse of the characterization of lex-ness we used above. *)
@@ -412,6 +418,39 @@ Module Accessible_Lex_Modalities_Theory
     exists Q; split; [ exact _ | intros x ].
     apply equiv_path. 
     exact (ap pr1 (f x)).
+  Defined.
+
+  (** Here is the Anel-Biederman-Finster-Joyal characterization of when an accessible presentation yields a lex modalty: it's enough for path spaces of the *generators* to be connected. *)
+  Class LexGen (O : Modality)
+    := isconnected_paths_gen :
+         forall (i : ngen_indices (acc_gen O)) (x y : ngen_type (acc_gen O) i),
+             IsConnected O (x = y).
+
+  (** Of course, for this it suffices that the family of generators be closed under path spaces.  (And we can "close up" any family of generators under path spaces.) *)
+  Definition lexgen_path_closed (O : Modality)
+    : (forall (i : ngen_indices (acc_gen O)) (x y : ngen_type (acc_gen O) i),
+          { j : ngen_indices (acc_gen O) & ngen_type (acc_gen O) j = (x = y) })
+      -> LexGen O.
+  Proof.
+    intros H i x y; destruct (H i x y) as [j e].
+    refine (transport (IsConnected O) e _).
+  Defined.
+
+  (* And now the theorem. *)
+  Definition lex_lexgen `{Univalence} (O : Modality) `{LexGen O} 
+    : Lex O.
+  Proof.
+    apply lex_inO_typeO, inO_typeO_genext; intros i P.
+    exists (forall x, P x); split; [ exact _ | intros x ].
+    assert (wc : forall y z, P y <~> P z).
+    { intros y z; refine (pr1 (isconnected_elim O _ (equiv_transport P y z))).
+      apply isconnected_paths_gen. }
+    refine (equiv_adjointify (fun u y => wc x y ((wc x x)^-1 u)) 
+                             (fun f => f x) _ _).
+    - intros f; apply path_forall; intros y; apply moveR_equiv_M.
+      destruct (isconnected_elim O _ (fun y => (wc x y)^-1 (f y))) as [z p].
+      exact (p x @ (p y)^).
+    - intros u; apply eisretr.
   Defined.
 
 End Accessible_Lex_Modalities_Theory.
