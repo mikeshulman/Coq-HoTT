@@ -45,6 +45,7 @@ Require Export HIT.FreeIntQuotient.
 Require Export HIT.Suspension.
 Require Export HIT.Spheres.
 Require Export HIT.Pushout.
+Require Export HIT.SpanPushout.
 Require Export HIT.SetCone.
 Require Export HIT.epi.
 Require Export HIT.unique_choice.
@@ -83,6 +84,10 @@ Require Export Spaces.Universe.
 Require Export Algebra.ooGroup.
 Require Export Algebra.Aut.
 Require Export Algebra.ooAction.
+
+Require Export Homotopy.HomotopyGroup.
+Require Export Homotopy.Pi1S1.
+Require Export Homotopy.BlakersMassey.
 
 Require Export Spectra.Spectrum.
 
