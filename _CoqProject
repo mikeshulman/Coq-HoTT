@@ -187,7 +187,9 @@ contrib/Freudenthal.v
 
 theories/Homotopy/HomotopyGroup.v
 theories/Homotopy/Pi1S1.v
+theories/Homotopy/GBM.v
 theories/Homotopy/BlakersMassey.v
+theories/Homotopy/Freudenthal.v
 
 #
 #   Spectra
