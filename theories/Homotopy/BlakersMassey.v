@@ -38,22 +38,6 @@ Proof.
   exact ev.
 Defined.
 
-(** The second one is not supposed to make any sense, so don't try.  It's just a mess of path algebra that collapses under J; we'll see later where it gets used. *)
-
-Lemma unfrobnicate {A : Type} {x y : A} (p : x = y)
-  : moveL_pM p p 1
-    ((internal_paths_rew_r (x = y) p
-        ((1 @ p) @ 1) (fun p0 : x = y => p0 @ p^ = 1 <~> 1 = 1)
-        (internal_paths_rew_r (x = y)
-           ((1 @ p) @ 1) (1 @ p)
-           (fun p0 : x = y => p0 @ p^ = 1 <~> 1 = 1)
-           (equiv_concat_l (concat_pp_V 1 p)^ 1) (concat_p1 (1 @ p)))
-        ((concat_1p p)^ @ (concat_p1 (1 @ p))^))^-1 1) @
-    concat_1p p = 1%path.
-Proof.
-  destruct p; reflexivity.
-Defined.
-
 (** ** Setup *)
 
 Module GenBlakersMassey (Os : ReflectiveSubuniverses).
@@ -600,11 +584,10 @@ Now we claim that the left-hand map of this span is also an equivalence.  Rather
                                (fun r => to O (hfiber glue r)) _).
       apply ap; unfold hfiber; rewrite transport_sigma'.
       apply ap; rewrite transport_paths_r.
-      (** Finally, we have another terrible-looking thing involving [frobnicate].  However, there are enough identity paths that [frobnicate] evaluates to... something that's almost fully path-general!  So with just a little bit of further work, we can reduce it also to something we can prove with path-induction: the incomprehensible lemma [unfrobnicate]. *)
       cbn.
       rewrite (transport_compose (fun q => glue q @ (glue q01)^ = 1%path) pr1).
       unfold path_sigma'; rewrite ap_V, ap_pr1_path_sigma, transport_1.
-      apply unfrobnicate.
+      by destruct (glue q01).
     Qed.
 
     (** It should be possible to prove an analogous [contraction_code_left] directly, but for now we follow HFLL and ABFJ by introducing a surjectivity assumption. *)
