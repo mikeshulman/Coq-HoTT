@@ -505,7 +505,7 @@ Proof.
   exact (f $o g).
 Defined.
 
-Definition opyoneda {A : Type} `{Is1Cat A} (a : A) (F : A -> Type) {ff : Is1Functor F} 
+Definition opyoneda {A : Type} `{Is1Cat A} (a : A) (F : A -> Type) {ff : Is1Functor F}
   : F a -> (opyon a $--> F).
 Proof.
   intros x b f.
@@ -559,11 +559,11 @@ Proof.
     apply Htpy_path; pose proof (f.2); pose proof (f^-1$.2); cbn in *.
   - refine ((isnat (fun a => (f.1 a)^-1) (f.1 a (Id a)) (Id b))^ @ _); cbn.
     refine (_ @ cate_issect (f.1 a) (Id a)); cbn.
-    apply ap. 
+    apply ap.
     rapply cat_idr_strong.
   - refine ((isnat f.1 (f^-1$.1 b (Id b)) (Id a))^ @ _); cbn.
     refine (_ @ cate_isretr (f.1 b) (Id b)); cbn.
-    apply ap. 
+    apply ap.
     rapply cat_idr_strong.
 Defined.
 
@@ -579,7 +579,7 @@ Global Instance is1functor_yon {A : Type} `{Is1Cat A} (a : A)
   := @is1functor_opyon A _ a.
 
 Definition yoneda {A : Type} `{Is1Cat A} (a : A)
-           (F : A^op -> Type) {ff : Is1Functor F} 
+           (F : A^op -> Type) {ff : Is1Functor F}
   : F a -> (yon a $--> F)
   := @opyoneda (A^op) _ a F _.
 
