@@ -352,17 +352,19 @@ Defined.
 Class HasEquivs (A : Type) `{Is0Coh2Cat A} :=
 {
   CatEquiv' : A -> A -> Type where "a $<~> b" := (CatEquiv' a b);
+  CatIsEquiv' : forall a b, (a $-> b) -> Type;
   cate_fun' : forall a b, (a $<~> b) -> (a $-> b);
-  cate_inv' : forall a b, (a $<~> b) -> (b $-> a);
-  cate_issect' : forall a b (f : a $<~> b),
-    cate_inv' _ _ f $o cate_fun' _ _ f $== Id a;
-  cate_isretr' : forall a b (f : a $<~> b),
-      cate_fun' _ _ f $o cate_inv' _ _ f $== Id b;
-  cate_adjointify' : forall a b (f : a $-> b) (g : b $-> a)
-    (r : f $o g $== Id b) (s : g $o f $== Id a), (a $<~> b);
-  cate_adjointify_fun' : forall a b (f : a $-> b) (g : b $-> a)
-    (r : f $o g $== Id b) (s : g $o f $== Id a),
-    cate_fun' a b (cate_adjointify' a b f g r s) $== f
+  cate_isequiv' : forall a b (f : a $<~> b), CatIsEquiv' a b (cate_fun' a b f);
+  cate_buildequiv' : forall a b (f : a $-> b), CatIsEquiv' a b f -> CatEquiv' a b;
+  cate_buildequiv_fun' : forall a b (f : a $-> b) (fe : CatIsEquiv' a b f),
+      cate_fun' a b (cate_buildequiv' a b f fe) $== f;
+  cate_inv' : forall a b (f : a $-> b), CatIsEquiv' a b f -> (b $-> a);
+  cate_issect' : forall a b (f : a $-> b) (fe : CatIsEquiv' a b f),
+    cate_inv' _ _ f fe $o f $== Id a;
+  cate_isretr' : forall a b (f : a $-> b) (fe : CatIsEquiv' a b f),
+      f $o cate_inv' _ _ f fe $== Id b;
+  catie_adjointify' : forall a b (f : a $-> b) (g : b $-> a)
+    (r : f $o g $== Id b) (s : g $o f $== Id a), CatIsEquiv' a b f;
 }.
 
 (** Since apparently a field of a record can't be the source of a coercion (Coq complains about the uniform inheritance condition, although as officially stated that condition appears to be satisfied), we redefine all the fields of [HasEquivs]. *)
@@ -379,53 +381,73 @@ Definition cate_fun {A} `{HasEquivs A} {a b : A} (f : a $<~> b)
 
 Coercion cate_fun : CatEquiv >-> Hom.
 
+(* Being an equivalence should be a typeclass, but we have to redefine it.  (Apparently [Existing Class] doesn't work.) *)
+Class CatIsEquiv {A} `{HasEquivs A} {a b : A} (f : a $-> b)
+  := catisequiv : CatIsEquiv' a b f.
+
+Global Instance cate_isequiv {A} `{HasEquivs A} {a b : A} (f : a $<~> b)
+  : CatIsEquiv f
+  := cate_isequiv' a b f.
+
+Definition Build_CatEquiv {A} `{HasEquivs A} {a b : A}
+           (f : a $-> b) {fe : CatIsEquiv f}
+  : a $<~> b
+  := cate_buildequiv' a b f fe.
+
+Definition cate_buildequiv_fun {A} `{HasEquivs A} {a b : A}
+           (f : a $-> b) {fe : CatIsEquiv f}
+  : cate_fun (Build_CatEquiv f) $== f
+  := cate_buildequiv_fun' a b f fe.
+
+Definition catie_adjointify {A} `{HasEquivs A} {a b : A}
+           (f : a $-> b) (g : b $-> a)
+           (r : f $o g $== Id b) (s : g $o f $== Id a)
+  : CatIsEquiv f
+  := catie_adjointify' a b f g r s.
+
+Definition cate_adjointify {A} `{HasEquivs A} {a b : A}
+           (f : a $-> b) (g : b $-> a)
+           (r : f $o g $== Id b) (s : g $o f $== Id a)
+  : a $<~> b
+  := @Build_CatEquiv _ _ _ _ a b f (catie_adjointify f g r s).
+
 (** This one we define to construct the whole inverse equivalence. *)
-Definition cate_inv {A} `{HasEquivs A} {a b : A} (f : a $<~> b)
+Definition cate_inv {A} `{HasEquivs A} {a b : A} (f : a $-> b) {fe : CatIsEquiv f}
   : b $<~> a.
 Proof.
-  srapply cate_adjointify'.
-  - exact (@cate_inv' A _ _ _ a b f).
-  - exact (@cate_fun' A _ _ _ a b f).
-  - exact (@cate_issect' A _ _ _ a b f).
-  - exact (@cate_isretr' A _ _ _ a b f).
+  simple refine (cate_adjointify _ _ _ _).
+  - exact (@cate_inv' A _ _ _ a b f fe).
+  - exact f.
+  - exact (@cate_issect' A _ _ _ a b f fe).
+  - exact (@cate_isretr' A _ _ _ a b f fe).
 Defined.
 
 Notation "f ^-1$" := (cate_inv f).
 
-Definition cate_issect {A} `{HasEquivs A} {a b} (f : a $<~> b)
+Definition cate_issect {A} `{HasEquivs A} {a b} (f : a $-> b) {fe : CatIsEquiv f}
   : f^-1$ $o f $== Id a.
 Proof.
-  refine (_ $@ @cate_issect' A _ _ _ a b f).
+  refine (_ $@ @cate_issect' A _ _ _ a b f fe).
   refine (_ $@R f).
-  apply cate_adjointify_fun'.
+  apply cate_buildequiv_fun'.
 Defined.
 
-Definition cate_isretr {A} `{HasEquivs A} {a b} (f : a $<~> b)
+Definition cate_isretr {A} `{HasEquivs A} {a b} (f : a $-> b) {fe : CatIsEquiv f}
   : f $o f^-1$ $== Id b.
 Proof.
-  refine (_ $@ @cate_isretr' A _ _ _ a b f).
+  refine (_ $@ @cate_isretr' A _ _ _ a b f fe).
   refine (f $@L _).
-  apply cate_adjointify_fun'.
+  apply cate_buildequiv_fun'.
 Defined.
 
-Definition cate_adjointify {A} `{HasEquivs A} {a b}
-  (f : a $-> b) (g : b $-> a)
-  (r : f $o g $== Id b) (s : g $o f $== Id a)
-  : a $<~> b
-  := @cate_adjointify' A _ _ _ a b f g r s.
-
-Definition cate_adjointify_fun {A} `{HasEquivs A} {a b}
-  (f : a $-> b) (g : b $-> a)
-  (r : f $o g $== Id b) (s : g $o f $== Id a)
-  : cate_adjointify f g r s $== f
-  := @cate_adjointify_fun' A _ _ _ a b f g r s.
-
-(** It might be tempting to instead mimic the [IsEquiv]/[Equiv] structure at the level of categories, with [cat_iso_fun_equiv] asserted (and its dual on the other side) by type dependency.  However, in that case to obtain a type [a $<~> b] for a general wild category, we'd need to define a specialized sigma-type or record, so that the result would not coincide definitionally with the "standard" notions of equivalence in examples.  With the above choice, with [A B : Type] we can have [A $<~> B] definitionally equal to [A <~> B], and similarly for pointed types, etc.  The drawback is that there is no correspondent of [IsEquiv] at the level of general wild categories, but in practice this seems less important. *)
-
 (** The identity morphism is an equivalence *)
+Global Instance catie_id {A} `{HasEquivs A} {c1 : Is1Coh1Cat A} (a : A)
+  : CatIsEquiv (Id a)
+  := catie_adjointify (Id a) (Id a) (cat_idlr a) (cat_idlr a).
+
 Definition id_cate {A} `{HasEquivs A} {c1 : Is1Coh1Cat A} (a : A)
   : a $<~> a
-  := cate_adjointify (Id a) (Id a) (cat_idlr a) (cat_idlr a).
+  := Build_CatEquiv (Id a).
 
 Global Instance reflexive_cate {A} `{HasEquivs A} {c1 : Is1Coh1Cat A}
   : Reflexive (@CatEquiv A _ _ _)
@@ -460,19 +482,28 @@ Global Instance transitive_cate {A} `{HasEquivs A} {c1 : Is1Coh1Cat A}
 
 
 (** Any sufficiently coherent functor preserves equivalences.  *)
-Definition emap {A B : Type} `{HasEquivs A} `{HasEquivs B} (F : A -> B)
+Global Instance iemap {A B : Type} `{HasEquivs A} `{HasEquivs B} (F : A -> B)
            {ff1 : Is0Coh1Functor F} {ff2 : Is0Coh2Functor F}
-           {ff11 : Is1Coh1Functor F} {a b : A} (f : a $<~> b)
-  : F a $<~> F b.
+           {ff11 : Is1Coh1Functor F} {a b : A} (f : a $-> b)
+           {fe : CatIsEquiv f}
+  : CatIsEquiv (fmap F f).
 Proof.
-  refine (cate_adjointify (fmap F f) (fmap F f^-1$) _ _).
+  refine (catie_adjointify (fmap F f) (fmap F f^-1$) _ _).
   - refine ((fmap_comp F f^-1$ f)^$ $@ fmap2 F (cate_isretr _) $@ fmap_id F _).
   - refine ((fmap_comp F f f^-1$)^$ $@ fmap2 F (cate_issect _) $@ fmap_id F _).
 Defined.
 
+Definition emap {A B : Type} `{HasEquivs A} `{HasEquivs B} (F : A -> B)
+           {ff1 : Is0Coh1Functor F} {ff2 : Is0Coh2Functor F}
+           {ff11 : Is1Coh1Functor F} {a b : A} (f : a $<~> b)
+  : F a $<~> F b
+  := Build_CatEquiv (fmap F f).
+
 (** Opposite categories preserve having equivalences. *)
 Global Instance hasequivs_op {A} `{HasEquivs A} : HasEquivs A^op.
 Proof.
+(* TODO: update *)
+(*
   srapply Build_HasEquivs; intros a b; unfold op in *; cbn in *.
   1:exact (b $<~> a).
   all:intros f.
@@ -482,7 +513,8 @@ Proof.
   - cbn. exact (cate_issect f).
   - intros g r s. exact (cate_adjointify f g s r).
   - intros g r s; cbn. apply cate_adjointify_fun.
-Defined.
+*)
+Admitted.
 
 (** When we have equivalences, we can define what it means for a category to be univalent. *)
 Definition cat_equiv_path {A : Type} `{HasEquivs A} {c1 : Is1Coh1Cat A} (a b : A)
@@ -491,7 +523,7 @@ Proof.
   intros []; reflexivity.
 Defined.
 
-Class IsUnivalent1Cat {A : Type} `{HasEquivs A} {c1 : Is1Coh1Cat A}
+Class IsUnivalent1Cat (A : Type) `{HasEquivs A} {c1 : Is1Coh1Cat A}
   := { isequiv_cat_equiv_path : forall a b, IsEquiv (@cat_equiv_path A _ _ _ _ a b) }.
 Global Existing Instance isequiv_cat_equiv_path.
 
@@ -531,14 +563,16 @@ Defined.
 
 Global Instance hasequivs_type : HasEquivs Type.
 Proof.
-  srefine (Build_HasEquivs Type _ _ Equiv _ _ _ _ _ _); intros A B.
+  srefine (Build_HasEquivs Type _ _ Equiv (@IsEquiv) _ _ _ _ _ _ _ _); intros A B.
   all:intros f.
   - exact f.
-  - exact (f^-1).
-  - cbn. intros x; apply eissect.
-  - cbn. intros x; apply eisretr.
-  - intros g r s; refine (equiv_adjointify f g r s).
-  - intros g r s; reflexivity.
+  - exact _.
+  - apply Build_Equiv.
+  - intros; reflexivity.
+  - intros; exact (f^-1).
+  - cbn. intros ? x; apply eissect.
+  - cbn. intros ? x; apply eisretr.
+  - intros g r s; refine (isequiv_adjointify f g r s).
 Defined.
 
 (* Of course, this requires the univalence axiom, but (unlike funext, for some reason) that isn't defined until Types/Universe. *)
@@ -588,7 +622,105 @@ Proof.
   - intros [a1 a2] [b1 b2] [g1 g2].
     cbn in *.
     exact (cat_idr _, cat_idr _).
+Defined.
+
+Global Instance hasequivs_prod A B `{HasEquivs A} `{HasEquivs B}
+  : HasEquivs (A * B).
+Proof.
+  srefine (Build_HasEquivs (A * B) _ _
+             (fun a b => (fst a $<~> fst b) * (snd a $<~> snd b))
+             _
+             _ _ _ _ _ _ _ _).
+  1:intros a b f; exact (CatIsEquiv (fst f) * CatIsEquiv (snd f)).
+  all:cbn; intros a b f.
+  - split; [ exact (fst f) | exact (snd f) ].
+  - split; exact _.
+  - intros [fe1 fe2]; split.
+    + exact (Build_CatEquiv (fst f)).
+    + exact (Build_CatEquiv (snd f)).
+  - intros [fe1 fe2]; cbn; split; apply cate_buildequiv_fun.
+  - intros [fe1 fe2]; split; [ exact ((fst f)^-1$) | exact ((snd f)^-1$) ].
+  - intros [fe1 fe2]; split; apply cate_issect.
+  - intros [fe1 fe2]; split; apply cate_isretr.
+  - intros g r s; split.
+    + exact (catie_adjointify (fst f) (fst g) (fst r) (fst s)).
+    + exact (catie_adjointify (snd f) (snd g) (snd r) (snd s)).
+Defined.
+
+(** ** Sum categories *)
+
+Global Instance is0coh1cat_sum A B `{ Is0Coh1Cat A } `{ Is0Coh1Cat B} 
+  : Is0Coh1Cat (A + B).
+  srefine (Build_Is0Coh1Cat _ _ _ _).
+  - intros [a | b] [a1 | b1].
+    + exact (a $-> a1).
+    + exact Empty.
+    + exact Empty.
+    + exact (b $-> b1).
+  - cbn.
+    intros [a | b].
+    + exact (Id a).
+    + exact (Id b).
+  - intros [a | b] [a1 | b1] [a2 | b2]; try contradiction.
+    + intros f g.
+    exact (f $o g).
+    + intros f g.
+    exact (f $o g).
+Defined.
+
+(* Note: [try contradiction] deals with empty cases. *)
+Global Instance is0coh2cat_sum A B `{ Is0Coh2Cat A } `{ Is0Coh2Cat B} 
+  : Is0Coh2Cat (A + B).
+Proof.
+  srefine (Build_Is0Coh2Cat _ _ _ _ _ _ _ _).
+  -intros [a | b] [c | d]; try contradiction.
+    + cbn. intros f g. 
+    exact ( f $== g ).
+    + cbn. intros f g.
+    exact (f $== g).
+  -intros [a | b] [a1 | b1] ; try contradiction.
+    + cbn. intro f. exact (Id_Htpy f).
+    + cbn. intro f.  exact (Id_Htpy f).
+  -intros [a | b] [a1 | b1] ; try contradiction.
+    +cbn. intros f g. 
+    exact Opp_Htpy.
+    +cbn. intros f g.
+    exact Opp_Htpy.
+  - intros [a | b] [c | d] f g h; try contradiction.
+    + cbn. 
+    exact Concat_Htpy.
+    + cbn.
+    exact Concat_Htpy.
+  - intros [a | b] [c | d] [e | f]; try contradiction.
+    + cbn. intros f g h. 
+    apply WhiskerL_Htpy.
+    + cbn. intros t g h.
+    apply WhiskerL_Htpy.
+  - intros [a | b] [c | d] [e | f]; try contradiction.
+    + cbn. intros f g. 
+    apply WhiskerR_Htpy.
+    + cbn. intros t g.
+    apply WhiskerR_Htpy.
     Defined.
+    
+Global Instance is1coh1cat_sum A B `{Is1Coh1Cat A} `{Is1Coh1Cat B}
+  : Is1Coh1Cat (A + B).
+Proof.
+  srefine (Build_Is1Coh1Cat (A + B) _ _ _ ).
+  - intros [a1 | a2] [b1 | b2] [c1 | c2] [d1 | d2] f g h; try contradiction; try contradiction.
+    + cbn in *.
+    apply cat_assoc.
+    + cbn in *.
+    apply cat_assoc.
+  - intros [a | b] [c | d] f; try contradiction.
+    + cbn in *. apply cat_idl.
+    + cbn in *. apply cat_idl.
+  - intros [a | b] [c | d] f; try contradiction.
+    + cbn in *. apply cat_idr.
+    + cbn in *. apply cat_idr.
+  Defined.
+    
+    
 
 (** ** Two-variable functors *)
 
@@ -692,6 +824,9 @@ Defined.
 
 (** It also inherits a notion of equivalence, namely a natural transformation that is a pointwise equivalence.  Note that due to incoherence, in this case we do *not* expect [cat_unadjointify] and [cat_adjointify] to actually be inverses. *)
 
+(* TODO: update *)
+
+(*
 Definition NatEquiv {A B : Type} `{Is0Coh1Cat A} `{HasEquivs B} (F G : A -> B) {ff : Is0Coh1Functor F} {fg : Is0Coh1Functor G}
   := { alpha : forall a, F a $<~> G a & Is1Natural F G (fun a => alpha a) }.
 
@@ -725,6 +860,7 @@ Proof.
   - intros [F ?] [G ?] [alpha ?] [gamma ?] r s a; cbn in *.
     apply cate_adjointify_fun.
 Defined.
+*)
 
 
 (** ** The covariant Yoneda lemma *)
@@ -793,6 +929,8 @@ Definition opyon1 {A : Type} `{Is0Coh1Cat A} (a : A) : Fun1 A Type
   := (opyon a ; is0coh1functor_opyon a).
 
 (** We can also deduce "full-faithfulness" on equivalences. *)
+(* TODO: update *)
+(*
 Definition opyon_equiv {A : Type} `{Is1Coh1Cat_Strong A}
            {eA : HasEquivs A} (a b : A)
   : (opyon1 a $<~> opyon1 b) -> (b $<~> a).
@@ -809,6 +947,7 @@ Proof.
     apply ap.
     serapply cat_idr_strong.
 Defined.
+*)
 
 (** ** The contravariant Yoneda lemma *)
 
@@ -855,10 +994,13 @@ Definition yon_cancel {A : Type} `{Is0Coh1Cat A} (a b : A)
 Definition yon1 {A : Type} `{Is0Coh1Cat A} (a : A) : Fun1 A^op Type
   := opyon1 a.
 
+(* TODO: update *)
+(*
 Definition yon_equiv {A : Type} `{Is1Coh1Cat_Strong A}
   {eA : HasEquivs A} (a b : A)
   : (yon1 a $<~> yon1 b) -> (a $<~> b)
   := (@opyon_equiv A^op _ _ _ _ a b).
+*)
 
 (** ** Wild category of wild categories *)
 
@@ -886,3 +1028,40 @@ Admitted.
 (** ** Grothendieck constructions *)
 
 (* How much coherence do we need? *)
+
+(** ** Indexed product of categories *)
+
+Global Instance is0coh1cat_forall (A : Type) (B : A -> Type)
+  {c : forall a, Is0Coh1Cat (B a)}
+  : Is0Coh1Cat (forall a, B a).
+Proof.
+  serapply Build_Is0Coh1Cat.
+  + intros x y; exact (forall (a : A), x a $-> y a).
+  + intros x a; exact (Id (x a)).
+  + intros x y z f g a; exact (f a $o g a).
+Defined.
+
+Global Instance is0coh2cat_forall (A : Type) (B : A -> Type)
+  {c1 : forall a, Is0Coh1Cat (B a)} {c2 : forall a, Is0Coh2Cat (B a)}
+  : Is0Coh2Cat (forall a, B a).
+Proof.
+  serapply Build_Is0Coh2Cat.
+  + intros x y f g; exact (forall a, f a $== g a).
+  + intros x y f a; apply Id_Htpy.
+  + intros x y f g p a; apply Opp_Htpy, p.
+  + intros x y f g h p q a; exact (p a $@ q a).
+  + intros x y z f g h p a; apply WhiskerL_Htpy, p.
+  + intros x y z f g p h a; apply WhiskerR_Htpy, p.
+Defined.
+
+Global Instance is1coh1cat_forall (A : Type) (B : A -> Type)
+    {c1 : forall a, Is0Coh1Cat (B a)} {c2 : forall a, Is0Coh2Cat (B a)}
+    {c3 : forall a, Is1Coh1Cat (B a)}
+    : Is1Coh1Cat (forall a, B a).
+Proof.
+  serapply Build_Is1Coh1Cat.
+  + intros w x y z f g h a; apply cat_assoc.
+  + intros x y f a; apply cat_idl.
+  + intros x y f a; apply cat_idr.
+Defined.
+
