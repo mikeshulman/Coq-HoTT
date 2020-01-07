@@ -957,3 +957,40 @@ Admitted.
 (** ** Grothendieck constructions *)
 
 (* How much coherence do we need? *)
+
+(** ** Indexed product of categories *)
+
+Global Instance is0coh1cat_forall (A : Type) (B : A -> Type)
+  {c : forall a, Is0Coh1Cat (B a)}
+  : Is0Coh1Cat (forall a, B a).
+Proof.
+  serapply Build_Is0Coh1Cat.
+  + intros x y; exact (forall (a : A), x a $-> y a).
+  + intros x a; exact (Id (x a)).
+  + intros x y z f g a; exact (f a $o g a).
+Defined.
+
+Global Instance is0coh2cat_forall (A : Type) (B : A -> Type)
+  {c1 : forall a, Is0Coh1Cat (B a)} {c2 : forall a, Is0Coh2Cat (B a)}
+  : Is0Coh2Cat (forall a, B a).
+Proof.
+  serapply Build_Is0Coh2Cat.
+  + intros x y f g; exact (forall a, f a $== g a).
+  + intros x y f a; apply Id_Htpy.
+  + intros x y f g p a; apply Opp_Htpy, p.
+  + intros x y f g h p q a; exact (p a $@ q a).
+  + intros x y z f g h p a; apply WhiskerL_Htpy, p.
+  + intros x y z f g p h a; apply WhiskerR_Htpy, p.
+Defined.
+
+Global Instance is1coh1cat_forall (A : Type) (B : A -> Type)
+    {c1 : forall a, Is0Coh1Cat (B a)} {c2 : forall a, Is0Coh2Cat (B a)}
+    {c3 : forall a, Is1Coh1Cat (B a)}
+    : Is1Coh1Cat (forall a, B a).
+Proof.
+  serapply Build_Is1Coh1Cat.
+  + intros w x y z f g h a; apply cat_assoc.
+  + intros x y f a; apply cat_idl.
+  + intros x y f a; apply cat_idr.
+Defined.
+
