@@ -281,9 +281,10 @@ Proof.
   exact ff.
 Defined.
 
-Global Instance is
+(** Global Instance is
  Is0Coh2Functor {A B : Type} `{Is0Coh2Cat A} `{Is0Coh2Cat B}
   (F : A -> B) {ff : Is0Coh1Functor F}
+*)
 
 
 (** ** Equivalences *)
