@@ -71,6 +71,18 @@ Global Instance Transitive_Htpy A `{Is0Coh2Cat A} (a b : A)
   : Transitive (@Htpy A _ _ a b)
   := fun f g h p q => p $@ q.
 
+Definition as0Coh2CatPath {A : Type} `{Is0Coh1Cat A}
+  : Is0Coh2Cat A.
+Proof.
+  srapply Build_Is0Coh2Cat.
+  - intros a b f g; exact (f = g).
+  - reflexivity.
+  - intros a b f g p ; exact (p ^).
+  - intros a b f g h p q ; exact (p @ q).
+  - intros a b c f g h p ; apply ap ; exact p.
+  - intros a b c f g p h ; exact (ap (fun k => k $o h) p).
+Defined.
+
 Definition Htpy_path {A} `{Is0Coh2Cat A} {a b : A} {f g : a $-> b} (p : f = g)
   : f $== g.
 Proof.
@@ -90,7 +102,7 @@ Class Is1Coh1Cat (A : Type) `{Is0Coh2Cat A} := Build_Is1Coh1Cat'
   cat_assoc : forall a b c d (f : a $-> b) (g : b $-> c) (h : c $-> d),
     (h $o g) $o f $== h $o (g $o f);
   cat_assoc_opp : forall a b c d (f : a $-> b) (g : b $-> c) (h : c $-> d),
-    h $o (g $o f) $== (h $o g) $o f; 
+    h $o (g $o f) $== (h $o g) $o f;
   cat_idl : forall a b (f : a $-> b), Id b $o f $== f;
   cat_idr : forall a b (f : a $-> b), f $o Id a $== f;
   cat_idlr : forall a, Id a $o Id a $== Id a;
@@ -114,7 +126,7 @@ Arguments cat_idr {_ _ _ _ _ _} f.
 (** Often, the coherences are actually equalities rather than homotopies. *)
 Class Is1Coh1Cat_Strong (A : Type) `{Is0Coh2Cat A} := Build_Is1Coh1Cat_Strong'
 {
-  cat_assoc_strong : forall a b c d 
+  cat_assoc_strong : forall a b c d
     (f : a $-> b) (g : b $-> c) (h : c $-> d),
     (h $o g) $o f = h $o (g $o f);
   cat_assoc_opp_strong : forall a b c d
@@ -395,7 +407,7 @@ Global Instance transitive_cate {A} `{HasEquivs A} {c1 : Is1Coh1Cat A}
 (** Any sufficiently coherent functor preserves equivalences.  *)
 Definition emap {A B : Type} `{HasEquivs A} `{HasEquivs B} (F : A -> B)
            {ff1 : Is0Coh1Functor F} {ff2 : Is0Coh2Functor F}
-           {ff11 : Is1Coh1Functor F} {a b : A} (f : a $<~> b) 
+           {ff11 : Is1Coh1Functor F} {a b : A} (f : a $<~> b)
   : F a $<~> F b.
 Proof.
   refine (cate_adjointify (fmap F f) (fmap F f^-1$) _ _).
@@ -431,7 +443,7 @@ Global Existing Instance isequiv_cat_equiv_path.
 Definition cat_path_equiv {A : Type} `{IsUnivalent1Cat A} (a b : A)
   : (a $<~> b) -> (a = b)
   := (cat_equiv_path a b)^-1.
-  
+
 
 (** ** The category of types *)
 
@@ -539,7 +551,7 @@ Proof.
   intros [a1 a2] [b1 b2] [f1 f2] [g1 g2] [p1 p2] q; cbn in *.
   (* This needs funext in [A]. *)
 Abort.
-  
+
 
 (** ** Sum categories *)
 
@@ -660,7 +672,7 @@ Proof.
 Defined.
 
 Definition opyoneda {A : Type} `{Is0Coh1Cat A} (a : A)
-           (F : A -> Type) {ff : Is0Coh1Functor F} 
+           (F : A -> Type) {ff : Is0Coh1Functor F}
   : F a -> (opyon a $--> F).
 Proof.
   intros x b f.
@@ -739,7 +751,7 @@ Global Instance is0coh1functor_yon {A : Type} `{Is0Coh1Cat A} (a : A)
   := @is0coh1functor_opyon A _ a.
 
 Definition yoneda {A : Type} `{Is0Coh1Cat A} (a : A)
-           (F : A^op -> Type) {ff : Is0Coh1Functor F} 
+           (F : A^op -> Type) {ff : Is0Coh1Functor F}
   : F a -> (yon a $--> F)
   := @opyoneda (A^op) _ a F _.
 
