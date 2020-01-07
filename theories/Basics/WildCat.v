@@ -281,12 +281,27 @@ Proof.
   exact ff.
 Defined.
 
-(** Global Instance is
- Is0Coh2Functor {A B : Type} `{Is0Coh2Cat A} `{Is0Coh2Cat B}
-  (F : A -> B) {ff : Is0Coh1Functor F}
+Global Instance is0coh2fun_op A B `{Is0Coh2Cat A} `{Is0Coh2Cat B}
+       (F : A -> B) {ff : Is0Coh1Functor F} {pf : Is0Coh2Functor F} : Is0Coh2Functor (F : A^op -> B^op).
+Proof.
+  apply Build_Is0Coh2Functor.
+  unfold op in *.
+  cbn in *.
+  intros a b.
+  apply fmap2.
+  exact pf.
+Defined.
+
+Print Is1Coh1Functor.
+
+(**E: Work in progress
+
+ Global Instance is1coh1fun_op A B `{Is0Coh1Cat A} `{Is0Coh1Cat B} `{Is0Coh2Cat B} (F : A -> B) {ff : Is0Coh1Functor F} {pf : Is1Coh1Functor} : Is1Coh1Functor (F : A^op -> B^op).
 *)
 
 
+
+  
 (** ** Equivalences *)
 
 (** We could define equivalences in any wild 2-category as bi-invertible maps, or in a wild 3-category as half-adjoint equivalences.  However, in concrete cases there is often an equivalent definition of equivalences that we want to use instead, and the important property we need is that it's logically equivalent to (quasi-)isomorphism. *)
