@@ -491,7 +491,7 @@ Proof.
   intros []; reflexivity.
 Defined.
 
-Class IsUnivalent1Cat {A : Type} `{HasEquivs A} {c1 : Is1Coh1Cat A}
+Class IsUnivalent1Cat (A : Type) `{HasEquivs A} {c1 : Is1Coh1Cat A}
   := { isequiv_cat_equiv_path : forall a b, IsEquiv (@cat_equiv_path A _ _ _ _ a b) }.
 Global Existing Instance isequiv_cat_equiv_path.
 

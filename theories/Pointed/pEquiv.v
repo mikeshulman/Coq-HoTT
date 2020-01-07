@@ -1,6 +1,7 @@
 Require Import Basics.
 Require Import Types.
-Require Import Pointed.Core.
+Require Import Pointed.Core Pointed.pMap Pointed.pHomotopy.
+Require Import UnivalenceImpliesFunext.
 
 Local Open Scope pointed_scope.
 
@@ -44,8 +45,28 @@ Defined.
 
 Notation "g o*E f" := (pequiv_compose f g) : pointed_scope.
 
-(* The record for pointed equivalences is equivalently a sigma type *)
 Definition issig_pequiv (A B : pType)
+  : { f : A ->* B & IsEquiv f } <~> (A <~>* B).
+Proof.
+  issig.
+Defined.
+
+(* Two pointed equivalences are equal if their underlying pointed functions are pointed homotopic. *)
+Definition equiv_path_pequiv `{Funext} {A B : pType} (f g : A <~>* B)
+  : (f ==* g) <~> (f = g).
+Proof.
+  transitivity ((issig_pequiv A B)^-1 f = (issig_pequiv A B)^-1 g).
+  - refine (equiv_path_sigma_hprop _ _ oE _).
+    apply (equiv_path_pmap f g).
+  - symmetry; exact (equiv_ap' (issig_pequiv A B)^-1 f g).
+Defined.
+
+Definition path_pequiv `{Funext} {A B : pType} (f g : A <~>* B)
+  : (f ==* g) -> (f = g)
+  := fun p => equiv_path_pequiv f g p.
+
+(* The record for pointed equivalences is equivalently a different sigma type *)
+Definition issig_pequiv' (A B : pType)
   : { f : A <~> B & f (point A) = point B } <~> (A <~>* B).
 Proof.
   transitivity { f : A ->* B & IsEquiv f }.
@@ -71,7 +92,7 @@ Proof.
   destruct A as [A a], B as [B b].
   refine (equiv_ap issig_ptype (A;a) (B;b) oE _).
   refine (equiv_path_sigma _ _ _ oE _).
-  refine (_ oE (issig_pequiv _ _)^-1); simpl.
+  refine (_ oE (issig_pequiv' _ _)^-1); simpl.
   refine (equiv_functor_sigma' (equiv_path_universe A B) _); intros f.
   apply equiv_concat_l.
   apply transport_path_universe.
@@ -138,3 +159,25 @@ Proof.
   1: apply r.
   apply s.
 Defined.
+
+Global Instance hasequivs_ptype : HasEquivs pType.
+Proof.
+  srapply (Build_HasEquivs _ _ _ pEquiv (fun A B f => f) (fun A B f => f^-1* ));
+    cbn; intros A B f.
+  - apply peissect.
+  - apply peisretr.
+  - apply pequiv_adjointify.
+  - reflexivity.
+Defined.
+
+Global Instance isunivalent_ptype `{Univalence} : IsUnivalent1Cat pType.
+Proof.
+  srapply Build_IsUnivalent1Cat; intros A B.
+  refine (isequiv_homotopic (equiv_path_ptype A B)^-1 _).
+  intros []; apply path_pequiv.
+  cbn.
+  srefine (Build_pHomotopy _ _).
+  - intros x; reflexivity.
+  - cbn.
+    admit.
+Admitted.
