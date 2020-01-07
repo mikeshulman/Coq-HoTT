@@ -52,6 +52,14 @@ Proof.
   destruct p; apply Id_Htpy.
 Defined.
 
+(** Generalizing function extensionality, "Morphism extensionality" states that [Htpy_path] is an equivalence. *)
+Class HasMorExt (A : Type) `{Is0Coh2Cat A} :=
+  { isequiv_Htpy_path : forall a b f g, IsEquiv (@Htpy_path _ _ _ a b f g) }.
+Global Existing Instance isequiv_Htpy_path.
+
+Definition path_Htpy {A} `{HasMorExt A} {a b : A} {f g : a $-> b} (p : f $== g) : f = g
+  := Htpy_path^-1 p.
+
 Class Is1Coh1Cat (A : Type) `{Is0Coh2Cat A} :=
   Build_Is1Coh1Cat'
   { cat_assoc : forall a b c d (f : a $-> b) (g : b $-> c) (h : c $-> d), (h $o g) $o f $== h $o (g $o f)
@@ -74,7 +82,7 @@ Arguments cat_idl [_ _ _ _ _ _] f.
 Arguments cat_idr [_ _ _ _ _ _] f.
 
 (** Often, the coherences are actually equalities rather than homotopies. *)
-Class Is1Coh1Cat_Strong (A : Type) `{Is0Coh2Cat A} :=
+Class Is1Coh1Cat_Strong (A : Type) `{Is0Coh1Cat A} :=
   Build_Is1Coh1Cat_Strong'
   { cat_assoc_strong : forall a b c d (f : a $-> b) (g : b $-> c) (h : c $-> d), (h $o g) $o f = h $o (g $o f)
     ; cat_assoc_opp_strong : forall a b c d (f : a $-> b) (g : b $-> c) (h : c $-> d), h $o (g $o f) = (h $o g) $o f
@@ -83,19 +91,21 @@ Class Is1Coh1Cat_Strong (A : Type) `{Is0Coh2Cat A} :=
     ; cat_idlr_strong : forall a, Id a $o Id a = Id a
   }.
 
-Definition Build_Is1Coh1Cat_Strong (A : Type) `{Is0Coh2Cat A}
+Definition Build_Is1Coh1Cat_Strong (A : Type) `{Is0Coh1Cat A}
            (cat_assoc' : forall a b c d (f : a $-> b) (g : b $-> c) (h : c $-> d), (h $o g) $o f = h $o (g $o f))
            (cat_idl' : forall a b (f : a $-> b), Id b $o f = f)
            (cat_idr' : forall a b (f : a $-> b), f $o Id a = f)
   : Is1Coh1Cat_Strong A
-  := Build_Is1Coh1Cat_Strong' A _ _ cat_assoc' (fun a b c d f g h => (cat_assoc' a b c d f g h)^) cat_idl' cat_idr' (fun a => cat_idl' a a (Id a)).
+  := Build_Is1Coh1Cat_Strong' A _ cat_assoc' (fun a b c d f g h => (cat_assoc' a b c d f g h)^) cat_idl' cat_idr' (fun a => cat_idl' a a (Id a)).
 
-Arguments cat_assoc_strong [_ _ _ _ _ _ _ _] f g h.
-Arguments cat_assoc_opp_strong [_ _ _ _ _ _ _ _] f g h.
-Arguments cat_idl_strong [_ _ _ _ _ _] f.
-Arguments cat_idr_strong [_ _ _ _ _ _] f.
+Arguments cat_assoc_strong [_ _ _ _ _ _ _] f g h.
+Arguments cat_assoc_opp_strong [_ _ _ _ _ _ _] f g h.
+Arguments cat_idl_strong [_ _ _ _ _] f.
+Arguments cat_idr_strong [_ _ _ _ _] f.
 
-Global Instance is1cat1_strong A `{Is1Coh1Cat_Strong A} : Is1Coh1Cat A.
+Global Instance is1coh1cat_strong A
+       {ac0 : Is0Coh1Cat A} {ac2 : Is0Coh2Cat A}
+       {ac11 : Is1Coh1Cat_Strong A} : Is1Coh1Cat A.
 Proof.
   srapply Build_Is1Coh1Cat'; intros; apply Htpy_path.
   - rapply cat_assoc_strong.
@@ -108,24 +118,24 @@ Defined.
 
 (** ** Unbundled definitions of functors *)
 
-Class Is1Functor {A B : Type} `{Is0Coh1Cat A} `{Is0Coh1Cat B} (F : A -> B) :=
+Class Is0Coh1Functor {A B : Type} `{Is0Coh1Cat A} `{Is0Coh1Cat B} (F : A -> B) :=
   { fmap : forall (a b : A) (f : a $-> b), F a $-> F b }.
 
 Arguments fmap [_ _ _ _] F [_ _ _] f.
 
-(* We can't write `{Is1Functor A B F} since that would duplicate the instances of Is0Coh1Cat. *)
-Class Is2Functor {A B : Type} `{Is0Coh2Cat A} `{Is0Coh2Cat B} (F : A -> B) {ff : Is1Functor F} :=
+(* We can't write `{Is0Coh1Functor A B F} since that would duplicate the instances of Is0Coh1Cat. *)
+Class Is0Coh2Functor {A B : Type} `{Is0Coh2Cat A} `{Is0Coh2Cat B} (F : A -> B) {ff : Is0Coh1Functor F} :=
   { fmap2 : forall a b (f g : a $-> b), (f $== g) -> (fmap F f $== fmap F g) }.
 
 Arguments fmap2 [_ _ _ _ _ _] F [_ _ _ _ _ _] p.
 
-Class Is1Functor1 {A B : Type} `{Is0Coh2Cat A} `{Is0Coh2Cat B} (F : A -> B) {ff : Is1Functor F} :=
+Class Is1Coh1Functor {A B : Type} `{Is0Coh1Cat A} `{Is0Coh2Cat B} (F : A -> B) {ff : Is0Coh1Functor F} :=
   { fmap_id : forall a, fmap F (Id a) $== Id (F a)
     ; fmap_comp : forall a b c (f : a $-> b) (g : b $-> c), fmap F (g $o f) $== fmap F g $o fmap F f
   }.
 
-Arguments fmap_id [_ _ _ _ _ _] F [_ _] a.
-Arguments fmap_comp [_ _ _ _ _ _] F [_ _ _ _ _] f g.
+Arguments fmap_id [_ _ _ _ _] F [_ _] a.
+Arguments fmap_comp [_ _ _ _ _] F [_ _ _ _ _] f g.
 
 
 (** ** Unbundled definitions of natural transformations *)
@@ -135,19 +145,19 @@ Definition Transformation {A B : Type} `{Is0Coh1Cat B} (F : A -> B) (G : A -> B)
 
 Notation "F $--> G" := (Transformation F G).
 
-Class Is1Natural {A B : Type} `{Is0Coh2Cat A} `{Is0Coh2Cat B}
-      (F : A -> B) {ff1 : Is1Functor F} (G : A -> B) {fg1 : Is1Functor G}
+Class Is1Natural {A B : Type} `{Is0Coh1Cat A} `{Is0Coh2Cat B}
+      (F : A -> B) {ff1 : Is0Coh1Functor F} (G : A -> B) {fg1 : Is0Coh1Functor G}
       (alpha : F $--> G) := Build_Is1Natural'
   { isnat : forall a b (f : a $-> b), alpha b $o fmap F f $== fmap G f $o alpha a
   ; isnat_opp : forall a b (f : a $-> b), fmap G f $o alpha a $== alpha b $o fmap F f }.
 
-Arguments isnat [_ _ _ _ _ _ _ _ _ _] alpha [alnat _ _] f : rename.
+Arguments isnat [_ _ _ _ _ _ _ _ _] alpha [alnat _ _] f : rename.
 
-Definition Build_Is1Natural {A B : Type} `{Is0Coh2Cat A} `{Is0Coh2Cat B}
-           (F : A -> B) {ff1 : Is1Functor F} (G : A -> B) {fg1 : Is1Functor G} (alpha : F $--> G)
+Definition Build_Is1Natural {A B : Type} `{Is0Coh1Cat A} `{Is0Coh2Cat B}
+           (F : A -> B) {ff1 : Is0Coh1Functor F} (G : A -> B) {fg1 : Is0Coh1Functor G} (alpha : F $--> G)
            (isnat' : forall a b (f : a $-> b), alpha b $o fmap F f $== fmap G f $o alpha a)
   : Is1Natural F G alpha
-  := Build_Is1Natural' _ _ _ _ _ _ F _ G _ alpha
+  := Build_Is1Natural' _ _ _ _ _ F _ G _ alpha
                        isnat' (fun a b f => (isnat' a b f)^$).
 
 
@@ -157,10 +167,10 @@ Definition op (A : Type) : Type := A.
 Notation "A ^op" := (op A).
 Typeclasses Opaque op.
 
-Global Instance is1cat_op A `{Is0Coh1Cat A} : Is0Coh1Cat (A ^op)
+Global Instance is0coh1cat_op A `{Is0Coh1Cat A} : Is0Coh1Cat (A ^op)
   := Build_Is0Coh1Cat A (fun a b => b $-> a) Id (fun a b c g f => f $o g).
 
-Global Instance is2cat_op A `{Is0Coh2Cat A} : Is0Coh2Cat (A ^op).
+Global Instance is0coh2cat_op A `{Is0Coh2Cat A} : Is0Coh2Cat (A ^op).
 Proof.
   srapply Build_Is0Coh2Cat; unfold op in *; cbn in *.
   1:intros a b f g; exact (f $== g).
@@ -172,7 +182,7 @@ Proof.
   - intros a b c f g p h; exact (h $@L p).
 Defined.
 
-Global Instance is1cat1_op A `{Is1Coh1Cat A} : Is1Coh1Cat (A ^op).
+Global Instance is1coh1cat_op A `{Is1Coh1Cat A} : Is1Coh1Cat (A ^op).
 Proof.
   srapply Build_Is1Coh1Cat'; unfold op in *; cbn in *.
   - intros a b c d f g h; exact (cat_assoc_opp h g f).
@@ -182,7 +192,7 @@ Proof.
   - intros a; exact (cat_idlr a).
 Defined.
 
-Global Instance is1cat1_strong_op A `{Is1Coh1Cat_Strong A} : Is1Coh1Cat_Strong (A ^op).
+Global Instance is1coh1cat_strong_op A `{Is1Coh1Cat_Strong A} : Is1Coh1Cat_Strong (A ^op).
 Proof.
   srapply Build_Is1Coh1Cat_Strong'; unfold op in *; cbn in *.
   - intros a b c d f g h; exact (cat_assoc_opp_strong h g f).
@@ -195,9 +205,9 @@ Defined.
 (* Opposites are definitionally involutive. *)
 (*
 Definition test1 A {ac : Is0Coh1Cat A} : A = (A^op)^op := 1.
-Definition test2 A {ac : Is0Coh1Cat A} : ac = is1cat_op (A^op) := 1.
-Definition test3 A {ac : Is0Coh1Cat A} {ac2 : Is0Coh2Cat A} : ac2 = is2cat_op (A^op) := 1.
-Definition test4 A {ac : Is0Coh1Cat A} {ac2 : Is0Coh2Cat A} {ac11 : Is1Coh1Cat A} : ac11 = is1cat1_op (A^op) := 1.
+Definition test2 A {ac : Is0Coh1Cat A} : ac = is0coh1cat_op (A^op) := 1.
+Definition test3 A {ac : Is0Coh1Cat A} {ac2 : Is0Coh2Cat A} : ac2 = is0coh2cat_op (A^op) := 1.
+Definition test4 A {ac : Is0Coh1Cat A} {ac2 : Is0Coh2Cat A} {ac11 : Is1Coh1Cat A} : ac11 = is1coh1cat_op (A^op) := 1.
 *)
 
 (* TODO: Opposite functors and natural transformations *)
@@ -278,6 +288,17 @@ Definition cate_adjointify_fun {A} `{HasEquivs A} {a b}
 
 (** It might be tempting to instead mimic the [IsEquiv]/[Equiv] structure at the level of categories, with [cat_iso_fun_equiv] asserted (and its dual on the other side) by type dependency.  However, in that case to obtain a type [a $<~> b] for a general wild category, we'd need to define a specialized sigma-type or record, so that the result would not coincide definitionally with the "standard" notions of equivalence in examples.  With the above choice, with [A B : Type] we can have [A $<~> B] definitionally equal to [A <~> B], and similarly for pointed types, etc.  The drawback is that there is no correspondent of [IsEquiv] at the level of general wild categories, but in practice this seems less important. *)
 
+(** The identity morphism is an equivalence *)
+Definition id_cate {A} `{HasEquivs A} {c1 : Is1Coh1Cat A} (a : A)
+  : a $<~> a
+  := cate_adjointify (Id a) (Id a) (cat_idlr a) (cat_idlr a).
+
+Global Instance reflexive_cate {A} `{HasEquivs A} {c1 : Is1Coh1Cat A}
+  : Reflexive (@CatEquiv A _ _ _)
+  := id_cate.
+
+(** TODO: Equivalences can be reversed. *)
+
 (** Equivalences can be composed. *)
 Definition compose_cate {A} `{HasEquivs A} {c1 : Is1Coh1Cat A} {a b c : A}
            (g : b $<~> c) (f : a $<~> b)
@@ -298,9 +319,14 @@ Defined.
 
 Notation "g $oE f" := (compose_cate g f).
 
+Global Instance transitive_cate {A} `{HasEquivs A} {c1 : Is1Coh1Cat A}
+  : Transitive (@CatEquiv A _ _ _)
+  := fun a b c f g => g $oE f.
+
+
 (** Any sufficiently coherent functor preserves equivalences.  *)
 Definition emap {A B : Type} `{HasEquivs A} `{HasEquivs B} (F : A -> B)
-           {ff1 : Is1Functor F} {ff2 : Is2Functor F} {ff11 : Is1Functor1 F}
+           {ff1 : Is0Coh1Functor F} {ff2 : Is0Coh2Functor F} {ff11 : Is1Coh1Functor F}
            {a b : A} (f : a $<~> b) : F a $<~> F b.
 Proof.
   refine (cate_adjointify (fmap F f) (fmap F f^-1$) _ _).
@@ -308,6 +334,7 @@ Proof.
   - refine ((fmap_comp F f f^-1$)^$ $@ fmap2 F (cate_issect _) $@ fmap_id F _).
 Defined.
 
+(** Opposite categories preserve having equivalences. *)
 Global Instance hasequivs_op {A} `{HasEquivs A} : HasEquivs A^op.
 Proof.
   srapply Build_HasEquivs; intros a b; unfold op in *; cbn in *.
@@ -321,12 +348,28 @@ Proof.
   - intros g r s; cbn. apply cate_adjointify_fun.
 Defined.
 
+(** When we have equivalences, we can define what it means for a category to be univalent. *)
+Definition cat_equiv_path {A : Type} `{HasEquivs A} {c1 : Is1Coh1Cat A} (a b : A)
+  : (a = b) -> (a $<~> b).
+Proof.
+  intros []; reflexivity.
+Defined.
+
+Class IsUnivalent1Cat {A : Type} `{HasEquivs A} {c1 : Is1Coh1Cat A}
+  := { isequiv_cat_equiv_path : forall a b, IsEquiv (@cat_equiv_path A _ _ _ _ a b) }.
+Global Existing Instance isequiv_cat_equiv_path.
+
+Definition cat_path_equiv {A : Type} `{IsUnivalent1Cat A} (a b : A)
+  : (a $<~> b) -> (a = b)
+  := (cat_equiv_path a b)^-1.
+  
+
 (** ** The category of types *)
 
-Global Instance is1cat_type : Is0Coh1Cat Type
+Global Instance is0coh1cat_type : Is0Coh1Cat Type
   := Build_Is0Coh1Cat Type (fun a b => a -> b) (fun a => idmap) (fun a b c g f => g o f).
 
-Global Instance is2cat_type : Is0Coh2Cat Type.
+Global Instance is0coh2cat_type : Is0Coh2Cat Type.
 Proof.
   srefine (Build_Is0Coh2Cat Type _ (fun a b f g => f == g) _ _ _ _ _); cbn.
   - intros a b f x; reflexivity.
@@ -336,9 +379,18 @@ Proof.
   - intros a b c f g p h x; exact (p (h x)).
 Defined.
 
-Global Instance is1cat1_strong_type : Is1Coh1Cat_Strong Type.
+Global Instance is1coh1cat_strong_type : Is1Coh1Cat_Strong Type.
 Proof.
   srapply Build_Is1Coh1Cat_Strong'; cbn; intros; reflexivity.
+Defined.
+
+Global Instance hasmorext_type `{Funext} : HasMorExt Type.
+Proof.
+  srapply Build_HasMorExt.
+  intros A B f g; cbn in *.
+  refine (isequiv_homotopic (@apD10 A (fun _ => B) f g) _).
+  intros p.
+  destruct p; reflexivity.
 Defined.
 
 Global Instance hasequivs_type : HasEquivs Type.
@@ -353,10 +405,15 @@ Proof.
   - intros g r s; reflexivity.
 Defined.
 
+(* Of course, this requires the univalence axiom, but (unlike funext, for some reason) that isn't defined until Types/Universe. *)
+(*
+Global Instance isunivalent_type `{Univalence}
+  : IsUnivalent1Cat Type.
+*)
 
 (** ** Product categories *)
 
-Global Instance is1cat_prod A B `{Is0Coh1Cat A} `{Is0Coh1Cat B}
+Global Instance is0coh1cat_prod A B `{Is0Coh1Cat A} `{Is0Coh1Cat B}
   : Is0Coh1Cat (A * B).
 Proof.
   refine (Build_Is0Coh1Cat (A * B) (fun x y => (fst x $-> fst y) * (snd x $-> snd y)) _ _).
@@ -365,7 +422,7 @@ Proof.
     exact (f1 $o f2 , g1 $o g2).
 Defined.
 
-Global Instance is2cat_prod A B `{Is0Coh2Cat A} `{Is0Coh2Cat B}
+Global Instance is0coh2cat_prod A B `{Is0Coh2Cat A} `{Is0Coh2Cat B}
   : Is0Coh2Cat (A * B).
 Proof.
   srefine (Build_Is0Coh2Cat (A * B) _ _ _ _ _ _ _).
@@ -382,7 +439,7 @@ Proof.
     exact (p $@R f3, q $@R g3).
 Defined.
 
-Global Instance is1cat1_prod A B `{Is1Coh1Cat A} `{Is1Coh1Cat B}
+Global Instance is1coh1cat_prod A B `{Is1Coh1Cat A} `{Is1Coh1Cat B}
   : Is1Coh1Cat (A * B).
 Proof.
 Admitted.
@@ -392,24 +449,24 @@ Admitted.
 
 (** To avoid having to define a separate notion of "two-variable functor", we define two-variable functors in uncurried form.  The following definition applies such a two-variable functor, with a currying built in. *)
 Definition fmap11 {A B C : Type} `{Is0Coh1Cat A} `{Is0Coh1Cat B} `{Is0Coh1Cat C}
-  (F : A -> B -> C) {H2 : Is1Functor (uncurry F)}
+  (F : A -> B -> C) {H2 : Is0Coh1Functor (uncurry F)}
   {a1 a2 : A} {b1 b2 : B} (f1 : a1 $-> a2) (f2 : b1 $-> b2)
   : F a1 b1 $-> F a2 b2
   := @fmap _ _ _ _ (uncurry F) H2 (a1, b1) (a2, b2) (f1, f2).
 
 (** For instance, we have hom-functors. *)
-Global Instance is1functor_hom {A} `{Is0Coh1Cat A}
-  : @Is1Functor (A^op * A) Type _ _ (uncurry (@Hom A _)).
+Global Instance is0coh1functor_hom {A} `{Is0Coh1Cat A}
+  : @Is0Coh1Functor (A^op * A) Type _ _ (uncurry (@Hom A _)).
 Proof.
-  apply Build_Is1Functor.
+  apply Build_Is0Coh1Functor.
   intros [a1 a2] [b1 b2] [f1 f2] g; cbn in *.
   exact (f2 $o g $o f1).
 Defined.
 
-Global Instance is2functor_hom {A} `{Is0Coh2Cat A}
-  : @Is2Functor (A^op * A) Type _ _ _ _ (uncurry (@Hom A _)) _.
+Global Instance is0coh2functor_hom {A} `{Is0Coh2Cat A}
+  : @Is0Coh2Functor (A^op * A) Type _ _ _ _ (uncurry (@Hom A _)) _.
 Proof.
-  apply Build_Is2Functor.
+  apply Build_Is0Coh2Functor.
   intros [a1 a2] [b1 b2] [f1 f2] [g1 g2] [p1 p2] q; cbn in *.
   (* This needs funext in [A]. *)
 Abort.
@@ -423,15 +480,15 @@ Abort.
 (** ** Wild functor categories *)
 
 Definition Fun1 (A B : Type) `{Is0Coh1Cat A} `{Is0Coh1Cat B}
-  := { F : A -> B & Is1Functor F }.
+  := { F : A -> B & Is0Coh1Functor F }.
 
-Definition NatTrans {A B : Type} `{Is0Coh2Cat A} `{Is0Coh2Cat B} (F G : A -> B)
-           {ff : Is1Functor F} {fg : Is1Functor G}
+Definition NatTrans {A B : Type} `{Is0Coh1Cat A} `{Is0Coh2Cat B} (F G : A -> B)
+           {ff : Is0Coh1Functor F} {fg : Is0Coh1Functor G}
   := { alpha : F $--> G & Is1Natural F G alpha }.
 
-(** Note that even if [A] and [B] are fully coherent oo-categories, the objects of our "functor category" are not fully coherent.  Thus we cannot in general expect this "functor category" to itself be fully coherent.  However, it is at least a wild 1-category.  *)
+(** Note that even if [A] and [B] are fully coherent oo-categories, the objects of our "functor category" are not fully coherent.  Thus we cannot in general expect this "functor category" to itself be fully coherent.  However, it is at least a 0-coherent 1-category, as long as [B] is a 1-coherent 1-category. *)
 
-Global Instance is1cat_fun (A B : Type) `{Is1Coh1Cat A} `{Is1Coh1Cat B} : Is0Coh1Cat (Fun1 A B).
+Global Instance is0coh1cat_fun (A B : Type) `{Is0Coh1Cat A} `{Is1Coh1Cat B} : Is0Coh1Cat (Fun1 A B).
 Proof.
   srapply Build_Is0Coh1Cat.
   - intros [F ?] [G ?].
@@ -449,9 +506,9 @@ Proof.
     exact (cat_assoc _ _ _).
 Defined.
 
-(** In fact, it is automatically also a wild 2-category, with a totally incoherent notion of 2-cell between 1-coherent natural transformations. *)
+(** In fact, in this case it is automatically also a 0-coherent 2-category and a 1-coherent 1-category, with a totally incoherent notion of 2-cell between 1-coherent natural transformations. *)
 
-Global Instance is2cat_fun (A B : Type) `{Is1Coh1Cat A} `{Is1Coh1Cat B} : Is0Coh2Cat (Fun1 A B).
+Global Instance is0coh2cat_fun (A B : Type) `{Is0Coh1Cat A} `{Is1Coh1Cat B} : Is0Coh2Cat (Fun1 A B).
 Proof.
   srapply Build_Is0Coh2Cat.
   - intros [F ?] [G ?] [alpha ?] [gamma ?].
@@ -468,7 +525,7 @@ Proof.
     exact (mu a $@R phi a).
 Defined.
 
-Global Instance is1cat1_fun (A B : Type) `{Is1Coh1Cat A} `{Is1Coh1Cat B} : Is1Coh1Cat (Fun1 A B).
+Global Instance is1coh1cat_fun (A B : Type) `{Is0Coh1Cat A} `{Is1Coh1Cat B} : Is1Coh1Cat (Fun1 A B).
 Proof.
   srapply Build_Is1Coh1Cat'.
   1,2:intros [F ?] [G ?] [K ?] [L ?] [alpha ?] [gamma ?] [phi ?] a; cbn.
@@ -483,7 +540,7 @@ Defined.
 
 (** It also inherits a notion of equivalence, namely a natural transformation that is a pointwise equivalence.  Note that due to incoherence, in this case we do *not* expect [cat_unadjointify] and [cat_adjointify] to actually be inverses. *)
 
-Definition NatEquiv {A B : Type} `{Is0Coh2Cat A} `{HasEquivs B} (F G : A -> B) {ff : Is1Functor F} {fg : Is1Functor G}
+Definition NatEquiv {A B : Type} `{Is0Coh2Cat A} `{HasEquivs B} (F G : A -> B) {ff : Is0Coh1Functor F} {fg : Is0Coh1Functor G}
   := { alpha : forall a, F a $<~> G a & Is1Natural F G (fun a => alpha a) }.
 
 Global Instance hasequivs_fun (A B : Type) `{Is1Coh1Cat A} `{Is1Coh1Cat B}
@@ -525,25 +582,25 @@ Defined.
 Definition opyon {A : Type} `{Is0Coh1Cat A} (a : A) : A -> Type
   := fun b => (a $-> b).
 
-Global Instance is1functor_opyon {A : Type} `{Is0Coh1Cat A} (a : A) : @Is1Functor A Type _ _ (opyon a).
+Global Instance is0coh1functor_opyon {A : Type} `{Is0Coh1Cat A} (a : A) : @Is0Coh1Functor A Type _ _ (opyon a).
 Proof.
-  apply Build_Is1Functor.
+  apply Build_Is0Coh1Functor.
   unfold opyon; intros b c f g; cbn in *.
   exact (f $o g).
 Defined.
 
-Definition opyoneda {A : Type} `{Is0Coh1Cat A} (a : A) (F : A -> Type) {ff : Is1Functor F} 
+Definition opyoneda {A : Type} `{Is0Coh1Cat A} (a : A) (F : A -> Type) {ff : Is0Coh1Functor F} 
   : F a -> (opyon a $--> F).
 Proof.
   intros x b f.
   exact (fmap F f x).
 Defined.
 
-Definition un_opyoneda {A : Type} `{Is0Coh1Cat A} (a : A) (F : A -> Type) {ff : Is1Functor F}
+Definition un_opyoneda {A : Type} `{Is0Coh1Cat A} (a : A) (F : A -> Type) {ff : Is0Coh1Functor F}
   : (opyon a $--> F) -> F a
   := fun alpha => alpha a (Id a).
 
-Global Instance is1natural_opyoneda {A : Type} `{Is0Coh2Cat A} (a : A) (F : A -> Type) {ff : Is1Functor F} {ff1 : Is1Functor1 F} (x : F a)
+Global Instance is1natural_opyoneda {A : Type} `{Is0Coh2Cat A} (a : A) (F : A -> Type) {ff : Is0Coh1Functor F} {ff1 : Is1Coh1Functor F} (x : F a)
   : Is1Natural (opyon a) F (opyoneda a F x).
 Proof.
   apply Build_Is1Natural.
@@ -551,13 +608,14 @@ Proof.
   exact (fmap_comp F g f x).
 Defined.
 
-Definition opyoneda_issect {A : Type} `{Is0Coh2Cat A} (a : A) (F : A -> Type) {ff : Is1Functor F} {ff1 : Is1Functor1 F} (x : F a)
+Definition opyoneda_issect {A : Type} `{Is0Coh2Cat A} (a : A) (F : A -> Type) {ff : Is0Coh1Functor F} {ff1 : Is1Coh1Functor F} (x : F a)
   : un_opyoneda a F (opyoneda a F x) = x
   := fmap_id F a x.
 
 (** We assume for the converse that the coherences in [A] are equalities (this is a weak funext-type assumption).  Note that we do not in general recover the witness of 1-naturality.  Indeed, if [A] is fully coherent, then a transformation of the form [yoneda a F x] is always also fully coherently natural, so an incoherent witness of 1-naturality could not be recovered in this way.  *)
-Definition opyoneda_isretr {A : Type} `{Is1Coh1Cat_Strong A} (a : A)
-           (F : A -> Type) {ff : Is1Functor F} {ff1 : Is1Functor1 F}
+Definition opyoneda_isretr {A : Type}
+           `{Is1Coh1Cat_Strong A} {ac2 : Is0Coh2Cat A} (a : A)
+           (F : A -> Type) {ff : Is0Coh1Functor F} {ff1 : Is1Coh1Functor F}
            (alpha : opyon a $--> F) {alnat : Is1Natural (opyon a) F alpha}
            (b : A)
   : opyoneda a F (un_opyoneda a F alpha) b $== alpha b.
@@ -575,10 +633,12 @@ Definition opyon_cancel {A : Type} `{Is0Coh1Cat A} (a b : A)
   := un_opyoneda a (opyon b).
 
 Definition opyon1 {A : Type} `{Is0Coh1Cat A} (a : A) : Fun1 A Type
-  := (opyon a ; is1functor_opyon a).
+  := (opyon a ; is0coh1functor_opyon a).
 
 (** We can also deduce "full-faithfulness" on equivalences. *)
-Definition opyon_equiv {A : Type} `{Is1Coh1Cat_Strong A} {eA : HasEquivs A} (a b : A)
+Definition opyon_equiv {A : Type}
+           `{Is1Coh1Cat_Strong A} {ac2 : Is0Coh2Cat A}
+           {eA : HasEquivs A} (a b : A)
   : (opyon1 a $<~> opyon1 b) -> (b $<~> a).
 Proof.
   intros f.
@@ -601,31 +661,32 @@ Defined.
 Definition yon {A : Type} `{Is0Coh1Cat A} (a : A) : A^op -> Type
   := @opyon (A^op) _ a.
 
-Global Instance is1functor_yon {A : Type} `{Is0Coh1Cat A} (a : A)
-  : Is1Functor (yon a)
-  := @is1functor_opyon A _ a.
+Global Instance is0coh1functor_yon {A : Type} `{Is0Coh1Cat A} (a : A)
+  : Is0Coh1Functor (yon a)
+  := @is0coh1functor_opyon A _ a.
 
 Definition yoneda {A : Type} `{Is0Coh1Cat A} (a : A)
-           (F : A^op -> Type) {ff : Is1Functor F} 
+           (F : A^op -> Type) {ff : Is0Coh1Functor F} 
   : F a -> (yon a $--> F)
   := @opyoneda (A^op) _ a F _.
 
 Definition un_yoneda {A : Type} `{Is0Coh1Cat A} (a : A)
-           (F : A^op -> Type) {ff : Is1Functor F}
+           (F : A^op -> Type) {ff : Is0Coh1Functor F}
   : (yon a $--> F) -> F a
   := @un_opyoneda (A^op) _ a F _.
 
 Global Instance is1natural_yoneda {A : Type} `{Is0Coh2Cat A} (a : A)
-       (F : A^op -> Type) {ff : Is1Functor F} {ff1 : Is1Functor1 F} (x : F a)
+       (F : A^op -> Type) {ff : Is0Coh1Functor F} {ff1 : Is1Coh1Functor F} (x : F a)
   : Is1Natural (yon a) F (yoneda a F x)
   := @is1natural_opyoneda (A^op) _ _ a F _ _ x.
 
-Definition yoneda_issect {A : Type} `{Is0Coh2Cat A} (a : A) (F : A^op -> Type) {ff : Is1Functor F} {ff1 : Is1Functor1 F} (x : F a)
+Definition yoneda_issect {A : Type} `{Is0Coh2Cat A} (a : A) (F : A^op -> Type) {ff : Is0Coh1Functor F} {ff1 : Is1Coh1Functor F} (x : F a)
   : un_yoneda a F (yoneda a F x) = x
   := @opyoneda_issect (A^op) _ _ a F _ _ x.
 
-Definition yoneda_isretr {A : Type} `{Is1Coh1Cat_Strong A} (a : A)
-           (F : A^op -> Type) {ff : Is1Functor F} {ff1 : Is1Functor1 F}
+Definition yoneda_isretr {A : Type}
+           `{Is1Coh1Cat_Strong A} {ac2 : Is0Coh2Cat A} (a : A)
+           (F : A^op -> Type) {ff : Is0Coh1Functor F} {ff1 : Is1Coh1Functor F}
            (alpha : yon a $--> F) {alnat : Is1Natural (yon a) F alpha}
            (b : A)
   : yoneda a F (un_yoneda a F alpha) b $== alpha b
@@ -638,7 +699,8 @@ Definition yon_cancel {A : Type} `{Is0Coh1Cat A} (a b : A)
 Definition yon1 {A : Type} `{Is0Coh1Cat A} (a : A) : Fun1 A^op Type
   := opyon1 a.
 
-Definition yon_equiv {A : Type} `{Is1Coh1Cat_Strong A} {eA : HasEquivs A} (a b : A)
+Definition yon_equiv {A : Type} `{Is1Coh1Cat_Strong A}
+           {ac2 : Is0Coh2Cat A} {eA : HasEquivs A} (a b : A)
   : (yon1 a $<~> yon1 b) -> (a $<~> b)
   := (@opyon_equiv A^op _ _ _ _ a b).
 
@@ -647,22 +709,22 @@ Definition yon_equiv {A : Type} `{Is1Coh1Cat_Strong A} {eA : HasEquivs A} (a b :
 
 Record WildCat :=
   { cat_carrier : Type
-    ; cat_is1cat : Is0Coh1Cat cat_carrier
+    ; cat_is0coh1cat : Is0Coh1Cat cat_carrier
     (* TODO: How much should we include here? *)
   }.
 Coercion cat_carrier : WildCat >-> Sortclass.
-Global Existing Instance cat_is1cat.
+Global Existing Instance cat_is0coh1cat.
 
-Global Instance is1cat_wildcat : Is0Coh1Cat WildCat.
+Global Instance is0coh1cat_wildcat : Is0Coh1Cat WildCat.
 Proof.
   refine (Build_Is0Coh1Cat WildCat (fun A B => Fun1 A B) _ _).
 Admitted.
 
-Global Instance is2cat_wildcat : Is0Coh2Cat WildCat.
+Global Instance is0coh2cat_wildcat : Is0Coh2Cat WildCat.
 Proof.
 Admitted.
 
-(* TODO: is1cat1_wildcat *)
+(* TODO: is1coh1cat_wildcat *)
 
 (** ** Grothendieck constructions *)
 
