@@ -533,8 +533,17 @@ Defined.
 Global Instance is1coh1cat_prod A B `{Is1Coh1Cat A} `{Is1Coh1Cat B}
   : Is1Coh1Cat (A * B).
 Proof.
-Admitted.
-
+  srefine (Build_Is1Coh1Cat (A * B) _ _ _ ).
+  - intros [a1 a2] [b1 b2] [c1 c2] [d1 d2] [f1 f2] [g1 g2] [h1 h2].
+    cbn in *.
+    exact(cat_assoc f1 g1 h1, cat_assoc f2 g2 h2).
+  - intros [a1 a2] [b1 b2] [f1 f2].
+    cbn in *.
+    exact (cat_idl _, cat_idl _).
+  - intros [a1 a2] [b1 b2] [g1 g2].
+    cbn in *.
+    exact (cat_idr _, cat_idr _).
+    Defined.
 
 (** ** Two-variable functors *)
 
