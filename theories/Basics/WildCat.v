@@ -586,7 +586,7 @@ Proof.
   - intros [a1 a2] [b1 b2] [g1 g2].
     cbn in *.
     exact (cat_idr _, cat_idr _).
-    Defined.
+Defined.
 
 (** ** Two-variable functors *)
 
