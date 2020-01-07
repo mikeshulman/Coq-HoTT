@@ -431,7 +431,9 @@ Global Instance reflexive_cate {A} `{HasEquivs A} {c1 : Is1Coh1Cat A}
   : Reflexive (@CatEquiv A _ _ _)
   := id_cate.
 
-(** TODO: Equivalences can be reversed. *)
+Global Instance symmetric_cate {A} `{HasEquivs A} {c1 : Is1Coh1Cat A}
+  : Symmetric (@CatEquiv A _ _ _)
+  := fun a b f => cate_inv f.
 
 (** Equivalences can be composed. *)
 Definition compose_cate {A} `{HasEquivs A} {c1 : Is1Coh1Cat A} {a b c : A}
