@@ -47,6 +47,9 @@ Definition pmap_compose {A B C : pType}
 
 Infix "o*" := pmap_compose : pointed_scope.
 
+Global Instance is0coh1cat_ptype : Is0Coh1Cat pType
+  := Build_Is0Coh1Cat pType pMap (@pmap_idmap) (@pmap_compose).
+
 (** ** Pointed homotopies *)
 
 (* A pointed homotopy is a homotopy with a proof that the presevation

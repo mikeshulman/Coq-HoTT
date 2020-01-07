@@ -65,6 +65,21 @@ Proof.
   - reflexivity.
 Qed.
 
+Global Instance is1coh1cat_ptype : Is1Coh1Cat pType.
+Proof.
+  srapply Build_Is1Coh1Cat.
+  - intros ? ? ? ? f g h; exact (pmap_compose_assoc h g f).
+  - intros ? ? f; exact (pmap_postcompose_idmap f).
+  - intros ? ? f; exact (pmap_precompose_idmap f).
+Defined.
+
+Global Instance hasmorext_ptype `{Funext} : HasMorExt pType.
+Proof.
+  srapply Build_HasMorExt; intros A B f g.
+  refine (isequiv_homotopic (equiv_path_pmap f g)^-1 _).
+  intros []; reflexivity.
+Defined.
+
 (** ** Trivially pointed maps *)
 
 (** Not infrequently we have a map between two unpointed types and want to consider it as a pointed map that trivially respects some given point in the domain. *)
