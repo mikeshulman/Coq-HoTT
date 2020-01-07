@@ -352,20 +352,14 @@ Defined.
 Class HasEquivs (A : Type) `{Is0Coh2Cat A} :=
 {
   CatEquiv' : A -> A -> Type where "a $<~> b" := (CatEquiv' a b);
-
   cate_fun' : forall a b, (a $<~> b) -> (a $-> b);
-
   cate_inv' : forall a b, (a $<~> b) -> (b $-> a);
-
   cate_issect' : forall a b (f : a $<~> b),
     cate_inv' _ _ f $o cate_fun' _ _ f $== Id a;
-
   cate_isretr' : forall a b (f : a $<~> b),
       cate_fun' _ _ f $o cate_inv' _ _ f $== Id b;
-
   cate_adjointify' : forall a b (f : a $-> b) (g : b $-> a)
     (r : f $o g $== Id b) (s : g $o f $== Id a), (a $<~> b);
-
   cate_adjointify_fun' : forall a b (f : a $-> b) (g : b $-> a)
     (r : f $o g $== Id b) (s : g $o f $== Id a),
     cate_fun' a b (cate_adjointify' a b f g r s) $== f
