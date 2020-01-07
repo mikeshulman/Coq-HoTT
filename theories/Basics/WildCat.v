@@ -259,6 +259,20 @@ Definition test4 A {ac : Is0Coh1Cat A} {ac2 : Is0Coh2Cat A} {ac11 : Is1Coh1Cat A
 
 (* TODO: Opposite functors and natural transformations *)
 
+Global Instance is0coh1fun_op  A `{Is0Coh1Cat A} B `{Is0Coh1Cat B} (F : A -> B) {ff : Is0Coh1Functor F} : Is0Coh1Functor (F : A ^op -> B ^op).
+Proof.
+  apply Build_Is0Coh1Functor.
+  unfold op.
+  cbn.
+  intros a b.
+  apply fmap.
+  exact ff.
+Defined.
+
+Global Instance is
+ Is0Coh2Functor {A B : Type} `{Is0Coh2Cat A} `{Is0Coh2Cat B}
+  (F : A -> B) {ff : Is0Coh1Functor F}
+
 
 (** ** Equivalences *)
 
