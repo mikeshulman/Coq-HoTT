@@ -502,7 +502,35 @@ Definition emap {A B : Type} `{HasEquivs A} `{HasEquivs B} (F : A -> B)
 (** Opposite categories preserve having equivalences. *)
 Global Instance hasequivs_op {A} `{HasEquivs A} : HasEquivs A^op.
 Proof.
-(* TODO: update *)
+  srapply Build_HasEquivs; intros a b; unfold op in *; cbn in *.
+  - exact (b $<~> a).
+  - intro g.
+    exact (CatIsEquiv g).
+  - intro f.
+    exact f.
+  - intro f.
+    apply cate_isequiv.
+  - intro f.
+    apply cate_buildequiv'.
+  - intro f.
+    apply cate_buildequiv_fun'.
+  - intro f.
+    intro pf.
+    cbn in *.
+    exact (f^-1$).
+  - intro f.
+    cbn in *.
+    intro pf.
+    exact (cate_isretr f).
+  - intro f.
+    intro pf.
+    cbn in *.
+    exact (cate_issect f).
+  - intros f g s t.
+    cbn.
+    exact (catie_adjointify f g t s).
+Defined.
+        (* Mikes proof in case I messed something up *)
 (*
   srapply Build_HasEquivs; intros a b; unfold op in *; cbn in *.
   1:exact (b $<~> a).
@@ -514,7 +542,6 @@ Proof.
   - intros g r s. exact (cate_adjointify f g s r).
   - intros g r s; cbn. apply cate_adjointify_fun.
 *)
-Admitted.
 
 (** When we have equivalences, we can define what it means for a category to be univalent. *)
 Definition cat_equiv_path {A : Type} `{HasEquivs A} {c1 : Is1Coh1Cat A} (a b : A)
