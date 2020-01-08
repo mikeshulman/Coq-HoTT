@@ -72,3 +72,13 @@ Proof.
   issig.
 Defined.
 
+
+Global Instance is0coh2cat_ptype : Is0Coh2Cat pType.
+Proof.
+  srapply (Build_Is0Coh2Cat pType _ (@pHomotopy)); intros.
+  - reflexivity.
+  - symmetry; assumption.
+  - transitivity g; assumption.
+  - apply pmap_postwhisker; assumption.
+  - apply pmap_prewhisker; assumption.
+Defined.
