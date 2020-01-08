@@ -738,6 +738,13 @@ Definition fmap11 {A B C : Type} `{Is0Coh1Cat A} `{Is0Coh1Cat B} `{Is0Coh1Cat C}
   : F a1 b1 $-> F a2 b2
   := @fmap _ _ _ _ (uncurry F) H2 (a1, b1) (a2, b2) (f1, f2).
 
+Definition fmap22 {A B C : Type} `{Is0Coh2Cat A} `{Is0Coh2Cat B} `{Is0Coh2Cat C}
+  (F : A -> B -> C) {ff1 : Is0Coh1Functor (uncurry F)} {ff2 : Is0Coh2Functor (uncurry F)}
+  {a1 a2 : A} {b1 b2 : B} (f1 : a1 $-> a2) (f2 : b1 $-> b2) (g1 : a1 $-> a2) (g2 : b1 $-> b2)
+  (alpha : f1 $== g1) (beta : f2 $== g2)
+  : (fmap11 F f1 f2) $== (fmap11 F g1 g2)
+  := @fmap2 _ _ _ _ _ _ (uncurry F) _ _ (a1, b1) (a2, b2) (f1, f2) (g1, g2) (alpha, beta).
+  
 (** For instance, we have hom-functors. *)
 Global Instance is0coh1functor_hom {A} `{Is0Coh1Cat A}
   : @Is0Coh1Functor (A^op * A) Type _ _ (uncurry (@Hom A _)).
