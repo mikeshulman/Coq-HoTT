@@ -623,6 +623,84 @@ Proof.
     cbn in *.
     exact (cat_idr _, cat_idr _).
 Defined.
+Global Instance is0coh1cat_sum A B `{ Is0Coh1Cat A } `{ Is0Coh1Cat B} 
+  : Is0Coh1Cat (A + B).
+  srefine (Build_Is0Coh1Cat _ _ _ _).
+  - intros [a | b] [a1 | b1].
+    + exact (a $-> a1).
+    + exact Empty.
+    + exact Empty.
+    + exact (b $-> b1).
+  - cbn.
+    intros [a | b].
+    + exact (Id a).
+    + exact (Id b).
+  - intros [a | b] [a1 | b1] [a2 | b2]; try contradiction.
+    + intros f g.
+    exact (f $o g).
+    + intros f g.
+    exact (f $o g).
+Defined.
+
+(* NOte: try contradiction deals with empty cases. *)
+Global Instance is0coh2cat_sum A B `{ Is0Coh2Cat A } `{ Is0Coh2Cat B} 
+  : Is0Coh2Cat (A + B).
+Proof.
+  srefine (Build_Is0Coh2Cat _ _ _ _ _ _ _ _).
+  -intros [a | b] [c | d]; try contradiction.
+    + cbn. intros f g. 
+    exact ( f $== g ).
+    + cbn. intros f g.
+    exact (f $== g).
+  -intros [a | b] [a1 | b1] ; try contradiction.
+    + cbn. intro f. exact (Id_Htpy f).
+    + cbn. intro f.  exact (Id_Htpy f).
+  -intros [a | b] [a1 | b1] ; try contradiction.
+    +cbn. intros f g. 
+    exact Opp_Htpy.
+    +cbn. intros f g.
+    exact Opp_Htpy.
+  - intros [a | b] [c | d] f g h; try contradiction.
+    + cbn. 
+    exact Concat_Htpy.
+    + cbn.
+    exact Concat_Htpy.
+  - intros [a | b] [c | d] [e | f]; try contradiction.
+    + cbn. intros f g h. 
+    apply WhiskerL_Htpy.
+    + cbn. intros t g h.
+    apply WhiskerL_Htpy.
+  - intros [a | b] [c | d] [e | f]; try contradiction.
+    + cbn. intros f g. 
+    apply WhiskerR_Htpy.
+    + cbn. intros t g.
+    apply WhiskerR_Htpy.
+    Defined.
+    
+Global Instance is1coh1cat_sum A B `{Is1Coh1Cat A} `{Is1Coh1Cat B}
+  : Is1Coh1Cat (A + B).
+Proof.
+  srefine (Build_Is1Coh1Cat (A + B) _ _ _ ).
+  - intros [a1 | a2] [b1 | b2] [c1 | c2] [d1 | d2] f g h; try contradiction; try contradiction.
+    + cbn in *.
+    apply cat_assoc.
+    + cbn in *.
+    apply cat_assoc.
+  - intros [a | b] [c | d] f; try contradiction.
+    + cbn in *. apply cat_idl.
+    + cbn in *. apply cat_idl.
+  
+    
+    
+    
+    exact(cat_assoc f1 g1 h1, cat_assoc f2 g2 h2).
+  - intros [a1 a2] [b1 b2] [f1 f2].
+    cbn in *.
+    exact (cat_idl _, cat_idl _).
+  - intros [a1 a2] [b1 b2] [g1 g2].
+    cbn in *.
+    exact (cat_idr _, cat_idr _).
+Defined.
 
 (** ** Two-variable functors *)
 
