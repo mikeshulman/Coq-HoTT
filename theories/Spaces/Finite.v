@@ -520,7 +520,7 @@ Global Instance finite_sum X Y `{Finite X} `{Finite Y}
 Proof.
   assert (e := merely_equiv_fin Y).
   strip_truncations.
-  refine (finite_equiv _ (functor_sum idmap e^-1) _).
+  refine (finite_equiv _ (fmap11 sum (Id X) e^-1) _).
   generalize (fcard Y); intros n.
   induction n as [|n IH].
   - refine (finite_equiv _ (sum_empty_r X)^-1 _).
