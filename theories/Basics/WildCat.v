@@ -647,9 +647,15 @@ Proof.
     + exact (catie_adjointify (snd f) (snd g) (snd r) (snd s)).
 Defined.
 
+(** This doesn't seem to solve the problem in [isequiv_functor_sum] *)
+Global Instance isequivs_prod A B `{HasEquivs A} `{HasEquivs B}
+       {a1 a2 : A} {b1 b2 : B} {f : a1 $-> a2} {g : b1 $-> b2}
+       {ef : CatIsEquiv f} {eg : CatIsEquiv g}
+  : @CatIsEquiv (A*B) _ _ _ (a1,b1) (a2,b2) (f,g) := (ef,eg).
+
 (** ** Sum categories *)
 
-Global Instance is0coh1cat_sum A B `{ Is0Coh1Cat A } `{ Is0Coh1Cat B} 
+Global Instance is0coh1cat_sum A B `{ Is0Coh1Cat A } `{ Is0Coh1Cat B}
   : Is0Coh1Cat (A + B).
   srefine (Build_Is0Coh1Cat _ _ _ _).
   - intros [a | b] [a1 | b1].
@@ -669,12 +675,12 @@ Global Instance is0coh1cat_sum A B `{ Is0Coh1Cat A } `{ Is0Coh1Cat B}
 Defined.
 
 (* Note: [try contradiction] deals with empty cases. *)
-Global Instance is0coh2cat_sum A B `{ Is0Coh2Cat A } `{ Is0Coh2Cat B} 
+Global Instance is0coh2cat_sum A B `{ Is0Coh2Cat A } `{ Is0Coh2Cat B}
   : Is0Coh2Cat (A + B).
 Proof.
   srefine (Build_Is0Coh2Cat _ _ _ _ _ _ _ _).
   -intros [a | b] [c | d]; try contradiction.
-    + cbn. intros f g. 
+    + cbn. intros f g.
     exact ( f $== g ).
     + cbn. intros f g.
     exact (f $== g).
@@ -682,27 +688,27 @@ Proof.
     + cbn. intro f. exact (Id_Htpy f).
     + cbn. intro f.  exact (Id_Htpy f).
   -intros [a | b] [a1 | b1] ; try contradiction.
-    +cbn. intros f g. 
+    +cbn. intros f g.
     exact Opp_Htpy.
     +cbn. intros f g.
     exact Opp_Htpy.
   - intros [a | b] [c | d] f g h; try contradiction.
-    + cbn. 
+    + cbn.
     exact Concat_Htpy.
     + cbn.
     exact Concat_Htpy.
   - intros [a | b] [c | d] [e | f]; try contradiction.
-    + cbn. intros f g h. 
+    + cbn. intros f g h.
     apply WhiskerL_Htpy.
     + cbn. intros t g h.
     apply WhiskerL_Htpy.
   - intros [a | b] [c | d] [e | f]; try contradiction.
-    + cbn. intros f g. 
+    + cbn. intros f g.
     apply WhiskerR_Htpy.
     + cbn. intros t g.
     apply WhiskerR_Htpy.
     Defined.
-    
+
 Global Instance is1coh1cat_sum A B `{Is1Coh1Cat A} `{Is1Coh1Cat B}
   : Is1Coh1Cat (A + B).
 Proof.
@@ -719,8 +725,8 @@ Proof.
     + cbn in *. apply cat_idr.
     + cbn in *. apply cat_idr.
   Defined.
-    
-    
+
+
 
 (** ** Two-variable functors *)
 
@@ -1057,4 +1063,3 @@ Proof.
   + intros x y f a; apply cat_idl.
   + intros x y f a; apply cat_idr.
 Defined.
-
