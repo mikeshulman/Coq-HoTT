@@ -7,7 +7,6 @@ Require Import Basics.Contractible.
 Require Import Basics.Equivalences.
 
 Local Open Scope path_scope.
-
 (** * Wild categories, functors, and transformations *)
 
 (** ** Unbundled definitions of categories *)
@@ -227,7 +226,7 @@ Proof.
   refine ((p b $@R fmap F f) $@ _).
   refine (_ $@ (fmap G f $@L (p a)^$)).
   apply (isnat gamma).
-Defined.  
+Defined.
 
 (** ** Opposite categories *)
 
@@ -316,7 +315,7 @@ Proof.
 Defined.
 
 Definition transformation_op {A} {B} `{Is0Coh1Cat B} (F : A -> B) (G : A -> B) (alpha : F $--> G) : (@Transformation (A^op) (B^op) (is0coh1cat_op B) (G : (A^op) -> (B^op)) (F : (A^op) -> (B^op))).
-Proof.       
+Proof.
   unfold op in *.
   cbn in *.
   intro a.
@@ -352,7 +351,7 @@ Proof.
   apply isnat_opp.
 Defined.
 *)
-  
+
 (** ** Equivalences *)
 
 (** We could define equivalences in any wild 2-category as bi-invertible maps, or in a wild 3-category as half-adjoint equivalences.  However, in concrete cases there is often an equivalent definition of equivalences that we want to use instead, and the important property we need is that it's logically equivalent to (quasi-)isomorphism. *)
@@ -488,7 +487,6 @@ Global Instance transitive_cate {A} `{HasEquivs A} {c1 : Is1Coh1Cat A}
   : Transitive (@CatEquiv A _ _ _)
   := fun a b c f g => g $oE f.
 
-
 (** Any sufficiently coherent functor preserves equivalences.  *)
 Global Instance iemap {A B : Type} `{HasEquivs A} `{HasEquivs B} (F : A -> B)
            {ff1 : Is0Coh1Functor F} {ff2 : Is0Coh2Functor F}
@@ -522,6 +520,13 @@ Proof.
   - apply cate_issect'.
   - intros f g s t.
     exact (catie_adjointify f g t s).
+Defined.
+
+Global Instance isequivs_op {A : Type} `{HasEquivs A}
+       {a b : A} (f : a $-> b) {ief : CatIsEquiv f}
+  : @CatIsEquiv A^op _ _ _ b a f.
+Proof.
+  assumption.
 Defined.
 
 (** When we have equivalences, we can define what it means for a category to be univalent. *)
@@ -581,6 +586,12 @@ Proof.
   - cbn. intros ? x; apply eissect.
   - cbn. intros ? x; apply eisretr.
   - intros g r s; refine (isequiv_adjointify f g r s).
+Defined.
+
+Global Instance catie_isequiv {A B : Type} {f : A $-> B}
+       `{IsEquiv A B f} : CatIsEquiv f.
+Proof.
+  assumption.
 Defined.
 
 (* Of course, this requires the univalence axiom, but (unlike funext, for some reason) that isn't defined until Types/Universe. *)
@@ -654,9 +665,14 @@ Proof.
     + exact (catie_adjointify (snd f) (snd g) (snd r) (snd s)).
 Defined.
 
+Global Instance isequivs_prod A B `{HasEquivs A} `{HasEquivs B}
+       {a1 a2 : A} {b1 b2 : B} {f : a1 $-> a2} {g : b1 $-> b2}
+       {ef : CatIsEquiv f} {eg : CatIsEquiv g}
+  : @CatIsEquiv (A*B) _ _ _ (a1,b1) (a2,b2) (f,g) := (ef,eg).
+
 (** ** Sum categories *)
 
-Global Instance is0coh1cat_sum A B `{ Is0Coh1Cat A } `{ Is0Coh1Cat B} 
+Global Instance is0coh1cat_sum A B `{ Is0Coh1Cat A } `{ Is0Coh1Cat B}
   : Is0Coh1Cat (A + B).
   srefine (Build_Is0Coh1Cat _ _ _ _).
   - intros [a | b] [a1 | b1].
@@ -676,12 +692,12 @@ Global Instance is0coh1cat_sum A B `{ Is0Coh1Cat A } `{ Is0Coh1Cat B}
 Defined.
 
 (* Note: [try contradiction] deals with empty cases. *)
-Global Instance is0coh2cat_sum A B `{ Is0Coh2Cat A } `{ Is0Coh2Cat B} 
+Global Instance is0coh2cat_sum A B `{ Is0Coh2Cat A } `{ Is0Coh2Cat B}
   : Is0Coh2Cat (A + B).
 Proof.
   srefine (Build_Is0Coh2Cat _ _ _ _ _ _ _ _).
   -intros [a | b] [c | d]; try contradiction.
-    + cbn. intros f g. 
+    + cbn. intros f g.
     exact ( f $== g ).
     + cbn. intros f g.
     exact (f $== g).
@@ -689,27 +705,27 @@ Proof.
     + cbn. intro f. exact (Id_Htpy f).
     + cbn. intro f.  exact (Id_Htpy f).
   -intros [a | b] [a1 | b1] ; try contradiction.
-    +cbn. intros f g. 
+    +cbn. intros f g.
     exact Opp_Htpy.
     +cbn. intros f g.
     exact Opp_Htpy.
   - intros [a | b] [c | d] f g h; try contradiction.
-    + cbn. 
+    + cbn.
     exact Concat_Htpy.
     + cbn.
     exact Concat_Htpy.
   - intros [a | b] [c | d] [e | f]; try contradiction.
-    + cbn. intros f g h. 
+    + cbn. intros f g h.
     apply WhiskerL_Htpy.
     + cbn. intros t g h.
     apply WhiskerL_Htpy.
   - intros [a | b] [c | d] [e | f]; try contradiction.
-    + cbn. intros f g. 
+    + cbn. intros f g.
     apply WhiskerR_Htpy.
     + cbn. intros t g.
     apply WhiskerR_Htpy.
     Defined.
-    
+
 Global Instance is1coh1cat_sum A B `{Is1Coh1Cat A} `{Is1Coh1Cat B}
   : Is1Coh1Cat (A + B).
 Proof.
@@ -726,8 +742,8 @@ Proof.
     + cbn in *. apply cat_idr.
     + cbn in *. apply cat_idr.
   Defined.
-    
-    
+
+
 
 (** ** Two-variable functors *)
 
@@ -744,7 +760,16 @@ Definition fmap22 {A B C : Type} `{Is0Coh2Cat A} `{Is0Coh2Cat B} `{Is0Coh2Cat C}
   (alpha : f1 $== g1) (beta : f2 $== g2)
   : (fmap11 F f1 f2) $== (fmap11 F g1 g2)
   := @fmap2 _ _ _ _ _ _ (uncurry F) _ _ (a1, b1) (a2, b2) (f1, f2) (g1, g2) (alpha, beta).
-  
+
+Definition iemap11 {A B C : Type} `{HasEquivs A} `{HasEquivs B} `{HasEquivs C} (F : A -> B -> C) {ff1 : Is0Coh1Functor (uncurry F)} {ff2 : Is0Coh2Functor (uncurry F)}
+ {ff3 : Is1Coh1Functor (uncurry F)}
+ {a1 a2 : A} {b1 b2 : B} (f1 : a1 $-> a2) (f2 : b1 $-> b2)
+ {f1e : CatIsEquiv f1} {f2e : CatIsEquiv f2}
+  : CatIsEquiv (fmap11 F f1 f2).
+Proof.
+  rapply (@iemap _ _ _ _ _ _ _ _ (uncurry F) _ _ _ (a1, b1) (a2, b2) (f1, f2)).
+Defined.
+
 (** For instance, we have hom-functors. *)
 Global Instance is0coh1functor_hom {A} `{Is0Coh1Cat A}
   : @Is0Coh1Functor (A^op * A) Type _ _ (uncurry (@Hom A _)).
@@ -1143,5 +1168,3 @@ Proof.
     (*Issue with applying WhiskerL_Htpy on second component... should be straightforward but some error. *) 
     
     Admitted.
-   
-  

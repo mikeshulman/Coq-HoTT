@@ -520,7 +520,7 @@ Global Instance finite_sum X Y `{Finite X} `{Finite Y}
 Proof.
   assert (e := merely_equiv_fin Y).
   strip_truncations.
-  refine (finite_equiv _ (functor_sum idmap e^-1) _).
+  refine (finite_equiv _ (fmap11 sum (Id X) e^-1) _).
   generalize (fcard Y); intros n.
   induction n as [|n IH].
   - refine (finite_equiv _ (sum_empty_r X)^-1 _).
@@ -611,7 +611,7 @@ Definition fcard_arrow `{Funext} X Y `{Finite X} `{Finite Y}
 Proof.
   assert (e := merely_equiv_fin X).
   strip_truncations.
-  refine (fcard_equiv (functor_arrow e idmap)^-1 @ _).
+  refine (fcard_equiv (fmap11 arrow e idmap)^-1 @ _).
   refine (_ @ ap (fun x => nat_exp (fcard Y) x) (fcard_equiv e)).
   generalize (fcard X); intros n.
   induction n as [|n IH].
