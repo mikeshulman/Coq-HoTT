@@ -1,5 +1,6 @@
 Require Export Basics.
 Require Export WildCat.Core.
+Require Export WildCat.Equiv.
 
 (** ** The category of types *)
 
@@ -44,7 +45,6 @@ Proof.
   destruct p; reflexivity.
 Defined.
 
-(*
 Global Instance hasequivs_type : HasEquivs Type.
 Proof.
   srefine (Build_HasEquivs Type _ _ Equiv (@IsEquiv) _ _ _ _ _ _ _ _); intros A B.
@@ -64,4 +64,3 @@ Global Instance catie_isequiv {A B : Type} {f : A $-> B}
 Proof.
   assumption.
 Defined.
-*)
