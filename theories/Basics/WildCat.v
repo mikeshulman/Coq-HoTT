@@ -763,11 +763,6 @@ Proof.
 Abort.
 
 
-(** ** Sum categories *)
-
-(* TODO? *)
-
-
 (** ** Wild functor categories *)
 
 Definition Fun1 (A B : Type) `{Is0Coh1Cat A} `{Is0Coh1Cat B}
