@@ -1060,4 +1060,88 @@ Proof.
   + intros x y f a; apply cat_idl.
   + intros x y f a; apply cat_idr.
 Defined.
+ 
+(* Transport is functor for 0 coh 1 cat, 0 coh 2 cat, 1 coh 1 cat*) 
 
+Global Instance is0coh1functor_transport (A : Type) (B : A -> Type) 
+  {H : forall x , Is0Coh1Cat ( B x ) } (x y : A) (p: x = y) : Is0Coh1Functor (transport B p).
+  Proof. serapply Build_Is0Coh1Functor.
+  intros a1 a2 f.
+  destruct p.
+  simpl.
+  exact f.
+  Defined. 
+  
+Global Instance is0coh2functor_transport (A : Type) (B : A -> Type) 
+  {H : forall x, Is0Coh1Cat (B x)} {H1 : forall x, Is0Coh2Cat ( B x )} (x y : A) (p: x = y) : Is0Coh2Functor (transport B p).
+  Proof. serapply Build_Is0Coh2Functor.
+  intros a1 a2 f g.
+  destruct p.
+  simpl.
+  exact (Id (f $== g)).
+  Defined.
+
+Global Instance is1coh1functor_transport (A : Type) (B : A -> Type) {H : forall x, Is0Coh1Cat (B x)} {H1 : forall x, Is0Coh2Cat (B x)} {H2 : forall x, Is1Coh1Cat (B x)} (x y : A) (p: x = y) : Is1Coh1Functor (transport B p).
+  Proof. serapply Build_Is1Coh1Functor.
+  + intros a.
+  destruct p.
+  simpl.
+  exact (Id_Htpy (Id a)).
+  + intros a1  a2 a3 f g.
+  destruct p.
+  simpl.
+  exact (Id_Htpy (g $o f)).
+  Defined.
+
+(** indexed coprod of categories -- uses functoriality of transport. *)
+
+Global Instance is0coh1cat_sigma (A : Type) (B : A -> Type)
+  {c : forall a, Is0Coh1Cat (B a)}
+  : Is0Coh1Cat {a : A &  B a}.
+Proof.
+  serapply Build_Is0Coh1Cat.
+  + intros [a1 b1] [a2 b2].
+  exact { f : a1 = a2 & transport B f b1 $-> b2}.
+  + cbn. intros [a b]. exists idpath. 
+  cbn. exact ( Id b ).
+  + cbn. intros [a1 b1] [a2 b2] [a3 b3] f g. 
+  exists (g.1 @ f.1) . 
+  refine (transport (fun x => (x $-> b3)) (transport_pp B g.1 f.1 b1)^ _ ).
+  (* pose (cat_equiv_path (transport_pp B g.1 f.1 b1)).
+  refine transport transport_pp  @ _).*)
+  refine (f.2 $o _).
+  exact ( fmap (transport B (f.1) ) g.2 ).
+  Defined.
+  
+Global Instance is0coh2cat_sigma (A : Type) (B : A -> Type)
+  {c : forall a, Is0Coh1Cat (B a)}{c1 : forall a, Is0Coh2Cat (B a)}
+  : Is0Coh2Cat {a : A &  B a}.
+Proof. 
+  serapply Build_Is0Coh2Cat.
+  +intros [a1 b1] [a2 b2]. cbn. intros [g1 g2] [h1 h2].
+  refine {p : (g1 = h1) & transport 
+  (fun (x : (a1 = a2)) => ( transport B x b1 $-> b2)) p g2 $== h2 }.
+  + intros [a1 b1] [a2 b2] [f1 f2]. 
+  exists idpath . cbn.
+  apply Id_Htpy.
+  + intros [a1 b1] [a2 b2] [f1 f2] [g1 g2].
+  intros [p1 p2]. exists p1^.
+  destruct f1. destruct p1. cbn in *.
+  apply Opp_Htpy. exact p2.
+  + intros [a1 b1] [a2 b2] [f1 f2] [g1 g2] [h1 h2] 
+  [p1 p2] [q1 q2]. 
+  exists (p1 @ q1). cbn in *.
+  destruct p1. destruct q1. cbn in *.
+  exact (p2 $@ q2).
+  + intros [a1 a2] [b1 b2] [d1 d2] [f1 f2] [g1 g2] [h1 h2] [p1 p2]. srefine (_;_).
+    - cbn. apply (whiskerR p1 h1).
+    - unfold pr1. destruct p1. 
+    unfold whiskerR. unfold concat2. unfold transport. 
+ (*   refine (WhiskerL_Htpy _ _).
+    apply (WhiskerL_Htpy h2 p2). *)
+    
+    (*Issue with applying WhiskerL_Htpy on second component... should be straightforward but some error. *) 
+    
+    Admitted.
+   
+  
