@@ -193,11 +193,11 @@ Arguments fmap_comp {_ _ _ _ _} F {_ _ _ _ _} f g.
 Definition Transformation {A B : Type} `{Is0Coh1Cat B} (F : A -> B) (G : A -> B)
   := forall (a : A), F a $-> G a.
 
-Notation "F $--> G" := (Transformation F G).
+Notation "F $=> G" := (Transformation F G).
 
 Class Is1Natural {A B : Type} `{Is0Coh1Cat A} `{Is0Coh2Cat B}
       (F : A -> B) {ff1 : Is0Coh1Functor F} (G : A -> B) {fg1 : Is0Coh1Functor G}
-      (alpha : F $--> G) := Build_Is1Natural'
+      (alpha : F $=> G) := Build_Is1Natural'
 {
   isnat : forall a b (f : a $-> b),
     alpha b $o fmap F f $== fmap G f $o alpha a;
@@ -209,7 +209,7 @@ Arguments isnat {_ _ _ _ _ _ _ _ _} alpha {alnat _ _} f : rename.
 
 Definition Build_Is1Natural {A B : Type} `{Is0Coh1Cat A} `{Is0Coh2Cat B}
            (F : A -> B) {ff1 : Is0Coh1Functor F} (G : A -> B)
-           {fg1 : Is0Coh1Functor G} (alpha : F $--> G)
+           {fg1 : Is0Coh1Functor G} (alpha : F $=> G)
            (isnat' : forall a b (f : a $-> b), alpha b $o fmap F f $== fmap G f $o alpha a)
   : Is1Natural F G alpha
   := Build_Is1Natural' _ _ _ _ _ F _ G _ alpha
@@ -218,7 +218,7 @@ Definition Build_Is1Natural {A B : Type} `{Is0Coh1Cat A} `{Is0Coh2Cat B}
 (** Modifying a transformation to something pointwise equal preserves naturality. *)
 Definition is1natural_homotopic {A B : Type} `{Is0Coh1Cat A} `{Is0Coh2Cat B}
       {F : A -> B} {ff1 : Is0Coh1Functor F} {G : A -> B} {fg1 : Is0Coh1Functor G}
-      {alpha : F $--> G} (gamma : F $--> G) {gmnat : Is1Natural F G gamma}
+      {alpha : F $=> G} (gamma : F $=> G) {gmnat : Is1Natural F G gamma}
       (p : forall a, alpha a $== gamma a)
   : Is1Natural F G alpha.
 Proof.
@@ -314,7 +314,7 @@ Proof.
     exact pf.
 Defined.
 
-Definition transformation_op {A} {B} `{Is0Coh1Cat B} (F : A -> B) (G : A -> B) (alpha : F $--> G) : (@Transformation (A^op) (B^op) (is0coh1cat_op B) (G : (A^op) -> (B^op)) (F : (A^op) -> (B^op))).
+Definition transformation_op {A} {B} `{Is0Coh1Cat B} (F : A -> B) (G : A -> B) (alpha : F $=> G) : (@Transformation (A^op) (B^op) (is0coh1cat_op B) (G : (A^op) -> (B^op)) (F : (A^op) -> (B^op))).
 Proof.
   unfold op in *.
   cbn in *.
@@ -323,7 +323,7 @@ Proof.
 Defined.
 
 Global Instance is1nat_op A B `{Is0Coh1Cat A} `{Is0Coh2Cat B}
-       (F : A -> B) {ff1 : Is0Coh1Functor F} (G : A -> B) {fg1 : Is0Coh1Functor G} (alpha : F $--> G) {pf : Is1Natural F G alpha} : Is1Natural (G : A^op -> B^op) (F : A^op -> B^op) (transformation_op F G alpha).
+       (F : A -> B) {ff1 : Is0Coh1Functor F} (G : A -> B) {fg1 : Is0Coh1Functor G} (alpha : F $=> G) {pf : Is1Natural F G alpha} : Is1Natural (G : A^op -> B^op) (F : A^op -> B^op) (transformation_op F G alpha).
 Proof.
   apply Build_Is1Natural'.
   - unfold op in *.
@@ -795,7 +795,7 @@ Definition Fun1 (A B : Type) `{Is0Coh1Cat A} `{Is0Coh1Cat B}
 
 Definition NatTrans {A B : Type} `{Is0Coh1Cat A} `{Is0Coh2Cat B} (F G : A -> B)
            {ff : Is0Coh1Functor F} {fg : Is0Coh1Functor G}
-  := { alpha : F $--> G & Is1Natural F G alpha }.
+  := { alpha : F $=> G & Is1Natural F G alpha }.
 
 (** Note that even if [A] and [B] are fully coherent oo-categories, the objects of our "functor category" are not fully coherent.  Thus we cannot in general expect this "functor category" to itself be fully coherent.  However, it is at least a 0-coherent 1-category, as long as [B] is a 1-coherent 1-category. *)
 
@@ -904,7 +904,7 @@ Defined.
 
 Definition opyoneda {A : Type} `{Is0Coh1Cat A} (a : A)
            (F : A -> Type) {ff : Is0Coh1Functor F}
-  : F a -> (opyon a $--> F).
+  : F a -> (opyon a $=> F).
 Proof.
   intros x b f.
   exact (fmap F f x).
@@ -912,7 +912,7 @@ Defined.
 
 Definition un_opyoneda {A : Type} `{Is0Coh1Cat A}
   (a : A) (F : A -> Type) {ff : Is0Coh1Functor F}
-  : (opyon a $--> F) -> F a
+  : (opyon a $=> F) -> F a
   := fun alpha => alpha a (Id a).
 
 Global Instance is1natural_opyoneda {A : Type} `{Is0Coh2Cat A}
@@ -933,7 +933,7 @@ Definition opyoneda_issect {A : Type} `{Is0Coh2Cat A} (a : A)
 (** We assume for the converse that the coherences in [A] are equalities (this is a weak funext-type assumption).  Note that we do not in general recover the witness of 1-naturality.  Indeed, if [A] is fully coherent, then a transformation of the form [yoneda a F x] is always also fully coherently natural, so an incoherent witness of 1-naturality could not be recovered in this way.  *)
 Definition opyoneda_isretr {A : Type} `{Is1Coh1Cat_Strong A} (a : A)
            (F : A -> Type) {ff : Is0Coh1Functor F} {ff1 : Is1Coh1Functor F}
-           (alpha : opyon a $--> F) {alnat : Is1Natural (opyon a) F alpha}
+           (alpha : opyon a $=> F) {alnat : Is1Natural (opyon a) F alpha}
            (b : A)
   : opyoneda a F (un_opyoneda a F alpha) b $== alpha b.
 Proof.
@@ -946,7 +946,7 @@ Defined.
 
 (** Specialization to "full-faithfulness" of the Yoneda embedding.  (In quotes because, again, incoherence means we can't recover the witness of naturality.)  *)
 Definition opyon_cancel {A : Type} `{Is0Coh1Cat A} (a b : A)
-  : (opyon a $--> opyon b) -> (b $-> a)
+  : (opyon a $=> opyon b) -> (b $-> a)
   := un_opyoneda a (opyon b).
 
 Definition opyon1 {A : Type} `{Is0Coh1Cat A} (a : A) : Fun1 A Type
@@ -983,12 +983,12 @@ Global Instance is0coh1functor_yon {A : Type} `{Is0Coh1Cat A} (a : A)
 
 Definition yoneda {A : Type} `{Is0Coh1Cat A} (a : A)
            (F : A^op -> Type) {ff : Is0Coh1Functor F}
-  : F a -> (yon a $--> F)
+  : F a -> (yon a $=> F)
   := @opyoneda (A^op) _ a F _.
 
 Definition un_yoneda {A : Type} `{Is0Coh1Cat A} (a : A)
            (F : A^op -> Type) {ff : Is0Coh1Functor F}
-  : (yon a $--> F) -> F a
+  : (yon a $=> F) -> F a
   := @un_opyoneda (A^op) _ a F _.
 
 Global Instance is1natural_yoneda {A : Type} `{Is0Coh2Cat A} (a : A)
@@ -1003,13 +1003,13 @@ Definition yoneda_issect {A : Type} `{Is0Coh2Cat A} (a : A) (F : A^op -> Type) {
 Definition yoneda_isretr {A : Type}
            `{Is1Coh1Cat_Strong A} {ac2 : Is0Coh2Cat A} (a : A)
            (F : A^op -> Type) {ff : Is0Coh1Functor F} {ff1 : Is1Coh1Functor F}
-           (alpha : yon a $--> F) {alnat : Is1Natural (yon a) F alpha}
+           (alpha : yon a $=> F) {alnat : Is1Natural (yon a) F alpha}
            (b : A)
   : yoneda a F (un_yoneda a F alpha) b $== alpha b
   := @opyoneda_isretr A^op _ _ _ a F _ _ alpha alnat b.
 
 Definition yon_cancel {A : Type} `{Is0Coh1Cat A} (a b : A)
-  : (yon a $--> yon b) -> (a $-> b)
+  : (yon a $=> yon b) -> (a $-> b)
   := un_yoneda a (yon b).
 
 Definition yon1 {A : Type} `{Is0Coh1Cat A} (a : A) : Fun1 A^op Type
@@ -1164,10 +1164,10 @@ Proof.
     unfold whiskerR. unfold concat2. 
     cbn in p2. unfold transport. 
     
-    exact ( WhiskerL_Htpy h2 p2 ). 
+  (*  exact ( WhiskerL_Htpy h2 p2 ). 
     
     
- (*   refine (WhiskerL_Htpy _ _).
+    refine (WhiskerL_Htpy _ _).
     apply (WhiskerL_Htpy h2 p2). *)
     
     (*Issue with applying WhiskerL_Htpy on second component... should be straightforward but some error. *)
