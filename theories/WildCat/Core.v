@@ -23,56 +23,25 @@ Notation "a $-> b" := (Hom a b).
 Arguments Comp {A _ a b c} _ _.
 Notation "g $o f" := (Comp g f).
 
-(* A 0-coherent notion of equivalence is simply reversible.  (Without 2-cells, we have no way to express that the reverse is an inverse.) *)
-Class Has0CohEquivs (A : Type) `{Is0Coh1Cat A} :=
-{
-  CatEquiv' : A -> A -> Type where "a $<~> b" := (CatEquiv' a b);
-  CatIsEquiv' : forall a b, (a $-> b) -> Type;
-  cate_fun' : forall a b, (a $<~> b) -> (a $-> b);
-  cate_isequiv' : forall a b (f : a $<~> b), CatIsEquiv' a b (cate_fun' a b f);
-  cate_buildequiv' : forall a b (f : a $-> b), CatIsEquiv' a b f -> CatEquiv' a b;
-  cate_buildequiv_fun' : forall a b (f : a $-> b) (fe : CatIsEquiv' a b f),
-      cate_fun' a b (cate_buildequiv' a b f fe) = f;
-  cate_inv' : forall {a b : A} (f : a $-> b) {fe : CatIsEquiv' a b f},
-      (b $-> a);
-}.
+(* A 0-coherent 1-groupoid is a category whose morphisms can be reversed. *)
+Class Is0Coh1Gpd (A : Type) `{Is0Coh1Cat A} :=
+  { gpd_rev : forall {a b : A}, (a $-> b) -> (b $-> a) }.
 
-(** Since apparently a field of a record can't be the source of a coercion (Coq complains about the uniform inheritance condition, although as officially stated that condition appears to be satisfied), we redefine all the fields of [Has0CohEquivs]. *)
+Definition GpdHom {A} `{Is0Coh1Gpd A} (a b : A) := a $-> b.
+Notation "a $== b" := (GpdHom a b).
 
-Definition CatEquiv {A} `{Has0CohEquivs A} (a b : A)
-  := @CatEquiv' A _ _ a b.
+Definition GpdComp {A} `{Is0Coh1Gpd A} {a b c : A}
+  : (a $== b) -> (b $== c) -> (a $== c)
+  := fun p q => q $o p.
+Infix "$@" := GpdComp.
 
-Notation "a $<~> b" := (CatEquiv a b).
-Arguments CatEquiv : simpl never.
+Notation "p ^$" := (gpd_rev p).
 
-Definition cate_fun {A} `{Has0CohEquivs A} {a b : A} (f : a $<~> b)
-  : a $-> b
-  := @cate_fun' A _ _ a b f.
-
-Coercion cate_fun : CatEquiv >-> Hom.
-
-(* Being an equivalence should be a typeclass, but we have to redefine it.  (Apparently [Existing Class] doesn't work.) *)
-Class CatIsEquiv {A} `{Has0CohEquivs A} {a b : A} (f : a $-> b)
-  := catisequiv : CatIsEquiv' a b f.
-
-Global Instance cate_isequiv {A} `{Has0CohEquivs A} {a b : A} (f : a $<~> b)
-  : CatIsEquiv f
-  := cate_isequiv' a b f.
-
-Definition Build_CatEquiv {A} `{Has0CohEquivs A} {a b : A}
-           (f : a $-> b) {fe : CatIsEquiv f}
-  : a $<~> b
-  := cate_buildequiv' a b f fe.
-
-Definition cate_buildequiv_fun {A} `{Has0CohEquivs A} {a b : A}
-           (f : a $-> b) {fe : CatIsEquiv f}
-  : cate_fun (Build_CatEquiv f) = f
-  := cate_buildequiv_fun' a b f fe.
-
-(* A (0-coherent 1-)groupoid is a category whose morphisms are all equivalences. *)
-Class IsGroupoid (A : Type) `{Has0CohEquivs A} :=
-  { catie_gpd : forall (a b : A) (f : a $-> b), CatIsEquiv f }.
-Global Existing Instance catie_gpd.
+Definition GpdHom_path {A} `{Is0Coh1Gpd A} {a b : A} (p : a = b)
+  : a $== b.
+Proof.
+  destruct p; apply Id.
+Defined.
 
 (* A 0-coherent 1-functor acts on morphisms, but satisfies no axioms. *)
 Class Is0Coh1Functor {A B : Type} `{Is0Coh1Cat A} `{Is0Coh1Cat B} (F : A -> B)
@@ -97,16 +66,14 @@ Definition fmap11 {A B C : Type} `{Is0Coh1Cat A} `{Is0Coh1Cat B} `{Is0Coh1Cat C}
   : F a1 b1 $-> F a2 b2
   := @fmap _ _ _ _ (uncurry F) H2 (a1, b1) (a2, b2) (f1, f2).
 
-(* A 0-coherent 2-category has its hom-types enhanced to 0-coherent 1-categories and its composition operations to 0-coherent 1-functors. *)
+(* A 0-coherent (2,1)-category has its hom-types enhanced to 0-coherent 1-groupoids and its composition operations to 0-coherent 1-functors. *)
 Class Is0Coh2Cat (A : Type) `{Is0Coh1Cat A} :=
 {
   is0coh1cat_hom : forall (a b : A), Is0Coh1Cat (a $-> b) ;
-  has0cohequivs_hom : forall (a b : A), Has0CohEquivs (a $-> b) ;
-  isgpd_hom : forall (a b : A), IsGroupoid (a $-> b) ;
+  isgpd_hom : forall (a b : A), Is0Coh1Gpd (a $-> b) ;
   is0coh1functor_comp : forall (a b c : A), Is0Coh1Functor (uncurry (@Comp A _ a b c))
 }.
 Global Existing Instance is0coh1cat_hom.
-Global Existing Instance has0cohequivs_hom.
 Global Existing Instance isgpd_hom.
 Global Existing Instance is0coh1functor_comp.
 
@@ -130,28 +97,9 @@ Definition WhiskerR_Htpy {A} `{Is0Coh2Cat A} {a b c : A}
   := p $o@ (Id h).
 Notation "p $@R h" := (WhiskerR_Htpy p h).
 
-Definition GpdHom {A} `{IsGroupoid A} (a b : A) := a $-> b.
-Notation "a $== b" := (GpdHom a b).
-
-Definition GpdComp {A} `{IsGroupoid A} {a b c : A}
-  : (a $== b) -> (b $== c) -> (a $== c)
-  := fun p q => q $o p.
-Infix "$@" := GpdComp.
-
-Definition GpdInv {A} `{IsGroupoid A} {a b : A}
-  : (a $== b) -> (b $== a)
-  := fun p => @cate_inv' _ _ _  a b p (catie_gpd a b p).
-Notation "p ^$" := (GpdInv p).
-
-Definition GpdHom_path {A} `{IsGroupoid A} {a b : A} (p : a = b)
-  : a $== b.
-Proof.
-  destruct p; apply Id.
-Defined.
-
 (** Generalizing function extensionality, "Morphism extensionality" states that homwise [GpdHom_path] is an equivalence. *)
 Class HasMorExt (A : Type) `{Is0Coh2Cat A} :=
-  { isequiv_Htpy_path : forall a b f g, IsEquiv (@GpdHom_path (a $-> b) _ _ _ f g) }.
+  { isequiv_Htpy_path : forall a b f g, IsEquiv (@GpdHom_path (a $-> b) _ _ f g) }.
 Global Existing Instance isequiv_Htpy_path.
 
 Definition path_Htpy {A} `{HasMorExt A} {a b : A} {f g : a $-> b} (p : f $== g) : f = g
