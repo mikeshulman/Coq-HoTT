@@ -26,12 +26,24 @@ Class Is0Coh1Gpd (A : Type) `{Is0Coh1Cat A} :=
 Definition GpdHom {A} `{Is0Coh1Gpd A} (a b : A) := a $-> b.
 Notation "a $== b" := (GpdHom a b).
 
+Global Instance reflexive_GpdHom {A} `{Is0Coh1Gpd A}
+  : Reflexive GpdHom
+  := fun a => Id a.
+
 Definition gpd_comp {A} `{Is0Coh1Gpd A} {a b c : A}
   : (a $== b) -> (b $== c) -> (a $== c)
   := fun p q => q $o p.
 Infix "$@" := gpd_comp.
 
+Global Instance transitive_GpdHom {A} `{Is0Coh1Gpd A}
+  : Transitive GpdHom
+  := fun a b c f g => f $@ g.
+
 Notation "p ^$" := (gpd_rev p).
+
+Global Instance symmetric_GpdHom {A} `{Is0Coh1Gpd A}
+  : Symmetric GpdHom
+  := fun a b f => f^$.
 
 Definition GpdHom_path {A} `{Is0Coh1Gpd A} {a b : A} (p : a = b)
   : a $== b.
