@@ -306,7 +306,7 @@ Defined.
 Print Transformation.
 
 Definition transformation_op {A} {B} `{Is0Coh1Cat B} (F : A -> B) (G : A -> B) (alpha : F $--> G) : (@Transformation (A^op) (B^op) (is0coh1cat_op B) (G : (A^op) -> (B^op)) (F : (A^op) -> (B^op))).
-Proof.       
+Proof.
   unfold op in *.
   cbn in *.
   intro a.
@@ -344,7 +344,7 @@ Proof.
   apply isnat_opp.
 Defined.
 *)
-  
+
 (** ** Equivalences *)
 
 (** We could define equivalences in any wild 2-category as bi-invertible maps, or in a wild 3-category as half-adjoint equivalences.  However, in concrete cases there is often an equivalent definition of equivalences that we want to use instead, and the important property we need is that it's logically equivalent to (quasi-)isomorphism. *)
