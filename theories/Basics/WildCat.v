@@ -623,6 +623,32 @@ Proof.
     cbn in *.
     exact (cat_idr _, cat_idr _).
 Defined.
+
+Global Instance hasequivs_prod A B `{HasEquivs A} `{HasEquivs B}
+  : HasEquivs (A * B).
+Proof.
+  srefine (Build_HasEquivs (A * B) _ _
+             (fun a b => (fst a $<~> fst b) * (snd a $<~> snd b))
+             _
+             _ _ _ _ _ _ _ _).
+  1:intros a b f; exact (CatIsEquiv (fst f) * CatIsEquiv (snd f)).
+  all:cbn; intros a b f.
+  - split; [ exact (fst f) | exact (snd f) ].
+  - split; exact _.
+  - intros [fe1 fe2]; split.
+    + exact (Build_CatEquiv (fst f)).
+    + exact (Build_CatEquiv (snd f)).
+  - intros [fe1 fe2]; cbn; split; apply cate_buildequiv_fun.
+  - intros [fe1 fe2]; split; [ exact ((fst f)^-1$) | exact ((snd f)^-1$) ].
+  - intros [fe1 fe2]; split; apply cate_issect.
+  - intros [fe1 fe2]; split; apply cate_isretr.
+  - intros g r s; split.
+    + exact (catie_adjointify (fst f) (fst g) (fst r) (fst s)).
+    + exact (catie_adjointify (snd f) (snd g) (snd r) (snd s)).
+Defined.
+
+(** ** Sum categories *)
+
 Global Instance is0coh1cat_sum A B `{ Is0Coh1Cat A } `{ Is0Coh1Cat B} 
   : Is0Coh1Cat (A + B).
   srefine (Build_Is0Coh1Cat _ _ _ _).
@@ -642,7 +668,7 @@ Global Instance is0coh1cat_sum A B `{ Is0Coh1Cat A } `{ Is0Coh1Cat B}
     exact (f $o g).
 Defined.
 
-(* NOte: try contradiction deals with empty cases. *)
+(* Note: [try contradiction] deals with empty cases. *)
 Global Instance is0coh2cat_sum A B `{ Is0Coh2Cat A } `{ Is0Coh2Cat B} 
   : Is0Coh2Cat (A + B).
 Proof.
