@@ -542,15 +542,16 @@ Defined.
 
 (** ** Functoriality on equivalences *)
 
-Global Instance isequiv_functor_sum `{IsEquiv A A' f} `{IsEquiv B B' g}
-: IsEquiv (fmap11 sum f g) | 1000.
+Global Instance isequiv_functor_sum
+{A A' B B' : Type} {f : A $-> A'} {g : B -> B'}
+                 `{IsEquiv A A' f} `{IsEquiv B B' g}
+  : IsEquiv (fmap11 sum f g) | 1000.
 Proof.
-  rapply (isequiv_adjointify (fmap11 sum f g) (fmap11 sum f^-1 g^-1)) ;
-  (*   repeat (intros || intros []) ; simpl ; apply ap ; *)
-  (* -  apply eisretr. *)
-  (* -  apply eisretr. *)
-  [ intros [?|?]; simpl; apply ap; apply eisretr
-  | intros [?|?]; simpl; apply ap; apply eissect ].
+  (* Typeclasses eauto := debug. *)
+  rapply (@iemap _ _ _ _ _ _ _ _ (uncurry sum)
+                 _ _ _ (A,B) (A',B') (f,g)).
+
+  split ; assumption.
 Defined.
 
 Definition equiv_functor_sum `{IsEquiv A A' f} `{IsEquiv B B' g}
