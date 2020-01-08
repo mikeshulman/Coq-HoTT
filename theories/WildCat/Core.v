@@ -4,7 +4,10 @@ Require Import Basics.
 
 (** * Wild categories, functors, and transformations *)
 
-(* A 0-coherent 1-category has 1-morphisms and operations on them, but no coherence. *)
+
+(** ** 0-coherent 1-categorical structures *)
+
+(** A 0-coherent 1-category has 1-morphisms and operations on them, but no coherence. *)
 Class Is0Coh1Cat (A : Type) :=
 {
   Hom : A -> A -> Type where "a $-> b" := (Hom a b);
@@ -16,7 +19,7 @@ Notation "a $-> b" := (Hom a b).
 Arguments cat_comp {A _ a b c} _ _.
 Notation "g $o f" := (cat_comp g f).
 
-(* A 0-coherent 1-groupoid is a category whose morphisms can be reversed. *)
+(** A 0-coherent 1-groupoid is a 0-coherent 1-category whose morphisms can be reversed. *)
 Class Is0Coh1Gpd (A : Type) `{Is0Coh1Cat A} :=
   { gpd_rev : forall {a b : A}, (a $-> b) -> (b $-> a) }.
 
@@ -36,13 +39,13 @@ Proof.
   destruct p; apply Id.
 Defined.
 
-(* A 0-coherent 1-functor acts on morphisms, but satisfies no axioms. *)
+(** A 0-coherent 1-functor acts on morphisms, but satisfies no axioms. *)
 Class Is0Coh1Functor {A B : Type} `{Is0Coh1Cat A} `{Is0Coh1Cat B} (F : A -> B)
   := { fmap : forall (a b : A) (f : a $-> b), F a $-> F b }.
 
 Arguments fmap {_ _ _ _} F {_ _ _} f.
 
-(* Products preserve 0-coherent 1-categories. *)
+(** Products preserve 0-coherent 1-categories. *)
 Global Instance is0coh1cat_prod A B `{Is0Coh1Cat A} `{Is0Coh1Cat B}
   : Is0Coh1Cat (A * B).
 Proof.
@@ -59,7 +62,10 @@ Definition fmap11 {A B C : Type} `{Is0Coh1Cat A} `{Is0Coh1Cat B} `{Is0Coh1Cat C}
   : F a1 b1 $-> F a2 b2
   := @fmap _ _ _ _ (uncurry F) H2 (a1, b1) (a2, b2) (f1, f2).
 
-(* A 0-coherent (2,1)-category has its hom-types enhanced to 0-coherent 1-groupoids and its composition operations to 0-coherent 1-functors. *)
+
+(** ** 0-coherent (2,1)-categorical structures *)
+
+(** A 0-coherent (2,1)-category has its hom-types enhanced to 0-coherent 1-groupoids and its composition operations to 0-coherent 1-functors. *)
 Class Is0Coh2Cat (A : Type) `{Is0Coh1Cat A} :=
 {
   is0coh1cat_hom : forall (a b : A), Is0Coh1Cat (a $-> b) ;
@@ -98,7 +104,17 @@ Global Existing Instance isequiv_Htpy_path.
 Definition path_Htpy {A} `{HasMorExt A} {a b : A} {f g : a $-> b} (p : f $== g) : f = g
   := GpdHom_path^-1 p.
 
-(* A 1-coherent 1-category satisfies associativity and unit laws up to 2-cells (so it must be at least a 0-coherent 2-category).  We duplicate the reversed associativity and double-identity laws to make more duality operations definitionally involutive. *)
+(** A 0-coherent (2,1)-functor acts on 2-cells, but satisfies no axioms. *)
+Class Is0Coh2Functor {A B : Type} `{Is0Coh2Cat A} `{Is0Coh2Cat B}
+  (* We can't write `{Is0Coh1Functor A B F} since that would duplicate the instances of Is0Coh1Cat. *)
+  (F : A -> B) {ff : Is0Coh1Functor F}
+  := { fmap2 : forall a b (f g : a $-> b), (f $== g) -> (fmap F f $== fmap F g) }.
+
+Arguments fmap2 {_ _ _ _ _ _} F {_ _ _ _ _ _} p.
+
+(** ** 1-coherent 1-categorical structures *)
+
+(** A 1-coherent 1-category satisfies associativity and unit laws up to 2-cells (so it must be at least a 0-coherent 2-category).  We duplicate the reversed associativity and double-identity laws to make more duality operations definitionally involutive. *)
 Class Is1Coh1Cat (A : Type) `{Is0Coh2Cat A} := Build_Is1Coh1Cat'
 {
   cat_assoc : forall a b c d (f : a $-> b) (g : b $-> c) (h : c $-> d),
@@ -169,13 +185,7 @@ Proof.
   - serapply cat_idlr_strong.
 Defined.
 
-(* We can't write `{Is0Coh1Functor A B F} since that would duplicate the instances of Is0Coh1Cat. *)
-Class Is0Coh2Functor {A B : Type} `{Is0Coh2Cat A} `{Is0Coh2Cat B}
-  (F : A -> B) {ff : Is0Coh1Functor F}
-  := { fmap2 : forall a b (f g : a $-> b), (f $== g) -> (fmap F f $== fmap F g) }.
-
-Arguments fmap2 {_ _ _ _ _ _} F {_ _ _ _ _ _} p.
-
+(** A 1-coherent 1-functor preserves identities and composition up to a 2-cell, so its codomain at least must be a 0-coherent (2,1)-category. *)
 Class Is1Coh1Functor {A B : Type} `{Is0Coh1Cat A} `{Is0Coh2Cat B}
   (F : A -> B) {ff : Is0Coh1Functor F} :=
 {
@@ -187,17 +197,19 @@ Class Is1Coh1Functor {A B : Type} `{Is0Coh1Cat A} `{Is0Coh2Cat B}
 Arguments fmap_id {_ _ _ _ _} F {_ _} a.
 Arguments fmap_comp {_ _ _ _ _} F {_ _ _ _ _} f g.
 
-(** ** Unbundled definitions of natural transformations *)
+(** ** Natural transformations *)
 
 Definition Transformation {A B : Type} `{Is0Coh1Cat B} (F : A -> B) (G : A -> B)
   := forall (a : A), F a $-> G a.
 
 Notation "F $=> G" := (Transformation F G).
 
+(** A 1-coherent natural transformation is natural up to a 2-cell, so again its codomain must be a (2,1)-category. *)
 Class Is1Natural {A B : Type} `{Is0Coh1Cat A} `{Is0Coh2Cat B}
       (F : A -> B) {ff1 : Is0Coh1Functor F} (G : A -> B) {fg1 : Is0Coh1Functor G}
       (alpha : F $=> G) := Build_Is1Natural'
 {
+  (* Again we duplicate data, to make more opposites definitionally involutive. *)
   isnat : forall a b (f : a $-> b),
     alpha b $o fmap F f $== fmap G f $o alpha a;
   isnat_opp : forall a b (f : a $-> b),
