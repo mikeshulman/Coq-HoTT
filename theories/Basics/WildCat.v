@@ -216,6 +216,18 @@ Definition Build_Is1Natural {A B : Type} `{Is0Coh1Cat A} `{Is0Coh2Cat B}
   := Build_Is1Natural' _ _ _ _ _ F _ G _ alpha
                        isnat' (fun a b f => (isnat' a b f)^$).
 
+(** Modifying a transformation to something pointwise equal preserves naturality. *)
+Definition is1natural_homotopic {A B : Type} `{Is0Coh1Cat A} `{Is0Coh2Cat B}
+      {F : A -> B} {ff1 : Is0Coh1Functor F} {G : A -> B} {fg1 : Is0Coh1Functor G}
+      {alpha : F $--> G} (gamma : F $--> G) {gmnat : Is1Natural F G gamma}
+      (p : forall a, alpha a $== gamma a)
+  : Is1Natural F G alpha.
+Proof.
+  refine (Build_Is1Natural F G alpha _); intros a b f.
+  refine ((p b $@R fmap F f) $@ _).
+  refine (_ $@ (fmap G f $@L (p a)^$)).
+  apply (isnat gamma).
+Defined.  
 
 (** ** Opposite categories *)
 
@@ -303,8 +315,6 @@ Proof.
     exact pf.
 Defined.
 
-Print Transformation.
-
 Definition transformation_op {A} {B} `{Is0Coh1Cat B} (F : A -> B) (G : A -> B) (alpha : F $--> G) : (@Transformation (A^op) (B^op) (is0coh1cat_op B) (G : (A^op) -> (B^op)) (F : (A^op) -> (B^op))).
 Proof.       
   unfold op in *.
@@ -312,8 +322,6 @@ Proof.
   intro a.
   apply (alpha a).
 Defined.
-
-Print Is1Natural.
 
 Global Instance is1nat_op A B `{Is0Coh1Cat A} `{Is0Coh2Cat B}
        (F : A -> B) {ff1 : Is0Coh1Functor F} (G : A -> B) {fg1 : Is0Coh1Functor G} (alpha : F $--> G) {pf : Is1Natural F G alpha} : Is1Natural (G : A^op -> B^op) (F : A^op -> B^op) (transformation_op F G alpha).
@@ -629,8 +637,7 @@ Global Instance hasequivs_prod A B `{HasEquivs A} `{HasEquivs B}
 Proof.
   srefine (Build_HasEquivs (A * B) _ _
              (fun a b => (fst a $<~> fst b) * (snd a $<~> snd b))
-             _
-             _ _ _ _ _ _ _ _).
+             _ _ _ _ _ _ _ _ _).
   1:intros a b f; exact (CatIsEquiv (fst f) * CatIsEquiv (snd f)).
   all:cbn; intros a b f.
   - split; [ exact (fst f) | exact (snd f) ].
@@ -817,9 +824,6 @@ Defined.
 
 (** It also inherits a notion of equivalence, namely a natural transformation that is a pointwise equivalence.  Note that due to incoherence, in this case we do *not* expect [cat_unadjointify] and [cat_adjointify] to actually be inverses. *)
 
-(* TODO: update *)
-
-(*
 Definition NatEquiv {A B : Type} `{Is0Coh1Cat A} `{HasEquivs B} (F G : A -> B) {ff : Is0Coh1Functor F} {fg : Is0Coh1Functor G}
   := { alpha : forall a, F a $<~> G a & Is1Natural F G (fun a => alpha a) }.
 
@@ -827,11 +831,18 @@ Global Instance hasequivs_fun (A B : Type) `{Is1Coh1Cat A} `{Is1Coh1Cat B}
   {eB : HasEquivs B} : HasEquivs (Fun1 A B).
 Proof.
   srapply Build_HasEquivs.
-  - intros [F ?] [G ?]. exact (NatEquiv F G).
-  - intros [F ?] [G ?] [alpha alnat]. cbn.
-    exists (fun a => alpha a); assumption.
-  - intros [F ?] [G ?] [alpha alnat]. cbn.
-    exists (fun a => (alpha a)^-1$).
+  1:{ intros [F ?] [G ?]. exact (NatEquiv F G). }
+  1:{ intros [F ?] [G ?] [alpha ?]; cbn in *.
+      exact (forall a, CatIsEquiv (alpha a)). }
+  all:intros [F ?] [G ?] [alpha alnat]; cbn in *.
+  - exists (fun a => alpha a); assumption.
+  - intros a; exact _.
+  - intros ?; srefine (_;_).
+    + intros a; exact (Build_CatEquiv (alpha a)).
+    + cbn. refine (is1natural_homotopic alpha _).
+      intros a; apply cate_buildequiv_fun.
+  - cbn; intros; apply cate_buildequiv_fun.
+  - intros ?; exists (fun a => (alpha a)^-1$).
     apply Build_Is1Natural; intros a b f.
     refine ((cat_idr _)^$ $@ _).
     refine ((_ $@L (cate_isretr (alpha a))^$) $@ _).
@@ -842,18 +853,11 @@ Proof.
     refine (cat_assoc_opp _ _ _ $@ _).
     refine ((cate_issect (alpha b) $@R _) $@ _).
     exact (cat_idl _).
-  - intros [F ?] [G ?] [alpha alnat] a; apply cate_issect.
-  - intros [F ?] [G ?] [alpha alnat] a; apply cate_isretr.
-  - intros [F ?] [G ?] [alpha ?] [gamma ?] r s; cbn in *.
-    exists (fun a => cate_adjointify (alpha a) (gamma a) (r a) (s a)).
-    apply Build_Is1Natural; intros a b f.
-    refine ((cate_adjointify_fun _ _ _ _ $@R _) $@ _); cbn.
-    refine (_ $@ (_ $@L cate_adjointify_fun _ _ _ _)^$); cbn.
-    exact (isnat alpha f).
-  - intros [F ?] [G ?] [alpha ?] [gamma ?] r s a; cbn in *.
-    apply cate_adjointify_fun.
+  - intros; apply cate_issect.
+  - intros; apply cate_isretr.
+  - intros [gamma ?] r s a; cbn in *.
+    refine (catie_adjointify (alpha a) (gamma a) (r a) (s a)).
 Defined.
-*)
 
 
 (** ** The covariant Yoneda lemma *)
@@ -922,8 +926,6 @@ Definition opyon1 {A : Type} `{Is0Coh1Cat A} (a : A) : Fun1 A Type
   := (opyon a ; is0coh1functor_opyon a).
 
 (** We can also deduce "full-faithfulness" on equivalences. *)
-(* TODO: update *)
-(*
 Definition opyon_equiv {A : Type} `{Is1Coh1Cat_Strong A}
            {eA : HasEquivs A} (a b : A)
   : (opyon1 a $<~> opyon1 b) -> (b $<~> a).
@@ -940,7 +942,6 @@ Proof.
     apply ap.
     serapply cat_idr_strong.
 Defined.
-*)
 
 (** ** The contravariant Yoneda lemma *)
 
