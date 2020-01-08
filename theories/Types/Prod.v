@@ -247,7 +247,7 @@ Defined.
 Global Instance isequiv_functor_prod `{IsEquiv A A' f} `{IsEquiv B B' g}
   : IsEquiv (fmap11 prod f g) | 1000.
 Proof.
-  rapply (@iemap _ _ _ _ _ _ _ _ (uncurry prod) _ _ _ (A, B) (A', B') (f, g) ).
+  exact (iemap11 prod f g).
 Defined.
 
 (** long direct proof of above
