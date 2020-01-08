@@ -1,13 +1,6 @@
 (* -*- mode: coq; mode: visual-line -*-  *)
 
-(* Don't import the old WildCat *)
-Require Import Basics.Overture.
-Require Import Basics.PathGroupoids.
-Require Import Basics.Notations.
-Require Import Basics.Contractible.
-Require Import Basics.Equivalences.
-
-Reserved Infix "$o@" (at level 30).
+Require Import Basics.
 
 (** * Wild categories, functors, and transformations *)
 
@@ -16,12 +9,12 @@ Class Is0Coh1Cat (A : Type) :=
 {
   Hom : A -> A -> Type where "a $-> b" := (Hom a b);
   Id  : forall (a : A), a $-> a;
-  Comp : forall (a b c : A), (b $-> c) -> (a $-> b) -> (a $-> c);
+  cat_comp : forall (a b c : A), (b $-> c) -> (a $-> b) -> (a $-> c);
 }.
 
 Notation "a $-> b" := (Hom a b).
-Arguments Comp {A _ a b c} _ _.
-Notation "g $o f" := (Comp g f).
+Arguments cat_comp {A _ a b c} _ _.
+Notation "g $o f" := (cat_comp g f).
 
 (* A 0-coherent 1-groupoid is a category whose morphisms can be reversed. *)
 Class Is0Coh1Gpd (A : Type) `{Is0Coh1Cat A} :=
@@ -30,10 +23,10 @@ Class Is0Coh1Gpd (A : Type) `{Is0Coh1Cat A} :=
 Definition GpdHom {A} `{Is0Coh1Gpd A} (a b : A) := a $-> b.
 Notation "a $== b" := (GpdHom a b).
 
-Definition GpdComp {A} `{Is0Coh1Gpd A} {a b c : A}
+Definition gpd_comp {A} `{Is0Coh1Gpd A} {a b c : A}
   : (a $== b) -> (b $== c) -> (a $== c)
   := fun p q => q $o p.
-Infix "$@" := GpdComp.
+Infix "$@" := gpd_comp.
 
 Notation "p ^$" := (gpd_rev p).
 
@@ -71,7 +64,7 @@ Class Is0Coh2Cat (A : Type) `{Is0Coh1Cat A} :=
 {
   is0coh1cat_hom : forall (a b : A), Is0Coh1Cat (a $-> b) ;
   isgpd_hom : forall (a b : A), Is0Coh1Gpd (a $-> b) ;
-  is0coh1functor_comp : forall (a b c : A), Is0Coh1Functor (uncurry (@Comp A _ a b c))
+  is0coh1functor_comp : forall (a b c : A), Is0Coh1Functor (uncurry (@cat_comp A _ a b c))
 }.
 Global Existing Instance is0coh1cat_hom.
 Global Existing Instance isgpd_hom.
@@ -81,7 +74,7 @@ Definition Comp2 {A} `{Is0Coh2Cat A} {a b c : A}
            {f g : a $-> b} {h k : b $-> c}
            (q : h $-> k) (p : f $-> g)
   : (h $o f $-> k $o g)
-  := fmap11 Comp q p.
+  := fmap11 cat_comp q p.
 
 Infix "$o@" := Comp2.
 
@@ -174,4 +167,62 @@ Proof.
   - serapply cat_idl_strong.
   - serapply cat_idr_strong.
   - serapply cat_idlr_strong.
+Defined.
+
+(* We can't write `{Is0Coh1Functor A B F} since that would duplicate the instances of Is0Coh1Cat. *)
+Class Is0Coh2Functor {A B : Type} `{Is0Coh2Cat A} `{Is0Coh2Cat B}
+  (F : A -> B) {ff : Is0Coh1Functor F}
+  := { fmap2 : forall a b (f g : a $-> b), (f $== g) -> (fmap F f $== fmap F g) }.
+
+Arguments fmap2 {_ _ _ _ _ _} F {_ _ _ _ _ _} p.
+
+Class Is1Coh1Functor {A B : Type} `{Is0Coh1Cat A} `{Is0Coh2Cat B}
+  (F : A -> B) {ff : Is0Coh1Functor F} :=
+{
+  fmap_id : forall a, fmap F (Id a) $== Id (F a);
+  fmap_comp : forall a b c (f : a $-> b) (g : b $-> c),
+    fmap F (g $o f) $== fmap F g $o fmap F f;
+}.
+
+Arguments fmap_id {_ _ _ _ _} F {_ _} a.
+Arguments fmap_comp {_ _ _ _ _} F {_ _ _ _ _} f g.
+
+(** ** Unbundled definitions of natural transformations *)
+
+Definition Transformation {A B : Type} `{Is0Coh1Cat B} (F : A -> B) (G : A -> B)
+  := forall (a : A), F a $-> G a.
+
+Notation "F $=> G" := (Transformation F G).
+
+Class Is1Natural {A B : Type} `{Is0Coh1Cat A} `{Is0Coh2Cat B}
+      (F : A -> B) {ff1 : Is0Coh1Functor F} (G : A -> B) {fg1 : Is0Coh1Functor G}
+      (alpha : F $=> G) := Build_Is1Natural'
+{
+  isnat : forall a b (f : a $-> b),
+    alpha b $o fmap F f $== fmap G f $o alpha a;
+  isnat_opp : forall a b (f : a $-> b),
+    fmap G f $o alpha a $== alpha b $o fmap F f;
+}.
+
+Arguments isnat {_ _ _ _ _ _ _ _ _} alpha {alnat _ _} f : rename.
+
+Definition Build_Is1Natural {A B : Type} `{Is0Coh1Cat A} `{Is0Coh2Cat B}
+           (F : A -> B) {ff1 : Is0Coh1Functor F} (G : A -> B)
+           {fg1 : Is0Coh1Functor G} (alpha : F $=> G)
+           (isnat' : forall a b (f : a $-> b), alpha b $o fmap F f $== fmap G f $o alpha a)
+  : Is1Natural F G alpha
+  := Build_Is1Natural' _ _ _ _ _ F _ G _ alpha
+                       isnat' (fun a b f => (isnat' a b f)^$).
+
+(** Modifying a transformation to something pointwise equal preserves naturality. *)
+Definition is1natural_homotopic {A B : Type} `{Is0Coh1Cat A} `{Is0Coh2Cat B}
+      {F : A -> B} {ff1 : Is0Coh1Functor F} {G : A -> B} {fg1 : Is0Coh1Functor G}
+      {alpha : F $=> G} (gamma : F $=> G) {gmnat : Is1Natural F G gamma}
+      (p : forall a, alpha a $== gamma a)
+  : Is1Natural F G alpha.
+Proof.
+  refine (Build_Is1Natural F G alpha _); intros a b f.
+  refine ((p b $@R fmap F f) $@ _).
+  refine (_ $@ (fmap G f $@L (p a)^$)).
+  apply (isnat gamma).
 Defined.
