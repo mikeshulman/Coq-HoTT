@@ -20,17 +20,39 @@ Typeclasses Opaque op.
 Global Instance is0coh1cat_op A `{Is0Coh1Cat A} : Is0Coh1Cat (A ^op)
   := Build_Is0Coh1Cat A (fun a b => b $-> a) Id (fun a b c g f => f $o g).
 
+Global Instance is0coh1gpd_op A `{Is0Coh1Gpd A} : Is0Coh1Gpd (A ^op).
+Proof.
+  srapply Build_Is0Coh1Gpd; unfold op in *; cbn in *.
+  intros a b.
+  apply gpd_rev.
+Defined.
+
+Global Instance op0coh1gpd_fun A `{Is0Coh1Gpd A} :
+  Is0Coh1Functor( (fun x => x) : A^op -> A).
+Proof.
+  srapply Build_Is0Coh1Functor; unfold op in *; cbn.
+  intros a b.
+  exact (fun f => f^$).
+Defined.
+
 Global Instance is0cat2cat_op A `{Is0Coh2Cat A} : Is0Coh2Cat A^op.
 Proof.
   srapply Build_Is0Coh2Cat; unfold op in *; cbn in *.
-  1: intros a b f g; exact (f $== g).
-  all: cbn.
-  - intros a b; apply Id_Htpy.
-  - intros a b f g; apply Opp_Htpy.
-  - intros a b f g h; apply Concat_Htpy.
-  - intros a b c f g h p; exact (p $@R h).
-  - intros a b c f g p h; exact (h $@L p).
+  - intros a b.
+    apply is0coh1cat_hom.
+  - intros a b.
+    apply isgpd_hom.
+  - intros a b c.
+    srapply Build_Is0Coh1Functor.
+    intros [f g] [h k].
+    intros [p q].
+    cbn in *.
+    exact (q $o@ p).
 Defined.
+
+
+(** WORK IN PROGRESS 
+
 
 Global Instance is1coh1cat_op A `{Is1Coh1Cat A} : Is1Coh1Cat A^op.
 Proof.
@@ -131,4 +153,6 @@ Proof.
   intros f.
   apply isnat_opp.
 Defined.
+*)
+
 *)
