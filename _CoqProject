@@ -56,6 +56,7 @@ theories/WildCat/Sum.v
 theories/WildCat/Opposite.v
 theories/WildCat/Type.v
 theories/WildCat/FunctorCat.v
+theories/WildCat/Yoneda.v
 
 
 #
