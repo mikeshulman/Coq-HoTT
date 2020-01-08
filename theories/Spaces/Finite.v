@@ -611,7 +611,7 @@ Definition fcard_arrow `{Funext} X Y `{Finite X} `{Finite Y}
 Proof.
   assert (e := merely_equiv_fin X).
   strip_truncations.
-  refine (fcard_equiv (functor_arrow e idmap)^-1 @ _).
+  refine (fcard_equiv (fmap11 arrow e idmap)^-1 @ _).
   refine (_ @ ap (fun x => nat_exp (fcard Y) x) (fcard_equiv e)).
   generalize (fcard X); intros n.
   induction n as [|n IH].

@@ -198,7 +198,7 @@ Section Extensions.
       intros h; simpl.
       refine (functor_sigma (functor_forall idmap g) _); intros k.
       refine (functor_forall idmap _);
-        intros a; unfold functor_arrow, functor_forall, composeD; simpl.
+        intros a; unfold functor_forall, composeD; simpl.
       apply moveR_equiv_M.
     - refine (functor_forall (functor_forall idmap (fun b => (g b)^-1)) _);
       intros h.
