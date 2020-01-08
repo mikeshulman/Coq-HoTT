@@ -227,7 +227,7 @@ Proof.
   refine ((p b $@R fmap F f) $@ _).
   refine (_ $@ (fmap G f $@L (p a)^$)).
   apply (isnat gamma).
-Defined.  
+Defined.
 
 (** ** Opposite categories *)
 
@@ -583,6 +583,12 @@ Proof.
   - intros g r s; refine (isequiv_adjointify f g r s).
 Defined.
 
+Global Instance catie_isequiv {A B : Type} {f : A $-> B}
+       `{IsEquiv A B f} : CatIsEquiv f.
+Proof.
+  assumption.
+Defined.
+
 (* Of course, this requires the univalence axiom, but (unlike funext, for some reason) that isn't defined until Types/Universe. *)
 (*
 Global Instance isunivalent_type `{Univalence}
@@ -750,7 +756,7 @@ Definition fmap22 {A B C : Type} `{Is0Coh2Cat A} `{Is0Coh2Cat B} `{Is0Coh2Cat C}
   (alpha : f1 $== g1) (beta : f2 $== g2)
   : (fmap11 F f1 f2) $== (fmap11 F g1 g2)
   := @fmap2 _ _ _ _ _ _ (uncurry F) _ _ (a1, b1) (a2, b2) (f1, f2) (g1, g2) (alpha, beta).
-  
+
 (** For instance, we have hom-functors. *)
 Global Instance is0coh1functor_hom {A} `{Is0Coh1Cat A}
   : @Is0Coh1Functor (A^op * A) Type _ _ (uncurry (@Hom A _)).
