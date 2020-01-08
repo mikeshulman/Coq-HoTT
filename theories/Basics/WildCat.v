@@ -7,7 +7,6 @@ Require Import Basics.Contractible.
 Require Import Basics.Equivalences.
 
 Local Open Scope path_scope.
-
 (** * Wild categories, functors, and transformations *)
 
 (** ** Unbundled definitions of categories *)
@@ -761,6 +760,15 @@ Definition fmap22 {A B C : Type} `{Is0Coh2Cat A} `{Is0Coh2Cat B} `{Is0Coh2Cat C}
   (alpha : f1 $== g1) (beta : f2 $== g2)
   : (fmap11 F f1 f2) $== (fmap11 F g1 g2)
   := @fmap2 _ _ _ _ _ _ (uncurry F) _ _ (a1, b1) (a2, b2) (f1, f2) (g1, g2) (alpha, beta).
+
+Definition iemap11 {A B C : Type} `{HasEquivs A} `{HasEquivs B} `{HasEquivs C} (F : A -> B -> C) {ff1 : Is0Coh1Functor (uncurry F)} {ff2 : Is0Coh2Functor (uncurry F)}
+ {ff3 : Is1Coh1Functor (uncurry F)} 
+ {a1 a2 : A} {b1 b2 : B} (f1 : a1 $-> a2) (f2 : b1 $-> b2)
+ {f1e : CatIsEquiv f1} {f2e : CatIsEquiv f2}
+  : CatIsEquiv (fmap11 F f1 f2).
+Proof.
+  rapply (@iemap _ _ _ _ _ _ _ _ (uncurry F) _ _ _ (a1, b1) (a2, b2) (f1, f2)).
+Defined.
 
 (** For instance, we have hom-functors. *)
 Global Instance is0coh1functor_hom {A} `{Is0Coh1Cat A}

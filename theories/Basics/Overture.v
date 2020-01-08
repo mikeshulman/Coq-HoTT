@@ -167,7 +167,7 @@ Notation "x .2" := (pr2 x) : fibration_scope.
 Definition uncurry {A B C} (f : A -> B -> C) (p : A * B) : C
   := f (fst p) (snd p).
 
-Arguments uncurry {A B C} /.
+Arguments uncurry {A B C} f p /.
 
 (** Composition of functions. *)
 
