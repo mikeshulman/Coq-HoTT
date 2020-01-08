@@ -44,6 +44,11 @@ theories/Basics/Decidable.v
 theories/Basics/WildCat.v
 
 #
+#   Wildcat
+#
+theories/WildCat/Core.v
+
+#
 #   Types
 #
 
