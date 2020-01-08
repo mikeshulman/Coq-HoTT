@@ -1161,10 +1161,16 @@ Proof.
   + intros [a1 a2] [b1 b2] [d1 d2] [f1 f2] [g1 g2] [h1 h2] [p1 p2]. srefine (_;_).
     - cbn. apply (whiskerR p1 h1).
     - unfold pr1. destruct p1. 
-    unfold whiskerR. unfold concat2. unfold transport. 
+    unfold whiskerR. unfold concat2. 
+    cbn in p2. unfold transport. 
+    
+    exact ( WhiskerL_Htpy h2 p2 ). 
+    
+    
  (*   refine (WhiskerL_Htpy _ _).
     apply (WhiskerL_Htpy h2 p2). *)
     
-    (*Issue with applying WhiskerL_Htpy on second component... should be straightforward but some error. *) 
+    (*Issue with applying WhiskerL_Htpy on second component... should be straightforward but some error. *)
+    (* Do we expect this example to be subsumed by a Grothendieck construction? *) 
     
     Admitted.
