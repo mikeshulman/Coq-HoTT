@@ -140,4 +140,3 @@ Require Export HoTT.Tactics.EquivalenceInduction.
 (** We check that UnivalenceAxiom, FunextAxiom aren't being leaked. This is so that these can be imported seperately. *)
 Fail Check HoTT.UnivalenceAxiom.univalence_axiom.
 Fail Check HoTT.FunextAxiom.funext_axiom.
-

@@ -21,7 +21,7 @@ COQC = hoqc
 #   # Spectra
 #   # Algebra
 #   # Tactics
-#   # PropResizing 
+#   # PropResizing
 #   # Categories
 #   # Classes
 #
@@ -231,7 +231,7 @@ theories/HoTT.v
 theories/Tests.v
 
 #
-#   Contrib  
+#   Contrib
 #
 
 contrib/HoTTBook.v
@@ -275,7 +275,7 @@ theories/Pointed/pSusp.v
 #
 
 theories/Spectra/Spectrum.v
-theories/Spectra/Coinductive.v  
+theories/Spectra/Coinductive.v
 
 #
 #   Algebra
@@ -622,5 +622,3 @@ theories/Classes/theory/ua_third_isomorphism.v
 theories/Classes/categories/ua_category.v
 
 theories/Classes/tests/ring_tac.v
-
-

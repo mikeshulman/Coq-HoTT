@@ -488,7 +488,6 @@ Global Instance transitive_cate {A} `{HasEquivs A} {c1 : Is1Coh1Cat A}
   : Transitive (@CatEquiv A _ _ _)
   := fun a b c f g => g $oE f.
 
-
 (** Any sufficiently coherent functor preserves equivalences.  *)
 Global Instance iemap {A B : Type} `{HasEquivs A} `{HasEquivs B} (F : A -> B)
            {ff1 : Is0Coh1Functor F} {ff2 : Is0Coh2Functor F}
@@ -522,6 +521,13 @@ Proof.
   - apply cate_issect'.
   - intros f g s t.
     exact (catie_adjointify f g t s).
+Defined.
+
+Global Instance isequivs_op {A : Type} `{HasEquivs A}
+       {a b : A} (f : a $-> b) {ief : CatIsEquiv f}
+  : @CatIsEquiv A^op _ _ _ b a f.
+Proof.
+  assumption.
 Defined.
 
 (** When we have equivalences, we can define what it means for a category to be univalent. *)
@@ -660,7 +666,6 @@ Proof.
     + exact (catie_adjointify (snd f) (snd g) (snd r) (snd s)).
 Defined.
 
-(** This doesn't seem to solve the problem in [isequiv_functor_sum] *)
 Global Instance isequivs_prod A B `{HasEquivs A} `{HasEquivs B}
        {a1 a2 : A} {b1 b2 : B} {f : a1 $-> a2} {g : b1 $-> b2}
        {ef : CatIsEquiv f} {eg : CatIsEquiv g}
