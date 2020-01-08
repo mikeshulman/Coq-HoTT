@@ -547,11 +547,8 @@ Global Instance isequiv_functor_sum
                  `{IsEquiv A A' f} `{IsEquiv B B' g}
   : IsEquiv (fmap11 sum f g) | 1000.
 Proof.
-  (* Typeclasses eauto := debug. *)
   rapply (@iemap _ _ _ _ _ _ _ _ (uncurry sum)
                  _ _ _ (A,B) (A',B') (f,g)).
-
-  split ; assumption.
 Defined.
 
 Definition equiv_functor_sum `{IsEquiv A A' f} `{IsEquiv B B' g}
