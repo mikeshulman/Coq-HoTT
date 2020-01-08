@@ -47,6 +47,8 @@ theories/Basics/Decidable.v
 #   Wildcat
 #
 
+theories/WildCat.v
+
 theories/WildCat/Core.v
 theories/WildCat/Equiv.v
 theories/WildCat/Prod.v
