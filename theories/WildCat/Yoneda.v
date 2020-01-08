@@ -118,7 +118,7 @@ Definition yoneda_issect {A : Type} `{Is0Coh2Cat A} (a : A) (F : A^op -> Type) {
   : un_yoneda a F (yoneda a F x) = x
   := @opyoneda_issect (A^op) _ _ a F _ _ x.
 
-(*
+
 Definition yoneda_isretr {A : Type}
            `{Is1Coh1Cat_Strong A} {ac2 : Is0Coh2Cat A} (a : A)
            (F : A^op -> Type) {ff : Is0Coh1Functor F} {ff1 : Is1Coh1Functor F}
@@ -133,7 +133,6 @@ Definition yon_cancel {A : Type} `{Is0Coh1Cat A} (a b : A)
 
 Definition yon1 {A : Type} `{Is0Coh1Cat A} (a : A) : Fun1 A^op Type
   := opyon1 a.
-*)
 
 (* TODO: update *)
 (*
