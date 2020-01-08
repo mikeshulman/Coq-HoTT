@@ -655,18 +655,12 @@ Proof.
   - intros [a | b] [c | d] f; try contradiction.
     + cbn in *. apply cat_idl.
     + cbn in *. apply cat_idl.
-  
+  - intros [a | b] [c | d] f; try contradiction.
+    + cbn in *. apply cat_idr.
+    + cbn in *. apply cat_idr.
+  Defined.
     
     
-    
-    exact(cat_assoc f1 g1 h1, cat_assoc f2 g2 h2).
-  - intros [a1 a2] [b1 b2] [f1 f2].
-    cbn in *.
-    exact (cat_idl _, cat_idl _).
-  - intros [a1 a2] [b1 b2] [g1 g2].
-    cbn in *.
-    exact (cat_idr _, cat_idr _).
-Defined.
 
 (** ** Two-variable functors *)
 
