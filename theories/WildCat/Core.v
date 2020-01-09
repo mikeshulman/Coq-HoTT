@@ -250,7 +250,7 @@ Class Is1Natural {A B : Type} `{Is0Coh0Cat A} `{Is0Coh2Cat B}
 
 Arguments isnat {_ _ _ _ _ _ _ _ _} alpha {alnat _ _} f : rename.
 
-Definition Build_Is1Natural {A B : Type} `{Is0Coh1Cat A} `{Is0Coh2Cat B}
+Definition Build_Is1Natural {A B : Type} `{Is0Coh0Cat A} `{Is0Coh2Cat B}
            (F : A -> B) {ff1 : Is0Coh1Functor F} (G : A -> B)
            {fg1 : Is0Coh1Functor G} (alpha : F $=> G)
            (isnat' : forall a b (f : a $-> b), alpha b $o fmap F f $== fmap G f $o alpha a)
