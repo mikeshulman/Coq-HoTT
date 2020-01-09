@@ -3,6 +3,7 @@
 
 Require Import HoTT.Basics.
 Require Import Types.Empty Types.Unit.
+Require Import WildCat.
 Local Open Scope path_scope.
 
 Generalizable Variables X A B f g n.
