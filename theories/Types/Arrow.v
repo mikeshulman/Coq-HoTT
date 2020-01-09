@@ -2,9 +2,9 @@
 (** * Theorems about Non-dependent function types *)
 
 Require Import HoTT.Basics.
+Require Import HoTT.WildCat.
 Require Import Types.Paths Types.Forall.
 Local Open Scope path_scope.
-
 
 Generalizable Variables A B C D f g n.
 
