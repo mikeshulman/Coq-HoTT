@@ -1,4 +1,4 @@
-Require Import Basics Types PathAny.
+Require Import Basics WildCat Types PathAny.
 Require Import Pointed.Core.
 Require Import Pointed.pHomotopy.
 
