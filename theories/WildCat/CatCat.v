@@ -26,19 +26,19 @@ Global Instance is0coh1cat_wildcat : Is0Coh1Cat WildCat.
 Proof.
   serapply Build_Is0Coh1Cat.
   + intros A B.  
-  exact (Fun1 A B).
+  exact (Fun01 A B).
   + intros C. cbn in *.
-  unfold Fun1. 
+  unfold Fun01. 
   (** This part seems redundant. I'm showing idmap is a 0 coherent 1 functor. maybe done elsewhere? (or should be done somewhere else?). In modifying we will probably want that idmap is 0 coherent 2, 1 coherent 1, etc. *)
   exists (idmap). serapply Build_Is0Coh1Functor. intros a b. cbn.
   exact (idmap).
-  + intros A B C; cbn in *; unfold Fun1.
+  + intros A B C; cbn in *; unfold Fun01.
   intros [G g] [F f]. 
   exists ( G o F). 
   serapply Build_Is0Coh1Functor.
   intros u v h. cbn in *.  exact (fmap G ( fmap F h)).
   Defined.
 
-Global Instance is0coh2cat_wildcat : Is0Coh2Cat WildCat.
+Global Instance is0coh21cat_wildcat : Is0Coh21Cat WildCat.
 Proof.
 Admitted.

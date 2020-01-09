@@ -28,12 +28,12 @@ Proof.
     exact ( (f1^$, f2^$) ).
 Defined.
 
-Global Instance is0coh2cat_prod A B `{Is0Coh2Cat A} `{Is0Coh2Cat B}
-  : Is0Coh2Cat (A * B).
+Global Instance is0coh21cat_prod A B `{Is0Coh21Cat A} `{Is0Coh21Cat B}
+  : Is0Coh21Cat (A * B).
 Proof.
 (** Need to modify the proof to use new definitions of 0 coherent 2 category. *)
 
-  serapply (Build_Is0Coh2Cat).
+  serapply (Build_Is0Coh21Cat).
   - intros [x1 x2] [y1 y2].
     rapply is0coh1cat_prod.
   - intros [x1 x2] [y1 y2].
@@ -89,7 +89,7 @@ Global Instance isequivs_prod A B `{HasEquivs A} `{HasEquivs B}
 
 (** Now we can have more coherent two-variable functors. *)
 
-Definition fmap22 {A B C : Type} `{Is0Coh2Cat A} `{Is0Coh2Cat B} `{Is0Coh2Cat C}
+Definition fmap22 {A B C : Type} `{Is0Coh21Cat A} `{Is0Coh21Cat B} `{Is0Coh21Cat C}
   (F : A -> B -> C) {ff1 : Is0Coh1Functor (uncurry F)} {ff2 : Is0Coh2Functor (uncurry F)}
   {a1 a2 : A} {b1 b2 : B} (f1 : a1 $-> a2) (f2 : b1 $-> b2) (g1 : a1 $-> a2) (g2 : b1 $-> b2)
   (alpha : f1 $== g1) (beta : f2 $== g2)

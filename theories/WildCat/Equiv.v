@@ -7,7 +7,7 @@ Require Import WildCat.Core.
 
 (** We could define equivalences in any wild 2-category as bi-invertible maps, or in a wild 3-category as half-adjoint equivalences.  However, in concrete cases there is often an equivalent definition of equivalences that we want to use instead, and the important property we need is that it's logically equivalent to (quasi-)isomorphism. *)
 
-Class HasEquivs (A : Type) `{Is0Coh2Cat A} :=
+Class HasEquivs (A : Type) `{Is0Coh21Cat A} :=
 {
   CatEquiv' : A -> A -> Type where "a $<~> b" := (CatEquiv' a b);
   CatIsEquiv' : forall a b, (a $-> b) -> Type;

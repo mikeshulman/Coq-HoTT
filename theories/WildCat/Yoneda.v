@@ -89,7 +89,7 @@ Definition un_opyoneda {A : Type} `{Is0Coh1Cat A}
   : (opyon a $=> F) -> F a
   := fun alpha => alpha a (Id a).
 
-Global Instance is1natural_opyoneda {A : Type} `{Is0Coh2Cat A}
+Global Instance is1natural_opyoneda {A : Type} `{Is0Coh21Cat A}
   (a : A) (F : A -> Type) {ff : Is0Coh1Functor F} {ff1 : Is1Coh1Functor F} (x : F a)
   : Is1Natural (opyon a) F (opyoneda a F x).
 Proof.
@@ -98,7 +98,7 @@ Proof.
   exact (fmap_comp F g f x).
 Defined.
 
-Definition opyoneda_issect {A : Type} `{Is0Coh2Cat A} (a : A)
+Definition opyoneda_issect {A : Type} `{Is0Coh21Cat A} (a : A)
            (F : A -> Type) {ff : Is0Coh1Functor F} {ff1 : Is1Coh1Functor F}
            (x : F a)
   : un_opyoneda a F (opyoneda a F x) = x
@@ -123,7 +123,7 @@ Definition opyon_cancel {A : Type} `{Is0Coh1Cat A} (a b : A)
   : (opyon a $=> opyon b) -> (b $-> a)
   := un_opyoneda a (opyon b).
 
-Definition opyon1 {A : Type} `{Is0Coh1Cat A} (a : A) : Fun1 A Type
+Definition opyon1 {A : Type} `{Is0Coh1Cat A} (a : A) : Fun01 A Type
   := (opyon a ; is0coh1functor_opyon a).
 
 (** We can also deduce "full-faithfulness" on equivalences. *)
@@ -134,7 +134,7 @@ Proof.
   intros f.
   refine (cate_adjointify (f.1 a (Id a)) (f^-1$.1 b (Id b)) _ _) ;
     apply GpdHom_path; pose proof (f.2); pose proof (f^-1$.2); cbn in *.
-  - refine ((isnat (fun a => (f.1 a)^-1) (f.1 a (Id a)) (Id b))^ @ _); cbn.
+  - refine ((isnat (fun a => (f.1 a)^-1$) (f.1 a (Id a)) (Id b))^ @ _); cbn.
     refine (_ @ cate_issect (f.1 a) (Id a)); cbn.
     apply ap.
     serapply cat_idr_strong.
@@ -165,18 +165,18 @@ Definition un_yoneda {A : Type} `{Is0Coh1Cat A} (a : A)
   : (yon a $=> F) -> F a
   := @un_opyoneda (A^op) _ a F _.
 
-Global Instance is1natural_yoneda {A : Type} `{Is0Coh2Cat A} (a : A)
+Global Instance is1natural_yoneda {A : Type} `{Is0Coh21Cat A} (a : A)
        (F : A^op -> Type) {ff : Is0Coh1Functor F} {ff1 : Is1Coh1Functor F} (x : F a)
   : Is1Natural (yon a) F (yoneda a F x)
   := @is1natural_opyoneda (A^op) _ _ a F _ _ x.
 
-Definition yoneda_issect {A : Type} `{Is0Coh2Cat A} (a : A) (F : A^op -> Type) {ff : Is0Coh1Functor F} {ff1 : Is1Coh1Functor F} (x : F a)
+Definition yoneda_issect {A : Type} `{Is0Coh21Cat A} (a : A) (F : A^op -> Type) {ff : Is0Coh1Functor F} {ff1 : Is1Coh1Functor F} (x : F a)
   : un_yoneda a F (yoneda a F x) = x
   := @opyoneda_issect (A^op) _ _ a F _ _ x.
 
 
 Definition yoneda_isretr {A : Type}
-           `{Is1Coh1Cat_Strong A} {ac2 : Is0Coh2Cat A} (a : A)
+           `{Is1Coh1Cat_Strong A} {ac2 : Is0Coh21Cat A} (a : A)
            (F : A^op -> Type) {ff : Is0Coh1Functor F} {ff1 : Is1Coh1Functor F}
            (alpha : yon a $=> F) {alnat : Is1Natural (yon a) F alpha}
            (b : A)
@@ -187,7 +187,7 @@ Definition yon_cancel {A : Type} `{Is0Coh1Cat A} (a b : A)
   : (yon a $=> yon b) -> (a $-> b)
   := un_yoneda a (yon b).
 
-Definition yon1 {A : Type} `{Is0Coh1Cat A} (a : A) : Fun1 A^op Type
+Definition yon1 {A : Type} `{Is0Coh1Cat A} (a : A) : Fun01 A^op Type
   := opyon1 a.
 
 Definition yon_equiv {A : Type} `{Is1Coh1Cat_Strong A}

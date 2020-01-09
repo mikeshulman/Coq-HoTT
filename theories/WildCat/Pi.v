@@ -19,11 +19,11 @@ Proof.
   + intros x y z f g a; exact (f a $o g a).
 Defined.
 
-Global Instance is0coh2cat_forall (A : Type) (B : A -> Type)
-  {c1 : forall a, Is0Coh1Cat (B a)} {c2 : forall a, Is0Coh2Cat (B a)}
-  : Is0Coh2Cat (forall a, B a).
+Global Instance is0coh21cat_forall (A : Type) (B : A -> Type)
+  {c1 : forall a, Is0Coh1Cat (B a)} {c2 : forall a, Is0Coh21Cat (B a)}
+  : Is0Coh21Cat (forall a, B a).
 Proof.
-  serapply Build_Is0Coh2Cat.
+  serapply Build_Is0Coh21Cat.
   + intros x y; serapply Build_Is0Coh1Cat.
     - intros f g; exact (forall a, f a $== g a).
     - intros f a; apply Id.
@@ -36,7 +36,7 @@ Proof.
 Defined.
 
 Global Instance is1coh1cat_forall (A : Type) (B : A -> Type)
-    {c1 : forall a, Is0Coh1Cat (B a)} {c2 : forall a, Is0Coh2Cat (B a)}
+    {c1 : forall a, Is0Coh1Cat (B a)} {c2 : forall a, Is0Coh21Cat (B a)}
     {c3 : forall a, Is1Coh1Cat (B a)}
     : Is1Coh1Cat (forall a, B a).
 Proof.
