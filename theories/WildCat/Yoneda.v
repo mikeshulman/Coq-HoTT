@@ -123,8 +123,10 @@ Definition opyon_cancel {A : Type} `{Is0Coh1Cat A} (a b : A)
   : (opyon a $=> opyon b) -> (b $-> a)
   := un_opyoneda a (opyon b).
 
-Definition opyon1 {A : Type} `{Is0Coh1Cat A} (a : A) : Fun01 A Type
-  := (opyon a ; is0coh1functor_opyon a).
+Definition opyon1 {A : Type} `{Is0Coh1Cat A} (a : A) : Fun01 A Type.
+Proof.
+  rapply (Build_Fun01 _ _ _ _ (opyon a)).
+Defined.
 
 (** We can also deduce "full-faithfulness" on equivalences. *)
 Definition opyon_equiv {A : Type} `{Is1Coh1Cat_Strong A}
