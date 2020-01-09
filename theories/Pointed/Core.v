@@ -1,5 +1,6 @@
 (* -*- mode: coq; mode: visual-line -*- *)
 Require Import Basics.
+Require Import WildCat.
 Require Import Types.
 
 Declare Scope pointed_scope.
