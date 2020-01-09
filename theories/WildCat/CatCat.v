@@ -27,24 +27,26 @@ Global Instance is0coh1cat_wildcat01 : Is0Coh1Cat WildCat01.
 Proof.
   serapply Build_Is0Coh1Cat.
   + intros A B.  
-  exact (Fun01 A B).
+    exact (Fun01 A B).
   + intros C. cbn in *.
-  exists (idmap). 
-  exact _.
-  + intros A B C; cbn in *; unfold Fun01.
-  intros [G g] [F f]. 
-  exists ( G o F). 
-  serapply Build_Is0Coh1Functor.
-  intros u v h. cbn in *.  exact (fmap G ( fmap F h)).
-  Defined.
-  
+    exists (idmap). 
+    exact _.
+  + intros A B C [G g] [F f].
+    exists (G o F). 
+    serapply Build_Is0Coh1Functor.
+    intros u v h. cbn in *.
+    exact (fmap G ( fmap F h)).
+Defined.
+
   (** Next: require more coherences to be a WildCat; get that WildCat is itself more structured. *) 
 
-Record WildCat :=P2
+Record WildCat :=
 {
-  cat_carrier : Type; cat_is0coh1cat : Is0Coh1Cat cat_carrier;
-   cat_is0coh2cat : Is0Coh21Cat cat_carrier; 
-   cat_is1coh1cat : Is1Coh1Cat cat_carrier}.
+  cat_carrier : Type;
+  cat_is0coh1cat : Is0Coh1Cat cat_carrier;
+  cat_is0coh2cat : Is0Coh21Cat cat_carrier; 
+  cat_is1coh1cat : Is1Coh1Cat cat_carrier
+}.
 
 Coercion cat_carrier : WildCat >-> Sortclass. 
 
@@ -59,11 +61,10 @@ Proof.
   serapply Build_Is0Coh1Cat.
   + intros A B.
   exact (Fun01 A B).
-  + intro C. unfold Fun01. 
+  + intro C.
   exists idmap. exact _.
   + intros C D E; cbn in *. 
   intros [F f]. intros [G g].
-  unfold Fun01.
   exists (F o G). 
   serapply Build_Is0Coh1Functor.
   intros a b h. cbn in *. exact (fmap F( fmap G h)).

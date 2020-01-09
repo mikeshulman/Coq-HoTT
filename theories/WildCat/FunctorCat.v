@@ -8,8 +8,10 @@ Require Import WildCat.Equiv.
 
 (** ** Categories of 0-coherent 1-functors *)
 
-Definition Fun01 (A B : Type) `{IsGraph A} `{IsGraph B}
-  := { F : A -> B & Is0Coh1Functor F }.
+Record Fun01 (A B : Type) `{IsGraph A} `{IsGraph B} := {
+  fun01_F :> A -> B;
+  fun01_is0coh1functor :> Is0Coh1Functor fun01_F;
+}.
 
 Definition NatTrans {A B : Type} `{IsGraph A} `{Is0Coh21Cat B} (F G : A -> B)
            {ff : Is0Coh1Functor F} {fg : Is0Coh1Functor G}
@@ -114,12 +116,17 @@ Global Existing Instance is0coh1functor_fun11.
 Global Existing Instance is0coh2functor_fun11.
 Global Existing Instance is1coh1functor_fun11.
 
-Global Instance is0coh1cat_fun11 (A B : Type)  `{Is1Coh1Cat A} `{Is1Coh1Cat B}
+Definition fun01_fun11 {A B : Type} `{Is0Coh21Cat A} `{Is0Coh21Cat B}
+           (F : Fun11 A B)
+  : Fun01 A B.
+Proof.
+  exists F; exact _.
+Defined.
+(*
+Global Instance is0coh1cat_fun11 (A B : Type)  `{Is0Coh21Cat A} `{Is0Coh21Cat B}
   : Is0Coh1Cat (Fun11 A B).
 Proof.
   srapply Build_Is0Coh1Cat.
   - intros F G; exact (NatTrans F G).
-  - intros F; exists (id_transformation F); exact _.
-  - intros F G K [gamma ?] [alpha ?]; cbn in *.
-    exists (comp_transformation gamma alpha); exact _.
-Defined.
+  - intros F; exact (
+                  *)
