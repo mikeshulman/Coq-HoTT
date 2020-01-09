@@ -1,9 +1,65 @@
+(* -*- mode: coq; mode: visual-line -*-  *)
+
 Require Export Basics.
 Require Export WildCat.Core.
 Require Export WildCat.Equiv.
 Require Export WildCat.Type.
 Require Export WildCat.Opposite.
 Require Export WildCat.FunctorCat.
+Require Export WildCat.Prod.
+
+(** ** Two-variable hom-functors *)
+
+Global Instance is0coh1functor_hom {A} `{Is0Coh1Cat A}
+  : @Is0Coh1Functor (A^op * A) Type _ _ (uncurry (@Hom A _)).
+Proof.
+  apply Build_Is0Coh1Functor.
+  intros [a1 a2] [b1 b2] [f1 f2] g; cbn in *.
+  exact (f2 $o g $o f1).
+Defined.
+
+(** This requires either morphism extensionality! *)
+Global Instance is0coh2functor_hom {A} `{HasMorExt A}
+  : @Is0Coh2Functor (A^op * A) Type _ _ _ _ (uncurry (@Hom A _)) _.
+Proof.
+  apply Build_Is0Coh2Functor.
+  intros [a1 a2] [b1 b2] [f1 f2] [g1 g2] [p1 p2] q; cbn in *.
+  apply path_hom.
+  exact ((p2 $@R q) $o@ p1).
+Defined.
+
+(** This requires either morphism extensionality or a strong 1-coherent 1-category. *)
+Global Instance is1coh1functor_hom {A} `{Is1Coh1Cat A} {me : HasMorExt A}
+  : @Is1Coh1Functor (A^op * A) Type _ _ _ (uncurry (@Hom A _)) _.
+Proof.
+  apply Build_Is1Coh1Functor.
+  - intros [a1 a2] f; cbn in *.
+    apply path_hom.
+    exact (cat_idr _ $@ cat_idl f).
+  - intros [a1 a2] [b1 b2] [c1 c2] [f1 f2] [g1 g2] h; cbn in *.
+    apply path_hom.
+    refine (cat_assoc _ _ _ $@ _).
+    refine (cat_assoc _ _ _ $@ _).
+    refine (_ $@ cat_assoc_opp _ _ _).
+    refine (g2 $@L _).
+    refine (_ $@ cat_assoc_opp _ _ _).
+    refine (cat_assoc_opp _ _ _).
+Defined.
+
+Global Instance is1coh1functor_hom' {A} `{Is1Coh1Cat_Strong A}
+  : @Is1Coh1Functor (A^op * A) Type _ _ _ (uncurry (@Hom A _)) _.
+Proof.
+  apply Build_Is1Coh1Functor.
+  - intros [a1 a2] f; cbn in *.
+    exact (cat_idr_strong _ @ cat_idl_strong f).
+  - intros [a1 a2] [b1 b2] [c1 c2] [f1 f2] [g1 g2] h; cbn in *.
+    refine (cat_assoc_strong _ _ _ @ _).
+    refine (cat_assoc_strong _ _ _ @ _).
+    refine (_ @ cat_assoc_opp_strong _ _ _).
+    apply ap.
+    refine (_ @ cat_assoc_opp_strong _ _ _).
+    refine (cat_assoc_opp_strong _ _ _).
+Defined.
 
 (** ** The covariant Yoneda lemma *)
 
@@ -59,7 +115,7 @@ Proof.
   refine ((isnat alpha f (Id a))^ @ _).
   cbn.
   apply ap.
-  exact (cat_idr_strong a _ f).
+  exact (cat_idr_strong f).
 Defined.
 
 (** Specialization to "full-faithfulness" of the Yoneda embedding.  (In quotes because, again, incoherence means we can't recover the witness of naturality.)  *)

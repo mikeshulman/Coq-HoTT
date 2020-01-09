@@ -113,7 +113,7 @@ Class HasMorExt (A : Type) `{Is0Coh2Cat A} :=
   { isequiv_Htpy_path : forall a b f g, IsEquiv (@GpdHom_path (a $-> b) _ _ f g) }.
 Global Existing Instance isequiv_Htpy_path.
 
-Definition path_Htpy {A} `{HasMorExt A} {a b : A} {f g : a $-> b} (p : f $== g) : f = g
+Definition path_hom {A} `{HasMorExt A} {a b : A} {f g : a $-> b} (p : f $== g) : f = g
   := GpdHom_path^-1 p.
 
 (** A 0-coherent (2,1)-functor acts on 2-cells, but satisfies no axioms. *)
@@ -183,7 +183,7 @@ Arguments cat_assoc_strong {_ _ _ _ _ _ _ _} f g h.
 Arguments cat_assoc_opp_strong {_ _ _ _ _ _ _ _} f g h.
 Arguments cat_idl_strong {_ _ _ _ _ _} f.
 Arguments cat_idr_strong {_ _ _ _ _ _} f.
-Arguments cat_idr_strong {_ _ _ _} a.
+Arguments cat_idlr_strong {_ _ _ _} a.
 
 Global Instance is1coh1cat_strong A
        {ac0 : Is0Coh1Cat A} {ac2 : Is0Coh2Cat A}
