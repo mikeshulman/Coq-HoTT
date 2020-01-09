@@ -376,7 +376,7 @@ Proof.
   + intros a b c; cbn in *; intros g1 g2.
   exact ( g1 $o g2).
 Defined.
-Local Instance induced_0coh21cat`{Is0Coh1Cat B}`{Is0Coh21Cat B} : Is0Coh21Cat A.
+Local Instance induced_0coh21cat `{Is0Coh21Cat B} : Is0Coh21Cat A.
 Proof.
   serapply Build_Is0Coh21Cat.
   + intros a b. cbn in *. exact _.
@@ -384,7 +384,7 @@ Proof.
   + intros a b c. cbn in *. 
   unfold uncurry. exact _.
 Defined.
-Local Instance induced_1coh1cat `{Is0Coh1Cat B}`{Is1Coh1Cat B} : Is1Coh1Cat A.
+Local Instance induced_1coh1cat `{Is1Coh1Cat B} : Is1Coh1Cat A.
 Proof.
   serapply Build_Is1Coh1Cat.
   + intros a b c d; cbn in *. 
