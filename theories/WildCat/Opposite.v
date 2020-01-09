@@ -146,7 +146,7 @@ Defined.
 
 (** Opposite natural transformations *)
 
-Definition transformation_op {A} {B} `{Is0Coh1Cat B} (F : A -> B) (G : A -> B) (alpha : F $=> G) : (@Transformation (A^op) (B^op) (@is0cat_1cat _ (is0coh1cat_op B)) (G : (A^op) -> (B^op)) (F : (A^op) -> (B^op))).
+Definition transformation_op {A} {B} `{Is0Coh1Cat B} (F : A -> B) (G : A -> B) (alpha : F $=> G) : (@Transformation (A^op) (B^op) (@isgraph_1cat _ (is0coh1cat_op B)) (G : (A^op) -> (B^op)) (F : (A^op) -> (B^op))).
 Proof.
   unfold op in *.
   cbn in *.

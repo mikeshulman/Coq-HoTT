@@ -6,16 +6,16 @@ Require Import WildCat.Equiv.
 
 (** ** Wild functor categories *)
 
-Definition Fun1 (A B : Type) `{Is0Coh0Cat A} `{Is0Coh1Cat B}
+Definition Fun1 (A B : Type) `{IsGraph A} `{Is0Coh1Cat B}
   := { F : A -> B & Is0Coh1Functor F }.
 
-Definition NatTrans {A B : Type} `{Is0Coh0Cat A} `{Is0Coh2Cat B} (F G : A -> B)
+Definition NatTrans {A B : Type} `{IsGraph A} `{Is0Coh2Cat B} (F G : A -> B)
            {ff : Is0Coh1Functor F} {fg : Is0Coh1Functor G}
   := { alpha : F $=> G & Is1Natural F G alpha }.
 
 (** Note that even if [A] and [B] are fully coherent oo-categories, the objects of our "functor category" are not fully coherent.  Thus we cannot in general expect this "functor category" to itself be fully coherent.  However, it is at least a 0-coherent 1-category, as long as [B] is a 1-coherent 1-category. *)
 
-Global Instance is0coh1cat_fun (A B : Type) `{Is0Coh0Cat A} `{Is1Coh1Cat B} : Is0Coh1Cat (Fun1 A B).
+Global Instance is0coh1cat_fun (A B : Type) `{IsGraph A} `{Is1Coh1Cat B} : Is0Coh1Cat (Fun1 A B).
 Proof.
   srapply Build_Is0Coh1Cat.
   - intros [F ?] [G ?].
@@ -35,7 +35,7 @@ Defined.
 
 (** In fact, in this case it is automatically also a 0-coherent 2-category and a 1-coherent 1-category, with a totally incoherent notion of 2-cell between 1-coherent natural transformations. *)
 
-Global Instance is0coh2cat_fun (A B : Type) `{Is0Coh0Cat A} `{Is1Coh1Cat B} : Is0Coh2Cat (Fun1 A B).
+Global Instance is0coh2cat_fun (A B : Type) `{IsGraph A} `{Is1Coh1Cat B} : Is0Coh2Cat (Fun1 A B).
 Proof.
   srapply Build_Is0Coh2Cat.
   - intros [F ?] [G ?]; serapply Build_Is0Coh1Cat.
@@ -54,7 +54,7 @@ Proof.
     exact (f a $o@ g a).
 Defined.
 
-Global Instance is1coh1cat_fun (A B : Type) `{Is0Coh0Cat A} `{Is1Coh1Cat B} : Is1Coh1Cat (Fun1 A B).
+Global Instance is1coh1cat_fun (A B : Type) `{IsGraph A} `{Is1Coh1Cat B} : Is1Coh1Cat (Fun1 A B).
 Proof.
   srapply Build_Is1Coh1Cat'.
   1,2:intros [F ?] [G ?] [K ?] [L ?] [alpha ?] [gamma ?] [phi ?] a; cbn.
@@ -69,7 +69,7 @@ Defined.
 
 (** It also inherits a notion of equivalence, namely a natural transformation that is a pointwise equivalence.  Note that this is not a "fully coherent" notion of equivalence, since the functors and transformations are not themselves fully coherent. *)
 
-Definition NatEquiv {A B : Type} `{Is0Coh0Cat A} `{HasEquivs B} (F G : A -> B) {ff : Is0Coh1Functor F} {fg : Is0Coh1Functor G}
+Definition NatEquiv {A B : Type} `{IsGraph A} `{HasEquivs B} (F G : A -> B) {ff : Is0Coh1Functor F} {fg : Is0Coh1Functor G}
   := { alpha : forall a, F a $<~> G a & Is1Natural F G (fun a => alpha a) }.
 
 Global Instance hasequivs_fun (A B : Type) `{Is1Coh1Cat A} `{Is1Coh1Cat B}

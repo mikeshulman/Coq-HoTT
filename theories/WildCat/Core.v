@@ -7,7 +7,7 @@ Require Import Basics.
 (** ** 0-coherent 0-categories *)
 
 (** A 0-coherent 0-category is just a directed graph. *)
-Class Is0Coh0Cat (A : Type) :=
+Class IsGraph (A : Type) :=
 {
   Hom : A -> A -> Type
 }.
@@ -19,12 +19,12 @@ Notation "a $-> b" := (Hom a b).
 (** A 0-coherent 1-category has 1-morphisms and operations on them, but no coherence. *)
 Class Is0Coh1Cat (A : Type) := Build_Is0Coh1Cat'
 {
-  is0cat_1cat : Is0Coh0Cat A;
+  isgraph_1cat : IsGraph A;
   Id  : forall (a : A), a $-> a;
   cat_comp : forall (a b c : A), (b $-> c) -> (a $-> b) -> (a $-> c);
 }.
 
-Global Existing Instance is0cat_1cat.
+Global Existing Instance isgraph_1cat.
 Arguments cat_comp {A _ a b c} _ _.
 Notation "g $o f" := (cat_comp g f).
 
@@ -33,7 +33,7 @@ Definition Build_Is0Coh1Cat A
            (Id'  : forall (a : A), Hom' a a)
            (cat_comp' : forall (a b c : A), Hom' b c -> Hom' a b -> Hom' a c)
   : Is0Coh1Cat A
-  := Build_Is0Coh1Cat' A (Build_Is0Coh0Cat A Hom') Id' cat_comp'.
+  := Build_Is0Coh1Cat' A (Build_IsGraph A Hom') Id' cat_comp'.
 
 (** A 0-coherent 1-groupoid is a 0-coherent 1-category whose morphisms can be reversed. *)
 Class Is0Coh1Gpd (A : Type) `{Is0Coh1Cat A} :=
@@ -68,15 +68,15 @@ Proof.
 Defined.
 
 (** A 0-coherent 1-functor acts on morphisms, but satisfies no axioms. *)
-Class Is0Coh1Functor {A B : Type} `{Is0Coh0Cat A} `{Is0Coh0Cat B} (F : A -> B)
+Class Is0Coh1Functor {A B : Type} `{IsGraph A} `{IsGraph B} (F : A -> B)
   := { fmap : forall (a b : A) (f : a $-> b), F a $-> F b }.
 
 Arguments fmap {_ _ _ _} F {_ _ _} f.
 
 (** Products preserve 0-coherent 1-categories. *)
-Global Instance is0coh0cat_prod A B `{Is0Coh0Cat A} `{Is0Coh0Cat B}
-  : Is0Coh0Cat (A * B)
-  := Build_Is0Coh0Cat (A * B) (fun x y => (fst x $-> fst y) * (snd x $-> snd y)).
+Global Instance is0coh0cat_prod A B `{IsGraph A} `{IsGraph B}
+  : IsGraph (A * B)
+  := Build_IsGraph (A * B) (fun x y => (fst x $-> fst y) * (snd x $-> snd y)).
 
 Global Instance is0coh1cat_prod A B `{Is0Coh1Cat A} `{Is0Coh1Cat B}
   : Is0Coh1Cat (A * B).
@@ -88,7 +88,7 @@ Proof.
 Defined.
 
 (** To avoid having to define a separate notion of "two-variable functor", we define two-variable functors in uncurried form.  The following definition applies such a two-variable functor, with a currying built in. *)
-Definition fmap11 {A B C : Type} `{Is0Coh0Cat A} `{Is0Coh0Cat B} `{Is0Coh0Cat C}
+Definition fmap11 {A B C : Type} `{IsGraph A} `{IsGraph B} `{IsGraph C}
   (F : A -> B -> C) {H2 : Is0Coh1Functor (uncurry F)}
   {a1 a2 : A} {b1 b2 : B} (f1 : a1 $-> a2) (f2 : b1 $-> b2)
   : F a1 b1 $-> F a2 b2
@@ -231,13 +231,13 @@ Arguments fmap_comp {_ _ _ _ _} F {_ _ _ _ _} f g.
 
 (** ** Natural transformations *)
 
-Definition Transformation {A B : Type} `{Is0Coh0Cat B} (F : A -> B) (G : A -> B)
+Definition Transformation {A B : Type} `{IsGraph B} (F : A -> B) (G : A -> B)
   := forall (a : A), F a $-> G a.
 
 Notation "F $=> G" := (Transformation F G).
 
 (** A 1-coherent natural transformation is natural up to a 2-cell, so again its codomain must be a (2,1)-category. *)
-Class Is1Natural {A B : Type} `{Is0Coh0Cat A} `{Is0Coh2Cat B}
+Class Is1Natural {A B : Type} `{IsGraph A} `{Is0Coh2Cat B}
       (F : A -> B) {ff1 : Is0Coh1Functor F} (G : A -> B) {fg1 : Is0Coh1Functor G}
       (alpha : F $=> G) := Build_Is1Natural'
 {
@@ -250,7 +250,7 @@ Class Is1Natural {A B : Type} `{Is0Coh0Cat A} `{Is0Coh2Cat B}
 
 Arguments isnat {_ _ _ _ _ _ _ _ _} alpha {alnat _ _} f : rename.
 
-Definition Build_Is1Natural {A B : Type} `{Is0Coh0Cat A} `{Is0Coh2Cat B}
+Definition Build_Is1Natural {A B : Type} `{IsGraph A} `{Is0Coh2Cat B}
            (F : A -> B) {ff1 : Is0Coh1Functor F} (G : A -> B)
            {fg1 : Is0Coh1Functor G} (alpha : F $=> G)
            (isnat' : forall a b (f : a $-> b), alpha b $o fmap F f $== fmap G f $o alpha a)
