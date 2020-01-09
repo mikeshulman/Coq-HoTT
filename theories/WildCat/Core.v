@@ -138,8 +138,8 @@ Definition path_hom {A} `{HasMorExt A} {a b : A} {f g : a $-> b} (p : f $== g) :
 
 (** A 0-coherent (2,1)-functor acts on 2-cells, but satisfies no axioms. *)
 Class Is0Coh2Functor {A B : Type} `{Is0Coh21Cat A} `{Is0Coh21Cat B}
-  (* We can't write `{Is0Coh1Functor A B F} since that would duplicate the instances of Is0Coh1Cat. *)
-  (F : A -> B) {ff : Is0Coh1Functor F}
+  (* The [!] tells Coq to use typeclass search to find the [IsGraph] parameters of [Is0Coh1Functor] instead of assuming additional copies of them. *)
+  (F : A -> B) `{!Is0Coh1Functor F}
   := { fmap2 : forall a b (f g : a $-> b), (f $== g) -> (fmap F f $== fmap F g) }.
 
 Arguments fmap2 {_ _ _ _ _ _} F {_ _ _ _ _ _} p.
@@ -176,7 +176,7 @@ Arguments cat_idr {_ _ _ _ _ _} f.
 Arguments cat_idlr {_ _ _ _} a.
 
 (** Often, the coherences are actually equalities rather than homotopies. *)
-Class Is1Coh1Cat_Strong (A : Type) `{Is0Coh21Cat A} := Build_Is1Coh1Cat_Strong'
+Class Is1Coh1Cat_Strong (A : Type) `{Is0Coh1Cat A} := Build_Is1Coh1Cat_Strong'
 {
   cat_assoc_strong : forall a b c d
     (f : a $-> b) (g : b $-> c) (h : c $-> d),
@@ -195,19 +195,18 @@ Definition Build_Is1Coh1Cat_Strong (A : Type) `{Is0Coh21Cat A}
   (cat_idl' : forall a b (f : a $-> b), Id b $o f = f)
   (cat_idr' : forall a b (f : a $-> b), f $o Id a = f)
   : Is1Coh1Cat_Strong A
-  := Build_Is1Coh1Cat_Strong' A _ _ cat_assoc'
+  := Build_Is1Coh1Cat_Strong' A _ cat_assoc'
     (fun a b c d f g h => (cat_assoc' a b c d f g h)^)
     cat_idl' cat_idr' (fun a => cat_idl' a a (Id a)).
 
-Arguments cat_assoc_strong {_ _ _ _ _ _ _ _} f g h.
-Arguments cat_assoc_opp_strong {_ _ _ _ _ _ _ _} f g h.
-Arguments cat_idl_strong {_ _ _ _ _ _} f.
-Arguments cat_idr_strong {_ _ _ _ _ _} f.
-Arguments cat_idlr_strong {_ _ _ _} a.
+Arguments cat_assoc_strong {_ _ _ _ _ _ _} f g h.
+Arguments cat_assoc_opp_strong {_ _ _ _ _ _ _} f g h.
+Arguments cat_idl_strong {_ _ _ _ _} f.
+Arguments cat_idr_strong {_ _ _ _ _} f.
+Arguments cat_idlr_strong {_ _ _} a.
 
-Global Instance is1coh1cat_strong A
-       {ac0 : Is0Coh1Cat A} {ac2 : Is0Coh21Cat A}
-       {ac11 : Is1Coh1Cat_Strong A} : Is1Coh1Cat A.
+Global Instance is1coh1cat_strong A `{Is1Coh1Cat_Strong A, !Is0Coh21Cat A}
+  : Is1Coh1Cat A.
 Proof.
   srapply Build_Is1Coh1Cat'; intros; apply GpdHom_path.
   - serapply cat_assoc_strong.
@@ -219,7 +218,7 @@ Defined.
 
 (** A 1-coherent 1-functor preserves identities and composition up to a 2-cell, so its codomain at least must be a 0-coherent (2,1)-category. *)
 Class Is1Coh1Functor {A B : Type} `{Is0Coh1Cat A} `{Is0Coh21Cat B}
-  (F : A -> B) {ff : Is0Coh1Functor F} :=
+  (F : A -> B) `{!Is0Coh1Functor F} :=
 {
   fmap_id : forall a, fmap F (Id a) $== Id (F a);
   fmap_comp : forall a b c (f : a $-> b) (g : b $-> c),
@@ -238,7 +237,7 @@ Notation "F $=> G" := (Transformation F G).
 
 (** A 1-coherent natural transformation is natural up to a 2-cell, so again its codomain must be a (2,1)-category. *)
 Class Is1Natural {A B : Type} `{IsGraph A} `{Is0Coh21Cat B}
-      (F : A -> B) {ff1 : Is0Coh1Functor F} (G : A -> B) {fg1 : Is0Coh1Functor G}
+      (F : A -> B) `{!Is0Coh1Functor F} (G : A -> B) `{!Is0Coh1Functor G}
       (alpha : F $=> G) := Build_Is1Natural'
 {
   (* Again we duplicate data, to make more opposites definitionally involutive. *)
@@ -251,8 +250,8 @@ Class Is1Natural {A B : Type} `{IsGraph A} `{Is0Coh21Cat B}
 Arguments isnat {_ _ _ _ _ _ _ _ _} alpha {alnat _ _} f : rename.
 
 Definition Build_Is1Natural {A B : Type} `{IsGraph A} `{Is0Coh21Cat B}
-           (F : A -> B) {ff1 : Is0Coh1Functor F} (G : A -> B)
-           {fg1 : Is0Coh1Functor G} (alpha : F $=> G)
+           (F : A -> B) `{!Is0Coh1Functor F} (G : A -> B)
+           `{!Is0Coh1Functor G} (alpha : F $=> G)
            (isnat' : forall a b (f : a $-> b), alpha b $o fmap F f $== fmap G f $o alpha a)
   : Is1Natural F G alpha
   := Build_Is1Natural' _ _ _ _ _ F _ G _ alpha
@@ -263,7 +262,7 @@ Definition id_transformation {A B : Type} `{Is0Coh1Cat B} (F : A -> B)
   := fun a => Id (F a).
 
 Global Instance is1natural_id {A B : Type} `{IsGraph A} `{Is1Coh1Cat B}
-       (F : A -> B) {ff1 : Is0Coh1Functor F}
+       (F : A -> B) `{!Is0Coh1Functor F}
   : Is1Natural F F (id_transformation F).
 Proof.
   apply Build_Is1Natural; intros a b f; cbn.
@@ -276,10 +275,9 @@ Definition comp_transformation {A B : Type} `{Is0Coh1Cat B}
   := fun a => gamma a $o alpha a.
 
 Global Instance is1natural_comp {A B : Type} `{IsGraph A} `{Is1Coh1Cat B}
-       {F G K : A -> B} {ff1 : Is0Coh1Functor F}
-       {fg1 : Is0Coh1Functor G} {fh1 : Is0Coh1Functor K}
-       (gamma : G $=> K) {gmnat : Is1Natural G K gamma}
-       (alpha : F $=> G) {alnat : Is1Natural F G alpha}
+       {F G K : A -> B} `{!Is0Coh1Functor F} `{!Is0Coh1Functor G} `{!Is0Coh1Functor K}
+       (gamma : G $=> K) `{!Is1Natural G K gamma}
+       (alpha : F $=> G) `{!Is1Natural F G alpha}
   : Is1Natural F K (comp_transformation gamma alpha).
 Proof.
   apply Build_Is1Natural; intros a b f; cbn.
@@ -292,8 +290,8 @@ Defined.
 
 (** Modifying a transformation to something pointwise equal preserves naturality. *)
 Definition is1natural_homotopic {A B : Type} `{Is0Coh1Cat A} `{Is0Coh21Cat B}
-      {F : A -> B} {ff1 : Is0Coh1Functor F} {G : A -> B} {fg1 : Is0Coh1Functor G}
-      {alpha : F $=> G} (gamma : F $=> G) {gmnat : Is1Natural F G gamma}
+      {F : A -> B} `{!Is0Coh1Functor F} {G : A -> B} `{!Is0Coh1Functor G}
+      {alpha : F $=> G} (gamma : F $=> G) `{!Is1Natural F G gamma}
       (p : forall a, alpha a $== gamma a)
   : Is1Natural F G alpha.
 Proof.
