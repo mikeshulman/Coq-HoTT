@@ -290,3 +290,38 @@ Proof.
   refine (_ $@ (fmap G f $@L (p a)^$)).
   apply (isnat gamma).
 Defined.
+
+(** Constant functor *)
+
+Section ConstantFunctor.
+
+  Context {A B : Type}
+    {HA1 : Is0Coh1Cat A} {HB1 : Is0Coh1Cat B}
+    {HA2 : Is0Coh2Cat A} {HB2 : Is0Coh2Cat B}
+    {HA3 : Is1Coh1Cat A} {HB3 : Is1Coh1Cat B}.
+
+  Global Instance is0coh1functor_const (x : B)
+    : Is0Coh1Functor (fun _ : A => x).
+  Proof.
+    serapply Build_Is0Coh1Functor.
+    intros a b f; apply Id.
+  Defined.
+
+  Global Instance is0coh2functor_const (x : B)
+    : Is0Coh2Functor (fun _ : A => x).
+  Proof.
+    serapply Build_Is0Coh2Functor.
+    intros a b f g p; apply Id.
+  Defined.
+
+  Global Instance is1coh1functor_const (x : B)
+    : Is1Coh1Functor (fun _ : A => x).
+  Proof.
+    serapply Build_Is1Coh1Functor.
+    + intro; apply Id.
+    + intros a b c f g. cbn.
+      symmetry.
+      apply cat_idlr.
+  Defined.
+
+End ConstantFunctor.
