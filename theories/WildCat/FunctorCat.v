@@ -114,17 +114,12 @@ Global Existing Instance is0coh1functor_fun11.
 Global Existing Instance is0coh2functor_fun11.
 Global Existing Instance is1coh1functor_fun11.
 
-Definition fun01_fun11 {A B : Type} `{Is0Coh21Cat A} `{Is0Coh21Cat B}
-           (F : Fun11 A B)
-  : Fun01 A B.
-Proof.
-  exists F; exact _.
-Defined.
-(*
-Global Instance is0coh1cat_fun11 (A B : Type)  `{Is0Coh21Cat A} `{Is0Coh21Cat B}
+Global Instance is0coh1cat_fun11 (A B : Type)  `{Is1Coh1Cat A} `{Is1Coh1Cat B}
   : Is0Coh1Cat (Fun11 A B).
 Proof.
   srapply Build_Is0Coh1Cat.
   - intros F G; exact (NatTrans F G).
-  - intros F; exact (
-                  *)
+  - intros F; exists (id_transformation F); exact _.
+  - intros F G K [gamma ?] [alpha ?]; cbn in *.
+    exists (comp_transformation gamma alpha); exact _.
+Defined.
