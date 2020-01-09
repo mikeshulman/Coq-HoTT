@@ -20,10 +20,10 @@ Proof.
 Defined.
 
 (* Note: [try contradiction] deals with empty cases. *)
-Global Instance is0coh2cat_sum A B `{ Is0Coh2Cat A } `{ Is0Coh2Cat B}
-  : Is0Coh2Cat (A + B).
+Global Instance is0coh21cat_sum A B `{ Is0Coh21Cat A } `{ Is0Coh21Cat B}
+  : Is0Coh21Cat (A + B).
 Proof.
-  serapply Build_Is0Coh2Cat.
+  serapply Build_Is0Coh21Cat.
   - intros x y.
     serapply Build_Is0Coh1Cat;
     destruct x as [a1 | b1], y as [a2 | b2];

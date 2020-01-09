@@ -73,13 +73,6 @@ Class Is0Coh1Functor {A B : Type} `{IsGraph A} `{IsGraph B} (F : A -> B)
 
 Arguments fmap {_ _ _ _} F {_ _ _} f.
 
-Global Instance is0coh1functor_idmap {A : Type} `{Is0Coh1Cat A}
-  : Is0Coh1Functor idmap.
-Proof.
-  apply Build_Is0Coh1Functor.
-  intros a b f ; exact f.
-Defined.
-
 (** Products preserve 0-coherent 1-categories. *)
 Global Instance is0coh0cat_prod A B `{IsGraph A} `{IsGraph B}
   : IsGraph (A * B)
@@ -105,7 +98,7 @@ Definition fmap11 {A B C : Type} `{IsGraph A} `{IsGraph B} `{IsGraph C}
 (** ** 0-coherent (2,1)-categorical structures *)
 
 (** A 0-coherent (2,1)-category has its hom-types enhanced to 0-coherent 1-groupoids and its composition operations to 0-coherent 1-functors. *)
-Class Is0Coh2Cat (A : Type) `{Is0Coh1Cat A} :=
+Class Is0Coh21Cat (A : Type) `{Is0Coh1Cat A} :=
 {
   is0coh1cat_hom : forall (a b : A), Is0Coh1Cat (a $-> b) ;
   isgpd_hom : forall (a b : A), Is0Coh1Gpd (a $-> b) ;
@@ -115,7 +108,7 @@ Global Existing Instance is0coh1cat_hom.
 Global Existing Instance isgpd_hom.
 Global Existing Instance is0coh1functor_comp.
 
-Definition Comp2 {A} `{Is0Coh2Cat A} {a b c : A}
+Definition Comp2 {A} `{Is0Coh21Cat A} {a b c : A}
            {f g : a $-> b} {h k : b $-> c}
            (q : h $-> k) (p : f $-> g)
   : (h $o f $-> k $o g)
@@ -123,20 +116,20 @@ Definition Comp2 {A} `{Is0Coh2Cat A} {a b c : A}
 
 Infix "$o@" := Comp2.
 
-Definition WhiskerL_Htpy {A} `{Is0Coh2Cat A} {a b c : A}
+Definition WhiskerL_Htpy {A} `{Is0Coh21Cat A} {a b c : A}
            {f g : a $-> b} (h : b $-> c) (p : f $-> g)
   : h $o f $-> h $o g
   := (Id h) $o@ p.
 Notation "h $@L p" := (WhiskerL_Htpy h p).
 
-Definition WhiskerR_Htpy {A} `{Is0Coh2Cat A} {a b c : A}
+Definition WhiskerR_Htpy {A} `{Is0Coh21Cat A} {a b c : A}
            {f g : b $-> c} (p : f $-> g) (h : a $-> b)
   : f $o h $-> g $o h
   := p $o@ (Id h).
 Notation "p $@R h" := (WhiskerR_Htpy p h).
 
 (** Generalizing function extensionality, "Morphism extensionality" states that homwise [GpdHom_path] is an equivalence. *)
-Class HasMorExt (A : Type) `{Is0Coh2Cat A} :=
+Class HasMorExt (A : Type) `{Is0Coh21Cat A} :=
   { isequiv_Htpy_path : forall a b f g, IsEquiv (@GpdHom_path (a $-> b) _ _ f g) }.
 Global Existing Instance isequiv_Htpy_path.
 
@@ -144,24 +137,17 @@ Definition path_hom {A} `{HasMorExt A} {a b : A} {f g : a $-> b} (p : f $== g) :
   := GpdHom_path^-1 p.
 
 (** A 0-coherent (2,1)-functor acts on 2-cells, but satisfies no axioms. *)
-Class Is0Coh2Functor {A B : Type} `{Is0Coh2Cat A} `{Is0Coh2Cat B}
+Class Is0Coh2Functor {A B : Type} `{Is0Coh21Cat A} `{Is0Coh21Cat B}
   (* We can't write `{Is0Coh1Functor A B F} since that would duplicate the instances of Is0Coh1Cat. *)
   (F : A -> B) {ff : Is0Coh1Functor F}
   := { fmap2 : forall a b (f g : a $-> b), (f $== g) -> (fmap F f $== fmap F g) }.
 
 Arguments fmap2 {_ _ _ _ _ _} F {_ _ _ _ _ _} p.
 
-Global Instance is0coh2functor_idmap {A : Type} `{Is0Coh2Cat A}
-  : Is0Coh2Functor idmap.
-Proof.
-  apply Build_Is0Coh2Functor.
-  intros a b f f' al ; exact al.
-Defined.
-
 (** ** 1-coherent 1-categorical structures *)
 
 (** A 1-coherent 1-category satisfies associativity and unit laws up to 2-cells (so it must be at least a 0-coherent 2-category).  We duplicate the reversed associativity and double-identity laws to make more duality operations definitionally involutive. *)
-Class Is1Coh1Cat (A : Type) `{Is0Coh2Cat A} := Build_Is1Coh1Cat'
+Class Is1Coh1Cat (A : Type) `{Is0Coh21Cat A} := Build_Is1Coh1Cat'
 {
   cat_assoc : forall a b c d (f : a $-> b) (g : b $-> c) (h : c $-> d),
     (h $o g) $o f $== h $o (g $o f);
@@ -173,7 +159,7 @@ Class Is1Coh1Cat (A : Type) `{Is0Coh2Cat A} := Build_Is1Coh1Cat'
 }.
 
 (* But in practice we don't want to have to give those extra data. *)
-Definition Build_Is1Coh1Cat (A : Type) `{Is0Coh2Cat A}
+Definition Build_Is1Coh1Cat (A : Type) `{Is0Coh21Cat A}
  (cat_assoc' : forall a b c d (f : a $-> b) (g : b $-> c) (h : c $-> d),
   (h $o g) $o f $== h $o (g $o f))
  (cat_idl' : forall a b (f : a $-> b), Id b $o f $== f)
@@ -190,7 +176,7 @@ Arguments cat_idr {_ _ _ _ _ _} f.
 Arguments cat_idlr {_ _ _ _} a.
 
 (** Often, the coherences are actually equalities rather than homotopies. *)
-Class Is1Coh1Cat_Strong (A : Type) `{Is0Coh2Cat A} := Build_Is1Coh1Cat_Strong'
+Class Is1Coh1Cat_Strong (A : Type) `{Is0Coh21Cat A} := Build_Is1Coh1Cat_Strong'
 {
   cat_assoc_strong : forall a b c d
     (f : a $-> b) (g : b $-> c) (h : c $-> d),
@@ -203,7 +189,7 @@ Class Is1Coh1Cat_Strong (A : Type) `{Is0Coh2Cat A} := Build_Is1Coh1Cat_Strong'
   cat_idlr_strong : forall a, Id a $o Id a = Id a;
 }.
 
-Definition Build_Is1Coh1Cat_Strong (A : Type) `{Is0Coh2Cat A}
+Definition Build_Is1Coh1Cat_Strong (A : Type) `{Is0Coh21Cat A}
   (cat_assoc' : forall a b c d (f : a $-> b) (g : b $-> c) (h : c $-> d),
     (h $o g) $o f = h $o (g $o f))
   (cat_idl' : forall a b (f : a $-> b), Id b $o f = f)
@@ -220,7 +206,7 @@ Arguments cat_idr_strong {_ _ _ _ _ _} f.
 Arguments cat_idlr_strong {_ _ _ _} a.
 
 Global Instance is1coh1cat_strong A
-       {ac0 : Is0Coh1Cat A} {ac2 : Is0Coh2Cat A}
+       {ac0 : Is0Coh1Cat A} {ac2 : Is0Coh21Cat A}
        {ac11 : Is1Coh1Cat_Strong A} : Is1Coh1Cat A.
 Proof.
   srapply Build_Is1Coh1Cat'; intros; apply GpdHom_path.
@@ -232,7 +218,7 @@ Proof.
 Defined.
 
 (** A 1-coherent 1-functor preserves identities and composition up to a 2-cell, so its codomain at least must be a 0-coherent (2,1)-category. *)
-Class Is1Coh1Functor {A B : Type} `{Is0Coh1Cat A} `{Is0Coh2Cat B}
+Class Is1Coh1Functor {A B : Type} `{Is0Coh1Cat A} `{Is0Coh21Cat B}
   (F : A -> B) {ff : Is0Coh1Functor F} :=
 {
   fmap_id : forall a, fmap F (Id a) $== Id (F a);
@@ -243,12 +229,6 @@ Class Is1Coh1Functor {A B : Type} `{Is0Coh1Cat A} `{Is0Coh2Cat B}
 Arguments fmap_id {_ _ _ _ _} F {_ _} a.
 Arguments fmap_comp {_ _ _ _ _} F {_ _ _ _ _} f g.
 
-Global Instance is1coh1functor_idmap {A : Type} `{Is1Coh1Cat A}
-  : Is1Coh1Functor idmap.
-Proof.
-  apply Build_Is1Coh1Functor ; intros ; reflexivity.
-Defined.
-
 (** ** Natural transformations *)
 
 Definition Transformation {A B : Type} `{IsGraph B} (F : A -> B) (G : A -> B)
@@ -257,7 +237,7 @@ Definition Transformation {A B : Type} `{IsGraph B} (F : A -> B) (G : A -> B)
 Notation "F $=> G" := (Transformation F G).
 
 (** A 1-coherent natural transformation is natural up to a 2-cell, so again its codomain must be a (2,1)-category. *)
-Class Is1Natural {A B : Type} `{IsGraph A} `{Is0Coh2Cat B}
+Class Is1Natural {A B : Type} `{IsGraph A} `{Is0Coh21Cat B}
       (F : A -> B) {ff1 : Is0Coh1Functor F} (G : A -> B) {fg1 : Is0Coh1Functor G}
       (alpha : F $=> G) := Build_Is1Natural'
 {
@@ -270,7 +250,7 @@ Class Is1Natural {A B : Type} `{IsGraph A} `{Is0Coh2Cat B}
 
 Arguments isnat {_ _ _ _ _ _ _ _ _} alpha {alnat _ _} f : rename.
 
-Definition Build_Is1Natural {A B : Type} `{IsGraph A} `{Is0Coh2Cat B}
+Definition Build_Is1Natural {A B : Type} `{IsGraph A} `{Is0Coh21Cat B}
            (F : A -> B) {ff1 : Is0Coh1Functor F} (G : A -> B)
            {fg1 : Is0Coh1Functor G} (alpha : F $=> G)
            (isnat' : forall a b (f : a $-> b), alpha b $o fmap F f $== fmap G f $o alpha a)
@@ -278,8 +258,40 @@ Definition Build_Is1Natural {A B : Type} `{IsGraph A} `{Is0Coh2Cat B}
   := Build_Is1Natural' _ _ _ _ _ F _ G _ alpha
                        isnat' (fun a b f => (isnat' a b f)^$).
 
+Definition id_transformation {A B : Type} `{Is0Coh1Cat B} (F : A -> B)
+  : F $=> F
+  := fun a => Id (F a).
+
+Global Instance is1natural_id {A B : Type} `{IsGraph A} `{Is1Coh1Cat B}
+       (F : A -> B) {ff1 : Is0Coh1Functor F}
+  : Is1Natural F F (id_transformation F).
+Proof.
+  apply Build_Is1Natural; intros a b f; cbn.
+  refine (cat_idl (fmap F f) $@ (cat_idr (fmap F f))^$).
+Defined.
+
+Definition comp_transformation {A B : Type} `{Is0Coh1Cat B}
+           {F G K : A -> B} (gamma : G $=> K) (alpha : F $=> G)
+  : F $=> K
+  := fun a => gamma a $o alpha a.
+
+Global Instance is1natural_comp {A B : Type} `{IsGraph A} `{Is1Coh1Cat B}
+       {F G K : A -> B} {ff1 : Is0Coh1Functor F}
+       {fg1 : Is0Coh1Functor G} {fh1 : Is0Coh1Functor K}
+       (gamma : G $=> K) {gmnat : Is1Natural G K gamma}
+       (alpha : F $=> G) {alnat : Is1Natural F G alpha}
+  : Is1Natural F K (comp_transformation gamma alpha).
+Proof.
+  apply Build_Is1Natural; intros a b f; cbn.
+  refine (cat_assoc _ _ _ $@ _).
+  refine ((gamma b $@L isnat alpha f) $@ _).
+  refine (cat_assoc_opp _ _ _ $@ _).
+  refine ((isnat gamma f) $@R alpha a $@ _).
+  exact (cat_assoc _ _ _).
+Defined.  
+
 (** Modifying a transformation to something pointwise equal preserves naturality. *)
-Definition is1natural_homotopic {A B : Type} `{Is0Coh1Cat A} `{Is0Coh2Cat B}
+Definition is1natural_homotopic {A B : Type} `{Is0Coh1Cat A} `{Is0Coh21Cat B}
       {F : A -> B} {ff1 : Is0Coh1Functor F} {G : A -> B} {fg1 : Is0Coh1Functor G}
       {alpha : F $=> G} (gamma : F $=> G) {gmnat : Is1Natural F G gamma}
       (p : forall a, alpha a $== gamma a)
@@ -290,3 +302,62 @@ Proof.
   refine (_ $@ (fmap G f $@L (p a)^$)).
   apply (isnat gamma).
 Defined.
+
+(** Identity functor *)
+
+Section IdentityFunctor.
+
+  Context {A : Type} {H1 : Is0Coh1Cat A}
+    {H2 : Is0Coh21Cat A} {H3 : Is1Coh1Cat A}.
+
+  Global Instance is0coh1functor_idmap : Is0Coh1Functor idmap.
+  Proof.
+    by apply Build_Is0Coh1Functor.
+  Defined.
+
+  Global Instance is0coh2functor_idmap : Is0Coh2Functor idmap.
+  Proof.
+    by apply Build_Is0Coh2Functor.
+  Defined.
+
+  Global Instance is1coh1functor_idmap : Is1Coh1Functor idmap.
+  Proof.
+    by apply Build_Is1Coh1Functor.
+  Defined.
+
+End IdentityFunctor.
+
+(** Constant functor *)
+
+Section ConstantFunctor.
+
+  Context {A B : Type}
+    {HA1 : Is0Coh1Cat A} {HB1 : Is0Coh1Cat B}
+    {HA2 : Is0Coh21Cat A} {HB2 : Is0Coh21Cat B}
+    {HA3 : Is1Coh1Cat A} {HB3 : Is1Coh1Cat B}.
+
+  Global Instance is0coh1functor_const (x : B)
+    : Is0Coh1Functor (fun _ : A => x).
+  Proof.
+    serapply Build_Is0Coh1Functor.
+    intros a b f; apply Id.
+  Defined.
+
+  Global Instance is0coh2functor_const (x : B)
+    : Is0Coh2Functor (fun _ : A => x).
+  Proof.
+    serapply Build_Is0Coh2Functor.
+    intros a b f g p; apply Id.
+  Defined.
+
+  Global Instance is1coh1functor_const (x : B)
+    : Is1Coh1Functor (fun _ : A => x).
+  Proof.
+    serapply Build_Is1Coh1Functor.
+    + intro; apply Id.
+    + intros a b c f g. cbn.
+      symmetry.
+      apply cat_idlr.
+  Defined.
+
+End ConstantFunctor.

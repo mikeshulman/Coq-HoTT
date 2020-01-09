@@ -27,11 +27,11 @@ Global Instance is0coh1cat_wildcat01 : Is0Coh1Cat WildCat01.
 Proof.
   serapply Build_Is0Coh1Cat.
   + intros A B.  
-  exact (Fun1 A B).
+  exact (Fun01 A B).
   + intros C. cbn in *.
   exists (idmap). 
   exact _.
-  + intros A B C; cbn in *; unfold Fun1.
+  + intros A B C; cbn in *; unfold Fun01.
   intros [G g] [F f]. 
   exists ( G o F). 
   serapply Build_Is0Coh1Functor.
@@ -43,7 +43,7 @@ Proof.
 Record WildCat :=P2
 {
   cat_carrier : Type; cat_is0coh1cat : Is0Coh1Cat cat_carrier;
-   cat_is0coh2cat : Is0Coh2Cat cat_carrier; 
+   cat_is0coh2cat : Is0Coh21Cat cat_carrier; 
    cat_is1coh1cat : Is1Coh1Cat cat_carrier}.
 
 Coercion cat_carrier : WildCat >-> Sortclass. 
@@ -58,12 +58,12 @@ Global Instance is0coh1cat_wildcat : Is0Coh1Cat WildCat.
 Proof.
   serapply Build_Is0Coh1Cat.
   + intros A B.
-  exact (Fun1 A B).
-  + intro C. unfold Fun1. 
+  exact (Fun01 A B).
+  + intro C. unfold Fun01. 
   exists idmap. exact _.
   + intros C D E; cbn in *. 
   intros [F f]. intros [G g].
-  unfold Fun1.
+  unfold Fun01.
   exists (F o G). 
   serapply Build_Is0Coh1Functor.
   intros a b h. cbn in *. exact (fmap F( fmap G h)).
@@ -86,7 +86,7 @@ Admitted.
 
 (* now show WildCat is 0 coh 2 cat with 0 coh 1 category structure on Fun02 given by taking core f natural transoformations. *) 
 
-Global Instance is0coh2cat_wildcat : Is0Coh2Cat WildCat.
+Global Instance is0coh21cat_wildcat : Is0Coh21Cat WildCat.
 Proof.
 Admitted.
 
