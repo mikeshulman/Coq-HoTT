@@ -8,7 +8,7 @@ Require Import WildCat.Equiv.
 
 (** ** Categories of 0-coherent 1-functors *)
 
-Definition Fun01 (A B : Type) `{IsGraph A} `{Is0Coh1Cat B}
+Definition Fun01 (A B : Type) `{IsGraph A} `{IsGraph B}
   := { F : A -> B & Is0Coh1Functor F }.
 
 Definition NatTrans {A B : Type} `{IsGraph A} `{Is0Coh21Cat B} (F G : A -> B)
