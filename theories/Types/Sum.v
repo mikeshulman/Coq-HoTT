@@ -3,6 +3,7 @@
 
 Require Import HoTT.Basics.
 Require Import Types.Empty Types.Prod Types.Sigma.
+Require Import WildCat.
 (** The following are only required for the equivalence between [sum] and a sigma type *)
 Require Import Types.Bool Types.Forall.
 
