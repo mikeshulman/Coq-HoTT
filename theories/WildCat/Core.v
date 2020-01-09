@@ -73,13 +73,6 @@ Class Is0Coh1Functor {A B : Type} `{IsGraph A} `{IsGraph B} (F : A -> B)
 
 Arguments fmap {_ _ _ _} F {_ _ _} f.
 
-Global Instance is0coh1functor_idmap {A : Type} `{Is0Coh1Cat A}
-  : Is0Coh1Functor idmap.
-Proof.
-  apply Build_Is0Coh1Functor.
-  intros a b f ; exact f.
-Defined.
-
 (** Products preserve 0-coherent 1-categories. *)
 Global Instance is0coh0cat_prod A B `{IsGraph A} `{IsGraph B}
   : IsGraph (A * B)
@@ -150,13 +143,6 @@ Class Is0Coh2Functor {A B : Type} `{Is0Coh21Cat A} `{Is0Coh21Cat B}
   := { fmap2 : forall a b (f g : a $-> b), (f $== g) -> (fmap F f $== fmap F g) }.
 
 Arguments fmap2 {_ _ _ _ _ _} F {_ _ _ _ _ _} p.
-
-Global Instance is0coh2functor_idmap {A : Type} `{Is0Coh21Cat A}
-  : Is0Coh2Functor idmap.
-Proof.
-  apply Build_Is0Coh2Functor.
-  intros a b f f' al ; exact al.
-Defined.
 
 (** ** 1-coherent 1-categorical structures *)
 
@@ -243,12 +229,6 @@ Class Is1Coh1Functor {A B : Type} `{Is0Coh1Cat A} `{Is0Coh21Cat B}
 Arguments fmap_id {_ _ _ _ _} F {_ _} a.
 Arguments fmap_comp {_ _ _ _ _} F {_ _ _ _ _} f g.
 
-Global Instance is1coh1functor_idmap {A : Type} `{Is1Coh1Cat A}
-  : Is1Coh1Functor idmap.
-Proof.
-  apply Build_Is1Coh1Functor ; intros ; reflexivity.
-Defined.
-
 (** ** Natural transformations *)
 
 Definition Transformation {A B : Type} `{IsGraph B} (F : A -> B) (G : A -> B)
@@ -322,3 +302,62 @@ Proof.
   refine (_ $@ (fmap G f $@L (p a)^$)).
   apply (isnat gamma).
 Defined.
+
+(** Identity functor *)
+
+Section IdentityFunctor.
+
+  Context {A : Type} {H1 : Is0Coh1Cat A}
+    {H2 : Is0Coh21Cat A} {H3 : Is1Coh1Cat A}.
+
+  Global Instance is0coh1functor_idmap : Is0Coh1Functor idmap.
+  Proof.
+    by apply Build_Is0Coh1Functor.
+  Defined.
+
+  Global Instance is0coh2functor_idmap : Is0Coh2Functor idmap.
+  Proof.
+    by apply Build_Is0Coh2Functor.
+  Defined.
+
+  Global Instance is1coh1functor_idmap : Is1Coh1Functor idmap.
+  Proof.
+    by apply Build_Is1Coh1Functor.
+  Defined.
+
+End IdentityFunctor.
+
+(** Constant functor *)
+
+Section ConstantFunctor.
+
+  Context {A B : Type}
+    {HA1 : Is0Coh1Cat A} {HB1 : Is0Coh1Cat B}
+    {HA2 : Is0Coh21Cat A} {HB2 : Is0Coh21Cat B}
+    {HA3 : Is1Coh1Cat A} {HB3 : Is1Coh1Cat B}.
+
+  Global Instance is0coh1functor_const (x : B)
+    : Is0Coh1Functor (fun _ : A => x).
+  Proof.
+    serapply Build_Is0Coh1Functor.
+    intros a b f; apply Id.
+  Defined.
+
+  Global Instance is0coh2functor_const (x : B)
+    : Is0Coh2Functor (fun _ : A => x).
+  Proof.
+    serapply Build_Is0Coh2Functor.
+    intros a b f g p; apply Id.
+  Defined.
+
+  Global Instance is1coh1functor_const (x : B)
+    : Is1Coh1Functor (fun _ : A => x).
+  Proof.
+    serapply Build_Is1Coh1Functor.
+    + intro; apply Id.
+    + intros a b c f g. cbn.
+      symmetry.
+      apply cat_idlr.
+  Defined.
+
+End ConstantFunctor.
