@@ -190,10 +190,8 @@ Definition yon_cancel {A : Type} `{Is0Coh1Cat A} (a b : A)
 Definition yon1 {A : Type} `{Is0Coh1Cat A} (a : A) : Fun1 A^op Type
   := opyon1 a.
 
-(* TODO: update *)
-(*
 Definition yon_equiv {A : Type} `{Is1Coh1Cat_Strong A}
   {eA : HasEquivs A} (a b : A)
   : (yon1 a $<~> yon1 b) -> (a $<~> b)
   := (@opyon_equiv A^op _ _ _ _ a b).
-*)
+
