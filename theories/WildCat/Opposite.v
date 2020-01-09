@@ -8,6 +8,7 @@ Require Import Basics.Contractible.
 Require Import Basics.Equivalences.
 
 Require Import WildCat.Core.
+Require Import WildCat.Equiv.
 
 (** ** Opposite categories *)
 
@@ -170,3 +171,26 @@ Proof.
     exact pf.
 Defined.
 
+(** Opposite categories preserve having equivalences. *)
+Global Instance hasequivs_op {A} `{HasEquivs A} : HasEquivs A^op.
+Proof.
+  srapply Build_HasEquivs; intros a b; unfold op in *; cbn.
+  - exact (b $<~> a).
+  - apply CatIsEquiv.
+  - apply cate_fun'.
+  - apply cate_isequiv'.
+  - apply cate_buildequiv'.
+  - apply cate_buildequiv_fun'.
+  - apply cate_inv'.
+  - apply cate_isretr'.
+  - apply cate_issect'.
+  - intros f g s t.
+    exact (catie_adjointify f g t s).
+Defined.
+
+Global Instance isequivs_op {A : Type} `{HasEquivs A}
+       {a b : A} (f : a $-> b) {ief : CatIsEquiv f}
+  : @CatIsEquiv A^op _ _ _ b a f.
+Proof.
+  assumption.
+Defined.
