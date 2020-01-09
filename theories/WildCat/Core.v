@@ -359,3 +359,40 @@ Section ConstantFunctor.
   Defined.
 
 End ConstantFunctor.
+
+(** Mapping to a category induces a category structure on the source. *)
+
+Section Induced_category.
+Context {A B : Type} 
+  (f : A -> B).
+  
+Local Instance induced_0coh1cat `{Is0Coh1Cat B}: Is0Coh1Cat A.
+Proof.
+  serapply Build_Is0Coh1Cat.
+  + intros a1 a2. 
+  exact (f a1 $-> f a2).
+  + intro a. cbn in *. 
+  exact (Id (f a)).
+  + intros a b c; cbn in *; intros g1 g2.
+  exact ( g1 $o g2).
+Defined.
+Local Instance induced_0coh21cat`{Is0Coh1Cat B}`{Is0Coh21Cat B} : Is0Coh21Cat A.
+Proof.
+  serapply Build_Is0Coh21Cat.
+  + intros a b. cbn in *. exact _.
+  + intros a b. cbn in *. exact _.
+  + intros a b c. cbn in *. 
+  unfold uncurry. exact _.
+Defined.
+Local Instance induced_1coh1cat `{Is0Coh1Cat B}`{Is1Coh1Cat B} : Is1Coh1Cat A.
+Proof.
+  serapply Build_Is1Coh1Cat.
+  + intros a b c d; cbn in *. 
+  intros u v w. apply cat_assoc.
+  + intros a b; cbn in *.
+  intros u. apply cat_idl.
+  + intros a b; cbn in *.
+  intros u. apply cat_idr.
+Defined. 
+End Induced_category.
+
