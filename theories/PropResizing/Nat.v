@@ -1,6 +1,7 @@
 (* -*- mode: coq; mode: visual-line -*-  *)
 (** * Defining the natural numbers from univalence and propresizing. *)
 Require Import Basics.
+Require Import WildCat.
 Require Import Types.
 Require Import UnivalenceImpliesFunext.
 Require Import HProp.
@@ -195,7 +196,7 @@ Section AssumeStuff.
   Defined.
 
   Definition graph_succ_path_equiv@{}
-    := Eval unfold graph_succ_path_equiv0 in graph_succ_path_equiv0@{u}.
+    := Eval unfold graph_succ_path_equiv0 in graph_succ_path_equiv0@{u s}.
 
   Definition graph_unsucc_path@{} (A B : Graph)
     : (graph_succ A = graph_succ B) -> A = B
@@ -310,9 +311,9 @@ Section AssumeStuff.
   Qed.
 
   Local Instance ishprop_graph_zero_or_succ@{} : forall n : Graph,
-      IsHProp ((n = graph_zero) + { m : N & n = graph_succ m.1 }).
+      IsHProp (sum@{p p} (n = graph_zero) { m : N & n = graph_succ m.1 }).
   Proof.
-    intros n. apply ishprop_sum@{p u p}.
+    intros n. apply ishprop_sum@{p p p}.
     - apply (@trunc_equiv' _ _ (equiv_path_inverse _ _)),ishprop_path_graph_in_N.
       exact zero.2.
     - apply @ishprop_sigma_disjoint.
@@ -338,8 +339,8 @@ Section AssumeStuff.
   Definition N_zero_or_succ@{} (n : N)
     : (n = zero) + { m : N & n = succ m }.
   Proof.
-    apply (functor_sum (path_N _ _)
-                       (functor_sigma (Q := fun m:N => n = succ m) idmap (fun m => path_N _ (succ m)))).
+    rapply (fmap11 sum@{p p} (path_N n zero)
+                   (functor_sigma (Q := fun m:N => n = succ m) idmap (fun m => path_N _ (succ m)))).
     destruct n as [n nrec]; cbn.
     srefine (resize_nrec n nrec
              (fun n => (n = graph_zero) +
@@ -748,11 +749,16 @@ Section AssumeStuff.
       | apply ap, path_ishprop ]).
   Defined.
 
+  Set Printing Universes.
+  Set Printing All.
+
+  Universe q.
+
   Definition equiv_N_segment_succ@{} (n : N)
     : { m : N & m <= succ n } <~> @sum@{p p} {m : N & m <= n} Unit.
   Proof.
     refine (_ oE equiv_N_segment (succ n)).
-    apply equiv_functor_sum_r.
+    apply equiv_functor_sum_r@{p p p p p q q q q}.
     apply equiv_functor_sigma_id.
     intros m; apply equiv_iff_hprop_uncurried, N_lt_succ_iff_le.
   Defined.
@@ -788,10 +794,8 @@ Section AssumeStuff.
 
   (** Now we're finally ready to prove recursion. *)
   Section NRec.
-    (** Here is the type we will recurse into.  Importantly, it
-    doesn't have to be a set! *)
-    (** [nr] is the universe of [partial_Nrec], morally [max(p,x)].
-        Note that it shouldn't be [large], see constraints on [contr_partial_Nrec_zero]. *)
+    (** Here [X] is the type we will recurse into, in universe [x].  Importantly, it doesn't have to be a set! *)
+    (** [nr] is the universe of [partial_Nrec], morally [max(p,x)]. Note that it shouldn't be [large], see constraints on [contr_partial_Nrec_zero]. *)
     Universe x nr.
     Context (X : Type@{x}) (x0 : X) (xs : X -> X).
 
@@ -843,7 +847,7 @@ Section AssumeStuff.
       := ltac:(first [exact contr_partial_Nrec_zero0@{nr}|exact contr_partial_Nrec_zero0]).
     Local Existing Instance contr_partial_Nrec_zero.
 
-    Local Definition equiv_N_segment_succ_maps@{} (n : N)
+    Local Definition equiv_N_segment_succ_maps (n : N)
       : Equiv@{nr nr} (prod@{nr x} ({ m : N & m <= n} -> X) X) ({ m : N & m <= succ n} -> X).
     Proof.
       refine (_ oE @equiv_sum_ind@{x nr nr nr nr p p p}
@@ -854,7 +858,7 @@ Section AssumeStuff.
         apply equiv_unit_rec@{x nr Set}.
     Defined.
 
-    Local Definition equiv_seg_succ@{} (n m : N) (H : m < succ n)
+    Local Definition equiv_seg_succ (n m : N) (H : m < succ n)
                (f : { m : N & m <= n} -> X) (xsn : X)
       : equiv_N_segment_succ_maps n (f,xsn) (m ; N_lt_le m _ H) = f (existT (fun m=>m<=n) m (fst (N_lt_succ_iff_le m _) H)).
     Proof.
@@ -948,8 +952,8 @@ Section AssumeStuff.
         refine (equiv_sigma_symm _ oE _).
         exact ((equiv_sigma_contr _)^-1%equiv). }
     Defined.
-    Local Definition partial_Nrec_succ@{}
-      := Eval unfold partial_Nrec_succ0 in partial_Nrec_succ0@{nr nr nr nr}.
+    Local Definition partial_Nrec_succ
+      := Eval unfold partial_Nrec_succ0 in partial_Nrec_succ0.
 
     Local Instance contr_partial_Nrec@{} (n : N) : Contr (partial_Nrec n).
     Proof.
@@ -1091,7 +1095,7 @@ Section AssumeStuff.
       - apply path_forall; intros n.
         unfold N_rec_beta_succ'.
         cbn [fst snd pr1 pr2];
-          cbv [equiv_fun equiv_inverse equiv_inv equiv_isequiv equiv_compose' equiv_compose isequiv_compose equiv_functor_sum_r equiv_functor_sigma_id equiv_functor_sigma' equiv_functor_sigma equiv_functor_sum' equiv_functor_sum equiv_adjointify isequiv_adjointify isequiv_functor_sum isequiv_idmap equiv_idmap isequiv_functor_sigma equiv_iff_hprop_uncurried functor_sum functor_sigma equiv_N_segment equiv_N_segment_succ inverse transport eisretr];
+          cbv [equiv_fun equiv_inverse equiv_inv equiv_isequiv equiv_compose' equiv_compose isequiv_compose equiv_functor_sum_r equiv_functor_sigma_id equiv_functor_sigma' equiv_functor_sigma equiv_functor_sum' equiv_functor_sum equiv_adjointify isequiv_adjointify isequiv_functor_sum isequiv_idmap equiv_idmap isequiv_functor_sigma equiv_iff_hprop_uncurried fmap11 fmap functor_sigma equiv_N_segment equiv_N_segment_succ inverse transport eisretr];
           cbn [fst snd pr1 pr2 refl_seg].
         rewrite ap_compose.
         rewrite ap_pr1_path_sigma_hprop.
