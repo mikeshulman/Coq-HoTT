@@ -2,8 +2,8 @@
 (** * Theorems about disjoint unions *)
 
 Require Import HoTT.Basics.
-Require Import Types.Empty Types.Prod Types.Sigma.
 Require Import WildCat.
+Require Import Types.Empty Types.Prod Types.Sigma.
 (** The following are only required for the equivalence between [sum] and a sigma type *)
 Require Import Types.Bool Types.Forall.
 
