@@ -33,20 +33,21 @@ Defined.
                                                                             Global Instance is0coh21cat_prod A B `{Is0Coh21Cat A} `{Is0Coh21Cat B}
   : Is0Coh21Cat (A * B).
 Proof.
-(** Need to modify the proof to use new definitions of 0 coherent 2 category. *)
-
-                                                                                                                                                                 serapply (Build_Is0Coh21Cat).
+  serapply (Build_Is0Coh21Cat).
   - intros [x1 x2] [y1 y2].
     rapply is0coh1cat_prod.
   - intros [x1 x2] [y1 y2].
-    
-rapply is0coh1gpd_prod.
+    apply is0coh1gpd_prod.
+    + cbn.
+      apply isgpd_hom.
+    + cbn.
+      apply isgpd_hom.
   - intros [x1 x2] [y1 y2] [z1 z2].
     serapply Build_Is0Coh1Functor.  
     intros f g. unfold uncurry. destruct f as [[f11 f12] [f21 f22]]. destruct g as [[g11 g12] [g21 g22]]. cbn in *. 
     intros a. destruct a as [[a11 a12][a21 a22]].
     exact ( a11 $o@ a21, a12 $o@ a22).
-    Defined.
+Defined.
     
 Global Instance is1coh1cat_prod A B `{Is1Coh1Cat A} `{Is1Coh1Cat B}
   : Is1Coh1Cat (A * B).
