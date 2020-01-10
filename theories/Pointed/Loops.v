@@ -3,16 +3,13 @@ Require Import Types.
 Require Import HSet.
 Require Import Fibrations.
 Require Import Factorization.
-
-(* Note: currently have commented out everything to do with truncation *)
-(* Require Import HoTT.Truncations.*)
-
+Require Import HoTT.Truncations.
 Require Import Pointed.Core.
 Require Import Pointed.pMap.
 Require Import Pointed.pEquiv.
 Require Import Pointed.pHomotopy.
 
-(* Import TrM. *)
+Import TrM.
 
 Local Open Scope pointed_scope.
 Local Open Scope path_scope.
@@ -163,7 +160,7 @@ Proof.
     (fun q => equiv_moveR_pM _ _ _))).
 Defined.
 
-(* (** And likewise the connectedness.  *)
+(** And likewise the connectedness.  *)
 (* Note: We give the definition explicitly since it was slow before. *)
 Global Instance isconnected_loops_functor `{Univalence} {n : trunc_index}
   (A B : pType) (f : A ->* B) `{IsConnMap n.+1 _ _ f}
@@ -194,7 +191,7 @@ Proof.
     abstract (rewrite !concat_1p; reflexivity). }
   exact (path_intermediate (path_factor (O_factsys n) (loops_functor f) I
     (image n (loops_functor f)))).
-Defined. *)
+Defined.
 
 (** Loop inversion is a pointed equivalence *)
 Definition loops_inv (A : pType) : loops A <~>* loops A.

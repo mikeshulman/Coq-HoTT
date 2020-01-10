@@ -1,5 +1,4 @@
 Require Import Basics.
-Require Import WildCat.
 Require Import Types.
 Require Import Pointed.Core.
 
