@@ -232,12 +232,12 @@ Defined.
 (** "functor_prod" is now given by "fmap11 prod" *)
 Definition functor_prod {A A' B B' : Type} (f:A->A') (g:B->B')
   : A * B -> A' * B'
-  := fun z => (f (fst z), g (snd z)).
+  := fmap11 prod f g.
 
 Definition ap_functor_prod {A A' B B' : Type} (f:A->A') (g:B->B')
   (z z' : A * B) (p : fst z = fst z') (q : snd z = snd z')
-  : ap (fmap11 prod f g) (path_prod _ _ p q)
-  = path_prod (fmap11 prod f g z) (fmap11 prod f g z') (ap f p) (ap g q).
+  : ap (functor_prod f g) (path_prod _ _ p q)
+  = path_prod (functor_prod f g z) (functor_prod f g z') (ap f p) (ap g q).
 Proof.
   destruct z as [a b]; destruct z' as [a' b'].
   simpl in p, q. destruct p, q. reflexivity.
@@ -246,50 +246,19 @@ Defined.
 (** ** Equivalences *)
 
 Global Instance isequiv_functor_prod `{IsEquiv A A' f} `{IsEquiv B B' g}
-  : IsEquiv (fmap11 prod f g) | 1000.
-Proof.
-  exact (iemap11 prod f g).
-Defined.
-
-(** long direct proof of above
-Proof.
-  srapply Build_IsEquiv.
-  - exact (fmap11 prod f^-1 g^-1).
-  - cbn.
-    intros [a b].
-    apply path_prod.
-    + apply eisretr.
-    + apply eisretr.
-  - intros [a b].
-    unfold fmap11.
-    cbv.
-    apply path_prod.
-    + apply eissect.
-    + apply eissect.
-  - intros [a b].
-    cbn.
-    rewrite ap_functor_prod.
-    rewrite !eisadj.
-    unfold fmap11.
-    cbn.
-    reflexivity.
-Defined.
-*)
+  : IsEquiv (fmap11 prod f g) | 1000
+  := iemap11 prod f g.
 
 Definition equiv_functor_prod `{IsEquiv A A' f} `{IsEquiv B B' g}
   : A * B <~> A' * B'.
 Proof.
-  srapply Build_Equiv.
-  - exact (fmap11 prod f g).
-  - apply isequiv_functor_prod.
+  srapply (Build_Equiv _ _ (fmap11 prod f g)).
 Defined.
 
 Definition equiv_functor_prod' {A A' B B' : Type} (f : A <~> A') (g : B <~> B')
   : A * B <~> A' * B'.
 Proof.
-  srapply Build_Equiv.
-  - exact (fmap11 prod f g).
-  - apply isequiv_functor_prod.
+  srapply (Build_Equiv _ _ (fmap11 prod f g)).
 Defined.
 
 Notation "f *E g" := (equiv_functor_prod' f g) : equiv_scope.

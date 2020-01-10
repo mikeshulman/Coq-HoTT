@@ -26,9 +26,9 @@ Proof.
     exact (p (g a) @ ap f' (p' a)).
 Defined.
 
-Global Instance is0coh2cat_type : Is0Coh2Cat Type.
+Global Instance is0coh21cat_type : Is0Coh21Cat Type.
 Proof.
-  rapply (Build_Is0Coh2Cat Type _ _ (fun a b => is0coh1gpd_arrow)).
+  rapply (Build_Is0Coh21Cat Type _ _ (fun a b => is0coh1gpd_arrow)).
 Defined.
 
 Global Instance is1coh1cat_strong_type : Is1Coh1Cat_Strong Type.
@@ -59,8 +59,10 @@ Proof.
   - intros g r s; refine (isequiv_adjointify f g r s).
 Defined.
 
-Global Instance catie_isequiv {A B : Type} {f : A $-> B}
+Definition catie_isequiv {A B : Type} {f : A $-> B}
        `{IsEquiv A B f} : CatIsEquiv f.
 Proof.
   assumption.
 Defined.
+
+Hint Immediate catie_isequiv : typeclass_instances.

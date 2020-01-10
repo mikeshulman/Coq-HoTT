@@ -7,7 +7,7 @@ Require Import WildCat.Core.
 
 (** We could define equivalences in any wild 2-category as bi-invertible maps, or in a wild 3-category as half-adjoint equivalences.  However, in concrete cases there is often an equivalent definition of equivalences that we want to use instead, and the important property we need is that it's logically equivalent to (quasi-)isomorphism. *)
 
-Class HasEquivs (A : Type) `{Is0Coh2Cat A} :=
+Class HasEquivs (A : Type) `{Is0Coh21Cat A} :=
 {
   CatEquiv' : A -> A -> Type where "a $<~> b" := (CatEquiv' a b);
   CatIsEquiv' : forall a b, (a $-> b) -> Type;
@@ -99,24 +99,24 @@ Proof.
 Defined.
 
 (** The identity morphism is an equivalence *)
-Global Instance catie_id {A} `{HasEquivs A} {c1 : Is1Coh1Cat A} (a : A)
+Global Instance catie_id {A} `{HasEquivs A, !Is1Coh1Cat A} (a : A)
   : CatIsEquiv (Id a)
   := catie_adjointify (Id a) (Id a) (cat_idlr a) (cat_idlr a).
 
-Definition id_cate {A} `{HasEquivs A} {c1 : Is1Coh1Cat A} (a : A)
+Definition id_cate {A} `{HasEquivs A, !Is1Coh1Cat A} (a : A)
   : a $<~> a
   := Build_CatEquiv (Id a).
 
-Global Instance reflexive_cate {A} `{HasEquivs A} {c1 : Is1Coh1Cat A}
+Global Instance reflexive_cate {A} `{HasEquivs A, !Is1Coh1Cat A}
   : Reflexive (@CatEquiv A _ _ _)
   := id_cate.
 
-Global Instance symmetric_cate {A} `{HasEquivs A} {c1 : Is1Coh1Cat A}
+Global Instance symmetric_cate {A} `{HasEquivs A, !Is1Coh1Cat A}
   : Symmetric (@CatEquiv A _ _ _)
   := fun a b f => cate_inv f.
 
 (** Equivalences can be composed. *)
-Definition compose_cate {A} `{HasEquivs A} {c1 : Is1Coh1Cat A} {a b c : A}
+Definition compose_cate {A} `{HasEquivs A, !Is1Coh1Cat A} {a b c : A}
   (g : b $<~> c) (f : a $<~> b) : a $<~> c.
 Proof.
   refine (cate_adjointify (g $o f) (f^-1$ $o g^-1$) _ _).
@@ -134,15 +134,61 @@ Defined.
 
 Notation "g $oE f" := (compose_cate g f).
 
-Global Instance transitive_cate {A} `{HasEquivs A} {c1 : Is1Coh1Cat A}
+Definition compose_cate_fun {A}
+           `{HasEquivs A} {c1 : Is1Coh1Cat A}
+           {a b c : A} (g : b $<~> c) (f : a $<~> b)
+  : cate_fun (g $oE f) $== g $o f.
+Proof.
+  apply cate_buildequiv_fun.
+Defined.
+
+Definition compose_cate_funinv {A}
+           `{HasEquivs A} {c1 : Is1Coh1Cat A}
+           {a b c : A} (g : b $<~> c) (f : a $<~> b)
+  : g $o f $== cate_fun (g $oE f).
+Proof.
+  apply gpd_rev.
+  apply cate_buildequiv_fun.
+Defined.
+
+Definition compose_cate_assoc {A} `{HasEquivs A} {c1 : Is1Coh1Cat A}
+           {a b c d : A} (f : a $<~> b) (g : b $<~> c) (h : c $<~> d)
+  : cate_fun ((h $oE g) $oE f) $== cate_fun (h $oE (g $oE f)).
+Proof.
+  refine (compose_cate_fun _ f $@ _ $@ cat_assoc f g h $@ _ $@
+                           compose_cate_funinv h _).
+  - refine (compose_cate_fun h g $o@ _).
+    apply Id.                   (* Why do i need these? *)
+  - refine (_ $o@ compose_cate_funinv g f).
+    apply Id.                   (* [Id h] doesn't work? *)
+Defined.
+
+Definition compose_cate_idl {A} `{HasEquivs A} {c1 : Is1Coh1Cat A}
+           {a b : A} (f : a $<~> b)
+  : cate_fun (id_cate b $oE f) $== cate_fun f.
+Proof.
+  refine (compose_cate_fun _ f $@ _ $@ cat_idl f).
+  refine (cate_buildequiv_fun _ $o@ _).
+  apply Id.
+Defined.
+
+Definition compose_cate_idr {A} `{HasEquivs A} {c1 : Is1Coh1Cat A}
+           {a b : A} (f : a $<~> b)
+  : cate_fun (f $oE id_cate a) $== cate_fun f.
+Proof.
+  refine (compose_cate_fun f _ $@ _ $@ cat_idr f).
+  refine (_ $o@ cate_buildequiv_fun _).
+  apply Id.
+Defined.
+
+Global Instance transitive_cate {A} `{HasEquivs A, !Is1Coh1Cat A}
   : Transitive (@CatEquiv A _ _ _)
   := fun a b c f g => g $oE f.
 
 (** Any sufficiently coherent functor preserves equivalences.  *)
 Global Instance iemap {A B : Type} `{HasEquivs A} `{HasEquivs B} (F : A -> B)
-           {ff1 : Is0Coh1Functor F} {ff2 : Is0Coh2Functor F}
-           {ff11 : Is1Coh1Functor F} {a b : A} (f : a $-> b)
-           {fe : CatIsEquiv f}
+       `{!Is0Coh1Functor F, !Is0Coh2Functor F, !Is1Coh1Functor F}
+       {a b : A} (f : a $-> b) {fe : CatIsEquiv f}
   : CatIsEquiv (fmap F f).
 Proof.
   refine (catie_adjointify (fmap F f) (fmap F f^-1$) _ _).
@@ -151,22 +197,82 @@ Proof.
 Defined.
 
 Definition emap {A B : Type} `{HasEquivs A} `{HasEquivs B} (F : A -> B)
-           {ff1 : Is0Coh1Functor F} {ff2 : Is0Coh2Functor F}
-           {ff11 : Is1Coh1Functor F} {a b : A} (f : a $<~> b)
+           `{!Is0Coh1Functor F, !Is0Coh2Functor F, !Is1Coh1Functor F}
+           {a b : A} (f : a $<~> b)
   : F a $<~> F b
   := Build_CatEquiv (fmap F f).
 
 (** When we have equivalences, we can define what it means for a category to be univalent. *)
-Definition cat_equiv_path {A : Type} `{HasEquivs A} {c1 : Is1Coh1Cat A} (a b : A)
+Definition cat_equiv_path {A : Type} `{HasEquivs A, !Is1Coh1Cat A} (a b : A)
   : (a = b) -> (a $<~> b).
 Proof.
   intros []; reflexivity.
 Defined.
 
-Class IsUnivalent1Cat (A : Type) `{HasEquivs A} {c1 : Is1Coh1Cat A}
+Class IsUnivalent1Cat (A : Type) `{HasEquivs A, !Is1Coh1Cat A}
   := { isequiv_cat_equiv_path : forall a b, IsEquiv (@cat_equiv_path A _ _ _ _ a b) }.
 Global Existing Instance isequiv_cat_equiv_path.
 
 Definition cat_path_equiv {A : Type} `{IsUnivalent1Cat A} (a b : A)
   : (a $<~> b) -> (a = b)
   := (cat_equiv_path a b)^-1.
+
+(** ** Core of a 1Coh1Cat *)
+
+Definition core (A : Type) : Type := A.
+Typeclasses Opaque core.
+
+Global Instance is0coh1cat_core {A : Type} `{HasEquivs A}
+  `{!Is1Coh1Cat A} : Is0Coh1Cat (core A).
+Proof.
+  srapply Build_Is0Coh1Cat ; cbv.
+  - intros a b ; exact (a $<~> b).
+  - apply id_cate.
+  - intros a b c ; apply compose_cate.
+Defined.
+
+Global Instance is0coh1cat_core_hom {A : Type} `{HasEquivs A}
+       `{!Is1Coh1Cat A} (a b : core A) : Is0Coh1Cat (a $-> b).
+Proof.
+  cbv in a, b.
+  srapply Build_Is0Coh1Cat.
+  - intros f g ; exact (cate_fun f $== cate_fun g).
+  - intro f ; apply Id.
+  - intros f g h ; apply cat_comp.
+Defined.
+
+Global Instance is0coh1gpd_core_hom {A : Type} `{HasEquivs A}
+       `{!Is1Coh1Cat A} (a b : core A) : Is0Coh1Gpd (a $-> b).
+Proof.
+  cbv in a, b.
+  apply Build_Is0Coh1Gpd.
+  intros f g ; cbv.
+  apply gpd_rev.
+Defined.
+
+Global Instance is0coh1functor_cat_comp {A : Type} `{HasEquivs A}
+       `{!Is1Coh1Cat A} (a b c : core A) :
+  Is0Coh1Functor (uncurry (@cat_comp A _ a b c)).
+Proof.
+  cbv in a, b, c.
+  apply Build_Is0Coh1Functor.
+  - intros [f g] [f' g'] [al be].
+    exact (compose_cate_fun f g
+           $@ (al $o@ be)
+           $@ (compose_cate_fun f' g')^$).
+Defined.
+
+Global Instance is0coh21cat_core {A : Type} `{HasEquivs A}
+  `{!Is1Coh1Cat A} : Is0Coh21Cat (core A).
+Proof.
+  rapply Build_Is0Coh21Cat.
+Defined.
+
+Global Instance is1coh1cat_core {A : Type} `{HasEquivs A}
+       `{!Is1Coh1Cat A} : Is1Coh1Cat (core A).
+Proof.
+  rapply Build_Is1Coh1Cat ; intros.
+  - apply compose_cate_assoc.
+  - apply compose_cate_idl.
+  - apply compose_cate_idr.
+Defined.
