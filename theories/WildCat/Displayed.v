@@ -3,6 +3,7 @@ Require Import Basics.
 Require Import Types.
 Require Import WildCat.Core.
 Require Import WildCat.Equiv.
+Require Import WildCat.Opposite.
 
 (** * Displayed wild categories *)
 
@@ -13,12 +14,23 @@ Reserved Notation "f ^$$" (at level 20).
 Reserved Infix "$$@" (at level 30).
 Reserved Infix "$$o@" (at level 30).
 
+
+(** ** displayed graphs *)
+
+Class IsDGraph {A : Type} (B : A -> Type) :=
+{
+  isgraph_base : IsGraph A ;
+  DGraph_Hom : forall {a b : A} (f : a $-> b), B a -> B b -> Type
+  (* where "x $-[ f ]-> y" := (DHom _ _ f x y) *)
+}.
+
+
 (** ** 0-coherent displayed 1-categories *)
 
 Class Is0Coh1DCat {A : Type} `{Is0Coh1Cat A} (B : A -> Type) :=
 {
-  DHom : forall {a b : A} (f : a $-> b), B a -> B b -> Type ;
-  (* where "x $-[ f ]-> y" := (DHom _ _ f x y) *)
+(**  is_Dgraph : IsDGraph B; *)
+  DHom : forall {a b : A} (f : a $-> b), B a -> B b -> Type ; 
   DId : forall {a : A} (x : B a), DHom (Id a) x x ;
   DComp : forall {a b c : A} {g : b $-> c} {f : a $-> b}
                  {x : B a} {y : B b} {z : B c},
@@ -27,7 +39,7 @@ Class Is0Coh1DCat {A : Type} `{Is0Coh1Cat A} (B : A -> Type) :=
 
 (* Notation "x $-[ f ]-> y" := (DHom f x y). *)
 Notation "v $$o u" := (DComp v u).
-
+                                         
 Global Instance is0coh1cat_sigma {A : Type} (B : A -> Type) `{Is0Coh1DCat A B}
   : Is0Coh1Cat (sig B).
 Proof.
@@ -40,9 +52,50 @@ Defined.
 Global Instance is0coh1functor_pr1 {A : Type} (B : A -> Type) `{Is0Coh1DCat A B} : Is0Coh1Functor (pr1 : (sig B) -> A).
 Proof.
   apply Build_Is0Coh1Functor.
-  intros [a x] [b y] [f g]; cbn.
+  intros [a x] [b y] [f u]; cbn.
   assumption.
 Defined.  
+
+(** ** contravariant 0-coherent displayed 1-categories *)
+Class Is_contra_0Coh1DCat {A : Type} `{Is0Coh1Cat A} (B : A -> Type) :=
+{
+  contra_DHom : forall {a b : A} (f : a $-> b), B b -> B a -> Type ;
+  contra_DId : forall {a : A} (x : B a), contra_DHom (Id a) x x ;
+  contra_DComp : forall {a b c : A} {g : b $-> c} {f : a $-> b}
+                    {x : B a} {y : B b} {z : B c} ,
+      contra_DHom f y x -> contra_DHom g z y -> contra_DHom (g $o f) z x
+}.
+
+Global Instance is_contra_0coh1DCat_op {A : Type} `{Is0Coh1Cat A} (B : A -> Type) `{Is_contra_0Coh1DCat A B} : @Is0Coh1DCat (A^op) _ B.
+Proof.
+  srapply Build_Is0Coh1DCat; unfold op in *; cbn in *.
+  - intros a b.
+    apply contra_DHom.
+  - intros a x.
+    apply contra_DId.
+  - intros a b c g f x y z.
+    apply contra_DComp.
+Defined.
+
+Global Instance is0coh1cat_op_sigma {A : Type} (B : A -> Type) `{Is_contra_0Coh1DCat A B}
+  : Is0Coh1Cat (sig B).
+Proof.
+  srapply Build_Is0Coh1Cat.
+  - intros [a x] [b y]; exact {f : a $-> b & contra_DHom f y x}.
+  - cbn. intros [a x]; exact (Id a; contra_DId x).
+  - cbn. intros [a x] [b y] [c z] [g v] [f u]. exact (g $o f; contra_DComp u v).
+Defined.
+
+Global Instance is_contra_0coh1functor_pr1 {A : Type} (B : A -> Type) `{Is_contra_0Coh1DCat A B} : Is0Coh1Functor (pr1 : (sig B) -> A).
+Proof.
+  apply Build_Is0Coh1Functor.
+  intros [a x] [b y] [f u]; cbn.
+  assumption.
+Defined.  
+
+
+
+(** 0-coherent displayed 1-groupoids *)
 
 Class Is0Coh1DGpd {A : Type} (B : A -> Type)
       `{Is0Coh1DCat A B} {ag : Is0Coh1Gpd A} :=
@@ -59,12 +112,16 @@ Proof.
   exact (f^$ ; u^$$).
 Defined.
 
+(** 0-coherent 1-displayed functors *)
+
 Class Is0Coh1DFunctor {A1 A2 : Type} (B1 : A1 -> Type) (B2 : A2 -> Type)
       `{Is0Coh1DCat A1 B1} `{Is0Coh1DCat A2 B2}
       (F : A1 -> A2) {ff : Is0Coh1Functor F}
       (G : forall a:A1, B1 a -> B2 (F a))
   := { fmapD : forall {a b : A1} {f : a $-> b} {x : B1 a} {y : B1 b},
          DHom f x y -> DHom (fmap F f) (G a x) (G b y) }.
+
+Arguments fmapD {A1 A2 B1 B2 _ _ _ _ F ff} G {gg a b f x y} u : rename.
 
 Global Instance is0coh1functor_sigma {A1 A2 : Type} (B1 : A1 -> Type) (B2 : A2 -> Type) `{Is0Coh1DCat A1 B1} `{Is0Coh1DCat A2 B2} (F : A1 -> A2) {ff : Is0Coh1Functor F} (G : forall a:A1, B1 a -> B2 (F a)) {gg : Is0Coh1DFunctor B1 B2 F G} : Is0Coh1Functor (functor_sigma F G).
 Proof.
@@ -73,12 +130,14 @@ Proof.
   cbn in *.
   intros [f g].
   exists (fmap F f).
-  apply fmapD.
+  apply (fmapD G).
   assumption.
 Defined.
 
-Global Instance is0coh1Dcat_prod {A1 A2 : Type} `{Is0Coh1Cat A1} `{Is0Coh1Cat A2} (B1 : A1 -> Type) (B2 : A2 -> Type)  `{Is0Coh1DCat A1 B1}
-      `{Is0Coh1DCat A2 B2}
+(** products of 0-coherent displayed 1-categories *)
+
+Global Instance is0coh1Dcat_prod {A1 A2 : Type} `{Is0Coh1Cat A1} `{Is0Coh1Cat A2} (B1 : A1 -> Type) (B2 : A2 -> Type)  `{!Is0Coh1DCat B1}
+      `{!Is0Coh1DCat B2}
   : @Is0Coh1DCat (A1 * A2) _ (fun x => (B1 (fst x)) * (B2 (snd x))).
 Proof.
   srapply Build_Is0Coh1DCat; intros [a1 a2] [b1 b2]; cbn.
@@ -89,9 +148,9 @@ Proof.
     exact (DComp v1 u1, DComp v2 u2).
 Defined.
 
-(** work in progress still breaks
+(** 0-coherent displayed 21-categories *)
 
-Class Is0Coh2DCat {A : Type} {a01 : Is0Coh1Cat A} {a02 : Is0Coh2Cat A}
+Class Is0Coh21DCat {A : Type} {a01 : Is0Coh1Cat A} {a02 : Is0Coh21Cat A}
       (B : A -> Type) {ba : Is0Coh1DCat B} :=
   {
     is0coh1Dcat_DHom : forall {a b : A} {x : B a} {y : B b},
@@ -100,25 +159,33 @@ Class Is0Coh2DCat {A : Type} {a01 : Is0Coh1Cat A} {a02 : Is0Coh2Cat A}
         @Is0Coh1DGpd (a $-> b) (fun f => DHom f x y) _ _ _ ;
     is0coh1Dfunctor_DComp : forall {a b c : A}
                                    {x : B a} {y : B b} {z : B c},
-        @Is0Coh1DFunctor ((b $-> c) * (a $-> b)) (a $-> c) (fun gf => let (g,f) := gf in DHom g y z * DHom f x y) _ _ _ _ _ (uncurry (@cat_comp A _ a b c)) _
-                         (fun gf => let (g,f) := gf in (fun vu => let (v,u) := vu in @DComp A _ B _ a b c g f x y z v u))
-        
-                         }.
+(@Is0Coh1DFunctor ((b $-> c) * (a $-> b)) (a $-> c)
+                            (fun gf => DHom (fst gf) y z * DHom (snd gf) x y) (fun k => DHom k x z) _ (is0coh1Dcat_prod (fun g => DHom g y z) (fun f => DHom f x y) ) _ _ (uncurry (@cat_comp A _ a b c)) _                          (fun h => (fun vu => @DComp A _ B _ a b c (fst h) (snd h) x y z (fst vu) (snd vu))))
+}. 
 
-*)
+Global Existing Instance is0coh1Dcat_DHom.
+Global Existing Instance is0coh1Dgpd_DHom.
+Global Existing Instance is0coh1Dfunctor_DComp.
 
-(** old attempt at Is0Coh2DCat
-    DHom2 : forall {a b : A} {x : B a} {y : B b} {f g : a $-> b}
-                   (p : f $== g), (DHom f x y) -> (DHom g x y) -> Type ;
-    DHom2_rev : forall {a b : A} {x : B a} {y : B b} {f g : a $-> b}
-                       (p : f $== g) (u : DHom f x y) (v : DHom g x y),
-                       DHom2 p u v -> DHom2 (p ^$) v u ;
-    DId2 : forall {a b : A} {x : B a} {y : B b} {f : a $-> b}
-                  (u : DHom f x y), DHom2 (Id f) u u ;
-    DComp2 : forall {a b c : A} {x : B a} {y : B b} {z : B c}
-        {f1 f2 : a $-> b} {g1 g2 : b $-> c} (p : f1 $== f2) (q : g1 $== g2)
-        (u1 : DHom f1 x y) (u2 : DHom f2 x y)
-        (v1 : DHom g1 y z) (v2 : DHom g2 y z),
-        (DHom2 p u1 u2) -> (DHom2 q v1 v2)
-        -> (DHom2 (q $o@ p) (v1 $$o u1) (v2 $$o u2))
- *)
+Global Instance is0coh21cat_sigma {A : Type} (B : A -> Type) `{Is0Coh1DCat A B} {ha21 : Is0Coh21Cat A} {hab : Is0Coh21DCat B}
+  : Is0Coh21Cat (sig B).
+Proof.
+  rapply Build_Is0Coh21Cat.
+  - exact _.
+  - intros [a x] [b y] [c z].
+    serapply Build_Is0Coh1Functor.
+    intros [[g1 v1] [f1 u1]] [[g2 v2] [f2 u2]] [[q qq] [p pp]]; cbn in *.
+    exists (q $o@ p).
+    About fmapD.
+    refine  (@fmapD   ((b $-> c) * (a $-> b)) (a $-> c) (fun gf => DHom (fst gf) y z * DHom (snd gf) x y) (fun k => DHom k x z)     _ (is0coh1Dcat_prod (fun g => DHom g y z) (fun f => DHom f x y) ) _ _
+               (uncurry (@cat_comp A _ a b c)) _ (fun h => (fun vu => @DComp A _ B _ a b c (fst h) (snd h) x y z (fst vu) (snd vu)))
+               (is0coh1Dfunctor_DComp) (g1, f1) (g2, f2) (q,p) (v1, u1) (v2, u2) (qq,pp)).
+Defined.
+
+Global Instance is0coh2functor_pr1 {A : Type} (B : A -> Type) `{Is0Coh21DCat A B} : Is0Coh2Functor (pr1 : (sig B) -> A).
+Proof.
+  apply Build_Is0Coh2Functor.
+  intros [a x] [b y] [f u] [g v] [p pp]; cbn.
+  assumption.
+Defined.  
+
