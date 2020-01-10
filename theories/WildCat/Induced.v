@@ -24,7 +24,8 @@ Proof.
   exact (Id (f a)).
   + intros a b c; cbn in *; intros g1 g2.
   exact ( g1 $o g2).
-Defined.
+ Defined.
+(** Want that the structure map along which we induce the category structure becomes a functor wrt the induced structure *) 
 Local Instance inducingmap_is0coh1functor `{Is0Coh1Cat B} : Is0Coh1Functor f.
 Proof.
   serapply Build_Is0Coh1Functor.
@@ -61,7 +62,7 @@ Proof.
 Defined.
 End Induced_category.
 
-  (** Stuff about induced HasEquivs. This other stuff about induced category structures is in Core. This part can't be in core  because HasEquivs is defined in this file, which uses Core.v. Make separate section?*)
+  (** Stuff about induced HasEquivs.*)
   
 Definition induced_hasequivs (A B: Type)(F: A -> B)`{Is1Coh1Cat B}`{!HasEquivs B} : @HasEquivs A _ (induced_0coh21cat F).
 Proof.
@@ -86,5 +87,4 @@ Proof.
   + intros a b h g m n; cbn in *.  
   exact ( catie_adjointify' _ _ h g m n  ).
   Defined.
-
-(** !! For proof of induced_hasequivs: need to go back and show in core that induced_is0coh1cat makes the make f that induces a 0 coherent 1 functor. This is in core *) 
+ 
