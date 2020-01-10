@@ -11,6 +11,7 @@ Require Import WildCat.Equiv.
 
 (** ** Product categories *)
 
+(** This is already in core.
 Global Instance is0coh1cat_prod A B `{Is0Coh1Cat A} `{Is0Coh1Cat B}
   : Is0Coh1Cat (A * B).
 Proof.
@@ -19,6 +20,7 @@ Proof.
   - intros [a1 b1] [a2 b2] [a3 b3] [f1 g1] [f2 g2]; cbn in *.
     exact (f1 $o f2 , g1 $o g2).
 Defined.
+*)
 
 Global Instance is0coh1gpd_prod A B `{Is0Coh1Gpd A} `{Is0Coh1Gpd B} : Is0Coh1Gpd (A * B).
 Proof. 
@@ -28,16 +30,17 @@ Proof.
     exact ( (f1^$, f2^$) ).
 Defined.
 
-Global Instance is0coh21cat_prod A B `{Is0Coh21Cat A} `{Is0Coh21Cat B}
+                                                                            Global Instance is0coh21cat_prod A B `{Is0Coh21Cat A} `{Is0Coh21Cat B}
   : Is0Coh21Cat (A * B).
 Proof.
 (** Need to modify the proof to use new definitions of 0 coherent 2 category. *)
 
-  serapply (Build_Is0Coh21Cat).
+                                                                                                                                                                 serapply (Build_Is0Coh21Cat).
   - intros [x1 x2] [y1 y2].
     rapply is0coh1cat_prod.
   - intros [x1 x2] [y1 y2].
-    rapply is0coh1gpd_prod.
+    
+rapply is0coh1gpd_prod.
   - intros [x1 x2] [y1 y2] [z1 z2].
     serapply Build_Is0Coh1Functor.  
     intros f g. unfold uncurry. destruct f as [[f11 f12] [f21 f22]]. destruct g as [[g11 g12] [g21 g22]]. cbn in *. 
