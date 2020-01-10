@@ -219,15 +219,15 @@ Definition cat_path_equiv {A : Type} `{IsUnivalent1Cat A} (a b : A)
 
 (** ** Core of a 1Coh1Cat *)
 
-Definition core (A : Type) : Type := A.
-Typeclasses Opaque core.
+Record core (A : Type) := { uncore : A }.
+Arguments uncore {A} c.
 
 Global Instance is0coh1cat_core {A : Type} `{HasEquivs A}
   `{!Is1Coh1Cat A} : Is0Coh1Cat (core A).
 Proof.
   srapply Build_Is0Coh1Cat ; cbv.
-  - intros a b ; exact (a $<~> b).
-  - apply id_cate.
+  - intros a b ; exact (uncore a $<~> uncore b).
+  - intros; apply id_cate.
   - intros a b c ; apply compose_cate.
 Defined.
 
@@ -252,7 +252,7 @@ Defined.
 
 Global Instance is0coh1functor_cat_comp {A : Type} `{HasEquivs A}
        `{!Is1Coh1Cat A} (a b c : core A) :
-  Is0Coh1Functor (uncurry (@cat_comp A _ a b c)).
+  Is0Coh1Functor (uncurry (@cat_comp (core A) _ a b c)).
 Proof.
   cbv in a, b, c.
   apply Build_Is0Coh1Functor.
