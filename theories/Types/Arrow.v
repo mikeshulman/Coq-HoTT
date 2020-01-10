@@ -186,8 +186,12 @@ Section FunctorArrow.
     apply Build_Is1Coh1Functor ; intros ; reflexivity.
   Defined.
 
+  Definition functor_arrow `(f : B -> A) `(g : C -> D)
+    : (A -> C) -> (B -> D)
+    := fmap11 arrow f g.
+
   Definition ap_functor_arrow  `(f : B -> A) `(g : C -> D) (h h' : A -> C) (p : h == h')
-  : ap (fmap11 arrow f g) (path_arrow _ _ p) = path_arrow _ _ (fun b => ap g (p (f b)))
+  : ap (functor_arrow f g) (path_arrow _ _ p) = path_arrow _ _ (fun b => ap g (p (f b)))
   := @ap_functor_forall _ A (fun _ => C) B (fun _ => D) f (fun _ => g) h h' p.
 
 End FunctorArrow.
@@ -206,7 +210,7 @@ Global Instance trunc_arrow {A B : Type} `{IsTrunc n B}
 (** ** Equivalences *)
 
 Global Instance isequiv_functor_arrow `{IsEquiv B A f} `{IsEquiv C D g}
-  : IsEquiv (fmap11 arrow f g) | 1000.
+  : IsEquiv (functor_arrow f g) | 1000.
 Proof.
   rapply (iemap11 arrow f g).
 Defined.

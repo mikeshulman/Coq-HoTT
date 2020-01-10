@@ -29,7 +29,7 @@ Proof.
 Defined.
 
 (** This requires either morphism extensionality or a strong 1-coherent 1-category. *)
-Global Instance is1coh1functor_hom {A} `{Is1Coh1Cat A} {me : HasMorExt A}
+Global Instance is1coh1functor_hom {A} `{Is1Coh1Cat A} `{!HasMorExt A}
   : @Is1Coh1Functor (A^op * A) Type _ _ _ (uncurry (@Hom A _)) _.
 Proof.
   apply Build_Is1Coh1Functor.
@@ -90,7 +90,7 @@ Definition un_opyoneda {A : Type} `{Is0Coh1Cat A}
   := fun alpha => alpha a (Id a).
 
 Global Instance is1natural_opyoneda {A : Type} `{Is0Coh21Cat A}
-  (a : A) (F : A -> Type) {ff : Is0Coh1Functor F} {ff1 : Is1Coh1Functor F} (x : F a)
+  (a : A) (F : A -> Type) `{!Is0Coh1Functor F, !Is1Coh1Functor F} (x : F a)
   : Is1Natural (opyon a) F (opyoneda a F x).
 Proof.
   apply Build_Is1Natural.
@@ -99,14 +99,14 @@ Proof.
 Defined.
 
 Definition opyoneda_issect {A : Type} `{Is0Coh21Cat A} (a : A)
-           (F : A -> Type) {ff : Is0Coh1Functor F} {ff1 : Is1Coh1Functor F}
+           (F : A -> Type) `{!Is0Coh1Functor F, !Is1Coh1Functor F}
            (x : F a)
   : un_opyoneda a F (opyoneda a F x) = x
   := fmap_id F a x.
 
 (** We assume for the converse that the coherences in [A] are equalities (this is a weak funext-type assumption).  Note that we do not in general recover the witness of 1-naturality.  Indeed, if [A] is fully coherent, then a transformation of the form [yoneda a F x] is always also fully coherently natural, so an incoherent witness of 1-naturality could not be recovered in this way.  *)
 Definition opyoneda_isretr {A : Type} `{Is1Coh1Cat_Strong A} (a : A)
-           (F : A -> Type) {ff : Is0Coh1Functor F} {ff1 : Is1Coh1Functor F}
+           (F : A -> Type) `{!Is0Coh1Functor F, !Is1Coh1Functor F}
            (alpha : opyon a $=> F) {alnat : Is1Natural (opyon a) F alpha}
            (b : A)
   : opyoneda a F (un_opyoneda a F alpha) b $== alpha b.
@@ -123,12 +123,14 @@ Definition opyon_cancel {A : Type} `{Is0Coh1Cat A} (a b : A)
   : (opyon a $=> opyon b) -> (b $-> a)
   := un_opyoneda a (opyon b).
 
-Definition opyon1 {A : Type} `{Is0Coh1Cat A} (a : A) : Fun01 A Type
-  := (opyon a ; is0coh1functor_opyon a).
+Definition opyon1 {A : Type} `{Is0Coh1Cat A} (a : A) : Fun01 A Type.
+Proof.
+  rapply (Build_Fun01 _ _ _ _ (opyon a)).
+Defined.
 
 (** We can also deduce "full-faithfulness" on equivalences. *)
-Definition opyon_equiv {A : Type} `{Is1Coh1Cat_Strong A}
-           {eA : HasEquivs A} (a b : A)
+Definition opyon_equiv {A : Type} `{HasEquivs A} `{!Is1Coh1Cat_Strong A}
+           (a b : A)
   : (opyon1 a $<~> opyon1 b) -> (b $<~> a).
 Proof.
   intros f.
@@ -156,17 +158,17 @@ Global Instance is0coh1functor_yon {A : Type} `{Is0Coh1Cat A} (a : A)
   := @is0coh1functor_opyon A _ a.
 
 Definition yoneda {A : Type} `{Is0Coh1Cat A} (a : A)
-           (F : A^op -> Type) {ff : Is0Coh1Functor F}
+           (F : A^op -> Type) `{!Is0Coh1Functor F}
   : F a -> (yon a $=> F)
   := @opyoneda (A^op) _ a F _.
 
 Definition un_yoneda {A : Type} `{Is0Coh1Cat A} (a : A)
-           (F : A^op -> Type) {ff : Is0Coh1Functor F}
+           (F : A^op -> Type) `{!Is0Coh1Functor F}
   : (yon a $=> F) -> F a
   := @un_opyoneda (A^op) _ a F _.
 
 Global Instance is1natural_yoneda {A : Type} `{Is0Coh21Cat A} (a : A)
-       (F : A^op -> Type) {ff : Is0Coh1Functor F} {ff1 : Is1Coh1Functor F} (x : F a)
+       (F : A^op -> Type) `{!Is0Coh1Functor F, !Is1Coh1Functor F} (x : F a)
   : Is1Natural (yon a) F (yoneda a F x)
   := @is1natural_opyoneda (A^op) _ _ a F _ _ x.
 
@@ -177,11 +179,11 @@ Definition yoneda_issect {A : Type} `{Is0Coh21Cat A} (a : A) (F : A^op -> Type) 
 
 Definition yoneda_isretr {A : Type}
            `{Is1Coh1Cat_Strong A} {ac2 : Is0Coh21Cat A} (a : A)
-           (F : A^op -> Type) {ff : Is0Coh1Functor F} {ff1 : Is1Coh1Functor F}
+           (F : A^op -> Type) `{!Is0Coh1Functor F, !Is1Coh1Functor F}
            (alpha : yon a $=> F) {alnat : Is1Natural (yon a) F alpha}
            (b : A)
   : yoneda a F (un_yoneda a F alpha) b $== alpha b
-  := @opyoneda_isretr A^op _ _ _ a F _ _ alpha alnat b.
+  := @opyoneda_isretr A^op _ _ a F _ _ alpha alnat b.
 
 Definition yon_cancel {A : Type} `{Is0Coh1Cat A} (a b : A)
   : (yon a $=> yon b) -> (a $-> b)
@@ -190,8 +192,7 @@ Definition yon_cancel {A : Type} `{Is0Coh1Cat A} (a b : A)
 Definition yon1 {A : Type} `{Is0Coh1Cat A} (a : A) : Fun01 A^op Type
   := opyon1 a.
 
-Definition yon_equiv {A : Type} `{Is1Coh1Cat_Strong A}
-  {eA : HasEquivs A} (a b : A)
+Definition yon_equiv {A : Type} `{HasEquivs A} `{!Is1Coh1Cat_Strong A}
+           (a b : A)
   : (yon1 a $<~> yon1 b) -> (a $<~> b)
   := (@opyon_equiv A^op _ _ _ _ a b).
-

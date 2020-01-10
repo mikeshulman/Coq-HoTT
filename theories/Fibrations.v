@@ -1,7 +1,7 @@
 (* -*- mode: coq; mode: visual-line -*- *)
 (** * Basic facts about fibrations *)
 
-Require Import HoTT.Basics Types.Sigma Types.Paths.
+Require Import HoTT.Basics Types.Sigma Types.Prod Types.Paths.
 Require Import EquivalenceVarieties.
 
 Local Open Scope equiv_scope.
@@ -261,9 +261,9 @@ Defined.
 (** ** Fibers of [functor_prod] *)
 Definition hfiber_functor_prod {A B C D}
            (f : A -> B) (g : C -> D) y
-  : hfiber (Prod.functor_prod f g) y <~> (hfiber f (fst y) * hfiber g (snd y)).
+  : hfiber (functor_prod f g) y <~> (hfiber f (fst y) * hfiber g (snd y)).
 Proof.
-  unfold Prod.functor_prod.
+  unfold functor_prod.
   srefine (equiv_adjointify _ _ _ _).
   - exact (fun x => ((fst x.1; ap fst x.2), (snd x.1; ap snd x.2))).
   - refine (fun xs => (((fst xs).1, (snd xs).1); _)).
@@ -278,7 +278,7 @@ Defined.
 Global Instance istruncmap_functor_prod n {A B C D}
        (f : A -> B) (g : C -> D)
        `{!IsTruncMap n f} `{!IsTruncMap n g}
-  : IsTruncMap n (Prod.functor_prod f g).
+  : IsTruncMap n (functor_prod f g).
 Proof.
   intros y.
   exact (trunc_equiv _ (hfiber_functor_prod _ _ _)^-1).

@@ -350,12 +350,12 @@ Section FunctorSum.
 
   Context {A A' B B' : Type} (f : A -> A') (g : B -> B').
 
-  (* Definition functor_sum : A + B -> A' + B' *)
-  (*   := fmap11 sum f g. *)
+  Definition functor_sum : A + B -> A' + B'
+    := fmap11 sum f g.
 
   (** The fibers of [sum] are those of [f] and [g]. *)
   Definition hfiber_functor_sum_l (a' : A')
-  : hfiber (fmap11 sum f g) (inl a') <~> hfiber f a'.
+  : hfiber functor_sum (inl a') <~> hfiber f a'.
   Proof.
     simple refine (equiv_adjointify _ _ _ _).
     - intros [[a|b] p].
@@ -378,7 +378,7 @@ Section FunctorSum.
   Defined.
 
   Definition hfiber_functor_sum_r (b' : B')
-  : hfiber (fmap11 sum f g) (inr b') <~> hfiber g b'.
+  : hfiber functor_sum (inr b') <~> hfiber g b'.
   Proof.
     simple refine (equiv_adjointify _ _ _ _).
     - intros [[a|b] p].
@@ -404,7 +404,7 @@ End FunctorSum.
 
 (** ** "Unfunctorial action" *)
 
-(** Not every function [A + B -> A' + B'] is of the form [fmap11 sum f g].  However, this is the case if it preserves the summands, i.e. if it maps [A] into [A'] and [B] into [B'].  More generally, if a function [A + B -> A' + B'] maps [A] into [A'] only, then we can extract from it a function [A -> A'].  Since these operations are a sort of inverse to [functor_sum], we call them [unfunctor_sum_*]. *)
+(** Not every function [A + B -> A' + B'] is of the form [functor_sum f g].  However, this is the case if it preserves the summands, i.e. if it maps [A] into [A'] and [B] into [B'].  More generally, if a function [A + B -> A' + B'] maps [A] into [A'] only, then we can extract from it a function [A -> A'].  Since these operations are a sort of inverse to [functor_sum], we call them [unfunctor_sum_*]. *)
 
 Definition unfunctor_sum_l {A A' B B' : Type} (h : A + B -> A' + B')
            (Ha : forall a:A, is_inl (h (inl a)))
@@ -419,7 +419,7 @@ Definition unfunctor_sum_r {A A' B B' : Type} (h : A + B -> A' + B')
 Definition unfunctor_sum_eta {A A' B B' : Type} (h : A + B -> A' + B')
            (Ha : forall a:A, is_inl (h (inl a)))
            (Hb : forall b:B, is_inr (h (inr b)))
-: fmap11 sum (unfunctor_sum_l h Ha) (unfunctor_sum_r h Hb) == h.
+: functor_sum (unfunctor_sum_l h Ha) (unfunctor_sum_r h Hb) == h.
 Proof.
   intros [a|b]; simpl.
   - unfold unfunctor_sum_l; apply inl_un_inl.
@@ -543,17 +543,15 @@ Defined.
 
 (** ** Functoriality on equivalences *)
 
-Global Instance isequiv_functor_sum
-{A A' B B' : Type} {f : A $-> A'} {g : B -> B'}
-                 `{IsEquiv A A' f} `{IsEquiv B B' g}
-  : IsEquiv (fmap11 sum f g) | 1000.
-Proof.
-  exact (iemap11 sum f g).
-Defined.
+Global Instance isequiv_functor_sum {A A' B B' : Type}
+       {f : A $-> A'} {g : B -> B'}
+       `{IsEquiv A A' f} `{IsEquiv B B' g}
+  : IsEquiv (functor_sum f g) | 1000
+  := iemap11 sum f g.
 
 Definition equiv_functor_sum `{IsEquiv A A' f} `{IsEquiv B B' g}
 : A + B <~> A' + B'
-  := Build_Equiv _ _ (fmap11 sum f g) _.
+  := Build_Equiv _ _ (functor_sum f g) _.
 
 Definition equiv_functor_sum' {A A' B B' : Type} (f : A <~> A') (g : B <~> B')
 : A + B <~> A' + B'

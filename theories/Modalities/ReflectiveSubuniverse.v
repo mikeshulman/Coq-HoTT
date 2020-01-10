@@ -1,5 +1,5 @@
 (* -*- mode: coq; mode: visual-line -*- *)
-Require Import HoTT.Basics HoTT.WildCat HoTT.Types.
+Require Import HoTT.Basics HoTT.Types.
 Require Import UnivalenceImpliesFunext EquivalenceVarieties Extensions HProp Fibrations NullHomotopy Pullback.
 Require Import HoTT.Tactics.
 Require Import HIT.Coeq Colimits.Pushout.
@@ -887,7 +887,7 @@ Section Reflective_Subuniverse.
     Proof.
       simple refine (equiv_adjointify _ _ _ _).
       - apply O_rec; intros x.
-        exact (to O _ (fmap11 sum (to O A) (to O B) x)).
+        exact (to O _ (functor_sum (to O A) (to O B) x)).
       - apply O_rec; intros [x|x].
         + (* Work around https://coq.inria.fr/bugs/show_bug.cgi?id=4525, stack overflow in exact *)
           let lem := constr:(fun A B => to O _ o @inl A B) in
@@ -1465,7 +1465,7 @@ Section ModalMaps.
   (** [sum] preserves modal maps. *)
   Global Instance mapinO_functor_sum {A A' B B'}
          (f : A -> A') (g : B -> B') `{MapIn O _ _ f} `{MapIn O _ _ g}
-  : MapIn O (fmap11 sum f g).
+  : MapIn O (functor_sum f g).
   Proof.
     intros [a|b].
     - refine (inO_equiv_inO _ (hfiber_functor_sum_l f g a)^-1).

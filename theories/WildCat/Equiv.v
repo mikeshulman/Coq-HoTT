@@ -99,24 +99,24 @@ Proof.
 Defined.
 
 (** The identity morphism is an equivalence *)
-Global Instance catie_id {A} `{HasEquivs A} {c1 : Is1Coh1Cat A} (a : A)
+Global Instance catie_id {A} `{HasEquivs A, !Is1Coh1Cat A} (a : A)
   : CatIsEquiv (Id a)
   := catie_adjointify (Id a) (Id a) (cat_idlr a) (cat_idlr a).
 
-Definition id_cate {A} `{HasEquivs A} {c1 : Is1Coh1Cat A} (a : A)
+Definition id_cate {A} `{HasEquivs A, !Is1Coh1Cat A} (a : A)
   : a $<~> a
   := Build_CatEquiv (Id a).
 
-Global Instance reflexive_cate {A} `{HasEquivs A} {c1 : Is1Coh1Cat A}
+Global Instance reflexive_cate {A} `{HasEquivs A, !Is1Coh1Cat A}
   : Reflexive (@CatEquiv A _ _ _)
   := id_cate.
 
-Global Instance symmetric_cate {A} `{HasEquivs A} {c1 : Is1Coh1Cat A}
+Global Instance symmetric_cate {A} `{HasEquivs A, !Is1Coh1Cat A}
   : Symmetric (@CatEquiv A _ _ _)
   := fun a b f => cate_inv f.
 
 (** Equivalences can be composed. *)
-Definition compose_cate {A} `{HasEquivs A} {c1 : Is1Coh1Cat A} {a b c : A}
+Definition compose_cate {A} `{HasEquivs A, !Is1Coh1Cat A} {a b c : A}
   (g : b $<~> c) (f : a $<~> b) : a $<~> c.
 Proof.
   refine (cate_adjointify (g $o f) (f^-1$ $o g^-1$) _ _).
@@ -181,15 +181,14 @@ Proof.
   apply Id.
 Defined.
 
-Global Instance transitive_cate {A} `{HasEquivs A} {c1 : Is1Coh1Cat A}
+Global Instance transitive_cate {A} `{HasEquivs A, !Is1Coh1Cat A}
   : Transitive (@CatEquiv A _ _ _)
   := fun a b c f g => g $oE f.
 
 (** Any sufficiently coherent functor preserves equivalences.  *)
 Global Instance iemap {A B : Type} `{HasEquivs A} `{HasEquivs B} (F : A -> B)
-           {ff1 : Is0Coh1Functor F} {ff2 : Is0Coh2Functor F}
-           {ff11 : Is1Coh1Functor F} {a b : A} (f : a $-> b)
-           {fe : CatIsEquiv f}
+       `{!Is0Coh1Functor F, !Is0Coh2Functor F, !Is1Coh1Functor F}
+       {a b : A} (f : a $-> b) {fe : CatIsEquiv f}
   : CatIsEquiv (fmap F f).
 Proof.
   refine (catie_adjointify (fmap F f) (fmap F f^-1$) _ _).
@@ -198,19 +197,19 @@ Proof.
 Defined.
 
 Definition emap {A B : Type} `{HasEquivs A} `{HasEquivs B} (F : A -> B)
-           {ff1 : Is0Coh1Functor F} {ff2 : Is0Coh2Functor F}
-           {ff11 : Is1Coh1Functor F} {a b : A} (f : a $<~> b)
+           `{!Is0Coh1Functor F, !Is0Coh2Functor F, !Is1Coh1Functor F}
+           {a b : A} (f : a $<~> b)
   : F a $<~> F b
   := Build_CatEquiv (fmap F f).
 
 (** When we have equivalences, we can define what it means for a category to be univalent. *)
-Definition cat_equiv_path {A : Type} `{HasEquivs A} {c1 : Is1Coh1Cat A} (a b : A)
+Definition cat_equiv_path {A : Type} `{HasEquivs A, !Is1Coh1Cat A} (a b : A)
   : (a = b) -> (a $<~> b).
 Proof.
   intros []; reflexivity.
 Defined.
 
-Class IsUnivalent1Cat (A : Type) `{HasEquivs A} {c1 : Is1Coh1Cat A}
+Class IsUnivalent1Cat (A : Type) `{HasEquivs A, !Is1Coh1Cat A}
   := { isequiv_cat_equiv_path : forall a b, IsEquiv (@cat_equiv_path A _ _ _ _ a b) }.
 Global Existing Instance isequiv_cat_equiv_path.
 

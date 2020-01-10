@@ -59,8 +59,10 @@ Proof.
   - intros g r s; refine (isequiv_adjointify f g r s).
 Defined.
 
-Global Instance catie_isequiv {A B : Type} {f : A $-> B}
+Definition catie_isequiv {A B : Type} {f : A $-> B}
        `{IsEquiv A B f} : CatIsEquiv f.
 Proof.
   assumption.
 Defined.
+
+Hint Immediate catie_isequiv : typeclass_instances.
