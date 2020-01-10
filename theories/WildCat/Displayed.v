@@ -148,6 +148,24 @@ Proof.
     exact (DComp v1 u1, DComp v2 u2).
 Defined.
 
+(** comparison functors between product of sigmas and sigma of product *)
+Global Instance is0coh1functor_sigma_prod {A1 A2 : Type} `{Is0Coh1Cat A1} `{Is0Coh1Cat A2} (B1 : A1 -> Type) (B2 : A2 -> Type) `{!Is0Coh1DCat B1} `{!Is0Coh1DCat B2} : @Is0Coh1Functor ((sig B1) * (sig B2)) ({ x : (A1 * A2) & (B1 (fst x)) * (B2 (snd x))}) _ _ (fun x => let (u,v) := x in ((u.1, v.1);(u.2, v.2))).
+Proof.
+  rapply Build_Is0Coh1Functor.
+  intros [[a1 x1] [a2 x2]] [[b1 y1] [b2 y2]]; cbn in *.  
+  intros [[f1 u1] [f2 u2]].
+  exact ((f1, f2) ; (u1, u2)).
+Defined.  
+
+Global Instance is0coh1functor_prod_sigma {A1 A2 : Type} `{Is0Coh1Cat A1} `{Is0Coh1Cat A2} (B1 : A1 -> Type) (B2 : A2 -> Type) `{!Is0Coh1DCat B1} `{!Is0Coh1DCat B2} : @Is0Coh1Functor ({ x : (A1 * A2) & (B1 (fst x)) * (B2 (snd x))})  ((sig B1) * (sig B2)) _ _ (fun x => ((fst (pr1 x); fst (pr2 x)),(snd (pr1 x); snd (pr2 x)))).
+Proof.
+  rapply Build_Is0Coh1Functor.
+  intros [[a1 a2] [x1 x2]] [[b1 b2] [y1 y2]]; cbn in *.  
+  intros [[f1 f2] [u1 u2]].
+  exact ((f1 ; u1) , (f2; u2)).
+Defined.  
+
+
 (** 0-coherent displayed 21-categories *)
 
 Class Is0Coh21DCat {A : Type} {a01 : Is0Coh1Cat A} {a02 : Is0Coh21Cat A}
@@ -176,7 +194,6 @@ Proof.
     serapply Build_Is0Coh1Functor.
     intros [[g1 v1] [f1 u1]] [[g2 v2] [f2 u2]] [[q qq] [p pp]]; cbn in *.
     exists (q $o@ p).
-    About fmapD.
     refine  (@fmapD   ((b $-> c) * (a $-> b)) (a $-> c) (fun gf => DHom (fst gf) y z * DHom (snd gf) x y) (fun k => DHom k x z)     _ (is0coh1Dcat_prod (fun g => DHom g y z) (fun f => DHom f x y) ) _ _
                (uncurry (@cat_comp A _ a b c)) _ (fun h => (fun vu => @DComp A _ B _ a b c (fst h) (snd h) x y z (fst vu) (snd vu)))
                (is0coh1Dfunctor_DComp) (g1, f1) (g2, f2) (q,p) (v1, u1) (v2, u2) (qq,pp)).
@@ -188,4 +205,5 @@ Proof.
   intros [a x] [b y] [f u] [g v] [p pp]; cbn.
   assumption.
 Defined.  
+
 
