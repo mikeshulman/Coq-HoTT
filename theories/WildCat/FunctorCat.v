@@ -66,7 +66,8 @@ Defined.
 
 (** It also inherits a notion of equivalence, namely a natural transformation that is a pointwise equivalence.  Note that this is not a "fully coherent" notion of equivalence, since the functors and transformations are not themselves fully coherent. *)
 
-Definition NatEquiv {A B : Type} `{IsGraph A} `{HasEquivs B} (F G : A -> B) {ff : Is0Coh1Functor F} {fg : Is0Coh1Functor G}
+Definition NatEquiv {A B : Type} `{IsGraph A} `{HasEquivs B}
+           (F G : A -> B) `{!Is0Coh1Functor F, !Is0Coh1Functor G}
   := { alpha : forall a, F a $<~> G a & Is1Natural F G (fun a => alpha a) }.
 
 Global Instance hasequivs_fun01 (A B : Type) `{Is0Coh1Cat A} `{Is1Coh1Cat B} (** previously it was assumed A was a 1 coherent 1 category. the same proof goes through with A a 0 coherent 1 category. Weakening this hypothesis substantially simplifies the proof that Fun11 has equivs.*)
@@ -143,3 +144,4 @@ Proof.
  serapply (induced_hasequivs (Fun11 A B)(Fun01 A B) fun01_fun11 ).
  Defined.
   
+

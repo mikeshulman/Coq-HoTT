@@ -86,9 +86,9 @@ Proof.
   intros; symmetry; assumption.
 Defined.
 
-Global Instance is0coh2cat_ptype : Is0Coh2Cat pType.
+Global Instance is0coh2cat_ptype : Is0Coh21Cat pType.
 Proof.
-  rapply Build_Is0Coh2Cat; try exact _.
+  rapply Build_Is0Coh21Cat; try exact _.
   intros A B C; rapply Build_Is0Coh1Functor; intros [f1 f2] [g1 g2] [p q]; cbn.
   transitivity (f1 o* g2).
   - apply pmap_postwhisker; assumption.

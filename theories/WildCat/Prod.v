@@ -11,6 +11,7 @@ Require Import WildCat.Equiv.
 
 (** ** Product categories *)
 
+(** This is already in core.
 Global Instance is0coh1cat_prod A B `{Is0Coh1Cat A} `{Is0Coh1Cat B}
   : Is0Coh1Cat (A * B).
 Proof.
@@ -19,6 +20,7 @@ Proof.
   - intros [a1 b1] [a2 b2] [a3 b3] [f1 g1] [f2 g2]; cbn in *.
     exact (f1 $o f2 , g1 $o g2).
 Defined.
+*)
 
 Global Instance is0coh1gpd_prod A B `{Is0Coh1Gpd A} `{Is0Coh1Gpd B} : Is0Coh1Gpd (A * B).
 Proof. 
@@ -28,22 +30,24 @@ Proof.
     exact ( (f1^$, f2^$) ).
 Defined.
 
-Global Instance is0coh21cat_prod A B `{Is0Coh21Cat A} `{Is0Coh21Cat B}
+                                                                            Global Instance is0coh21cat_prod A B `{Is0Coh21Cat A} `{Is0Coh21Cat B}
   : Is0Coh21Cat (A * B).
 Proof.
-(** Need to modify the proof to use new definitions of 0 coherent 2 category. *)
-
   serapply (Build_Is0Coh21Cat).
   - intros [x1 x2] [y1 y2].
     rapply is0coh1cat_prod.
   - intros [x1 x2] [y1 y2].
-    rapply is0coh1gpd_prod.
+    apply is0coh1gpd_prod.
+    + cbn.
+      apply isgpd_hom.
+    + cbn.
+      apply isgpd_hom.
   - intros [x1 x2] [y1 y2] [z1 z2].
     serapply Build_Is0Coh1Functor.  
     intros f g. unfold uncurry. destruct f as [[f11 f12] [f21 f22]]. destruct g as [[g11 g12] [g21 g22]]. cbn in *. 
     intros a. destruct a as [[a11 a12][a21 a22]].
     exact ( a11 $o@ a21, a12 $o@ a22).
-    Defined.
+Defined.
     
 Global Instance is1coh1cat_prod A B `{Is1Coh1Cat A} `{Is1Coh1Cat B}
   : Is1Coh1Cat (A * B).
@@ -90,19 +94,18 @@ Global Instance isequivs_prod A B `{HasEquivs A} `{HasEquivs B}
 (** Now we can have more coherent two-variable functors. *)
 
 Definition fmap22 {A B C : Type} `{Is0Coh21Cat A} `{Is0Coh21Cat B} `{Is0Coh21Cat C}
-  (F : A -> B -> C) {ff1 : Is0Coh1Functor (uncurry F)} {ff2 : Is0Coh2Functor (uncurry F)}
+  (F : A -> B -> C) `{!Is0Coh1Functor (uncurry F), !Is0Coh2Functor (uncurry F)}
   {a1 a2 : A} {b1 b2 : B} (f1 : a1 $-> a2) (f2 : b1 $-> b2) (g1 : a1 $-> a2) (g2 : b1 $-> b2)
   (alpha : f1 $== g1) (beta : f2 $== g2)
   : (fmap11 F f1 f2) $== (fmap11 F g1 g2)
   := @fmap2 _ _ _ _ _ _ (uncurry F) _ _ (a1, b1) (a2, b2) (f1, f2) (g1, g2) (alpha, beta).
 
-Definition iemap11 {A B C : Type} `{HasEquivs A} `{HasEquivs B} `{HasEquivs C}
+Global Instance iemap11 {A B C : Type} `{HasEquivs A} `{HasEquivs B} `{HasEquivs C}
            (F : A -> B -> C) {ff1 : Is0Coh1Functor (uncurry F)}
-           {ff2 : Is0Coh2Functor (uncurry F)} {ff3 : Is1Coh1Functor (uncurry F)}
+           `{!Is0Coh2Functor (uncurry F), !Is1Coh1Functor (uncurry F)}
            {a1 a2 : A} {b1 b2 : B} (f1 : a1 $-> a2) (f2 : b1 $-> b2)
            {f1e : CatIsEquiv f1} {f2e : CatIsEquiv f2}
   : CatIsEquiv (fmap11 F f1 f2).
 Proof.
   rapply (@iemap _ _ _ _ _ _ _ _ (uncurry F) _ _ _ (a1, b1) (a2, b2) (f1, f2)).
 Defined.
-
