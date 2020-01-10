@@ -202,9 +202,9 @@ Proof.
     exact (DComp2 qq pp).
 Defined.
 
-Global Instance is0coh2functor_pr1 {A : Type} (B : A -> Type) `{Is0Coh21DCat A B} : Is0Coh2Functor (pr1 : (sig B) -> A).
+Global Instance is0coh2functor_pr1 {A : Type} (B : A -> Type) `{Is0Coh21DCat A B} : Is0Coh21Functor (pr1 : (sig B) -> A).
 Proof.
-  apply Build_Is0Coh2Functor.
+  apply Build_Is0Coh21Functor.
   intros [a x] [b y] [f u] [g v] [p pp]; cbn.
   assumption.
 Defined.  
@@ -213,7 +213,7 @@ Defined.
 
 Class Is0Coh2DFunctor  {A1 A2 : Type} (B1 : A1 -> Type) (B2 : A2 -> Type)
         {HA1 : Is0Coh1Cat A1} {HA21 : Is0Coh21Cat A1} {HA2 : Is0Coh1Cat A2} {HA22 : Is0Coh21Cat A2} {HB1 : Is0Coh1DCat B1} {HB2 : Is0Coh1DCat B2} {ab1 : Is0Coh21DCat B1} {ab2 : Is0Coh21DCat B2}
-      (F : A1 -> A2) `{!Is0Coh1Functor F} `{!Is0Coh2Functor F}
+      (F : A1 -> A2) `{!Is0Coh1Functor F} `{!Is0Coh21Functor F}
       (G : forall a:A1, B1 a -> B2 (F a)) 
       `{!Is0Coh1DFunctor B1 B2 F G} 
   := { fmapD2 : forall {a b : A1} {f g : a $-> b} {x : B1 a} {y : B1 b} (u : DHom f x y) (v : DHom g x y) (p : f $== g),
@@ -221,13 +221,28 @@ Class Is0Coh2DFunctor  {A1 A2 : Type} (B1 : A1 -> Type) (B2 : A2 -> Type)
        
 Global Instance is0coh2functor_sigma  {A1 A2 : Type} (B1 : A1 -> Type) (B2 : A2 -> Type)
         {HA1 : Is0Coh1Cat A1} {HA21 : Is0Coh21Cat A1} {HA2 : Is0Coh1Cat A2} {HA22 : Is0Coh21Cat A2} {HB1 : Is0Coh1DCat B1} {HB2 : Is0Coh1DCat B2} {ab1 : Is0Coh21DCat B1} {ab2 : Is0Coh21DCat B2}
-      (F : A1 -> A2) `{!Is0Coh1Functor F} `{!Is0Coh2Functor F}
+      (F : A1 -> A2) `{!Is0Coh1Functor F} `{!Is0Coh21Functor F}
       (G : forall a:A1, B1 a -> B2 (F a)) 
-      `{!Is0Coh1DFunctor B1 B2 F G} `{!Is0Coh2DFunctor B1 B2 F G} : Is0Coh2Functor (functor_sigma F G).
+      `{!Is0Coh1DFunctor B1 B2 F G} `{!Is0Coh2DFunctor B1 B2 F G} : Is0Coh21Functor (functor_sigma F G).
 Proof.
-  srapply Build_Is0Coh2Functor.
+  srapply Build_Is0Coh21Functor.
   intros [a x] [b y] [f u] [g v] [p pp].
   cbn in *.
   exact (fmap2 F p ; fmapD2 u v p pp).
 Defined.
 
+(** 1-coherent displayed 1-categories *)
+
+(** A 1-coherent displayed 1-category satisfies associativity and unit laws up to 2-cells (so it must be at least a 0-coherent 2-category).  We duplicate the reversed associativity and double-identity laws to make more duality operations definitionally involutive. *)
+
+About DId.
+
+Class Is1Coh1DCat {A : Type} {a01 : Is0Coh1Cat A} {a02 : Is0Coh21Cat A}
+  {a11 : Is1Coh1Cat A}    (B : A -> Type) {ba01 : Is0Coh1DCat B} {ba02 : Is0Coh21DCat B} := Build_Is1Coh1DCat' 
+{
+  dcat_assoc : forall {a b c d : A} {f : a $-> b} {g : b $-> c} {h : c $-> d} {x : B a} {y : B b} {z : B c} {w : B d} (u : DHom f x y) (v : DHom g y z) (t : DHom h z w) , (DHom2 (cat_assoc f g h) ((t $$o v) $$o u) (t $$o (v $$o u))) ;
+  dcat_assoc_opp : forall {a b c d : A} {f : a $-> b} {g : b $-> c} {h : c $-> d} {x : B a} {y : B b} {z : B c} {w : B d} (u : DHom f x y) (v : DHom g y z) (t : DHom h z w) , (DHom2 (cat_assoc_opp f g h) (t $$o (v $$o u)) ((t $$o v) $$o u)) ;
+  dcat_idl : forall {a b : A} {f : a $-> b} {x : B a} {y : B b} (u : DHom f x y), DHom2 (cat_idl f) ((DId y) $$o u) u ;
+    dcat_idr : forall {a b : A} {f : a $-> b} {x : B a} {y : B b} (u : DHom f x y), DHom2 (cat_idr f) (u $$o (DId x)) u ;
+   dcat_idlr : forall {a : A} {x : B a}, DHom2 (cat_idlr a) ((DId x) $$o (DId x)) (DId x)
+}.                                                                                                                                                      
