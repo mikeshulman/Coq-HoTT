@@ -242,7 +242,7 @@ Proof.
   + intros a b h g m n; cbn in *.  
   exact ( catie_adjointify' _ _ h g m n  ).
   Defined.
-Admitted.
+
 (** !! For proof of induced_hasequivs: need to go back and show in core that induced_is0coh1cat makes the make f that induces a 0 coherent 1 functor. This is in core *) 
 
 (** ** Core of a 1Coh1Cat *)

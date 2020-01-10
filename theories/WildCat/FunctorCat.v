@@ -3,6 +3,7 @@
 Require Import Basics.
 Require Import WildCat.Core.
 Require Import WildCat.Equiv.
+Require Import WildCat.Induced.
 
 (** * Wild functor categories *)
 
