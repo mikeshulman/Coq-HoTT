@@ -48,9 +48,10 @@ Proof.
   - intros a b c.
     rapply Build_Is0Coh1Functor.
     intros [f g] [f' g'] [al be].
-    cbn. cbn in *. cbv in f, g, f', g'.
-    exact (@fmap11 _ _ _ _ _ _ cat_comp is0coh1functor_comp f g f' g'
-                   al be).
+    cbn ; cbn in * ; cbv in f, g, f', g'.
+    exact (@emap11 _ _ _ _ _ _ _ _ _ _ _ _ cat_comp
+                   is0coh1functor_comp _ is1coh1functor_comp
+                   f f' g g' al be).
 Defined.
 
 
