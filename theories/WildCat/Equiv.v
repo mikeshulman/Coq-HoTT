@@ -217,16 +217,6 @@ Definition cat_path_equiv {A : Type} `{IsUnivalent1Cat A} (a b : A)
   : (a $<~> b) -> (a = b)
   := (cat_equiv_path a b)^-1.
 
-  (** Stuff about induced HasEquivs. This other stuff about induced category structures is in Core. This part can't be in core  because HasEquivs is defined in this file, which uses Core.v. Make separate section?*)
-
-Definition induced_hasequivs (A B: Type)(f: A -> B) `{Is0Coh21Cat A}`{Is1Coh1Cat B}`{!HasEquivs B} : HasEquivs A.
-Proof.
-  serapply Build_HasEquivs.
-
-(** NEED TO FINISH THIS PROOF! USED IN FunctorCat.v to show Fun11 has equivs. *)
-Admitted.
-
-
 (** ** Core of a 1Coh1Cat *)
 
 Definition core (A : Type) : Type := A.
