@@ -48,6 +48,8 @@ theories/Basics/Decidable.v
 #
 theories/WildCat.v
 theories/WildCat/Core.v
+theories/WildCat/UnitCat.v
+theories/WildCat/EmptyCat.v
 theories/WildCat/Prod.v
 theories/WildCat/Equiv.v
 theories/WildCat/Sum.v
