@@ -3,13 +3,16 @@ Require Import Types.
 Require Import HSet.
 Require Import Fibrations.
 Require Import Factorization.
-Require Import HoTT.Truncations.
+
+(* Note: currently have commented out everything to do with truncation *)
+(* Require Import HoTT.Truncations.*)
+
 Require Import Pointed.Core.
 Require Import Pointed.pMap.
 Require Import Pointed.pEquiv.
 Require Import Pointed.pHomotopy.
 
-Import TrM.
+(* Import TrM. *)
 
 Local Open Scope pointed_scope.
 Local Open Scope path_scope.
@@ -43,9 +46,9 @@ Defined.
 Definition istrunc_loops {n} (A : pType) `{IsTrunc n.+1 A}
   : IsTrunc n (loops A) := _.
 
-(** Similarly for connectedness. *)
+(* (** Similarly for connectedness. *)
 Definition isconnected_loops `{Univalence} {n} (A : pType)
-  `{IsConnected n.+1 A} : IsConnected n (loops A) := _.
+  `{IsConnected n.+1 A} : IsConnected n (loops A) := _. *)
 
 (** ** Functoriality of loop spaces *)
 
@@ -160,7 +163,7 @@ Proof.
     (fun q => equiv_moveR_pM _ _ _))).
 Defined.
 
-(** And likewise the connectedness.  *)
+(* (** And likewise the connectedness.  *)
 (* Note: We give the definition explicitly since it was slow before. *)
 Global Instance isconnected_loops_functor `{Univalence} {n : trunc_index}
   (A B : pType) (f : A ->* B) `{IsConnMap n.+1 _ _ f}
@@ -170,12 +173,12 @@ Global Instance isconnected_loops_functor `{Univalence} {n : trunc_index}
       (equiv_functor_sigma' 1 (fun q => equiv_moveR_Vp _ p _))
       (isconnected_equiv' n _
         (equiv_functor_sigma' 1 (fun q => equiv_moveR_pM _ _ _))
-        (isconnected_equiv' n _ (hfiber_ap _)^-1 (isconnected_paths _ _))).
+        (isconnected_equiv' n _ (hfiber_ap _)^-1 (isconnected_paths _ _))). 
 
 (** It follows that loop spaces "commute with images". *)
 Definition equiv_loops_image `{Univalence} n {A B : pType} (f : A ->* B)
   : loops (Build_pType (image n.+1 f) (factor1 (image n.+1 f) (point A)))
-  <~> image n (loops_functor f).
+  <~> image n (loops_functor f). 
 Proof.
   set (C := (Build_pType (image n.+1 f) (factor1 (image n.+1 f) (point A)))).
   pose (g := Build_pMap A C (factor1 (image n.+1 f)) 1).
@@ -191,7 +194,7 @@ Proof.
     abstract (rewrite !concat_1p; reflexivity). }
   exact (path_intermediate (path_factor (O_factsys n) (loops_functor f) I
     (image n (loops_functor f)))).
-Defined.
+Defined. *)
 
 (** Loop inversion is a pointed equivalence *)
 Definition loops_inv (A : pType) : loops A <~>* loops A.
@@ -256,6 +259,7 @@ Proof.
 Defined.
 
 (** Since that was a separate induction, its underlying function is only homotopic to [iterated_loops_functor n], not definitionally equal. *)
+
 Definition pequiv_iterated_loops_functor_is_iterated_loops_functor {A B} n (f : A <~>* B)
   : pequiv_iterated_loops_functor n f ==* iterated_loops_functor n f.
 Proof.
