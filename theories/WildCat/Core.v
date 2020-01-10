@@ -376,6 +376,11 @@ Proof.
   + intros a b c; cbn in *; intros g1 g2.
   exact ( g1 $o g2).
 Defined.
+Local Instance inducingmap_is0coh1functor `{Is0Coh1Cat B} : Is0Coh1Functor f.
+Proof.
+  serapply Build_Is0Coh1Functor.
+  intros a b. cbn in *. exact idmap.
+  Defined.
 Local Instance induced_0coh21cat `{Is0Coh21Cat B} : Is0Coh21Cat A.
 Proof.
   serapply Build_Is0Coh21Cat.
@@ -384,6 +389,11 @@ Proof.
   + intros a b c. cbn in *. 
   unfold uncurry. exact _.
 Defined.
+Local Instance inducingmap_is0coh21functor `{Is0Coh21Cat B} : Is0Coh2Functor f.
+Proof. 
+  serapply Build_Is0Coh2Functor.
+  intros a b g h. cbn in *. exact idmap.
+  Defined.
 Local Instance induced_1coh1cat `{Is1Coh1Cat B} : Is1Coh1Cat A.
 Proof.
   serapply Build_Is1Coh1Cat.
@@ -393,7 +403,12 @@ Proof.
   intros u. apply cat_idl.
   + intros a b; cbn in *.
   intros u. apply cat_idr.
-Defined. 
-
+Defined.
+Local Instance inducingmap_is1coh1functor `{Is1Coh1Cat B} : Is1Coh1Functor f.
+Proof.
+  serapply Build_Is1Coh1Functor.
+  + intros a. cbn in *. exact (Id _).
+  + intros a b c g h. cbn in *. exact (Id _). 
+Defined.
 End Induced_category.
 

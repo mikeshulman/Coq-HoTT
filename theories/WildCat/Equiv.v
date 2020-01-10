@@ -219,13 +219,31 @@ Definition cat_path_equiv {A : Type} `{IsUnivalent1Cat A} (a b : A)
   
   (** Stuff about induced HasEquivs. This other stuff about induced category structures is in Core. This part can't be in core  because HasEquivs is defined in this file, which uses Core.v. Make separate section?*)
   
-Definition induced_hasequivs (A B: Type)(f: A -> B) `{Is0Coh21Cat A}`{Is1Coh1Cat B}`{!HasEquivs B} : HasEquivs A.
+Definition induced_hasequivs (A B: Type)(F: A -> B)`{Is1Coh1Cat B}`{!HasEquivs B} : @HasEquivs A _ (induced_0coh21cat F).
 Proof.
   serapply Build_HasEquivs.
-  
-(** NEED TO FINISH THIS PROOF! USED IN FunctorCat.v to show Fun11 has equivs. *)  
-Admitted.
+  + intros a b. exact (F a $<~> F b).
+  + intros a b h. apply (CatIsEquiv' (F a) (F b)).
+  exact (@fmap _ _ _ _ F (inducingmap_is0coh1functor F) a b h ).
+  + intros a b; cbn in *. 
+  intros g. exact( cate_fun g).
+  + intros a b h; cbn in *. 
+  exact (cate_isequiv' _ _ h ).
+  + intros a b h; cbn in *. 
+  exact ( cate_buildequiv' _ _ h).
+  + intros a b h fe; cbn in *. 
+  exact ( cate_buildequiv_fun' (F a) (F b) h fe) .
+  + intros a b h fe; cbn in *.
+  exact(cate_inv'  _ _ h fe ).
+  + intros a b h fe; cbn in *.
+  exact (cate_issect' _ _ h fe ).
+  + intros a b h fe; cbn in *.
+   exact (cate_isretr' _ _ _ _ ).
+  + intros a b h g m n; cbn in *.  
+  exact ( catie_adjointify' _ _ h g m n  ).
+  Defined.
 
+(** !! For proof of induced_hasequivs: need to go back and show in core that induced_is0coh1cat makes the make f that induces a 0 coherent 1 functor. This is in core *) 
 
 (** ** Core of a 1Coh1Cat *)
 
