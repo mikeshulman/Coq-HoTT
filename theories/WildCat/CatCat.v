@@ -85,7 +85,7 @@ Global Instance is0coh1gpd_core (A : Type) `{ h : Is0Coh1Cat(A)} : Is0Coh1Gpd ( 
 Proof. rapply Build_Is0Coh1Gpd.
 Admitted.
 
-(* now show WildCat is 0 coh 2 cat with 0 coh 1 category structure on Fun02 given by taking core f natural transoformations. *) 
+(* now show WildCat is 2 coh 2 cat with  coh 1 category structure on Fun02 given by taking natural transoformations. *) 
 
 Global Instance is0coh21cat_wildcat : Is0Coh21Cat WildCat.
 Proof.

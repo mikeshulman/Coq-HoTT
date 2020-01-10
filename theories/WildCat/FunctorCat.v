@@ -69,7 +69,7 @@ Defined.
 Definition NatEquiv {A B : Type} `{IsGraph A} `{HasEquivs B} (F G : A -> B) {ff : Is0Coh1Functor F} {fg : Is0Coh1Functor G}
   := { alpha : forall a, F a $<~> G a & Is1Natural F G (fun a => alpha a) }.
 
-Global Instance hasequivs_fun01 (A B : Type) `{Is1Coh1Cat A} `{Is1Coh1Cat B}
+Global Instance hasequivs_fun01 (A B : Type) `{Is0Coh1Cat A} `{Is1Coh1Cat B} (** previously it was assumed A was a 1 coherent 1 category. the same proof goes through with A a 0 coherent 1 category. Weakening this hypothesis substantially simplifies the proof that Fun11 has equivs.*)
   {eB : HasEquivs B} : HasEquivs (Fun01 A B).
 Proof.
   srapply Build_HasEquivs.
@@ -122,11 +122,24 @@ Definition fun01_fun11 {A B : Type} `{Is0Coh21Cat A} `{Is0Coh21Cat B}
 Proof.
   exists F; exact _.
 Defined.
-(*
-Global Instance is0coh1cat_fun11 (A B : Type)  `{Is0Coh21Cat A} `{Is0Coh21Cat B}
-  : Is0Coh1Cat (Fun11 A B).
+
+Global Instance is0coh1cat_fun11 {A B : Type} `{Is0Coh21Cat A} `{Is1Coh1Cat B} : Is0Coh1Cat (Fun11 A B).
 Proof.
-  srapply Build_Is0Coh1Cat.
-  - intros F G; exact (NatTrans F G).
-  - intros F; exact (
-                  *)
+  exact (induced_0coh1cat (fun01_fun11)).
+Defined.
+
+Global Instance is0coh21cat_fun11 {A B : Type} `{Is0Coh21Cat A} `{Is1Coh1Cat B} : Is0Coh21Cat (Fun11 A B).
+Proof.
+  exact (induced_0coh21cat (fun01_fun11)).
+Defined.
+
+Global Instance is1coh1cat_fun11 {A B :Type} `{Is0Coh21Cat A}`{Is1Coh1Cat B} : Is1Coh1Cat (Fun11 A B).
+Proof.
+  exact (induced_1coh1cat (fun01_fun11)).
+Defined.
+
+Global Instance hasequivs_fun11 { A B : Type} `{Is0Coh21Cat A}`{Is1Coh1Cat B}`{!HasEquivs B} : HasEquivs (Fun11 A B).
+Proof.
+ serapply (induced_hasequivs (Fun11 A B)(Fun01 A B) fun01_fun11 ).
+ Defined.
+  

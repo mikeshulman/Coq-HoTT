@@ -396,5 +396,6 @@ Proof.
   + intros a b; cbn in *.
   intros u. apply cat_idr.
 Defined. 
+
 End Induced_category.
 
