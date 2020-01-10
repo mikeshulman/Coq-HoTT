@@ -109,13 +109,13 @@ Record Fun11 (A B : Type) `{Is0Coh21Cat A} `{Is0Coh21Cat B} :=
 {
   fun11_fun : A -> B ;
   is0coh1functor_fun11 : Is0Coh1Functor fun11_fun ;
-  is0coh2functor_fun11 : Is0Coh2Functor fun11_fun ;
+  is0coh21functor_fun11 : Is0Coh21Functor fun11_fun ;
   is1coh1functor_fun11 : Is1Coh1Functor fun11_fun
 }.
 
 Coercion fun11_fun : Fun11 >-> Funclass.
 Global Existing Instance is0coh1functor_fun11.
-Global Existing Instance is0coh2functor_fun11.
+Global Existing Instance is0coh21functor_fun11.
 Global Existing Instance is1coh1functor_fun11.
 
 Definition fun01_fun11 {A B : Type} `{Is0Coh21Cat A} `{Is0Coh21Cat B}

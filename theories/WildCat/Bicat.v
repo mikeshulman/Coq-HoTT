@@ -43,18 +43,13 @@ Definition is0coh21cat_2coh2cat_pre {A : Type} `{Is2Coh2Cat_Pre A}
   : @Is0Coh21Cat A is0coh1cat_2coh2cat_pre.
 Proof.
   simple notypeclasses refine (Build_Is0Coh21Cat _ _ _ _ _).
-  - intros a b ; cbv.
-    exact (is0coh1cat_hom a b).
   - intros a b ; cbn.
-    Set Printing All.
-    rapply Build_Is0Coh1Gpd.
-    intros f g al.
-
-    apply cate_inv.
-    exact (al^-1$).
-
-    Check (@is0coh1gpd_core (a $-> b)).
-  - intros ; exact _.
+    exact _.
+  - intros a b ; cbn.
+    exact _.
+  - intros a b c.
+    rapply Build_Is0Coh1Functor.
+    intros [f g] [f' g'] [al be].
 Defined.
 
 

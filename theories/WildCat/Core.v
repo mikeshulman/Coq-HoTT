@@ -137,7 +137,7 @@ Definition path_hom {A} `{HasMorExt A} {a b : A} {f g : a $-> b} (p : f $== g) :
   := GpdHom_path^-1 p.
 
 (** A 0-coherent (2,1)-functor acts on 2-cells, but satisfies no axioms. *)
-Class Is0Coh2Functor {A B : Type} `{Is0Coh21Cat A} `{Is0Coh21Cat B}
+Class Is0Coh21Functor {A B : Type} `{Is0Coh21Cat A} `{Is0Coh21Cat B}
   (* The [!] tells Coq to use typeclass search to find the [IsGraph] parameters of [Is0Coh1Functor] instead of assuming additional copies of them. *)
   (F : A -> B) `{!Is0Coh1Functor F}
   := { fmap2 : forall a b (f g : a $-> b), (f $== g) -> (fmap F f $== fmap F g) }.
@@ -313,9 +313,9 @@ Section IdentityFunctor.
     by apply Build_Is0Coh1Functor.
   Defined.
 
-  Global Instance is0coh2functor_idmap : Is0Coh2Functor idmap.
+  Global Instance is0coh2functor_idmap : Is0Coh21Functor idmap.
   Proof.
-    by apply Build_Is0Coh2Functor.
+    by apply Build_Is0Coh21Functor.
   Defined.
 
   Global Instance is1coh1functor_idmap : Is1Coh1Functor idmap.
@@ -341,10 +341,10 @@ Section ConstantFunctor.
     intros a b f; apply Id.
   Defined.
 
-  Global Instance is0coh2functor_const (x : B)
-    : Is0Coh2Functor (fun _ : A => x).
+  Global Instance is0coh21functor_const (x : B)
+    : Is0Coh21Functor (fun _ : A => x).
   Proof.
-    serapply Build_Is0Coh2Functor.
+    serapply Build_Is0Coh21Functor.
     intros a b f g p; apply Id.
   Defined.
 
@@ -360,3 +360,183 @@ Section ConstantFunctor.
 
 End ConstantFunctor.
 
+
+(** More products *)
+
+Global Instance is0coh1gpd_prod A B `{Is0Coh1Gpd A} `{Is0Coh1Gpd B}
+ : Is0Coh1Gpd (A * B).
+Proof. 
+  serapply Build_Is0Coh1Gpd.
+  intros [x1 x2] [y1 y2] [f1 f2].
+  cbn in *.
+  exact ( (f1^$, f2^$) ).
+Defined.
+
+Global Instance is0coh21cat_prod A B `{Is0Coh21Cat A} `{Is0Coh21Cat B}
+  : Is0Coh21Cat (A * B).
+Proof.
+  serapply (Build_Is0Coh21Cat).
+  - intros [x1 x2] [y1 y2].
+    rapply is0coh1cat_prod.
+  - intros [x1 x2] [y1 y2].
+    apply is0coh1gpd_prod.
+    + cbn.
+      apply isgpd_hom.
+    + cbn.
+      apply isgpd_hom.
+  - intros [x1 x2] [y1 y2] [z1 z2].
+    serapply Build_Is0Coh1Functor.  
+    intros f g. unfold uncurry.
+    destruct f as [[f11 f12] [f21 f22]].
+    destruct g as [[g11 g12] [g21 g22]]. cbn in *. 
+    intros a. destruct a as [[a11 a12][a21 a22]].
+    exact ( a11 $o@ a21, a12 $o@ a22).
+Defined.
+    
+Global Instance is1coh1cat_prod A B `{Is1Coh1Cat A} `{Is1Coh1Cat B}
+  : Is1Coh1Cat (A * B).
+Proof.
+  srefine (Build_Is1Coh1Cat (A * B) _ _ _ ).
+  - intros [a1 a2] [b1 b2] [c1 c2] [d1 d2] [f1 f2] [g1 g2] [h1 h2].
+    cbn in *. 
+    exact(cat_assoc f1 g1 h1, cat_assoc f2 g2 h2).
+  - intros [a1 a2] [b1 b2] [f1 f2].
+    cbn in *.
+    exact (cat_idl _, cat_idl _).
+  - intros [a1 a2] [b1 b2] [g1 g2].
+    cbn in *.
+    exact (cat_idr _, cat_idr _). 
+Defined. 
+
+(** 1-coherent 1-groupoids *)
+
+Class Is1Coh1Gpd (A : Type) `{Is1Coh1Cat A, !Is0Coh1Gpd A} :=
+{ 
+  gpd_issect : forall {a b : A} (f : a $-> b), f^$ $o f $== Id a ;
+  gpd_isretr : forall {a b : A} (f : a $-> b), f $o f^$ $== Id b ;
+}.
+
+(** 2-coherent (2,1)-categories *)
+
+Definition cat_comp_lassoc {A : Type} `{Is1Coh1Cat A} (a b c d : A)
+  : (a $-> b) * (b $-> c) * (c $-> d) -> a $-> d.
+Proof.
+  intros [[f g] h].
+  exact ((h $o g) $o f).
+Defined.
+
+Definition cat_comp_rassoc {A : Type} `{Is1Coh1Cat A} (a b c d : A)
+  : (a $-> b) * (b $-> c) * (c $-> d) -> a $-> d.
+Proof.
+  intros [[f g] h].
+  exact (h $o (g $o f)).
+Defined.
+
+Global Instance is0coh1cat_cat_assoc_dom {A : Type} `{Is1Coh1Cat A}
+       {a b c d : A} : Is0Coh1Cat ((a $-> b) * (b $-> c) * (c $-> d)).
+Proof.
+  rapply is0coh1cat_prod.
+Defined.
+
+Global Instance is0coh1functor_cat_comp_lassoc
+       {A : Type} `{Is1Coh1Cat A}
+       {a b c d : A} : Is0Coh1Functor (cat_comp_lassoc a b c d).
+Proof.
+  apply Build_Is0Coh1Functor.
+  intros [[f g] h] [[f' g'] h'] [[al be] ga] ;
+    exact (fmap11 cat_comp (fmap11 cat_comp ga be) al).
+Defined.
+
+Global Instance is0coh1functor_cat_comp_rassoc
+       {A : Type} `{Is1Coh1Cat A}
+       {a b c d : A} : Is0Coh1Functor (cat_comp_rassoc a b c d).
+Proof.
+  apply Build_Is0Coh1Functor.
+  intros [[f g] h] [[f' g'] h'] [[al be] ga] ;
+    exact (fmap11 cat_comp ga (fmap11 cat_comp be al)).
+Defined.
+
+Definition cat_assoc_transformation {A : Type} `{Is1Coh1Cat A} {a b c d : A}
+  : (cat_comp_lassoc a b c d) $=> (cat_comp_rassoc a b c d).
+Proof.
+  intros [[f g] h] ; exact (cat_assoc f g h).
+Defined.
+
+Definition cat_comp_idl {A : Type} `{Is1Coh1Cat A} (a b : A)
+  : (a $-> b) -> (a $-> b)
+  := fun (f : a $-> b) => Id b $o f.
+
+Global Instance is0coh1functor_cat_comp_idl {A : Type} `{Is1Coh1Cat A} (a b : A)
+  : Is0Coh1Functor (cat_comp_idl a b).
+Proof.
+  apply Build_Is0Coh1Functor.
+  intros f g p; unfold cat_comp_idl; cbn.
+  exact (Id b $@L p).
+Defined.
+
+Definition cat_idl_transformation {A : Type} `{Is1Coh1Cat A} {a b : A}
+  : cat_comp_idl a b $=> idmap.
+Proof.
+  intro f ; exact (cat_idl f).
+Defined.
+
+Definition cat_comp_idr {A : Type} `{Is1Coh1Cat A} (a b : A)
+  : (a $-> b) -> (a $-> b)
+  := fun (f : a $-> b) => f $o Id a.
+
+Global Instance is0coh1functor_cat_comp_idr {A : Type} `{Is1Coh1Cat A} (a b : A)
+  : Is0Coh1Functor (cat_comp_idr a b).
+Proof.
+  apply Build_Is0Coh1Functor.
+  intros f g p; unfold cat_comp_idr; cbn.
+  exact (p $@R Id a).
+Defined.
+
+Definition cat_idr_transformation {A : Type} `{Is1Coh1Cat A} {a b : A}
+  : cat_comp_idr a b $=> idmap.
+Proof.
+  intro f ; exact (cat_idr f).
+Defined.
+
+Class Is2Coh21Cat (A : Type) `{Is1Coh1Cat A} :=
+{
+  is0coh21cat_hom : forall (a b : A), Is0Coh21Cat (a $-> b) ;
+  is1coh1cat_hom : forall (a b : A), Is1Coh1Cat (a $-> b) ;
+  is1coh1gpd_hom : forall (a b : A), Is1Coh1Gpd (a $-> b) ;
+  is0coh21functor_comp : forall (a b c : A),
+      Is0Coh21Functor (uncurry (@cat_comp A _ a b c)) ;
+  is1coh1functor_comp : forall (a b c : A),
+      Is1Coh1Functor (uncurry (@cat_comp A _ a b c)) ;
+
+  (** *** Associator *)
+  is1natural_cat_assoc : forall (a b c d : A),
+      Is1Natural (cat_comp_lassoc a b c d) (cat_comp_rassoc a b c d)
+                 cat_assoc_transformation ;
+
+  (** *** Unitors *)
+  is1natural_cat_idl : forall (a b : A),
+      Is1Natural (cat_comp_idl a b) idmap
+                 cat_idl_transformation;
+
+  is1natural_cat_idr : forall (a b : A),
+      Is1Natural (cat_comp_idr a b) idmap
+                 (@cat_idr_transformation _ _ _ _ a b) ;
+
+  (** *** Coherence *)
+  cat_pentagon : forall (a b c d e : A)
+                        (f : a $-> b) (g : b $-> c) (h : c $-> d) (k : d $-> e),
+      (k $@L cat_assoc f g h) $o (cat_assoc f (h $o g) k) $o (cat_assoc g h k $@R f)
+      $== (cat_assoc (g $o f) h k) $o (cat_assoc f g (k $o h)) ;
+
+  cat_tril : forall (a b c : A) (f : a $-> b) (g : b $-> c),
+      (g $@L cat_idl f) $o (cat_assoc f (Id b) g) $== (cat_idr g $@R f)
+}.
+
+Global Existing Instance is0coh21cat_hom.
+Global Existing Instance is1coh1cat_hom.
+Global Existing Instance is1coh1gpd_hom.
+Global Existing Instance is0coh21functor_comp.
+Global Existing Instance is1coh1functor_comp.
+Global Existing Instance is1natural_cat_assoc.
+Global Existing Instance is1natural_cat_idl.
+Global Existing Instance is1natural_cat_idr.

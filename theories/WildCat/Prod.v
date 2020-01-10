@@ -20,7 +20,6 @@ Proof.
   - intros [a1 b1] [a2 b2] [a3 b3] [f1 g1] [f2 g2]; cbn in *.
     exact (f1 $o f2 , g1 $o g2).
 Defined.
-*)
 
 Global Instance is0coh1gpd_prod A B `{Is0Coh1Gpd A} `{Is0Coh1Gpd B} : Is0Coh1Gpd (A * B).
 Proof. 
@@ -30,7 +29,7 @@ Proof.
     exact ( (f1^$, f2^$) ).
 Defined.
 
-                                                                            Global Instance is0coh21cat_prod A B `{Is0Coh21Cat A} `{Is0Coh21Cat B}
+Global Instance is0coh21cat_prod A B `{Is0Coh21Cat A} `{Is0Coh21Cat B}
   : Is0Coh21Cat (A * B).
 Proof.
   serapply (Build_Is0Coh21Cat).
@@ -63,6 +62,7 @@ Proof.
     cbn in *.
     exact (cat_idr _, cat_idr _). 
 Defined. 
+*)
 
 Global Instance hasequivs_prod A B `{HasEquivs A} `{HasEquivs B}
   : HasEquivs (A * B).
@@ -94,7 +94,7 @@ Global Instance isequivs_prod A B `{HasEquivs A} `{HasEquivs B}
 (** Now we can have more coherent two-variable functors. *)
 
 Definition fmap22 {A B C : Type} `{Is0Coh21Cat A} `{Is0Coh21Cat B} `{Is0Coh21Cat C}
-  (F : A -> B -> C) `{!Is0Coh1Functor (uncurry F), !Is0Coh2Functor (uncurry F)}
+  (F : A -> B -> C) `{!Is0Coh1Functor (uncurry F), !Is0Coh21Functor (uncurry F)}
   {a1 a2 : A} {b1 b2 : B} (f1 : a1 $-> a2) (f2 : b1 $-> b2) (g1 : a1 $-> a2) (g2 : b1 $-> b2)
   (alpha : f1 $== g1) (beta : f2 $== g2)
   : (fmap11 F f1 f2) $== (fmap11 F g1 g2)
@@ -102,7 +102,7 @@ Definition fmap22 {A B C : Type} `{Is0Coh21Cat A} `{Is0Coh21Cat B} `{Is0Coh21Cat
 
 Global Instance iemap11 {A B C : Type} `{HasEquivs A} `{HasEquivs B} `{HasEquivs C}
            (F : A -> B -> C) {ff1 : Is0Coh1Functor (uncurry F)}
-           `{!Is0Coh2Functor (uncurry F), !Is1Coh1Functor (uncurry F)}
+           `{!Is0Coh21Functor (uncurry F), !Is1Coh1Functor (uncurry F)}
            {a1 a2 : A} {b1 b2 : B} (f1 : a1 $-> a2) (f2 : b1 $-> b2)
            {f1e : CatIsEquiv f1} {f2e : CatIsEquiv f2}
   : CatIsEquiv (fmap11 F f1 f2).

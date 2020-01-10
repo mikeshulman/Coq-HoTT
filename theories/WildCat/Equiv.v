@@ -187,7 +187,7 @@ Global Instance transitive_cate {A} `{HasEquivs A, !Is1Coh1Cat A}
 
 (** Any sufficiently coherent functor preserves equivalences.  *)
 Global Instance iemap {A B : Type} `{HasEquivs A} `{HasEquivs B} (F : A -> B)
-       `{!Is0Coh1Functor F, !Is0Coh2Functor F, !Is1Coh1Functor F}
+       `{!Is0Coh1Functor F, !Is0Coh21Functor F, !Is1Coh1Functor F}
        {a b : A} (f : a $-> b) {fe : CatIsEquiv f}
   : CatIsEquiv (fmap F f).
 Proof.
@@ -197,7 +197,7 @@ Proof.
 Defined.
 
 Definition emap {A B : Type} `{HasEquivs A} `{HasEquivs B} (F : A -> B)
-           `{!Is0Coh1Functor F, !Is0Coh2Functor F, !Is1Coh1Functor F}
+           `{!Is0Coh1Functor F, !Is0Coh21Functor F, !Is1Coh1Functor F}
            {a b : A} (f : a $<~> b)
   : F a $<~> F b
   := Build_CatEquiv (fmap F f).

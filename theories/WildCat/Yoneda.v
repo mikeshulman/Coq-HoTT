@@ -19,10 +19,10 @@ Proof.
 Defined.
 
 (** This requires either morphism extensionality! *)
-Global Instance is0coh2functor_hom {A} `{HasMorExt A}
-  : @Is0Coh2Functor (A^op * A) Type _ _ _ _ (uncurry (@Hom A _)) _.
+Global Instance is0coh21functor_hom {A} `{HasMorExt A}
+  : @Is0Coh21Functor (A^op * A) Type _ _ _ _ (uncurry (@Hom A _)) _.
 Proof.
-  apply Build_Is0Coh2Functor.
+  apply Build_Is0Coh21Functor.
   intros [a1 a2] [b1 b2] [f1 f2] [g1 g2] [p1 p2] q; cbn in *.
   apply path_hom.
   exact ((p2 $@R q) $o@ p1).
