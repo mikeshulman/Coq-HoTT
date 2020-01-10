@@ -1,6 +1,5 @@
 (* -*- mode: coq; mode: visual-line -*- *)
 Require Import Basics.
-Require Import WildCat.
 Require Import Types.
 
 Declare Scope pointed_scope.
@@ -47,9 +46,6 @@ Definition pmap_compose {A B C : pType}
                 (ap g (point_eq f) @ point_eq g).
 
 Infix "o*" := pmap_compose : pointed_scope.
-
-Global Instance is0coh1cat_ptype : Is0Coh1Cat pType
-  := Build_Is0Coh1Cat pType pMap (@pmap_idmap) (@pmap_compose).
 
 (** ** Pointed homotopies *)
 
