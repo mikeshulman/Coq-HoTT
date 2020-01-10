@@ -127,10 +127,10 @@ Proof.
 Defined.
 
 Global Instance is0coh2fun_op A B `{Is0Coh21Cat A} `{Is0Coh21Cat B}
-       (F : A -> B) `{!Is0Coh1Functor F, !Is0Coh2Functor F}
-  : Is0Coh2Functor (F : A^op -> B^op).
+       (F : A -> B) `{!Is0Coh1Functor F, !Is0Coh21Functor F}
+  : Is0Coh21Functor (F : A^op -> B^op).
 Proof.
-  apply Build_Is0Coh2Functor; unfold op in *; cbn in *.
+  apply Build_Is0Coh21Functor; unfold op in *; cbn in *.
   intros a b.
   apply fmap2.
   assumption.

@@ -39,9 +39,9 @@ Proof.
   + intros a b c. cbn in *. 
   unfold uncurry. exact _.
 Defined.
-Local Instance inducingmap_is0coh21functor `{Is0Coh21Cat B} : Is0Coh2Functor f.
+Local Instance inducingmap_is0coh21functor `{Is0Coh21Cat B} : Is0Coh21Functor f.
 Proof. 
-  serapply Build_Is0Coh2Functor.
+  serapply Build_Is0Coh21Functor.
   intros a b g h. cbn in *. exact idmap.
   Defined.
 Local Instance induced_1coh1cat `{Is1Coh1Cat B} : Is1Coh1Cat A.
