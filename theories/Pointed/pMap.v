@@ -1,6 +1,7 @@
 Require Import Basics Types PathAny.
 Require Import Pointed.Core.
 Require Import Pointed.pHomotopy.
+Require Import WildCat.
 
 Local Open Scope pointed_scope.
 
@@ -70,3 +71,5 @@ Qed.
 (** Not infrequently we have a map between two unpointed types and want to consider it as a pointed map that trivially respects some given point in the domain. *)
 Definition pmap_from_point {A B : Type} (f : A -> B) (a : A)
   := Build_pMap (Build_pType A a) (Build_pType B (f a)) f 1%path.
+  
+

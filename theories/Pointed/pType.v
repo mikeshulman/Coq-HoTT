@@ -81,3 +81,8 @@ Admitted.
   - cbn.
     admit.
 *)
+
+Global Instance is0coh1functor_pmap : Is0Coh1Functor (uncurry pMap).
+Proof.
+  serapply Build_Is0Coh1Functor. 
+  
