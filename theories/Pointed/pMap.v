@@ -1,6 +1,7 @@
-Require Import Basics WildCat Types PathAny.
+Require Import Basics Types PathAny.
 Require Import Pointed.Core.
 Require Import Pointed.pHomotopy.
+Require Import WildCat.
 
 Local Open Scope pointed_scope.
 
@@ -65,23 +66,10 @@ Proof.
   - reflexivity.
 Qed.
 
-Global Instance is1coh1cat_ptype : Is1Coh1Cat pType.
-Proof.
-  srapply Build_Is1Coh1Cat.
-  - intros ? ? ? ? f g h; exact (pmap_compose_assoc h g f).
-  - intros ? ? f; exact (pmap_postcompose_idmap f).
-  - intros ? ? f; exact (pmap_precompose_idmap f).
-Defined.
-
-Global Instance hasmorext_ptype `{Funext} : HasMorExt pType.
-Proof.
-  srapply Build_HasMorExt; intros A B f g.
-  refine (isequiv_homotopic (equiv_path_pmap f g)^-1 _).
-  intros []; reflexivity.
-Defined.
-
 (** ** Trivially pointed maps *)
 
 (** Not infrequently we have a map between two unpointed types and want to consider it as a pointed map that trivially respects some given point in the domain. *)
 Definition pmap_from_point {A B : Type} (f : A -> B) (a : A)
   := Build_pMap (Build_pType A a) (Build_pType B (f a)) f 1%path.
+  
+

@@ -3,7 +3,6 @@
 
 Require Import HoTT.Basics.
 Require Import Types.Empty Types.Unit.
-Require Import WildCat.
 Local Open Scope path_scope.
 
 Generalizable Variables X A B f g n.
@@ -203,36 +202,10 @@ Definition transport_prod {A : Type} {P Q : A -> Type} {a a' : A} (p : a = a')
   := match p with idpath => 1 end.
 
 (** ** Functorial action *)
-  
-Global Instance is0coh1functor_prod : Is0Coh1Functor (uncurry prod).
-Proof.
-  apply Build_Is0Coh1Functor.
-  intros [A B] [C D] [f g] [a b].
-  exact (pair (f a) (g b)).
-Defined.
 
-Global Instance is0coh2functor_prod : Is0Coh2Functor (uncurry prod).
-Proof.
-  apply Build_Is0Coh2Functor.
-  intros [A B] [C D] [f g] [f' g'] [alpha beta] [a b].
-  apply path_prod.
-  - exact (alpha a).
-  - exact (beta b).
-Defined.    
-
-Global Instance is1coh1functor_prod : Is1Coh1Functor (uncurry prod).
-Proof.
-  apply Build_Is1Coh1Functor.
-  - intros [A B] [a b].
-    reflexivity.
-  - intros [A B] [C D] [E F] [f g] [h k] [a b].
-    reflexivity.
-Defined.
-
-(** "functor_prod" is now given by "fmap11 prod" *)
 Definition functor_prod {A A' B B' : Type} (f:A->A') (g:B->B')
   : A * B -> A' * B'
-  := fmap11 prod f g.
+  := fun z => (f (fst z), g (snd z)).
 
 Definition ap_functor_prod {A A' B B' : Type} (f:A->A') (g:B->B')
   (z z' : A * B) (p : fst z = fst z') (q : snd z = snd z')
@@ -246,19 +219,35 @@ Defined.
 (** ** Equivalences *)
 
 Global Instance isequiv_functor_prod `{IsEquiv A A' f} `{IsEquiv B B' g}
-  : IsEquiv (fmap11 prod f g) | 1000
-  := iemap11 prod f g.
+: IsEquiv (functor_prod f g) | 1000.
+Proof.
+  refine (Build_IsEquiv
+            _ _ (functor_prod f g) (functor_prod f^-1 g^-1)
+            (fun z => path_prod' (eisretr f (fst z)) (eisretr g (snd z))
+                      @ eta_prod z)
+            (fun w => path_prod' (eissect f (fst w)) (eissect g (snd w))
+                      @ eta_prod w)
+            _).
+  intros [a b]; simpl.
+  unfold path_prod'.
+  rewrite !concat_p1.
+  rewrite ap_functor_prod.
+  rewrite !eisadj.
+  reflexivity.
+Defined.
 
 Definition equiv_functor_prod `{IsEquiv A A' f} `{IsEquiv B B' g}
   : A * B <~> A' * B'.
 Proof.
-  srapply (Build_Equiv _ _ (fmap11 prod f g)).
+  exists (functor_prod f g).
+  exact _. (* i.e., search the context for instances *)
 Defined.
 
 Definition equiv_functor_prod' {A A' B B' : Type} (f : A <~> A') (g : B <~> B')
   : A * B <~> A' * B'.
 Proof.
-  srapply (Build_Equiv _ _ (fmap11 prod f g)).
+  exists (functor_prod f g).
+  exact _.
 Defined.
 
 Notation "f *E g" := (equiv_functor_prod' f g) : equiv_scope.

@@ -1,8 +1,8 @@
 (* -*- mode: coq; mode: visual-line -*- *)
-Require Import Basics.
+Require Import Basics Types.
 Require Import Pointed.Core.
 Require Import WildCat.
-Require Import pHomotopy.
+Require Import pHomotopy pMap pEquiv.
 
 Local Open Scope pointed_scope.
 Local Open Scope path_scope.
@@ -37,3 +37,52 @@ Defined.
 
 
 
+
+Global Instance is1coh1cat_ptype : Is1Coh1Cat pType.
+Proof.
+  srapply Build_Is1Coh1Cat.
+  - intros ? ? ? ? f g h; exact (pmap_compose_assoc h g f).
+  - intros ? ? f; exact (pmap_postcompose_idmap f).
+  - intros ? ? f; exact (pmap_precompose_idmap f).
+Defined.
+
+Global Instance hasmorext_ptype `{Funext} : HasMorExt pType.
+Proof.
+  srapply Build_HasMorExt; intros A B f g.
+  refine (isequiv_homotopic (equiv_path_pmap f g)^-1 _).
+  intros []; reflexivity.
+Defined.
+
+
+Global Instance hasequivs_ptype : HasEquivs pType.
+Proof.
+  (* TODO: Borken *)
+Admitted.
+(*
+  srapply (Build_HasEquivs _ _ _ pEquiv (fun A B f => f) (fun A B f => f^-1* ));
+    cbn; intros A B f.
+  - apply peissect.
+  - apply peisretr.
+  - apply pequiv_adjointify.
+  - reflexivity.
+Defined.
+*)
+
+Global Instance isunivalent_ptype `{Univalence} : IsUnivalent1Cat pType.
+Proof.
+  srapply Build_IsUnivalent1Cat; intros A B.
+Admitted.
+(*
+  refine (isequiv_homotopic (equiv_path_ptype A B)^-1 _).
+  intros []; apply path_pequiv.
+  cbn.
+  srefine (Build_pHomotopy _ _).
+  - intros x; reflexivity.
+  - cbn.
+    admit.
+*)
+
+Global Instance is0coh1functor_pmap : Is0Coh1Functor (uncurry pMap).
+Proof.
+  serapply Build_Is0Coh1Functor. 
+  

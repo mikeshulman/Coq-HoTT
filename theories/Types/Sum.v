@@ -2,7 +2,6 @@
 (** * Theorems about disjoint unions *)
 
 Require Import HoTT.Basics.
-Require Import WildCat.
 Require Import Types.Empty Types.Prod Types.Sigma.
 (** The following are only required for the equivalence between [sum] and a sigma type *)
 Require Import Types.Bool Types.Forall.
@@ -324,36 +323,12 @@ Defined.
 (** ** Functorial action *)
 
 Section FunctorSum.
-
-  Global Instance is0coh1functor_sum : Is0Coh1Functor (uncurry sum).
-  Proof.
-    apply Build_Is0Coh1Functor.
-    intros [A A'] [B B'] [f f'] [a | a'].
-    - exact (inl (f a)).
-    - exact (inr (f' a')).
-  Defined.
-
-  Global Instance is0coh2functor_sum : Is0Coh2Functor (uncurry sum).
-  Proof.
-    apply Build_Is0Coh2Functor.
-    intros [A A'] [B B'] [f f'] [g g'] [p p'] [a | a'] ;
-      [exact (ap inl (p a)) | exact (ap inr (p' a'))].
-  Defined.
-
-  Global Instance is1coh1functor_sum : Is1Coh1Functor (uncurry sum).
-  Proof.
-    apply Build_Is1Coh1Functor.
-    - intros [A A'] [a | a'] ; reflexivity.
-    - intros [A A'] [B B'] [C C'] [f f'] [g g'] [a | a'] ;
-        reflexivity.
-  Defined.
-
   Context {A A' B B' : Type} (f : A -> A') (g : B -> B').
 
   Definition functor_sum : A + B -> A' + B'
-    := fmap11 sum f g.
+    := fun z => match z with inl z' => inl (f z') | inr z' => inr (g z') end.
 
-  (** The fibers of [sum] are those of [f] and [g]. *)
+  (** The fibers of [functor_sum] are those of [f] and [g]. *)
   Definition hfiber_functor_sum_l (a' : A')
   : hfiber functor_sum (inl a') <~> hfiber f a'.
   Proof.
@@ -543,11 +518,15 @@ Defined.
 
 (** ** Functoriality on equivalences *)
 
-Global Instance isequiv_functor_sum {A A' B B' : Type}
-       {f : A $-> A'} {g : B -> B'}
-       `{IsEquiv A A' f} `{IsEquiv B B' g}
-  : IsEquiv (functor_sum f g) | 1000
-  := iemap11 sum f g.
+Global Instance isequiv_functor_sum `{IsEquiv A A' f} `{IsEquiv B B' g}
+: IsEquiv (functor_sum f g) | 1000.
+Proof.
+  apply (isequiv_adjointify
+           (functor_sum f g)
+           (functor_sum f^-1 g^-1));
+  [ intros [?|?]; simpl; apply ap; apply eisretr
+  | intros [?|?]; simpl; apply ap; apply eissect ].
+Defined.
 
 Definition equiv_functor_sum `{IsEquiv A A' f} `{IsEquiv B B' g}
 : A + B <~> A' + B'

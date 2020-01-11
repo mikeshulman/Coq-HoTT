@@ -2,9 +2,9 @@
 (** * Theorems about Non-dependent function types *)
 
 Require Import HoTT.Basics.
-Require Import HoTT.WildCat.
 Require Import Types.Paths Types.Forall.
 Local Open Scope path_scope.
+
 
 Generalizable Variables A B C D f g n.
 
@@ -157,45 +157,16 @@ Defined.
 
 (** ** Functorial action *)
 
-Section FunctorArrow.
+Definition functor_arrow `(f : B -> A) `(g : C -> D)
+  : (A -> C) -> (B -> D)
+  := @functor_forall A (fun _ => C) B (fun _ => D) f (fun _ => g).
 
-  Definition arrow (A : Type^op) (B : Type) := A -> B.
-
-  Global Instance is0coh1functor_arrow
-    : @Is0Coh1Functor (Type^op * Type) Type _ _ (uncurry arrow).
-  Proof.
-    apply Build_Is0Coh1Functor.
-    intros [A B] [C D] [f g] h c ; exact (g (h (f c))).
-  Defined.
-
-  Global Instance is0coh2functor_arrow
-    : @Is0Coh2Functor (Type^op * Type) Type _ _ _ _ (uncurry arrow) _.
-  Proof.
-    apply Build_Is0Coh2Functor.
-    intros [A B] [C D] [f g] [f' g'] [p p'] h.
-    cbn in *; cbv in h.
-    apply path_forall.
-    intro c.
-    refine (_ @ (p' (h (f' c)))).
-    apply ap ; apply ap ; apply p.
-  Defined.
-
-  Global Instance is1coh1functor_arrow
-    : @Is1Coh1Functor (Type^op * Type) Type _ _ _ (uncurry arrow) _.
-  Proof.
-    apply Build_Is1Coh1Functor ; intros ; reflexivity.
-  Defined.
-
-  Definition functor_arrow `(f : B -> A) `(g : C -> D)
-    : (A -> C) -> (B -> D)
-    := fmap11 arrow f g.
-
-  Definition ap_functor_arrow  `(f : B -> A) `(g : C -> D) (h h' : A -> C) (p : h == h')
-  : ap (functor_arrow f g) (path_arrow _ _ p) = path_arrow _ _ (fun b => ap g (p (f b)))
-  := @ap_functor_forall _ A (fun _ => C) B (fun _ => D) f (fun _ => g) h h' p.
-
-End FunctorArrow.
-
+Definition ap_functor_arrow `(f : B -> A) `(g : C -> D)
+  (h h' : A -> C) (p : h == h')
+  : ap (functor_arrow f g) (path_arrow _ _ p)
+  = path_arrow _ _ (fun b => ap g (p (f b)))
+  := @ap_functor_forall _ A (fun _ => C) B (fun _ => D)
+  f (fun _ => g) h h' p.
 
 (** ** Truncatedness: functions into an n-type is an n-type *)
 
@@ -210,10 +181,9 @@ Global Instance trunc_arrow {A B : Type} `{IsTrunc n B}
 (** ** Equivalences *)
 
 Global Instance isequiv_functor_arrow `{IsEquiv B A f} `{IsEquiv C D g}
-  : IsEquiv (functor_arrow f g) | 1000.
-Proof.
-  rapply (iemap11 arrow f g).
-Defined.
+  : IsEquiv (functor_arrow f g) | 1000
+  := @isequiv_functor_forall _ A (fun _ => C) B (fun _ => D)
+     _ _ _ _.
 
 Definition equiv_functor_arrow `{IsEquiv B A f} `{IsEquiv C D g}
   : (A -> C) <~> (B -> D)

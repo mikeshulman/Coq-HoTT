@@ -329,12 +329,10 @@ End IdentityFunctor.
 
 Section ConstantFunctor.
 
-  Context {A B : Type}
-    {HA1 : Is0Coh1Cat A} {HB1 : Is0Coh1Cat B}
-    {HA2 : Is0Coh21Cat A} {HB2 : Is0Coh21Cat B}
-    {HA3 : Is1Coh1Cat A} {HB3 : Is1Coh1Cat B}.
+  Context {A B : Type}.
 
-  Global Instance is0coh1functor_const (x : B)
+  Global Instance is0coh1functor_const
+    `{IsGraph A} `{Is0Coh1Cat B} (x : B)
     : Is0Coh1Functor (fun _ : A => x).
   Proof.
     serapply Build_Is0Coh1Functor.
@@ -348,7 +346,8 @@ Section ConstantFunctor.
     intros a b f g p; apply Id.
   Defined.
 
-  Global Instance is1coh1functor_const (x : B)
+  Global Instance is1coh1functor_const
+    `{Is0Coh21Cat A} `{Is1Coh1Cat B} (x : B)
     : Is1Coh1Functor (fun _ : A => x).
   Proof.
     serapply Build_Is1Coh1Functor.

@@ -10,9 +10,12 @@ Require Import WildCat.Induced.
 (** ** Categories of 0-coherent 1-functors *)
 
 Record Fun01 (A B : Type) `{IsGraph A} `{IsGraph B} := {
-  fun01_F :> A -> B;
-  fun01_is0coh1functor :> Is0Coh1Functor fun01_F;
+  fun01_F : A -> B;
+  fun01_is0coh1functor : Is0Coh1Functor fun01_F;
 }.
+
+Coercion fun01_F : Fun01 >-> Funclass.
+Existing Instance fun01_is0coh1functor.
 
 Definition NatTrans {A B : Type} `{IsGraph A} `{Is0Coh21Cat B} (F G : A -> B)
            {ff : Is0Coh1Functor F} {fg : Is0Coh1Functor G}
