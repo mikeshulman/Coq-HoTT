@@ -209,9 +209,9 @@ Proof.
   assumption.
 Defined.  
 
-(** 0-coherent 2-displayed functors *)
+(** 0-coherent displayed 21-functors *)
 
-Class Is0Coh2DFunctor  {A1 A2 : Type} (B1 : A1 -> Type) (B2 : A2 -> Type)
+Class Is0Coh21DFunctor  {A1 A2 : Type} (B1 : A1 -> Type) (B2 : A2 -> Type)
         {HA1 : Is0Coh1Cat A1} {HA21 : Is0Coh21Cat A1} {HA2 : Is0Coh1Cat A2} {HA22 : Is0Coh21Cat A2} {HB1 : Is0Coh1DCat B1} {HB2 : Is0Coh1DCat B2} {ab1 : Is0Coh21DCat B1} {ab2 : Is0Coh21DCat B2}
       (F : A1 -> A2) `{!Is0Coh1Functor F} `{!Is0Coh21Functor F}
       (G : forall a:A1, B1 a -> B2 (F a)) 
@@ -219,11 +219,11 @@ Class Is0Coh2DFunctor  {A1 A2 : Type} (B1 : A1 -> Type) (B2 : A2 -> Type)
   := { fmapD2 : forall {a b : A1} {f g : a $-> b} {x : B1 a} {y : B1 b} (u : DHom f x y) (v : DHom g x y) (p : f $== g),
          DHom2 p u v -> DHom2 (fmap2 F p) (fmapD G u) (fmapD G v)}.
        
-Global Instance is0coh2functor_sigma  {A1 A2 : Type} (B1 : A1 -> Type) (B2 : A2 -> Type)
+Global Instance is0coh21functor_sigma  {A1 A2 : Type} (B1 : A1 -> Type) (B2 : A2 -> Type)
         {HA1 : Is0Coh1Cat A1} {HA21 : Is0Coh21Cat A1} {HA2 : Is0Coh1Cat A2} {HA22 : Is0Coh21Cat A2} {HB1 : Is0Coh1DCat B1} {HB2 : Is0Coh1DCat B2} {ab1 : Is0Coh21DCat B1} {ab2 : Is0Coh21DCat B2}
       (F : A1 -> A2) `{!Is0Coh1Functor F} `{!Is0Coh21Functor F}
       (G : forall a:A1, B1 a -> B2 (F a)) 
-      `{!Is0Coh1DFunctor B1 B2 F G} `{!Is0Coh2DFunctor B1 B2 F G} : Is0Coh21Functor (functor_sigma F G).
+      `{!Is0Coh1DFunctor B1 B2 F G} `{!Is0Coh21DFunctor B1 B2 F G} : Is0Coh21Functor (functor_sigma F G).
 Proof.
   srapply Build_Is0Coh21Functor.
   intros [a x] [b y] [f u] [g v] [p pp].
@@ -235,10 +235,9 @@ Defined.
 
 (** A 1-coherent displayed 1-category satisfies associativity and unit laws up to 2-cells (so it must be at least a 0-coherent 2-category).  We duplicate the reversed associativity and double-identity laws to make more duality operations definitionally involutive. *)
 
-About DId.
 
 Class Is1Coh1DCat {A : Type} {a01 : Is0Coh1Cat A} {a02 : Is0Coh21Cat A}
-  {a11 : Is1Coh1Cat A}    (B : A -> Type) {ba01 : Is0Coh1DCat B} {ba02 : Is0Coh21DCat B} := Build_Is1Coh1DCat' 
+  {a11 : Is1Coh1Cat A}    (B : A -> Type) {ba01 : Is0Coh1DCat B} {ba02 : Is0Coh21DCat B} := (* Build_Is1Coh1DCat' *)
 {
   dcat_assoc : forall {a b c d : A} {f : a $-> b} {g : b $-> c} {h : c $-> d} {x : B a} {y : B b} {z : B c} {w : B d} (u : DHom f x y) (v : DHom g y z) (t : DHom h z w) , (DHom2 (cat_assoc f g h) ((t $$o v) $$o u) (t $$o (v $$o u))) ;
   dcat_assoc_opp : forall {a b c d : A} {f : a $-> b} {g : b $-> c} {h : c $-> d} {x : B a} {y : B b} {z : B c} {w : B d} (u : DHom f x y) (v : DHom g y z) (t : DHom h z w) , (DHom2 (cat_assoc_opp f g h) (t $$o (v $$o u)) ((t $$o v) $$o u)) ;
@@ -246,3 +245,83 @@ Class Is1Coh1DCat {A : Type} {a01 : Is0Coh1Cat A} {a02 : Is0Coh21Cat A}
     dcat_idr : forall {a b : A} {f : a $-> b} {x : B a} {y : B b} (u : DHom f x y), DHom2 (cat_idr f) (u $$o (DId x)) u ;
    dcat_idlr : forall {a : A} {x : B a}, DHom2 (cat_idlr a) ((DId x) $$o (DId x)) (DId x)
 }.                                                                                                                                                      
+
+(* Note in 1Coh1Cat A, cat_assoc is not defined to be the reverse of cat_assoc_opp. For this reason I wasn't able to construct dcat_assoc_opp from dcat_assoc as its reverse lives over the reverse of cat_assoc rather than over cat_assoc_opp as it should. You can see this by uncommenting out Build_Is1Coh1DCat' above and then running the following proof that breaks at that point. (maybe also issues later? I don't know how to shelve the goal.)
+
+Definition Build_Is1Coh1DCat {A : Type} {a01 : Is0Coh1Cat A} {a02 : Is0Coh21Cat A}
+           {a11 : Is1Coh1Cat A}    (B : A -> Type) {ba01 : Is0Coh1DCat B} {ba02 : Is0Coh21DCat B}
+  (dcat_assoc' : forall {a b c d : A} {f : a $-> b} {g : b $-> c} {h : c $-> d} {x : B a} {y : B b} {z : B c} {w : B d} (u : DHom f x y) (v : DHom g y z) (t : DHom h z w) , (DHom2 (cat_assoc f g h) ((t $$o v) $$o u) (t $$o (v $$o u))))
+ (dcat_idl' : forall {a b : A} {f : a $-> b} {x : B a} {y : B b} (u : DHom f x y), DHom2 (cat_idl f) ((DId y) $$o u) u)
+  (dcat_idr' : forall {a b : A} {f : a $-> b} {x : B a} {y : B b} (u : DHom f x y), DHom2 (cat_idr f) (u $$o (DId x)) u)
+  : Is1Coh1DCat B.
+Proof.
+   srapply Build_Is1Coh1DCat'.
+   - exact dcat_assoc'.
+   - Print dcat_idlr.
+     exact (fun a b c d f g h x y z w u v t => (dcat_assoc' a b c d f g h x y z w u v t)^$$).
+   - exact dcat_idl'.
+   - exact dcat_idr'.
+   - exact (fun a x => dcat_idl' a a (Id a) x x (DId x)).
+Defined.
+*)
+
+About dcat_idl.
+
+Arguments dcat_assoc {_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _} u v t.
+Arguments dcat_assoc_opp {_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _} u v t.
+Arguments dcat_idl {_ _ _ _ _ _ _ _ _ _ _ _ _} u.
+Arguments dcat_idr {_ _ _ _ _ _ _ _ _ _ _ _ _} u.
+Arguments dcat_idlr {_ _ _ _ _ _ _ _ _} x.
+
+Global Instance is1coh1cat_sigma {A : Type} {a01 : Is0Coh1Cat A} {a02 : Is0Coh21Cat A}  {a11 : Is1Coh1Cat A} (B : A -> Type) {ba01 : Is0Coh1DCat B} {ba02 : Is0Coh21DCat B} {ba11 : Is1Coh1DCat B}
+  : Is1Coh1Cat (sig B).
+Proof.
+  rapply Build_Is1Coh1Cat.
+  - intros [a x] [b y] [c z] [d w] [f u] [g v] [h t]; cbn in *.
+    exact (cat_assoc f g h ; dcat_assoc u v t).
+  - intros [a x] [b y] [f u]; cbn in *.
+    exact (cat_idl f ; dcat_idl u).
+  - intros [a x] [b y] [f u].
+    exact (cat_idr f ; dcat_idr u).
+Defined.
+
+Global Instance is1coh1functor_pr1 {A : Type} (B : A -> Type) `{Is1Coh1DCat A B} : Is1Coh1Functor (pr1 : (sig B) -> A).
+Proof.
+  apply Build_Is1Coh1Functor.
+  - intros [a x]; cbn.
+    apply Id.
+  - intros [a x] [b y] [c z] [f u] [g v]; cbn.
+    apply Id.
+Defined.
+
+(** 1-coherent displayed 1-functors *)
+
+Class Is1Coh1DFunctor  {A1 A2 : Type} (B1 : A1 -> Type) (B2 : A2 -> Type)
+        {HA1 : Is0Coh1Cat A1} {HA12 : Is0Coh21Cat A1} {HA11 : Is1Coh1Cat A1} {HA2 : Is0Coh1Cat A2} {HA22 : Is0Coh21Cat A2} {HA21 : Is1Coh1Cat A2} {HB1 : Is0Coh1DCat B1} {HB2 : Is0Coh1DCat B2} {ab1 : Is0Coh21DCat B1} {ab2 : Is0Coh21DCat B2} {ab11 : Is1Coh1DCat B1} {ab21 : Is1Coh1DCat B2}
+      (F : A1 -> A2) `{!Is0Coh1Functor F} `{!Is0Coh21Functor F} `{!Is1Coh1Functor F}
+      (G : forall a:A1, B1 a -> B2 (F a)) 
+      `{!Is0Coh1DFunctor B1 B2 F G} `{!Is0Coh21DFunctor B1 B2 F G} 
+  := {
+      fmapD_id : forall {a : A1} {x : B1 a}, DHom2 (fmap_id F a) (fmapD G (DId x)) ( DId (G a x));
+      fmapD_comp : forall {a b c : A1} {f : a $-> b} {g : b $-> c} {x : B1 a} {y : B1 b} {z : B1 c} (u : DHom f x y) (v : DHom g y z), DHom2 (fmap_comp F f g) (fmapD G (DComp v u)) (DComp (fmapD G v) (fmapD G u)) 
+    }.
+
+Arguments fmapD_id {_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _} x.
+Arguments fmapD_comp  {_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ a b c f g x y z} u v.
+
+Global Instance is1coh1functor_sigma  {A1 A2 : Type} (B1 : A1 -> Type) (B2 : A2 -> Type)
+             {HA1 : Is0Coh1Cat A1} {HA12 : Is0Coh21Cat A1} {HA11 : Is1Coh1Cat A1} {HA2 : Is0Coh1Cat A2} {HA22 : Is0Coh21Cat A2} {HA21 : Is1Coh1Cat A2} {HB1 : Is0Coh1DCat B1} {HB2 : Is0Coh1DCat B2} {ab1 : Is0Coh21DCat B1} {ab2 : Is0Coh21DCat B2} {ab11 : Is1Coh1DCat B1} {ab21 : Is1Coh1DCat B2}
+      (F : A1 -> A2) `{!Is0Coh1Functor F} `{!Is0Coh21Functor F} `{!Is1Coh1Functor F}
+      (G : forall a:A1, B1 a -> B2 (F a)) 
+      `{!Is0Coh1DFunctor B1 B2 F G} `{!Is0Coh21DFunctor B1 B2 F G}
+      `{!Is1Coh1DFunctor B1 B2 F G} : Is1Coh1Functor (functor_sigma F G).
+Proof.
+  srapply Build_Is1Coh1Functor.
+  - intros [a x]; cbn.
+    exact (fmap_id F a ; fmapD_id x).
+  - intros [a x] [b y] [c z] [f u] [g v].
+    exact (fmap_comp F f g ; fmapD_comp u v).
+Defined.
+
+(** TODO strong versions of the above *)
+
