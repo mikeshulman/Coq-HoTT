@@ -17,6 +17,9 @@ Class Is2Coh2Cat_Pre (A : Type) `{Is0Coh1Cat A} :=
   is0coh1functor_comp : forall (a b c : A),
       Is0Coh1Functor (uncurry (@cat_comp A _ a b c)) ;
 
+  is0coh21functor_comp : forall (a b c : A),
+      Is0Coh21Functor (uncurry (@cat_comp A _ a b c)) ;
+
   is1coh1functor_comp : forall (a b c : A),
       Is1Coh1Functor (uncurry (@cat_comp A _ a b c))
 }.
@@ -26,51 +29,182 @@ Existing Instance is0coh21cat_hom.
 Existing Instance is1coh1cat_hom.
 Existing Instance hasequivs_hom.
 Existing Instance is0coh1functor_comp.
+Existing Instance is0coh21functor_comp.
 Existing Instance is1coh1functor_comp.
+
+Definition coh_comp {A : Type} `{Is2Coh2Cat_Pre A} {a b c : A}
+  : core (b $-> c) -> core (a $-> b) -> core (a $-> c).
+Proof.
+  intros [f] [g] ; apply Build_core ; exact (f $o g).
+Defined.
+
+Definition coh_id {A : Type} `{Is2Coh2Cat_Pre A} (a : A)
+  : core (a $-> a).
+Proof.
+  apply Build_core, Id.
+Defined.
 
 Definition is0coh1cat_2coh2cat_pre {A : Type} `{Is2Coh2Cat_Pre A}
   : Is0Coh1Cat A.
 Proof.
-  srapply Build_Is0Coh1Cat.
+  simple refine (Build_Is0Coh1Cat _ _ _ _).
   - intros a b ; exact (core (a $-> b)).
-  - intro a ; apply Id.
-  - intros a b c ; apply cat_comp.
+  - intro a ; apply coh_id.
+  - intros a b c ; apply coh_comp.
 Defined.
 
-(* Typeclasses eauto := debug. *)
+Global Instance is0coh1functor_bicat_comp {A : Type}
+       `{Is2Coh2Cat_Pre A} {a b c : A}
+  : Is0Coh1Functor (uncurry
+                      (@cat_comp _  is0coh1cat_2coh2cat_pre a b c)).
+Proof.
+  rapply Build_Is0Coh1Functor.
+  intros [[f] [g]] [[f'] [g']] [al be].
+  exact (emap11 cat_comp al be).
+Defined.
 
-Definition is0coh21cat_2coh2cat_pre {A : Type} `{Is2Coh2Cat_Pre A}
+Global Instance is0coh21cat_2coh2cat_pre {A : Type} `{Is2Coh2Cat_Pre A}
   : @Is0Coh21Cat A is0coh1cat_2coh2cat_pre.
 Proof.
-  simple notypeclasses refine (Build_Is0Coh21Cat _ _ _ _ _).
-  - intros a b ; apply is0coh1cat_core.
-  - intros a b ; apply is0coh1gpd_core.
-  - intros a b c.
-    rapply Build_Is0Coh1Functor.
-    intros [f g] [f' g'] [al be].
-    cbn ; cbn in * ; cbv in f, g, f', g'.
-    exact (@emap11 _ _ _ _ _ _ _ _ _ _ _ _ cat_comp
-                   is0coh1functor_comp _ is1coh1functor_comp
-                   f f' g g' al be).
+  rapply (Build_Is0Coh21Cat A is0coh1cat_2coh2cat_pre).
 Defined.
 
+Definition bicat_comp_lassoc {A : Type} `{Is2Coh2Cat_Pre A}
+           (a b c d : A) : core (a $-> b) * core (b $-> c) *
+                           core (c $-> d) -> core (a $-> d).
+Proof.
+  intros [[[f] [g]] [h]] ; apply Build_core ; exact ((h $o g) $o f).
+Defined.
 
-Class Is2Coh2Cat_Pre1 (A : Type) `{Is2Coh2Cat_Pre A} :=
+Definition bicat_comp_rassoc {A : Type} `{Is2Coh2Cat_Pre A}
+           (a b c d : A) : core (a $-> b) * core (b $-> c) *
+                           core (c $-> d) -> core (a $-> d).
+Proof.
+  intros [[[f] [g]] [h]] ; apply Build_core ; exact (h $o (g $o f)).
+Defined.
+
+Global Instance is0coh1cat_bicat_assoc_dom {A : Type}
+       `{Is2Coh2Cat_Pre A} {a b c d : A}
+  : Is0Coh1Cat (core (a $-> b) * core (b $-> c) * core (c $-> d)).
+Proof.
+  rapply is0coh1cat_prod.
+Defined.
+
+(* I'm not sure why i have to do this, but $o@ just stalls, and in
+fact even $o fails. *)
+
+Infix "$oC" := coh_comp (at level 30).
+
+Definition coh_comp2 {A : Type} `{Is2Coh2Cat_Pre A}
+           {a b c : A} {f g : core (a $-> b)} {h k : core (b $-> c)}
+           (al : h $-> k) (be : f $-> g)
+  : h $oC f $-> k $oC g := fmap11 coh_comp al be.
+
+Infix "$o@C" := coh_comp2 (at level 30).
+
+Global Instance is0coh1functor_bicat_comp_lassoc
+       {A : Type} `{Is2Coh2Cat_Pre A}
+       {pf : @Is1Coh1Cat A is0coh1cat_2coh2cat_pre _ }
+       {a b c d : A} : Is0Coh1Functor (bicat_comp_lassoc a b c d).
+Proof.
+  apply Build_Is0Coh1Functor.
+  intros [[f g] h] [[f' g'] h'] [[al be] ga].
+  exact (ga $o@C be $o@C al).
+Defined.
+
+Global Instance is0coh1functor_bicat_comp_rassoc
+       {A : Type} `{Is2Coh2Cat_Pre A}
+       {pf : @Is1Coh1Cat A is0coh1cat_2coh2cat_pre _}
+       {a b c d : A} : Is0Coh1Functor (bicat_comp_rassoc a b c d).
+Proof.
+  apply Build_Is0Coh1Functor.
+  intros [[f g] h] [[f' g'] h'] [[al be] ga].
+  exact (ga $o@C (be $o@C al)).
+Defined.
+
+Definition bicat_assoc_nat {A : Type} `{Is2Coh2Cat_Pre A}
+           {pf : @Is1Coh1Cat A is0coh1cat_2coh2cat_pre _}
+           {a b c d : A}
+  : (bicat_comp_lassoc a b c d) $=> (bicat_comp_rassoc a b c d).
+Proof.
+  intros [[f g] h] ; rapply (@cat_assoc A _ _ pf).
+Defined.
+
+Definition bicat_idl_fun {A : Type} `{Is2Coh2Cat_Pre A}
+           (a b : A) (f : core (a $-> b)) : core (a $-> b)
+  := (coh_id b) $oC f.
+
+Definition bicat_idr_fun {A : Type} `{Is2Coh2Cat_Pre A}
+           (a b : A) (f : core (a $-> b)) : core (a $-> b)
+  := f $oC (coh_id a).
+
+Global Instance is0coh1functor_bicat_idl_fun {A : Type}
+       `{Is2Coh2Cat_Pre A} {a b : A}
+  : Is0Coh1Functor (bicat_idl_fun a b).
+Proof.
+  rapply Build_Is0Coh1Functor.
+  intros f g al.
+  exact (Id (coh_id b) $o@C al).
+Defined.
+
+Global Instance is0coh1functor_bicat_idr_fun {A : Type}
+       `{Is2Coh2Cat_Pre A} {a b : A}
+  : Is0Coh1Functor (bicat_idr_fun a b).
+Proof.
+  rapply Build_Is0Coh1Functor.
+  intros f g al.
+  exact (al $o@C Id (coh_id a)).
+Defined.
+
+Definition bicat_idl_nat {A : Type} `{Is2Coh2Cat_Pre A}
+           {pf : @Is1Coh1Cat A is0coh1cat_2coh2cat_pre _}
+           {a b : A}
+  : bicat_idl_fun a b $=> idmap.
+Proof.
+  intro f ; rapply (@cat_idl _ _ _ pf).
+Defined.
+
+Definition bicat_idr_nat {A : Type}
+           `{Is2Coh2Cat_Pre A}
+           {pf : @Is1Coh1Cat A is0coh1cat_2coh2cat_pre _}
+           {a b : A}
+  : bicat_idr_fun a b $=> idmap.
+Proof.
+  intro f ; rapply (@cat_idr _ _ _ pf).
+Defined.
+
+Class Is2Coh2Cat (A : Type) `{Is2Coh2Cat_Pre A} :=
 {
-  is0coh1functor_comp : forall (a b c : A),
-      Is0Coh1Functor
-        (uncurry (@cat_comp A is0coh1cat_2coh2cat_pre a b c)) ;
+  is1coh1cat_core : @Is1Coh1Cat A is0coh1cat_2coh2cat_pre
+                                is0coh21cat_2coh2cat_pre ;
+  (** *** Associator *)
+  is1natural_cat_assoc : forall (a b c d : A),
+      Is1Natural (bicat_comp_lassoc a b c d)
+                 (bicat_comp_rassoc a b c d)
+                 bicat_assoc_nat ;
 
-  is1coh1functor_comp : forall (a b c : A),
-      Is1Coh1Functor
-        (uncurry (@cat_comp A is0coh1cat_2coh2cat_pre a b c))
+  (** *** Unitors *)
+  is1natural_cat_idl : forall (a b : A),
+      Is1Natural (bicat_idl_fun a b) idmap bicat_idl_nat;
+
+
+  is1natural_cat_idr : forall (a b : A),
+      Is1Natural (bicat_idr_fun a b) idmap bicat_idr_nat;
+
+  (** *** Coherence *)
+  bicat_tri : forall (a b c : A) (f : core (a $-> b)) (g : core (b $-> c)),
+      Id g $o@C bicat_idl_nat f $o bicat_assoc_nat (f,(coh_id b),g)
+         $== bicat_idr_nat g $o@C Id f ;
+
+  bicat_pentagon : forall (a b c d e : A)
+                     (f : core (a $-> b)) (g : core (b $-> c))
+                     (h : core (c $-> d)) (k : core (d $-> e)),
+      (Id k $o@C bicat_assoc_nat (f,g,h))
+        $o bicat_assoc_nat (f,(h $oC g),k)
+        $o (bicat_assoc_nat (g,h,k) $o@C Id f)
+      $== bicat_assoc_nat ((g $oC f),h,k)
+          $o bicat_assoc_nat (f,g,(k $oC h)) ;
 }.
-
-
-
-
-Set Printing Implicit.
-
 
 (*
 Definition bicat_comp_lassoc {A : Type} `{Is1Coh1Cat A} (a b c d : A)
@@ -128,7 +262,7 @@ Definition cat_idr_nat {A : Type} `{Is1Coh1Cat A} {a b : A}
 Proof.
   intro f ; exact (cat_idr f).
 Defined.
-*)
+
 
 (** Notably absent due to groupoidal assumptions:
 
@@ -143,10 +277,8 @@ Defined.
 
 Class Is2Coh2Cat (A : Type) `{Is1Coh1Cat A} := Build_Is2Coh2Cat'
 {
-  is0coh1cat_hom : forall (a b : A), Is0Coh1Cat (a $-> b) ;
   is0coh2cat_hom : forall (a b : A), Is0Coh2Cat (a $-> b) ;
   is1coh1cat_hom : forall (a b : A), Is1Coh1Cat (a $-> b) ;
-  hasequivs_hom : forall (a b : A), HasEquivs (a $-> b) ;
 
   is1coh1functor_comp : forall (a b c : A),
       Is1Coh1Functor (uncurry (@cat_comp A _ a b c)) ;
@@ -180,3 +312,4 @@ Class Is2Coh2Cat (A : Type) `{Is1Coh1Cat A} := Build_Is2Coh2Cat'
       Id g $o@ cat_idl_nat f $o cat_assoc_nat  (f,(Id b),g)
          $== cat_idr_nat g $o@ Id f
 }.
+*)
