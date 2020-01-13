@@ -8,18 +8,21 @@ Require Import Basics.Equivalences.
 Require Import WildCat.Core.
 Require Import WildCat.FunctorCat.
 Require Import WildCat.Equiv.
+Require Import WildCat.Induced.
 
-(** ** Wild category of wild categories *)
+(** * Wild categories of wild categories *)
 
-Record WildCat01 :=Pl
+(** ** The wild category of wild (0,1)-categories *)
+
+(** The category of wild (0,1)-categories is simplest, but minimally coherent. *)
+Record WildCat01 :=
 {
   cat01_carrier : Type;
   cat01_is01cat : Is01Cat cat01_carrier;
-  
-  (* TODO: How much should we include here? Plan: do for objects 0 coherent 1 categories; then consider 1 coherent 1 categories.*)
 }.
 
-Coercion cat01_carrier : WildCat01 >-> Sortclass. (* note for morgan: this allows us to consider WildCats as types. *)
+(* note for morgan: this allows us to consider WildCats as types. *)
+Coercion cat01_carrier : WildCat01 >-> Sortclass.
 
 Global Existing Instance cat01_is01cat.
 
@@ -29,16 +32,16 @@ Proof.
   + intros A B.  
     exact (Fun01 A B).
   + intros C. cbn in *.
-    exists (idmap). 
-    exact _.
+    exists idmap; exact _.
   + intros A B C [G g] [F f].
-    exists (G o F). 
-    serapply Build_Is0Functor.
-    intros u v h. cbn in *.
-    exact (fmap G ( fmap F h)).
+    exists (G o F); exact _.
 Defined.
 
-  (** Next: require more coherences to be a WildCat; get that WildCat is itself more structured. *) 
+(** In fact [WildCat01] is probably a (wild) 1-category and even a (1,2)-category, but we haven't shown that or even defined the latter. *)
+
+(** ** The wild category of wild 1-categories *)
+
+(** This should form a wild 2-category. *) 
 
 Record WildCat :=
 {
@@ -47,46 +50,24 @@ Record WildCat :=
   cat_is1cat : Is1Cat cat_carrier
 }.
 
+(* note for morgan: this allows us to consider WildCats as types. *)
 Coercion cat_carrier : WildCat >-> Sortclass. 
 
-(* note for morgan: this allows us to consider WildCats as types. *)
 Global Existing Instance cat_is01cat. 
 Global Existing Instance cat_is1cat.
 
-(** The proof below is identical to that showing that WildCat01 is a 0 coherent 1 category. This is because every 1 coherent 1 category is a 0 coherent 1 category. *)
+(** The proof below is almost identical to that showing that WildCat01 is a (0,1)-category, but we use [Fun11] instead of [Fun01]. *)
 Global Instance is01cat_wildcat : Is01Cat WildCat.
 Proof.
   serapply Build_Is01Cat.
   + intros A B.
-  exact (Fun01 A B).
-  + intro C.
-  exists idmap. exact _.
-  + intros C D E; cbn in *. 
-  intros [F f]. intros [G g].
-  exists (F o G). 
-  serapply Build_Is0Functor.
-  intros a b h. cbn in *. exact (fmap F( fmap G h)).
+    exact (Fun11 A B).
+  + intro A; rapply (Build_Fun11 idmap).
+  + intros C D E [F ? ?] [G ? ?]; cbn in *.
+    srapply (Build_Fun11 (F o G)).
 Defined.
 
-
-(** Need to have a way to take the core of Fun1 A B to get a gropoid so that we can have a 2-category structure on WildCat.*)
-
-Definition core (A : Type) `{Is01Cat A} := A.
-
-Global Instance is01cat_core (A : Type) `{HasEquivs A}
-  : Is01Cat (core A).
-Proof.
-  serapply Build_Is01Cat.
-  + intros a b. 
-Admitted.
-
-Global Instance is0gpd_core (A : Type) `{HasEquivs A}
-  : Is0Gpd (core A).
-Proof.
-  rapply Build_Is0Gpd.
-Admitted.
-
-(* Now show WildCat is a 2-category with a 1-category structure on Fun02 given by natural transformations. *) 
+(** Now we show WildCat is a 2-category, with a 1-category structure on Fun02 given by natural transformations. *) 
 
 Global Instance is1cat_wildcat : Is1Cat WildCat.
 (** Proof.
@@ -104,5 +85,3 @@ Global Instance is1cat_wildcat : Is1Cat WildCat.
   intros u v h. cbn in *.  exact (fmap G ( fmap F h)).
   Defined. *)
 Admitted. 
-
-

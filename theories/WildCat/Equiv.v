@@ -217,7 +217,7 @@ Definition cat_path_equiv {A : Type} `{IsUnivalent1Cat A} (a b : A)
   : (a $<~> b) -> (a = b)
   := (cat_equiv_path a b)^-1.
 
-(** ** Core of a 1Coh1Cat *)
+(** ** Core of a 1-category *)
 
 Record core (A : Type) := { uncore : A }.
 Arguments uncore {A} c.
@@ -231,7 +231,7 @@ Proof.
   - intros a b c ; apply compose_cate.
 Defined.
 
-Global Instance is0coh1cat_core_hom {A : Type} `{HasEquivs A} (a b : core A)
+Global Instance is01cat_core_hom {A : Type} `{HasEquivs A} (a b : core A)
   : Is01Cat (a $-> b).
 Proof.
   cbv in a, b.

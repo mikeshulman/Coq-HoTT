@@ -313,6 +313,31 @@ Section ConstantFunctor.
 
 End ConstantFunctor.
 
+(** Composite functors *)
+
+Section CompositeFunctor.
+
+  Context {A B C : Type} `{Is1Cat A} `{Is1Cat B} `{Is1Cat C}
+          (F : A -> B) `{!Is0Functor F, !Is1Functor F}
+          (G : B -> C) `{!Is0Functor G, !Is1Functor G}.
+
+  Global Instance is0functor_compose : Is0Functor (G o F).
+  Proof.
+    srapply Build_Is0Functor.
+    intros a b f; exact (fmap G (fmap F f)).
+  Defined.
+
+  Global Instance is1functor_compose : Is1Functor (G o F).
+  Proof.
+    srapply Build_Is1Functor.
+    - intros a b f g p; exact (fmap2 G (fmap2 F p)).
+    - intros a; exact (fmap2 G (fmap_id F a) $@ fmap_id G (F a)).
+    - intros a b c f g.
+      refine (fmap2 G (fmap_comp F f g) $@ _).
+      exact (fmap_comp G (fmap F f) (fmap F g)).
+  Defined.
+
+End CompositeFunctor.
 
 (** More products *)
 

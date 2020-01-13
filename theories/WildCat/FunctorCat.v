@@ -112,6 +112,8 @@ Coercion fun11_fun : Fun11 >-> Funclass.
 Global Existing Instance is0functor_fun11.
 Global Existing Instance is1functor_fun11.
 
+Arguments Build_Fun11 {A B _ _ _ _} F _ _ : rename.
+
 Definition fun01_fun11 {A B : Type} `{Is1Cat A} `{Is1Cat B}
            (F : Fun11 A B)
   : Fun01 A B.
