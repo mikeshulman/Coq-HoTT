@@ -1325,7 +1325,7 @@ Section ConnectedTypes.
     : IsConnected O A.
   Proof.
     apply contr_O_contr; exact _.
-  Defined.
+  Defined.    
 
   (** A type which is both connected and truncated is contractible. *)
   Definition contr_trunc_conn {A : Type} `{In O A} `{IsConnected O A}
@@ -1462,7 +1462,7 @@ Section ModalMaps.
     refine (inO_equiv_inO _ (hfiber_pullback_along' g f c)^-1).
   Defined.
 
-  (** [sum] preserves modal maps. *)
+  (** [functor_sum] preserves modal maps. *)
   Global Instance mapinO_functor_sum {A A' B B'}
          (f : A -> A') (g : B -> B') `{MapIn O _ _ f} `{MapIn O _ _ g}
   : MapIn O (functor_sum f g).
@@ -1641,7 +1641,7 @@ Section ConnectedMaps.
   Defined.
 
   (** It follows that [conn_map_elim] is actually an equivalence. *)
-  Theorem isequiv_o_conn_map
+  Theorem isequiv_o_conn_map 
           {A B : Type} (f : A -> B) `{IsConnMap O _ _ f}
           (P : B -> Type) `{forall b:B, In O (P b)}
   : IsEquiv (fun (g : forall b:B, P b) => g oD f).
@@ -1679,7 +1679,7 @@ Section ConnectedMaps.
     apply conn_map_from_extension_elim; intros P ? d.
     exists (conn_map_elim g P (conn_map_elim f (P o g) d)); intros a.
     exact (conn_map_comp g P _ _ @ conn_map_comp f (P o g) d a).
-  Defined.
+  Defined.      
 
   Definition cancelR_conn_map {A B C : Type} (f : A -> B) (g : B -> C)
          `{IsConnMap O _ _ f} `{IsConnMap O _ _ (g o f)}

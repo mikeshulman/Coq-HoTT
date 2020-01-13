@@ -165,7 +165,7 @@ Section EquivPushout.
   Proof.
     refine (equiv_functor_coeq' eA (equiv_functor_sum' eB eC) _ _).
     all:unfold pointwise_paths.
-    all:intro; cbn; apply ap.
+    all:intro; simpl; apply ap.
     + apply p.
     + apply q.
   Defined.
