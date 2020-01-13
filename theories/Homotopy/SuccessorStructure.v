@@ -14,9 +14,12 @@ Record SuccStr : Type := {
    succ : carrier -> carrier }.
 
 Declare Scope succ_scope.
+Local Open Scope nat_scope.
 Local Open Scope succ_scope.
 Delimit Scope succ_scope with succ.
 Arguments succ {_} _.
+
+Notation "x .+1" := (succ x) : succ_scope.
 
 Definition IntSucc : SuccStr := Build_SuccStr Int int_succ.
 Definition NatSucc : SuccStr := Build_SuccStr nat Nat.succ.
@@ -35,3 +38,18 @@ Proof.
 Defined.
 
 Definition Stratified (N : SuccStr) (n : nat) : SuccStr := Build_SuccStr (StratifiedType N n) (stratified_succ N n).
+
+Fixpoint succ_str_add {N : SuccStr} (n : N) (k : nat) : N :=
+  match k with
+  | O   => n
+  | S k => (succ_str_add n k).+1
+  end.
+
+Infix "+" := succ_str_add : succ_scope.
+
+Definition succ_str_add_succ {N : SuccStr} (n : N) (k : nat) : (n + k.+1) = n.+1 + k.
+Proof.
+  induction k.
+  + reflexivity.
+  + exact (ap succ IHk).
+Defined.
