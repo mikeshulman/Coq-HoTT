@@ -21,27 +21,17 @@ Arguments succ {_} _.
 Definition IntSucc : SuccStr := Build_SuccStr Int int_succ.
 Definition NatSucc : SuccStr := Build_SuccStr nat Nat.succ.
 
-(*Definition StratifiedType (N : SuccStr) (n : nat) : Type := N * Fin (Nat.succ n).
+Definition StratifiedType (N : SuccStr) (n : nat) : Type := N * Fin n.
 
 Definition stratified_succ (N : SuccStr) (n : nat) (x : StratifiedType N n) : StratifiedType N n.
 Proof.
   constructor.
-  + destruct (dec (snd x = inr tt)).
-    - exact (succ (fst x)). 
-    - exact (fst x).
-  + exact (snd x).
-  
-Definition Stratified (N : SuccStr) (n : nat) : SuccStr := Build_SuccStr (stratified_succ N n).*)
+  + induction n.
+    - induction (snd x).
+    - destruct (dec (snd x = inr tt)).
+      * exact (succ (fst x)).
+      * exact (fst x).
+  + exact (cyclic_succ (snd x)).
+Defined.
 
-Definition TimesThree (N : SuccStr): Type := N * Fin 3.
-
-(*Definition times_three_succ (N : SuccStr) (x : TimesThree N) : TimesThree N.
-Proof.
-  constructor.
-  + destruct (dec (snd x = inr tt)).
-    - exact (succ (fst x)). 
-    - exact (fst x).
-  + exact (snd x).
-Defined.*)
-
-(*Definition Stratified (N : SuccStr) (n : nat) : SuccStr := Build_SuccStr (stratified_succ N n).*)
+Definition Stratified (N : SuccStr) (n : nat) : SuccStr := Build_SuccStr (StratifiedType N n) (stratified_succ N n).

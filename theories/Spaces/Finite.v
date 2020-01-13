@@ -1055,3 +1055,26 @@ Ltac FinIndOn X := repeat
   end.
 
 Ltac FinInd := let X := fresh "X" in intro X; FinIndOn X.
+
+(** The function from [Fin n] to [Fin n.+1] which adds 1 to the argument. *)
+Fixpoint add1 {n : nat} (k : Fin n) : Fin n.+1 :=
+  match n, k with
+  | 0, x         => inr tt (* unreachable case *)
+  | n.+1, inr tt => inr tt
+  | n.+1, inl k  => inl (add1 k)
+  end.
+
+(** The element [0] in [Fin n.+1]. *)
+Fixpoint fin_zero (n : nat) : Fin n.+1 :=
+  match n with
+  | 0    => inr tt
+  | n.+1 => inl (fin_zero n)
+  end.
+
+(** The cyclic successor on [Fin n]. It sends [n-1] to [0] and every other [k] to [k+1]. *)
+Definition cyclic_succ {n : nat} (k : Fin n) : Fin n :=
+  match n, k with
+  | 0, x => x (* unreachable case *)
+  | n.+1, inr tt => fin_zero n
+  | n.+1, inl k => add1 k
+  end.
