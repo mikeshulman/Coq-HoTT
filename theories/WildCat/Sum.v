@@ -5,10 +5,10 @@ Require Import WildCat.Core.
 
 (** ** Sum categories *)
 
-Global Instance is0coh1cat_sum A B `{ Is0Coh1Cat A } `{ Is0Coh1Cat B}
-  : Is0Coh1Cat (A + B).
+Global Instance is01cat_sum A B `{ Is01Cat A } `{ Is01Cat B}
+  : Is01Cat (A + B).
 Proof.
-  serapply Build_Is0Coh1Cat.
+  serapply Build_Is01Cat.
   - intros [a1 | b1] [a2 | b2].
     + exact (a1 $-> a2).
     + exact Empty.
@@ -20,30 +20,26 @@ Proof.
 Defined.
 
 (* Note: [try contradiction] deals with empty cases. *)
-Global Instance is0coh21cat_sum A B `{ Is0Coh21Cat A } `{ Is0Coh21Cat B}
-  : Is0Coh21Cat (A + B).
+Global Instance is1cat_sum A B `{ Is1Cat A } `{ Is1Cat B}
+  : Is1Cat (A + B).
 Proof.
-  serapply Build_Is0Coh21Cat.
+  serapply Build_Is1Cat.
   - intros x y.
-    serapply Build_Is0Coh1Cat;
+    serapply Build_Is01Cat;
     destruct x as [a1 | b1], y as [a2 | b2];
     try contradiction; cbn;
     (apply Hom || apply Id || intros a b c; apply cat_comp).
-  - intros x y; serapply Build_Is0Coh1Gpd.
+  - intros x y; serapply Build_Is0Gpd.
     destruct x as [a1 | b1], y as [a2 | b2];
     try contradiction; cbn; intros f g; apply gpd_rev.
-  - intros x y z; serapply Build_Is0Coh1Functor.
+  - intros x y z; serapply Build_Is0Functor.
     intros [f g] [h i] [j k].
     destruct x as [a1 | b1], y as [a2 | b2], z as [a3 | b3];
     try contradiction; exact (j $o@ k).
-Defined.
-
-Global Instance is1coh1cat_sum A B `{Is1Coh1Cat A} `{Is1Coh1Cat B}
-  : Is1Coh1Cat (A + B).
-Proof.
-  serapply Build_Is1Coh1Cat.
-  { intros [a1 | b1] [a2 | b2] [a3 | b3] [a4 | b4] f g h;
-    try contradiction; cbn; apply cat_assoc. }
-  1,2: intros [a1 | b1] [a2 | b2] f; try contradiction;
-    cbn; ( apply cat_idl || apply cat_idr).
+  - intros [a1 | b1] [a2 | b2] [a3 | b3] [a4 | b4] f g h;
+    try contradiction; cbn; apply cat_assoc.
+  - intros [a1 | b1] [a2 | b2] f; try contradiction;
+    cbn; apply cat_idl.
+  - intros [a1 | b1] [a2 | b2] f; try contradiction;
+    cbn; apply cat_idr.
 Defined.

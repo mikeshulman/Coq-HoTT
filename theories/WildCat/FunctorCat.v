@@ -11,21 +11,21 @@ Require Import WildCat.Induced.
 
 Record Fun01 (A B : Type) `{IsGraph A} `{IsGraph B} := {
   fun01_F : A -> B;
-  fun01_is0coh1functor : Is0Coh1Functor fun01_F;
+  fun01_is0functor : Is0Functor fun01_F;
 }.
 
 Coercion fun01_F : Fun01 >-> Funclass.
-Existing Instance fun01_is0coh1functor.
+Existing Instance fun01_is0functor.
 
-Definition NatTrans {A B : Type} `{IsGraph A} `{Is0Coh21Cat B} (F G : A -> B)
-           {ff : Is0Coh1Functor F} {fg : Is0Coh1Functor G}
+Definition NatTrans {A B : Type} `{IsGraph A} `{Is1Cat B} (F G : A -> B)
+           {ff : Is0Functor F} {fg : Is0Functor G}
   := { alpha : F $=> G & Is1Natural F G alpha }.
 
 (** Note that even if [A] and [B] are fully coherent oo-categories, the objects of our "functor category" are not fully coherent.  Thus we cannot in general expect this "functor category" to itself be fully coherent.  However, it is at least a 0-coherent 1-category, as long as [B] is a 1-coherent 1-category. *)
 
-Global Instance is0coh1cat_fun01 (A B : Type) `{IsGraph A} `{Is1Coh1Cat B} : Is0Coh1Cat (Fun01 A B).
+Global Instance is0cat_fun01 (A B : Type) `{IsGraph A} `{Is1Cat B} : Is01Cat (Fun01 A B).
 Proof.
-  srapply Build_Is0Coh1Cat.
+  srapply Build_Is01Cat.
   - intros [F ?] [G ?].
     exact (NatTrans F G).
   - intros [F ?]; cbn.
@@ -36,46 +36,39 @@ Defined.
 
 (** In fact, in this case it is automatically also a 0-coherent 2-category and a 1-coherent 1-category, with a totally incoherent notion of 2-cell between 1-coherent natural transformations. *)
 
-Global Instance is0coh2cat_fun01 (A B : Type) `{IsGraph A} `{Is1Coh1Cat B} : Is0Coh21Cat (Fun01 A B).
+Global Instance is0coh2cat_fun01 (A B : Type) `{IsGraph A} `{Is1Cat B} : Is1Cat (Fun01 A B).
 Proof.
-  srapply Build_Is0Coh21Cat.
-  - intros [F ?] [G ?]; serapply Build_Is0Coh1Cat.
+  srapply Build_Is1Cat.
+  - intros [F ?] [G ?]; serapply Build_Is01Cat.
     + intros [alpha ?] [gamma ?].
       exact (forall a, alpha a $== gamma a).
     + intros [alpha ?] a; cbn.
       reflexivity.
     + intros [alpha ?] [gamma ?] [phi ?] nu mu a.
       exact (mu a $@ nu a).
-  - intros [F ?] [G ?]; serapply Build_Is0Coh1Gpd.
+  - intros [F ?] [G ?]; serapply Build_Is0Gpd.
     intros [alpha ?] [gamma ?] mu a.
     exact ((mu a)^$).
   - intros [F ?] [G ?] [K ?].
-    serapply Build_Is0Coh1Functor.
+    serapply Build_Is0Functor.
     intros [[alpha ?] [gamma ?]] [[phi ?] [mu ?]] [f g] a.
     exact (f a $o@ g a).
-Defined.
-
-Global Instance is1coh1cat_fun01 (A B : Type) `{IsGraph A} `{Is1Coh1Cat B} : Is1Coh1Cat (Fun01 A B).
-Proof.
-  srapply Build_Is1Coh1Cat'.
-  1,2:intros [F ?] [G ?] [K ?] [L ?] [alpha ?] [gamma ?] [phi ?] a; cbn.
-  3,4:intros [F ?] [G ?] [alpha ?] a; cbn.
-  5:intros [F ?] a; cbn.
-  - serapply cat_assoc.
-  - serapply cat_assoc_opp.
-  - serapply cat_idl.
-  - serapply cat_idr.
-  - serapply cat_idlr.
+  - intros [F ?] [G ?] [K ?] [L ?] [alpha ?] [gamma ?] [phi ?] a; cbn.
+    serapply cat_assoc.
+  - intros [F ?] [G ?] [alpha ?] a; cbn.
+    serapply cat_idl.
+  - intros [F ?] [G ?] [alpha ?] a; cbn.
+    serapply cat_idr.
 Defined.
 
 (** It also inherits a notion of equivalence, namely a natural transformation that is a pointwise equivalence.  Note that this is not a "fully coherent" notion of equivalence, since the functors and transformations are not themselves fully coherent. *)
 
 Definition NatEquiv {A B : Type} `{IsGraph A} `{HasEquivs B}
-           (F G : A -> B) `{!Is0Coh1Functor F, !Is0Coh1Functor G}
+           (F G : A -> B) `{!Is0Functor F, !Is0Functor G}
   := { alpha : forall a, F a $<~> G a & Is1Natural F G (fun a => alpha a) }.
 
-Global Instance hasequivs_fun01 (A B : Type) `{Is0Coh1Cat A} `{Is1Coh1Cat B} (** previously it was assumed A was a 1 coherent 1 category. the same proof goes through with A a 0 coherent 1 category. Weakening this hypothesis substantially simplifies the proof that Fun11 has equivs.*)
-  {eB : HasEquivs B} : HasEquivs (Fun01 A B).
+Global Instance hasequivs_fun01 (A B : Type) `{Is01Cat A} `{HasEquivs B}
+  : HasEquivs (Fun01 A B).
 Proof.
   srapply Build_HasEquivs.
   1:{ intros [F ?] [G ?]. exact (NatEquiv F G). }
@@ -108,44 +101,35 @@ Defined.
 
 (** ** Categories of 1-coherent 1-functors *)
 
-Record Fun11 (A B : Type) `{Is0Coh21Cat A} `{Is0Coh21Cat B} :=
+Record Fun11 (A B : Type) `{Is1Cat A} `{Is1Cat B} :=
 {
   fun11_fun : A -> B ;
-  is0coh1functor_fun11 : Is0Coh1Functor fun11_fun ;
-  is0coh21functor_fun11 : Is0Coh21Functor fun11_fun ;
-  is1coh1functor_fun11 : Is1Coh1Functor fun11_fun
+  is0functor_fun11 : Is0Functor fun11_fun ;
+  is1functor_fun11 : Is1Functor fun11_fun
 }.
 
 Coercion fun11_fun : Fun11 >-> Funclass.
-Global Existing Instance is0coh1functor_fun11.
-Global Existing Instance is0coh21functor_fun11.
-Global Existing Instance is1coh1functor_fun11.
+Global Existing Instance is0functor_fun11.
+Global Existing Instance is1functor_fun11.
 
-Definition fun01_fun11 {A B : Type} `{Is0Coh21Cat A} `{Is0Coh21Cat B}
+Definition fun01_fun11 {A B : Type} `{Is1Cat A} `{Is1Cat B}
            (F : Fun11 A B)
   : Fun01 A B.
 Proof.
   exists F; exact _.
 Defined.
 
-Global Instance is0coh1cat_fun11 {A B : Type} `{Is0Coh21Cat A} `{Is1Coh1Cat B} : Is0Coh1Cat (Fun11 A B).
+Global Instance is01cat_fun11 {A B : Type} `{Is1Cat A} `{Is1Cat B} : Is01Cat (Fun11 A B).
 Proof.
-  exact (induced_0coh1cat (fun01_fun11)).
+  exact (induced_01cat (fun01_fun11)).
 Defined.
 
-Global Instance is0coh21cat_fun11 {A B : Type} `{Is0Coh21Cat A} `{Is1Coh1Cat B} : Is0Coh21Cat (Fun11 A B).
+Global Instance is1cat_fun11 {A B :Type} `{Is1Cat A} `{Is1Cat B} : Is1Cat (Fun11 A B).
 Proof.
-  exact (induced_0coh21cat (fun01_fun11)).
+  exact (induced_1cat (fun01_fun11)).
 Defined.
 
-Global Instance is1coh1cat_fun11 {A B :Type} `{Is0Coh21Cat A}`{Is1Coh1Cat B} : Is1Coh1Cat (Fun11 A B).
+Global Instance hasequivs_fun11 {A B : Type} `{Is1Cat A} `{HasEquivs B} : HasEquivs (Fun11 A B).
 Proof.
-  exact (induced_1coh1cat (fun01_fun11)).
+  exact (induced_hasequivs fun01_fun11).
 Defined.
-
-Global Instance hasequivs_fun11 { A B : Type} `{Is0Coh21Cat A}`{Is1Coh1Cat B}`{!HasEquivs B} : HasEquivs (Fun11 A B).
-Proof.
- serapply (induced_hasequivs (Fun11 A B)(Fun01 A B) fun01_fun11 ).
- Defined.
-  
-

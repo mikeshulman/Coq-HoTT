@@ -3,28 +3,17 @@ Require Import WildCat.Core.
 
 (** Empty category *)
 
-Global Instance isgraph_empty : IsGraph Empty.
+Global Instance is01cat_empty : Is01Cat Empty.
 Proof.
-  by econstructor.
+  srapply Build_Is01Cat; intros [].
 Defined.
 
-Global Instance is0coh1cat_empty : Is0Coh1Cat Empty.
+Global Instance is0gpd_empty : Is0Gpd Empty.
 Proof.
-  by econstructor.
+  constructor; intros [].
 Defined.
 
-Global Instance is0coh1gpd_empty : Is0Coh1Gpd Empty.
+Global Instance is1cat_empty : Is1Cat Empty.
 Proof.
-  by econstructor.
+  simple notypeclasses refine (Build_Is1Cat _ _ _ _ _ _ _ _); intros [].
 Defined.
-
-Global Instance is0coh21cat_empty : Is0Coh21Cat Empty.
-Proof.
-  by simple notypeclasses refine (Build_Is0Coh21Cat _ _ _ _ _).
-Defined.
-
-Global Instance is1coh1cat_empty : Is1Coh1Cat Empty.
-Proof.
-  econstructor; intros [].
-Defined.
-
