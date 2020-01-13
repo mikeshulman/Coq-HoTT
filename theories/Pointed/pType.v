@@ -71,5 +71,5 @@ Proof.
   srefine (Build_pHomotopy _ _).
   - intros x; reflexivity.
   - cbn.
-    admit.
-Admitted.
+    (* Some messy path algebra here. *)
+Abort.
