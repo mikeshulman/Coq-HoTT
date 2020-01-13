@@ -7,10 +7,10 @@ Require Import pHomotopy pMap pEquiv.
 Local Open Scope pointed_scope.
 Local Open Scope path_scope.
 
+(** * pType as a wild category *)
+
 Global Instance is01cat_ptype : Is01Cat pType
   := Build_Is01Cat pType pMap (@pmap_idmap) (@pmap_compose).
-
-  (** pointed homotopy stuff. *)
 
 Global Instance is01cat_pmap (A B : pType) : Is01Cat (A ->* B).
 Proof.
@@ -48,23 +48,23 @@ Defined.
 
 Global Instance hasequivs_ptype : HasEquivs pType.
 Proof.
-  (* TODO: Borken *)
-Admitted.
-(*
-  srapply (Build_HasEquivs _ _ _ pEquiv (fun A B f => f) (fun A B f => f^-1* ));
-    cbn; intros A B f.
-  - apply peissect.
-  - apply peisretr.
-  - apply pequiv_adjointify.
+  srapply (Build_HasEquivs _ _ _ pEquiv (fun A B f => IsEquiv f));
+    intros A B f; cbn; intros.
+  - exact f.
+  - exact _.
+  - exact (Build_pEquiv _ _ f _).
   - reflexivity.
+  - exact ((Build_pEquiv _ _ f _)^-1*).
+  - apply peissect.
+  - cbn. refine (peisretr (Build_pEquiv _ _ f _)).
+  - rapply (isequiv_adjointify f g).
+    + intros x; exact (pointed_htpy r x).
+    + intros x; exact (pointed_htpy s x).
 Defined.
-*)
 
 Global Instance isunivalent_ptype `{Univalence} : IsUnivalent1Cat pType.
 Proof.
   srapply Build_IsUnivalent1Cat; intros A B.
-Admitted.
-(*
   refine (isequiv_homotopic (equiv_path_ptype A B)^-1 _).
   intros []; apply path_pequiv.
   cbn.
@@ -72,11 +72,4 @@ Admitted.
   - intros x; reflexivity.
   - cbn.
     admit.
-*)
-
-(*
-Global Instance is0functor_pmap : Is0Functor (uncurry pMap).
-Proof.
-  serapply Build_Is0Coh1Functor. 
-  
- *)
+Admitted.
