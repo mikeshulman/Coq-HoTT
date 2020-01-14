@@ -470,6 +470,22 @@ Section Enhancements.
 
 End Enhancements.
 
+(** An enhancement of Corollary 2.29 of CORS: when O (hence also O') is a modality, the map between fibers is not just an O-equivalence but is O-connected. *)
+Global Instance conn_map_functor_hfiber {O O' : Modality} `{IsSepFor O' O}
+       {Y X : Type} (f : Y -> X) (x : X)
+  : IsConnMap O (functor_hfiber (fun y => (to_O_natural O' f y)^) x).
+Proof.
+  intros [oy p].
+  rewrite <- (inv_V p).
+  ntc_refine (isconnected_equiv' O _
+               (hfiber_functor_hfiber (to_O_natural O' f) oy x p^) _).
+  (* Actually typeclasss search can do the rest by itself, but it's faster (and easier for the human reader) if we help it out. *)
+  ntc_refine (isconnected_hfiber_conn_map
+                (f := (functor_hfiber (to_O_natural O' f) oy)) (x;p^)).
+  apply conn_map_O'_inverts.
+  apply O_inverts_isconnected; apply conn_map_to_O.
+Defined.
+
 (** ** The modal factorization system *)
 
 Section ModalFact.

@@ -486,6 +486,10 @@ Section Reflective_Subuniverse.
 
   Section Replete.
 
+    Definition inO_equiv_inO' (T : Type) {U : Type} `{In O T} (f : T <~> U)
+    : In O U
+      := inO_equiv_inO T f.
+
     (** An equivalent formulation of repleteness is that a type lies in the subuniverse as soon as its unit map is an equivalence. *)
     Definition inO_isequiv_to_O (T:Type)
     : IsEquiv (to O T) -> In O T
@@ -839,6 +843,39 @@ Section Reflective_Subuniverse.
       - unfold Sect; apply O_indpaths; try exact _.
         intros [a op]; revert op; apply O_indpaths; try exact _; intros p; simpl.
         abstract (repeat (simpl rewrite @O_rec_beta); reflexivity).
+    Defined.
+
+    (** ** Equivalences *)
+
+    (** Naively it might seem that we need closure under Sigmas (hence a modality) to deduce closure under [Equiv], but in fact the above closure under fibers is sufficient. *)
+
+    Global Instance inO_equiv `{Funext} (A B : Type)
+           `{In O A} `{In O B}
+      : In O (A <~> B).
+    Proof.
+      refine (inO_equiv_inO _ (issig_equiv A B)).
+      refine (inO_equiv_inO _ (equiv_functor_sigma equiv_idmap
+                                 (fun f => equiv_biinv_isequiv f))).
+      refine (inO_equiv_inO' (hfiber (fun fgh : (A->B)*((B->A)*(B->A)) => ((snd (snd fgh)) o (fst fgh) , (fst fgh) o (fst (snd fgh)))) (idmap, idmap)) _).
+      unfold hfiber, BiInv; cbn.
+      srefine (equiv_adjointify _ _ _ _).
+      - intros [[f [g h]] p].
+        apply (equiv_inverse (equiv_path_prod _ _)) in p.
+        destruct p as [p q]; cbn in *.
+        exists f; split; [ exists h | exists g ].
+        all:apply ap10; assumption.
+      - intros [f [[g p] [h q]]].
+        exists (f,(h,g)); cbn.
+        apply path_prod; apply path_arrow; assumption.
+      - intros [f [[g p] [h q]]]; cbn.
+        apply (path_sigma' _ 1); apply path_prod; apply (path_sigma' _ 1);
+          cbn; rewrite transport_1.
+        1:rewrite ap_fst_path_prod.
+        2:rewrite ap_snd_path_prod.
+        all:apply path_forall; intros x; rewrite ap10_path_arrow; reflexivity.
+      - intros [[f [g h]] p]; cbn. 
+        apply (path_sigma' _ 1); cbn.
+        refine (_ @ eta_path_prod p); apply ap011; apply eta_path_arrow.
     Defined.
 
     (** ** Paths *)
@@ -1334,6 +1371,14 @@ Section ConnectedTypes.
     apply (contr_equiv _ (to O A)^-1).
   Defined.
 
+  (** Any map between connected types is inverted by O. *)
+  Global Instance O_inverts_isconnected {A B : Type} (f : A -> B)
+             `{IsConnected O A} `{IsConnected O B}
+    : O_inverts O f.
+  Proof.
+    exact _.
+  Defined.
+
   (** Here's another way of stating the universal property for mapping out of connected types into modal ones. *)
   Definition extendable_const_isconnected_inO@{Ou Oa i j k l m} (n : nat)
              (** Work around https://coq.inria.fr/bugs/show_bug.cgi?id=3811 *)
@@ -1827,6 +1872,54 @@ Section ConnectedMaps.
   Defined.
 
 End ConnectedMaps.
+
+(** ** Separated subuniverses *)
+
+Class IsSepFor (O' O : ReflectiveSubuniverse)
+  := inO'_paths : forall (A : Type),
+      (forall (x y : A), In O (x = y)) <-> In O' A.
+
+Section Separated.
+  Context {O' O : ReflectiveSubuniverse} {sep : IsSepFor O' O}.
+
+  Global Instance inO'_inO {A} `{In O A} : In O' A.
+  Proof.
+    apply inO'_paths; rapply inO_paths.
+  Defined.
+
+  Global Instance inO'_hprop {A} {hp : IsHProp A} : In O' A.
+  Proof.
+    apply inO'_paths; intros x y; srapply inO_contr.
+  Defined.
+
+  (** Proposition 2.18 of CORS *)
+  Global Instance inO'_typeO `{Univalence} : In O' (Type_ O).
+  Proof.
+    apply inO'_paths; intros [A ?] [B ?].
+    refine (inO_equiv_inO _ (equiv_path_TypeO O _ _)); cbn.
+    refine (inO_equiv_inO _ (equiv_path_universe A B)).
+  Defined.
+
+  (** Corollary 2.29 of CORS *)
+  Global Instance O'_inverts_functor_hfiber {Y X : Type} (f : Y -> X)
+         (x : X)
+         : O_inverts O (functor_hfiber (fun y => (to_O_natural O' f y)^) x).
+  Proof.
+    (* TODO *)
+  Admitted.
+
+  (** Proposition 2.30 of CORS *)
+  Global Instance conn_map_O'_inverts {Y X : Type} (f : Y -> X)
+         `{O_inverts O' f}
+    : IsConnMap O f.
+  Proof.
+    intros x.
+    refine (contr_equiv' (O (hfiber (O_functor O' f) (to O' X x))) _).
+    exact (equiv_inverse (Build_Equiv _ _
+             (O_functor O (functor_hfiber (fun y => (to_O_natural O' f y)^) x)) _)).
+  Defined.
+
+End Separated.
 
 
 End ReflectiveSubuniverses_Theory.
