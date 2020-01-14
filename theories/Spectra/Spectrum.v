@@ -27,14 +27,14 @@ Local Open Scope succ_scope.
 Definition Prespectrum := GenPrespectrum IntSucc.
 Definition Spectrum := GenSpectrum IntSucc.
 
-Definition Build_Spectrum (X : Int -> pType)
+Definition Build_Spectrum' (X : Int -> pType)
   (f : forall n : Int, X n ->* loops (X (int_succ n)))
   {H : forall n : Int, IsEquiv (f n)}
   : Spectrum
   := Build_GenSpectrum IntSucc
       (Build_GenPrespectrum IntSucc X f) H.
 
-Definition Build_Spectrum' (X : Int -> pType)
+Definition Build_Spectrum (X : Int -> pType)
   (f : forall n : Int, X n <~>* loops (X (int_succ n)))
   : Spectrum
   := Build_GenSpectrum IntSucc
@@ -66,24 +66,45 @@ Proof.
     exact (S n).
 Defined.
 
+Definition nat_pos_succ (n : Pos) : nat_pos (pos_succ n) = S (nat_pos n).
+Proof.
+  rapply pos_peano_ind_beta_pos_succ.
+Defined.
+
+Definition int_succ_pos (n : Pos) : int_succ (pos n) = pos (pos_succ n).
+Proof.
+  destruct n as [|n|n]; reflexivity.
+Qed.
+
+Definition int_pred_neg (n : Pos) : int_pred (neg n) = neg (pos_succ n).
+Proof.
+  destruct n as [|n|n]; reflexivity.
+Qed.
+
+Definition int_succ_pos_succ (n : Pos) : int_succ (neg (pos_succ n)) = neg n.
+Proof.
+  rewrite <- int_pred_neg, int_succ_pred. reflexivity.
+Qed.
+
 Coercion nat_pos : Pos >-> nat.
 (** END: move to pos *)
 
 Definition Build_Spectrum_nat (X : nat -> pType)
-  (f : forall n, X n ->* loops (X (S n)))
-  {H : forall n, IsEquiv (f n)}
+  (f : forall n, X n <~>* loops (X (S n)))
   : Spectrum.
 Proof.
   serapply Build_Spectrum.
   + intros [n| |p].
-    - exact (Build_pType Unit tt).
+    - exact (iterated_loops n (X O)).
     - exact (X O).
     - exact (X p).
-  + intros [n| |p]; cbn.
-    1: exact (Build_pMap _ _ (fun _ => point _) idpath).
-    1: apply f.
-    unfold nat_pos.
-Admitted.
+  + intros [n| |p].
+    - revert n. refine (pos_peano_ind _ _ _). 
+      * reflexivity.
+      * intros n _. rewrite nat_pos_succ, int_succ_pos_succ. reflexivity.
+    - simpl. exact (f O).
+    - rewrite int_succ_pos, nat_pos_succ. apply f.
+Defined.
 
 (** ** Truncations of spectra *)
 (*
