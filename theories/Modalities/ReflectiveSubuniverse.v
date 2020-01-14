@@ -763,15 +763,14 @@ Section Reflective_Subuniverse.
     (** TODO: Manage the universes more carefully in this lemma, rather than simply allowing any universes to be inferred by unsetting strict universe declaration. *)
     Local Unset Strict Universe Declaration.
     Definition O_ind_from_inO_sigma
-    (** Work around https://coq.inria.fr/bugs/show_bug.cgi?id=3811 *)
-    : (forall (A:Type@{i}) (B:A -> Type@{j}) {A_inO : In@{Ou Oa i} O A} `{forall a, In@{Ou Oa j} O (B a)},
-         (In@{Ou Oa j} O (sig@{i j} (fun x:A => B x))))
-      ->
-      (forall (A:Type@{i}) (B: (O A) -> Type@{j}) `{forall a, In@{Ou Oa j} O (B a)}
-              (g : forall (a:A), (B (to O A a))),
-         { f : forall (z:O A), (B z) & forall a:A, f (to@{Ou Oa i} O A a) = g a }).
+               (H : forall (A:Type@{i}) (B:A -> Type@{j})
+                           {A_inO : In@{Ou Oa i} O A}
+                           `{forall a, In@{Ou Oa j} O (B a)},
+                   (In@{Ou Oa j} O (sig@{i j} (fun x:A => B x))))
+               (A:Type@{i}) (B: (O A) -> Type@{j}) `{forall a, In@{Ou Oa j} O (B a)}
+               (g : forall (a:A), (B (to O A a)))
+      : { f : forall (z:O A), (B z) & forall a:A, f (to@{Ou Oa i} O A a) = g a }.
     Proof.
-      intro H. intros A B ? g.
       pose (Z := sigT B).
       assert (In@{Ou Oa j} O Z).
       { apply H; [ exact _ | assumption ]. }
@@ -1882,6 +1881,10 @@ Class IsSepFor (O' O : ReflectiveSubuniverse)
 Section Separated.
   Context {O' O : ReflectiveSubuniverse} {sep : IsSepFor O' O}.
 
+  Global Instance inO'_paths' {A} (x y : A) `{In O' A}
+    : In O (x = y)
+    := snd (inO'_paths A) _ x y.
+
   Global Instance inO'_inO {A} `{In O A} : In O' A.
   Proof.
     apply inO'_paths; rapply inO_paths.
@@ -1900,13 +1903,52 @@ Section Separated.
     refine (inO_equiv_inO _ (equiv_path_universe A B)).
   Defined.
 
+  (** Proposition 2.26 of CORS *)
+  Global Instance isequiv_O'_path_cmp {A} (x y : A)
+    : IsEquiv (O_rec (O := O) (@ap _ _ (to O' A) x y)).
+  Proof.
+    (* TODO *)
+  Admitted.
+
+  Definition equiv_O'_path_cmp {A} (x y : A)
+    : O (x = y) <~> (to O' A x = to O' A y)
+    := Build_Equiv _ _ _ (isequiv_O'_path_cmp x y).
+
+  (** Lemma 2.27 of CORS *)
+  Global Instance O'_inverts_functor_sigma_to_O' {X} (P : O' X -> Type)
+    : @IsEquiv (O {x : X & P (to O' X x)}) (O {ox : O' X & P ox})
+               (O_functor O (fun xp:{x:X & P (to O' X x)} => (to O' X xp.1 ; xp.2))).
+  Proof.
+    (* TODO *)
+  Admitted.
+
+  Definition equiv_functor_sigma_to_O' {X} (P : O' X -> Type)
+    : (O {x : X & P (to O' X x)}) <~> (O {ox : O' X & P ox})
+    := Build_Equiv _ _ _ (O'_inverts_functor_sigma_to_O' P).
+
   (** Corollary 2.29 of CORS *)
   Global Instance O'_inverts_functor_hfiber {Y X : Type} (f : Y -> X)
          (x : X)
          : O_inverts O (functor_hfiber (fun y => (to_O_natural O' f y)^) x).
   Proof.
-    (* TODO *)
-  Admitted.
+    srefine (isequiv_homotopic (_ : _ <~> _) _).
+    - unfold hfiber.
+      refine (_ oE (equiv_inverse (equiv_O_sigma_O O _))).
+      refine (equiv_functor_sigma_to_O'
+                (fun oy:O' Y => O_functor O' f oy = to O' X x) oE _).
+      apply equiv_O_functor. 
+      refine (equiv_functor_sigma' equiv_idmap _); intros y; cbn.
+      refine (_ oE equiv_O'_path_cmp (f y) x).
+      apply equiv_concat_l, to_O_natural.
+    - apply O_indpaths.
+      intros [y p]; cbn.
+      abstract (
+      rewrite O_rec_beta;
+      rewrite !(to_O_natural O _ _);
+      apply ap; refine (path_sigma' _ 1 _); cbn;
+      rewrite O_rec_beta, inv_V; reflexivity
+      ).
+  Defined.
 
   (** Proposition 2.30 of CORS *)
   Global Instance conn_map_O'_inverts {Y X : Type} (f : Y -> X)
