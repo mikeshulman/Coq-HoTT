@@ -479,10 +479,10 @@ Proof.
   rewrite <- (inv_V p).
   ntc_refine (isconnected_equiv' O _
                (hfiber_functor_hfiber (to_O_natural O' f) oy x p^) _).
-  (* Actually typeclasss search can do the rest by itself, but it's faster (and easier for the human reader) if we help it out. *)
   ntc_refine (isconnected_hfiber_conn_map
                 (f := (functor_hfiber (to_O_natural O' f) oy)) (x;p^)).
   apply conn_map_O'_inverts.
+  (* Actually typeclasss search can do the rest by itself, but it's faster (and easier for the human reader) if we help it out. *)
   apply O_inverts_isconnected; apply conn_map_to_O.
 Defined.
 

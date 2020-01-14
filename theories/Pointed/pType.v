@@ -58,8 +58,8 @@ Proof.
   - apply peissect.
   - cbn. refine (peisretr (Build_pEquiv _ _ f _)).
   - rapply (isequiv_adjointify f g).
-    + intros x; exact (pointed_htpy r x).
-    + intros x; exact (pointed_htpy s x).
+    + intros x; exact (r x).
+    + intros x; exact (s x).
 Defined.
 
 Global Instance isunivalent_ptype `{Univalence} : IsUnivalent1Cat pType.

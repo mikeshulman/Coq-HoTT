@@ -186,7 +186,7 @@ Proof.
       (loops A) (loops B) (loops_functor f) (loops C)
       (loops_functor g) (loops_functor h) _ _ _).
     intros x; symmetry.
-    refine (_ @ pointed_htpy (loops_functor_compose h g) x).
+    refine (_ @ loops_functor_compose h g x).
     simpl.
     abstract (rewrite !concat_1p; reflexivity). }
   exact (path_intermediate (path_factor (O_factsys n) (loops_functor f) I

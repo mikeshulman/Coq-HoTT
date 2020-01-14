@@ -185,10 +185,10 @@ Defined.
 Lemma pequiv_ptr_loop_psusp `{Univalence} (X : pType) n `{IsConnected n.+1 X}
   : pTr (n +2+ n) X <~>* pTr (n +2+ n) (loops (psusp X)).
 Proof.
-  serapply (Build_pEquiv _ _ _ (isequiv_conn_map_ino (n +2+ n) _)).
+  simple notypeclasses refine (Build_pEquiv _ _ _ (isequiv_conn_map_ino (n +2+ n) _)).
   { apply ptr_functor.
     apply loop_susp_unit. }
-  exact _.
+  all:exact _.
 Defined.
 
 Definition loop_susp_unit_natural {X Y : pType} (f : X ->* Y)

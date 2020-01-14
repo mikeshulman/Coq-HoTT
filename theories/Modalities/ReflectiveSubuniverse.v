@@ -1951,7 +1951,8 @@ Section Separated.
   Defined.
 
   (** Proposition 2.30 of CORS *)
-  Global Instance conn_map_O'_inverts {Y X : Type} (f : Y -> X)
+  (* Making this an [Instance] breaks typeclass inference in various places. *)
+  Definition conn_map_O'_inverts {Y X : Type} (f : Y -> X)
          `{O_inverts O' f}
     : IsConnMap O f.
   Proof.

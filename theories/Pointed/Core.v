@@ -61,6 +61,12 @@ Arguments pointed_htpy {A B f g} p x.
 
 Coercion pointed_htpy : pHomotopy >-> pointwise_paths.
 
+Definition pointed_htpy' {A B} (f g : pMap A B) (p : pHomotopy f g)
+  : forall x:A, f x = g x
+  := fun x => pointed_htpy p x.
+
+Coercion pointed_htpy' : pHomotopy >-> Funclass.
+
 Infix "==*" := pHomotopy : pointed_scope.
 
 (** ** Pointed equivalences *)
