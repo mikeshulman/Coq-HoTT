@@ -60,6 +60,11 @@ Section Induced_category.
     + intros a b c g h. cbn in *. exact (Id _). 
   Defined.
 
+  Instance induced_hasmorext `{HasMorExt B} : HasMorExt A.
+  Proof.
+    constructor. intros. apply H1.
+  Defined.
+
   Definition induced_hasequivs `{HasEquivs B} : HasEquivs A.
   Proof.
     serapply Build_HasEquivs.

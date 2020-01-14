@@ -5,6 +5,7 @@ Require Import HIT.Coeq.
 Require Import Algebra.Group.
 Require Import Algebra.Subgroup.
 Require Import Cubical.
+Require Import WildCat.
 Import TrM.
 
 Local Open Scope mc_mult_scope.
@@ -416,3 +417,47 @@ Proof.
   + change (a o eta == idmap); symmetry.
     apply ah.
 Defined.
+
+(** AbGroup forms a 01Cat *)
+Global Instance is01cat_AbGroup : Is01Cat AbGroup :=
+  induced_01cat group_abgroup.
+
+(* Global Instance is01cat_GroupHomomorphism {A B : AbGroup} : Is01Cat (A $-> B) :=
+  induced_01cat (@grp_homo_map A B).
+ *)
+(* Global Instance is0gpd_GroupHomomorphism {A B : AbGroup}: Is0Gpd (A $-> B) :=
+  induced_0gpd (@grp_homo_map A B).
+ *)
+(* Definition is0functor_comp_induced {A B : Type} (f : A -> B) {H : Is01Cat B}
+(*   (HF : forall x y z : B, Is0Functor (uncurry (@cat_comp B _ x y z)))  *)
+  (x y z : A) : 
+   Is0Functor (uncurry (@cat_comp A (induced_01cat f) x y z)).
+ *)
+
+(* Global Instance is0functor_comp_GroupHomomorphism {A B C : AbGroup}:
+  Is0Functor (uncurry (@cat_comp Group _ A B C)).
+Proof.
+  apply Build_Is0Functor.
+  intros [f g] [f' g'] [p p'] a ;
+    exact (p (g a) @ ap f' (p' a)).
+Defined.
+ *)
+
+(* Definition is0functor_comp_induced {A B : Type} (f : A -> B) {H : Is01Cat B} {H2 : forall x y : B, IsGraph (x $-> y)}
+  (HF : forall x y z : B, Is0Functor (uncurry (@cat_comp B _ x y z)))
+  (x y z : A) : Is0Functor (uncurry (@cat_comp A (induced_01cat f) x y z)).
+Proof.
+  constructor. intros. apply HF, f0.
+Defined.
+ *)
+ 
+(** AbGroup forms a 1Cat *)
+Global Instance is1cat_abgroup : Is1Cat AbGroup :=
+  induced_1cat _.
+
+Instance hasmorext_abgroup `{Funext} : HasMorExt AbGroup :=
+  induced_hasmorext _.
+
+Global Instance hasequivs_abgroup : HasEquivs AbGroup :=
+  induced_hasequivs _.
+
