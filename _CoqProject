@@ -21,7 +21,7 @@ COQC = hoqc
 #   # Spectra
 #   # Algebra
 #   # Tactics
-#   # PropResizing 
+#   # PropResizing
 #   # Categories
 #   # Classes
 #
@@ -246,7 +246,7 @@ theories/HoTT.v
 theories/Tests.v
 
 #
-#   Contrib  
+#   Contrib
 #
 
 contrib/HoTTBook.v
@@ -270,6 +270,8 @@ theories/Homotopy/Freudenthal.v
 theories/Homotopy/HSpace.v
 theories/Homotopy/ClassifyingSpace.v
 theories/Homotopy/EMSpace.v
+theories/Homotopy/SuccessorStructure.v
+theories/Homotopy/LongExactSequence.v
 
 #
 #   Pointed
@@ -292,7 +294,7 @@ theories/Pointed/pType.v
 #
 
 theories/Spectra/Spectrum.v
-theories/Spectra/Coinductive.v  
+theories/Spectra/Coinductive.v
 
 #
 #   Algebra
