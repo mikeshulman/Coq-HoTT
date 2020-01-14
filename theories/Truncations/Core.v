@@ -212,6 +212,14 @@ Hint Immediate istruncmap_mapinO_tr : typeclass_instances.
 Notation oo := purely.
 (** Unfortunately, we can't import two or more copies of [Modalities_Theory] at the same time (the most recently imported shadows the other(s)).  If we ever want to talk about truncation and include [oo], we may want to define a "union" instance of [Modality]. *)
 
+(** ** Separatedness *)
+
+(** The [n.+1]-truncation is the separated subuniverse associated to the [n]-truncation.  *)
+Global Instance issepfor_Trunc : IsSepFor (n.+1) n.
+Proof.
+  intros A; split; intros; exact _.
+Defined.
+
 (** ** A few special things about the (-1)-truncation. *)
 
 Local Open Scope trunc_scope.
