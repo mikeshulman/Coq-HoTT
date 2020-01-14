@@ -21,8 +21,11 @@ Arguments succ {_} _.
 
 Notation "x .+1" := (succ x) : succ_scope.
 
-Definition IntSucc : SuccStr := Build_SuccStr Int int_succ.
 Definition NatSucc : SuccStr := Build_SuccStr nat Nat.succ.
+Definition IntSucc : SuccStr := Build_SuccStr Int int_succ.
+
+Notation "'+N'" := NatSucc (at level 55) : succ_scope.
+Notation "'+Z'" := IntSucc (at level 55) : succ_scope.
 
 Definition StratifiedType (N : SuccStr) (n : nat) : Type := N * Fin n.
 
@@ -53,3 +56,7 @@ Proof.
   + reflexivity.
   + exact (ap succ IHk).
 Defined.
+
+Notation "'N3'" := (Stratified (+N) 3) (at level 55) : succ_scope.
+Notation "'Z3'" := (Stratified (+Z) 3) (at level 55) : succ_scope.
+

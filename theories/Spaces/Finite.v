@@ -1078,3 +1078,14 @@ Definition cyclic_succ {n : nat} (k : Fin n) : Fin n :=
   | n.+1, inr tt => fin_zero n
   | n.+1, inl k => fin_add1 k
   end.
+
+(* move to Nat *)
+
+Fixpoint iterate {X : Type} (f : X -> X) (x : X) (n : nat) : X :=
+  match n with
+  | O    => x
+  | n.+1 => f (iterate f x n)
+  end.
+
+Definition fin_mod {n : nat} (k : nat) : Fin n.+1 :=
+iterate cyclic_succ (fin_zero n) k.
