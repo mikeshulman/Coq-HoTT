@@ -128,14 +128,14 @@ Definition Comp2 {A} `{Is1Cat A} {a b c : A}
 Infix "$o@" := Comp2.
 
 Definition WhiskerL_Htpy {A} `{Is1Cat A} {a b c : A}
-           {f g : a $-> b} (h : b $-> c) (p : f $-> g)
-  : h $o f $-> h $o g
+           {f g : a $-> b} (h : b $-> c) (p : f $== g)
+  : h $o f $== h $o g
   := (Id h) $o@ p.
 Notation "h $@L p" := (WhiskerL_Htpy h p).
 
 Definition WhiskerR_Htpy {A} `{Is1Cat A} {a b c : A}
-           {f g : b $-> c} (p : f $-> g) (h : a $-> b)
-  : f $o h $-> g $o h
+           {f g : b $-> c} (p : f $== g) (h : a $-> b)
+  : f $o h $== g $o h
   := p $o@ (Id h).
 Notation "p $@R h" := (WhiskerR_Htpy p h).
 
