@@ -5,15 +5,9 @@ Require Import Homotopy.EMSpace.
 Require Import AbelianGroup.
 Require Import Spectrum.
 
-(** TODO: unfinished *)
 Definition EMSpectrum `{Univalence} (A : AbGroup) : Spectrum.
 Proof.
-  serapply Build_Spectrum.
+  serapply Build_Spectrum_nat.
   1: exact (EilenbergMacLane A).
-  { intro n.
-    apply pointed_equiv_fun.
-    symmetry.
-    exact pequiv_loops_em_em. }
-  intro n.
-  exact _.
+  intro n. symmetry. apply pequiv_loops_em_em.
 Defined.
