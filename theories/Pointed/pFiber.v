@@ -1,9 +1,11 @@
 Require Import Basics.
 Require Import Types.
 Require Import Fibrations.
+Require Import WildCat.
 Require Import Pointed.Core.
 Require Import Pointed.pEquiv.
 Require Import Pointed.Loops.
+Require Import Pointed.pType.
 
 Local Open Scope pointed_scope.
 
@@ -120,3 +122,14 @@ Definition pequiv_pfiber {A B C D}
            (p : k o* f ==* g o* h)
   : pfiber f <~>* pfiber g
   := Build_pEquiv _ _ (functor_pfiber p) _.
+
+Definition square_functor_pfiber {A B C D}
+           {f : A ->* B} {g : C ->* D} {h : A ->* C} {k : B ->* D}
+           (p : k o* f ==* g o* h)
+  : h o* pfib f ==* pfib g o* functor_pfiber p.
+Proof.
+  serapply Build_pHomotopy.
+  - intros x; reflexivity.
+  - cbn; unfold functor_sigma; cbn.
+    abstract (rewrite ap_pr1_path_sigma, concat_p1; reflexivity).
+Defined.
