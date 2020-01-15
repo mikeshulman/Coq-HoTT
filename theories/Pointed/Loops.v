@@ -58,7 +58,7 @@ Proof.
   refine (concat_1p _ @ (concat_p1 _)^).
 Defined.
 
-Definition iterated_loops_functor {A B : pType} (n : nat) 
+Definition iterated_loops_functor {A B : pType} (n : nat)
   : (A ->* B) -> (iterated_loops n A) ->* (iterated_loops n B).
 Proof.
   induction n as [|n IHn].
@@ -314,22 +314,22 @@ Proof.
   reflexivity.
 Defined.
 
-(* pforall and loops 'commute' *)
-Lemma loops_pforall_commute `{Funext} (A : Type) (F : A -> pType)
-  : loops (pforall F) <~>* pforall (loops o F).
+(* product and loops 'commute' *)
+Lemma loops_pproduct_commute `{Funext} (A : Type) (F : A -> pType)
+  : loops (pproduct F) <~>* pproduct (loops o F).
 Proof.
   srefine (Build_pEquiv _ _ (Build_pMap _ _ (_ : Equiv _ _) _) _).
   1: apply equiv_apD10.
   reflexivity.
 Defined.
 
-(* pforall and iterated loops commute *)
-Lemma iterated_loops_pforall_commute `{Funext} (A : Type) (F : A -> pType) (n : nat)
-  : iterated_loops n (pforall F) <~>* pforall (iterated_loops n o F).
+(* product and iterated loops commute *)
+Lemma iterated_loops_pproduct_commute `{Funext} (A : Type) (F : A -> pType) (n : nat)
+  : iterated_loops n (pproduct F) <~>* pproduct (iterated_loops n o F).
 Proof.
   induction n.
   1: reflexivity.
-  refine (loops_pforall_commute _ _ o*E _).
+  refine (loops_pproduct_commute _ _ o*E _).
   apply pequiv_loops_functor, IHn.
 Defined.
 
@@ -362,10 +362,10 @@ Proof.
   exists (equiv_equiv_path A A).
   reflexivity.
 Defined.
-  
+
 Lemma local_global_looping `{Univalence} (A : Type) (n : nat)
   : iterated_loops n.+2 (Type, A)
-  <~>* pforall (fun a => iterated_loops n.+1 (A, a)).
+  <~>* pproduct (fun a => iterated_loops n.+1 (A, a)).
 Proof.
   induction n.
   { refine (_ o*E pequiv_loops_functor (loops_type A)).
@@ -373,7 +373,7 @@ Proof.
     exists (equiv_inverse (equiv_path_arrow 1%equiv 1%equiv)
             oE equiv_inverse (equiv_path_equiv 1%equiv 1%equiv)).
     reflexivity. }
-  exact (loops_pforall_commute _ _ o*E pequiv_loops_functor IHn).
+  exact (loops_pproduct_commute _ _ o*E pequiv_loops_functor IHn).
 Defined.
 
 (* 7.2.7 *)
