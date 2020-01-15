@@ -1,3 +1,4 @@
+Require Import Basics.
 Require Import WildCat.Core.
 Require Import WildCat.Equiv.
 
@@ -80,8 +81,7 @@ Section Squares2.
   Definition vinverse' `{!CatIsEquiv f01} `{!CatIsEquiv f21} (s : Square f10 f12 f01 f21) : Square f12 f10 (f01^-1$) (f21^-1$) :=
    transpose (hinverse' (transpose s)).
 
-  (* Coq complains without the primes. *)
-  Definition vinverse (f01'' : x00 $<~> x02) (f21'' : x20 $<~> x22) (s : Square f10 f12 f01'' f21'') : Square f12 f10 (f01''^-1$) (f21''^-1$) :=
+  Definition vinverse (f01 : x00 $<~> x02) (f21 : x20 $<~> x22) (s : Square f10 f12 f01 f21) : Square f12 f10 (f01^-1$) (f21^-1$) :=
     transpose (hinverse' (transpose s)).
 
   (* whisker a map in one of the corners. For the bottom-left and top-right we have two choices. *)
@@ -108,15 +108,6 @@ Section Squares2.
     (fmap_comp F _ _)^$ $@ fmap2 F s $@ fmap_comp F _ _.
 
 End Squares2.
-
-Reserved Infix "$@h" (at level 35).
-Reserved Infix "$@v" (at level 35).
-Reserved Infix "$@hR" (at level 34).
-Reserved Infix "$@hL" (at level 34).
-Reserved Infix "$@vR" (at level 34).
-Reserved Infix "$@vL" (at level 34).
-Reserved Notation "f ^h$" (at level 20).
-Reserved Notation "f ^v$" (at level 20).
 
 Notation "s $@h t" := (hconcat s t).
 Notation "s $@v t" := (vconcat s t).

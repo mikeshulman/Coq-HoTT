@@ -22,6 +22,12 @@ Reserved Infix "$o@" (at level 30).
 Reserved Infix "$@" (at level 30).
 Reserved Infix "$@L" (at level 30).
 Reserved Infix "$@R" (at level 30).
+Reserved Infix "$@h" (at level 35).
+Reserved Infix "$@v" (at level 35).
+Reserved Infix "$@hR" (at level 34).
+Reserved Infix "$@hL" (at level 34).
+Reserved Infix "$@vR" (at level 34).
+Reserved Infix "$@vL" (at level 34).
 Reserved Infix "$=>" (at level 99).
 Reserved Notation "~~ A" (at level 75, right associativity, only parsing).
 Reserved Notation "A <~> B" (at level 85).
@@ -42,6 +48,8 @@ Reserved Notation "f ^-1$" (at level 3, format "f '^-1$'").
 Reserved Notation "F '_1' m" (at level 10, no associativity).
 Reserved Notation "f ^*" (at level 20).
 Reserved Notation "f ^$" (at level 20).
+Reserved Notation "f ^h$" (at level 20).
+Reserved Notation "f ^v$" (at level 20).
 Reserved Notation "f *E g" (at level 40, no associativity).
 Reserved Notation "f +E g" (at level 50, left associativity).
 Reserved Notation "f == g" (at level 70, no associativity).
