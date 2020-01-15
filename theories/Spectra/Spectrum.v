@@ -31,14 +31,13 @@ Definition Build_Spectrum' (X : Int -> pType)
   (f : forall n : Int, X n ->* loops (X (int_succ n)))
   {H : forall n : Int, IsEquiv (f n)}
   : Spectrum
-  := Build_GenSpectrum IntSucc
+  := Build_GenSpectrum' IntSucc
       (Build_GenPrespectrum IntSucc X f) H.
 
 Definition Build_Spectrum (X : Int -> pType)
   (f : forall n : Int, X n <~>* loops (X (int_succ n)))
   : Spectrum
-  := Build_GenSpectrum IntSucc
-      (Build_GenPrespectrum IntSucc X f) (fun _ => _).
+  := Build_GenSpectrum IntSucc X f.
 
 (*
 Require Import Int.

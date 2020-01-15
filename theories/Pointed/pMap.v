@@ -74,3 +74,37 @@ Definition pmap_from_point {A B : Type} (f : A -> B) (a : A)
 (** The constant (zero) map *)
 Definition pConst {A B : pType} : A ->* B
   := Build_pMap A B (fun a => point B) 1%path.
+
+(* precomposing the zero map is the zero map *)
+Lemma precompose_pconst {A B C : pType} (f : B ->* C)
+  : f o* @pConst A B ==* pConst.
+Proof.
+  serapply Build_pHomotopy.
+  1: intro; apply point_eq.
+  exact (concat_p1 _ @ (concat_1p _)^).
+Defined.
+
+(* postcomposing the zero map is the zero map *)
+Lemma postcompose_pconst {A B C : pType} (f : A ->* B)
+  : pConst o* f ==* @pConst A C.
+Proof.
+  serapply Build_pHomotopy.
+  1: reflexivity.
+  refine (ap (fun x => concat x 1) (ap_const _ _)^).
+Defined.
+
+Lemma pmap_punit_pconst {A : pType} {f : A ->* pUnit} : f ==* pConst.
+Proof.
+  serapply Build_pHomotopy.
+  1: intro; apply path_unit.
+  refine (concat_p1 _ @ _).
+  apply eta_path_unit.
+Defined.
+
+Lemma pconst_factor {A B : pType} {f : pUnit ->* B} {g : A ->* pUnit}
+  : f o* g ==* pConst.
+Proof.
+  refine (_ @* precompose_pconst f).
+  apply pmap_postwhisker.
+  apply pmap_punit_pconst.
+Defined.

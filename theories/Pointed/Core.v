@@ -11,6 +11,11 @@ Generalizable Variables A B f.
 
 (** * Pointed Types *)
 
+(* Pointed version of unit type *)
+Global Instance ispointed_unit : IsPointed Unit := tt.
+
+Definition pUnit : pType := (Build_pType Unit _).
+
 (** A sigma type of pointed components is pointed. *)
 Global Instance ispointed_sigma `{IsPointed A} `{IsPointed (B (point A))}
 : IsPointed (sigT B)

@@ -97,6 +97,13 @@ Proof.
   apply ap_pp.
 Defined.
 
+Lemma loops_functor_pconst {A B : pType} : loops_functor (@pConst A B) ==* pConst.
+Proof.
+  serapply Build_pHomotopy.
+  + intro p. refine (concat_1p _ @ concat_p1 _ @ ap_const _ _).
+  + reflexivity.
+Defined.
+
 (* Loops functor preserves pointed homotopies *)
 Definition loops_2functor {A B : pType} {f g : A ->* B} (p : f ==* g)
   : (loops_functor f) ==* (loops_functor g).
@@ -414,3 +421,4 @@ Proof.
     apply concat_pV. }
   cbn; by rewrite concat_p1, concat_Vp.
 Qed.
+
