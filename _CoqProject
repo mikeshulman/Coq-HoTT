@@ -295,7 +295,7 @@ theories/Pointed/pType.v
 #
 #   Spectra
 #
-
+theories/Spectra.v
 theories/Spectra/Spectrum.v
 theories/Spectra/Coinductive.v
 theories/Spectra/GeneralizedSpectrum.v
