@@ -271,6 +271,7 @@ theories/Homotopy/HSpace.v
 theories/Homotopy/ClassifyingSpace.v
 theories/Homotopy/EMSpace.v
 theories/Homotopy/SuccessorStructure.v
+theories/Homotopy/ExactSequence.v
 theories/Homotopy/LongExactSequence.v
 
 #

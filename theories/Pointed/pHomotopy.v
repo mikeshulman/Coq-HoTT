@@ -18,31 +18,27 @@ Defined.
 Definition pmap_postwhisker {A B C : pType} {f g : A ->* B}
   (h : B ->* C) (p : f ==* g) : h o* f ==* h o* g.
 Proof.
-  pointed_reduce.
-  simple refine (Build_pHomotopy _ _); cbn.
-  - intros a; apply ap, p.
-  - reflexivity.
-Qed.
+  srefine (Build_pHomotopy _ _); cbn.
+  - exact (fun x => ap h (p x)).
+  - pointed_reduce; reflexivity.
+Defined.
 
 Definition pmap_prewhisker {A B C : pType} (f : A ->* B)
   {g h : B ->* C} (p : g ==* h) : g o* f ==* h o* f.
 Proof.
-  pointed_reduce.
-  simple refine (Build_pHomotopy _ _); cbn.
-  - intros a; apply p.
-  - refine (concat_p1 _ @ (concat_1p _)^).
-Qed.
+  srefine (Build_pHomotopy _ _); cbn.
+  - exact (fun x => p (f x)).
+  - pointed_reduce; reflexivity.
+Defined.
 
 (** ** Composition of pointed homotopies *)
 
 Definition phomotopy_compose {A B : pType} {f g h : A ->* B}
   (p : f ==* g) (q : g ==* h) : f ==* h.
 Proof.
-  pointed_reduce.
-  simple refine (Build_pHomotopy _ _); cbn.
-  - intros x; exact (p x @ q x).
-  - apply concat_p1.
-Qed.
+  srefine (Build_pHomotopy (fun x => p x @ q x) _); cbn.
+  pointed_reduce; reflexivity.
+Defined.
 
 Infix "@*" := phomotopy_compose : pointed_scope.
 
@@ -53,11 +49,10 @@ Global Instance phomotopy_transitive {A B} : Transitive (@pHomotopy A B)
 Definition phomotopy_inverse {A B : pType} {f g : A ->* B}
 : (f ==* g) -> (g ==* f).
 Proof.
-  intros p; pointed_reduce.
-  simple refine (Build_pHomotopy _ _); cbn.
+  intros p; srefine (Build_pHomotopy _ _); cbn.
   - intros x; exact ((p x)^).
-  - apply concat_Vp.
-Qed.
+  - pointed_reduce; apply concat_Vp.
+Defined.
 
 (* pointed homotopy is a symmetric relation *)
 Global Instance phomotopy_symmetric {A B} : Symmetric (@pHomotopy A B)

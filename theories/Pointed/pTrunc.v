@@ -1,6 +1,7 @@
 Require Import Basics.
 Require Import Types.
 Require Import Pointed.Core.
+Require Import Pointed.pMap.
 Require Import Pointed.pEquiv.
 Require Import Pointed.Loops.
 Require Import HoTT.Truncations.
@@ -29,6 +30,14 @@ Proof.
   reflexivity.
 Defined.
 
+Definition ptr_functor_pconst {X Y : pType} n
+  : ptr_functor n (@pConst X Y) ==* pConst.
+Proof.
+  serapply Build_pHomotopy.
+  - intros x; strip_truncations; reflexivity.
+  - reflexivity.
+Defined.
+
 Definition ptr_functor_pmap_compose n {X Y Z : pType} (f : X ->* Y) (g : Y ->* Z)
   : ptr_functor n (g o* f) ==* ptr_functor n g o* ptr_functor n f.
 Proof.
@@ -36,6 +45,17 @@ Proof.
   { intro x.
     by strip_truncations. }
   by pointed_reduce.
+Defined.
+
+Definition ptr_functor_homotopy {X Y : pType} (n : trunc_index)
+           {f g : X ->* Y} (p : f ==* g)
+  : ptr_functor n f ==* ptr_functor n g.
+Proof.
+  serapply Build_pHomotopy.
+  - intros x; strip_truncations; cbn.
+    change (@tr n Y (f x) = tr (g x)).
+    apply ap, p.
+  - exact ((ap_pp (@tr n _) _ _)^ @ ap _ (point_htpy p)).
 Defined.
 
 Definition ptr_pequiv {X Y : pType} (n : trunc_index) (f : X <~>* Y)

@@ -1872,6 +1872,33 @@ Section ConnectedMaps.
 
 End ConnectedMaps.
 
+(** ** Containment of subuniverses *)
+
+Section Containment.
+  Context (O O' : ReflectiveSubuniverse).
+
+  (** We say that O is contained in O' if every O-modal type is O'-modal. *)
+  Class ContainedIn :=
+    inO_contains : forall A, In O A -> In O' A.
+
+  (** This implies that every O'-connected type or map is O-connected. *)
+  Global Instance isconnected_contains A `{ContainedIn} `{IsConnected O' A}
+    : IsConnected O A.
+  Proof.
+    rapply isconnected_from_elim; intros C C_inO f.
+    apply inO_contains in C_inO.
+    rapply (isconnected_elim O').
+  Defined.
+
+  Global Instance conn_map_contains {A B} (f : A -> B)
+             `{ContainedIn} `{IsConnMap O' A B f}
+    : IsConnMap O f.
+  Proof.
+    intros x; exact _.
+  Defined.
+
+End Containment.
+
 (** ** Separated subuniverses *)
 
 Class IsSepFor (O' O : ReflectiveSubuniverse)
