@@ -185,6 +185,24 @@ Global Instance transitive_cate {A} `{HasEquivs A}
   : Transitive (@CatEquiv A _ _ _)
   := fun a b c f g => g $oE f.
 
+(** Some more convenient equalities for equivalences. The naming scheme is similar to [PathGroupoids.v].*)
+
+Definition compose_V_hh {A} `{HasEquivs A} {a b c : A} (f : b $<~> c) (g : a $-> b) :
+  f^-1$ $o (f $o g) $== g :=
+  (cat_assoc _ _ _)^$ $@ (cate_issect f $@R g) $@ cat_idl g.
+
+Definition compose_h_Vh {A} `{HasEquivs A} {a b c : A} (f : c $<~> b) (g : a $-> b) :
+  f $o (f^-1$ $o g) $== g :=
+  (cat_assoc _ _ _)^$ $@ (cate_isretr f $@R g) $@ cat_idl g.
+
+Definition compose_hh_V {A} `{HasEquivs A} {a b c : A} (f : b $-> c) (g : a $<~> b) :
+  (f $o g) $o g^-1$ $== f :=
+  cat_assoc _ _ _ $@ (f $@L cate_isretr g) $@ cat_idr f.
+
+Definition compose_hV_h {A} `{HasEquivs A} {a b c : A} (f : b $-> c) (g : b $<~> a) :
+  (f $o g^-1$) $o g $== f :=
+  cat_assoc _ _ _ $@ (f $@L cate_issect g) $@ cat_idr f.
+
 (** Any sufficiently coherent functor preserves equivalences.  *)
 Global Instance iemap {A B : Type} `{HasEquivs A} `{HasEquivs B}
        (F : A -> B) `{!Is0Functor F, !Is1Functor F}

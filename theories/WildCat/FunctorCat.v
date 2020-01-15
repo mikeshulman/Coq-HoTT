@@ -4,6 +4,8 @@ Require Import Basics.
 Require Import WildCat.Core.
 Require Import WildCat.Equiv.
 Require Import WildCat.Induced.
+Require Import WildCat.Square.
+Require Import WildCat.NatTrans.
 
 (** * Wild functor categories *)
 
@@ -84,15 +86,7 @@ Proof.
   - cbn; intros; apply cate_buildequiv_fun.
   - intros ?; exists (fun a => (alpha a)^-1$).
     apply Build_Is1Natural; intros a b f.
-    refine ((cat_idr _)^$ $@ _).
-    refine ((_ $@L (cate_isretr (alpha a))^$) $@ _).
-    refine (cat_assoc _ _ _ $@ _).
-    refine ((_ $@L (cat_assoc_opp _ _ _)) $@ _).
-    refine ((_ $@L ((isnat (fun a => alpha a) f)^$ $@R _)) $@ _).
-    refine ((_ $@L (cat_assoc _ _ _)) $@ _).
-    refine (cat_assoc_opp _ _ _ $@ _).
-    refine ((cate_issect (alpha b) $@R _) $@ _).
-    exact (cat_idl _).
+    exact (vinverse' (isnat alpha f)).
   - intros; apply cate_issect.
   - intros; apply cate_isretr.
   - intros [gamma ?] r s a; cbn in *.

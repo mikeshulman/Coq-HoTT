@@ -1,20 +1,32 @@
 Require Import WildCat.Core.
+Require Import WildCat.Equiv.
 
-(* Squares of morphisms in a Wild Category *)
+(** * Squares of morphisms in a Wild Category.  *)
+
+(**  These come up a lot as naturality squares. In this file we define basic operations on squares, to conveniently work with them. *)
 
 Section Squares.
-  Context {A : Type} `{Is1Cat A} {x x' x00 x20 x40 x02 x22 x42 x04 x24 x44 : A}
+  (* We declare a context with a lot of variables: the first component is horizontal, the second vertical.
+    x00 f10 x20 f30 x40
+    f01     f21     f41
+    x02 f12 x22 f32 x42
+    f03     f23     f43
+    x04 f14 x24 f34 x44 
+  All morphisms are pointed to the right or down. *)
+  Context {A : Type} `{HasEquivs A} {x x' x00 x20 x40 x02 x22 x42 x04 x24 x44 : A}
     {f10 f10' : x00 $-> x20} {f30 : x20 $-> x40} 
     {f12 f12' : x02 $-> x22} {f32 : x22 $-> x42} 
     {f14 : x04 $-> x24} {f34 : x24 $-> x44}
     {f01 f01' : x00 $-> x02} {f21 f21' : x20 $-> x22} {f41 f41' : x40 $-> x42}
     {f03 : x02 $-> x04} {f23 : x22 $-> x24} {f43 : x42 $-> x44}.
 
+  (** A Square is a cubical 2-cell in a 1-category. The order of the arguments is top-bottom-left-right: [Square t b l r].
+  It is defined to be [r $o t $== b $o l]. *)
   Definition Square {x00 x20 x02 x22} (f10 : x00 $-> x20) (f12 : x02 $-> x22) (f01 : x00 $-> x02) (f21 : x20 $-> x22) : Type :=
     f21 $o f10 $== f12 $o f01.
 
   Definition Build_Square (p : f21 $o f10 $== f12 $o f01) : Square f10 f12 f01 f21 := p.
-  Definition gpdhom_square (p : Square f10 f12 f01 f21) : f21 $o f10 $== f12 $o f01 := p.
+  Definition gpdhom_square (s : Square f10 f12 f01 f21) : f21 $o f10 $== f12 $o f01 := s.
 
   Definition hdeg_square {f f' : x $-> x'} (p : f $== f') : Square (Id x) (Id x') f f' := 
     cat_idr f' $@ p^$ $@ (cat_idl f)^$.
@@ -26,96 +38,96 @@ Section Squares.
   Definition hrfl {f : x $-> x'} : Square (Id x) (Id x') f f := hrefl f.
   Definition vrfl {f : x $-> x'} : Square f f (Id x) (Id x') := vrefl f.
 
+  Definition transpose (s : Square f10 f12 f01 f21) : Square f01 f21 f10 f12 := s^$.
+  Definition hconcat (s : Square f10 f12 f01 f21) (t : Square f30 f32 f21 f41) : Square (f30 $o f10) (f32 $o f12) f01 f41 :=
+    (cat_assoc _ _ _)^$ $@ (t $@R f10) $@ cat_assoc _ _ _ $@ (f32 $@L s) $@ (cat_assoc _ _ _)^$.
+  Definition vconcat (s : Square f10 f12 f01 f21) (t : Square f12 f14 f03 f23) : Square f10 f14 (f03 $o f01) (f23 $o f21) :=
+    cat_assoc _ _ _ $@ (f23 $@L s) $@ (cat_assoc _ _ _)^$ $@ (t $@R f01) $@ cat_assoc _ _ _.
+
+  Definition hinverse' `{!CatIsEquiv f10} `{!CatIsEquiv f12} (s : Square f10 f12 f01 f21) : Square f10^-1$ f12^-1$ f21 f01 :=
+   (cat_idl _)^$ $@ ((cate_issect f12)^$ $@R _) $@ cat_assoc _ _ _ $@
+   (_ $@L ((cat_assoc _ _ _)^$ $@ (s^$ $@R _) $@ cat_assoc _ _ _ $@ (_ $@L cate_isretr f10) $@ cat_idr _)).
+
+  (** The following four declarations modify one side of a Square using a 2-cell. The L or R indicate the side of the 2-cell.*)
+  Definition hconcatL (p : f01' $== f01) (s : Square f10 f12 f01 f21) : Square f10 f12 f01' f21 :=
+    s $@ (f12 $@L p^$).
+
+  (* Maybe we want to reverse [p]? *)
+  Definition hconcatR (s : Square f10 f12 f01 f21) (p : f21' $== f21) : Square f10 f12 f01 f21' :=
+    (p $@R f10) $@ s.
+
+  Definition vconcatL (p : f10' $== f10) (s : Square f10 f12 f01 f21) : Square f10' f12 f01 f21 :=
+    (f21 $@L p) $@ s.
+
+  Definition vconcatR (s : Square f10 f12 f01 f21) (p : f12' $== f12) : Square f10 f12' f01 f21 :=
+    s $@ (p^$ $@R f01).
+
 
 End Squares.
 
+Section Squares2.
+  (* We declare the context again, now that we can reuse some declarations where the variables have been inserted. *)
+  Context {A B : Type} `{HasEquivs A} `{Is1Cat B} {x x' x00 x20 x40 x02 x22 x42 x04 x24 x44 : A}
+    {f10 f10' : x00 $-> x20} {f30 : x20 $-> x40} 
+    {f12 f12' : x02 $-> x22} {f32 : x22 $-> x42} 
+    {f14 : x04 $-> x24} {f34 : x24 $-> x44}
+    {f01 f01' : x00 $-> x02} {f21 f21' : x20 $-> x22} {f41 f41' : x40 $-> x42}
+    {f03 : x02 $-> x04} {f23 : x22 $-> x24} {f43 : x42 $-> x44}.
 
+  Definition hinverse (f10 : x00 $<~> x20) (f12 : x02 $<~> x22) (s : Square f10 f12 f01 f21) : Square f10^-1$ f12^-1$ f21 f01 :=
+   hinverse' s.
+
+  Definition vinverse' `{!CatIsEquiv f01} `{!CatIsEquiv f21} (s : Square f10 f12 f01 f21) : Square f12 f10 (f01^-1$) (f21^-1$) :=
+   transpose (hinverse' (transpose s)).
+
+  (* Coq complains without the primes. *)
+  Definition vinverse (f01'' : x00 $<~> x02) (f21'' : x20 $<~> x22) (s : Square f10 f12 f01'' f21'') : Square f12 f10 (f01''^-1$) (f21''^-1$) :=
+    transpose (hinverse' (transpose s)).
+
+  (* whisker a map in one of the corners. For the bottom-left and top-right we have two choices. *)
+  Definition whiskerTL {f : x $-> x00} (s : Square f10 f12 f01 f21) : Square (f10 $o f) f12 (f01 $o f) f21 :=
+    (cat_assoc _ _ _)^$ $@ (s $@R f) $@ cat_assoc _ _ _.
+
+  Definition whiskerBR {f : x22 $-> x} (s : Square f10 f12 f01 f21) : Square f10 (f $o f12) f01 (f $o f21) :=
+    cat_assoc _ _ _ $@ (f $@L s) $@ (cat_assoc _ _ _)^$.
+
+  Definition whiskerBL {f : x $<~> x02} (s : Square f10 f12 f01 f21) : Square f10 (f12 $o f) (f^-1$ $o f01) f21 :=
+    s $@ ((compose_hh_V _ _)^$ $@R f01) $@ cat_assoc _ _ _.
+
+  Definition whiskerLB {f : x02 $<~> x} (s : Square f10 f12 f01 f21) : Square f10 (f12 $o f^-1$) (f $o f01) f21 :=
+    s $@ ((compose_hV_h _ _)^$ $@R f01) $@ cat_assoc _ _ _.
+
+  Definition whiskerTR {f : x20 $<~> x} (s : Square f10 f12 f01 f21) : Square (f $o f10) f12 f01 (f21 $o f^-1$) :=
+    cat_assoc _ _ _ $@ (f21 $@L compose_V_hh _ _) $@ s.
+
+  Definition whiskerRT {f : x $<~> x20} (s : Square f10 f12 f01 f21) : Square (f^-1$ $o f10) f12 f01 (f21 $o f) :=
+    cat_assoc _ _ _ $@ (f21 $@L compose_h_Vh _ _) $@ s.
+
+  Definition fmap_square (F : A -> B) {H0F : Is0Functor F} {H1F : Is1Functor F} (s : Square f10 f12 f01 f21) : 
+    Square (fmap F f10) (fmap F f12) (fmap F f01) (fmap F f21) :=
+    (fmap_comp F _ _)^$ $@ fmap2 F s $@ fmap_comp F _ _.
+
+End Squares2.
+
+Reserved Infix "$@h" (at level 35).
+Reserved Infix "$@v" (at level 35).
+Reserved Infix "$@hR" (at level 34).
+Reserved Infix "$@hL" (at level 34).
+Reserved Infix "$@vR" (at level 34).
+Reserved Infix "$@vL" (at level 34).
+Reserved Notation "f ^h$" (at level 20).
+Reserved Notation "f ^v$" (at level 20).
+
+Notation "s $@h t" := (hconcat s t).
+Notation "s $@v t" := (vconcat s t).
+Notation "s $@hR p" := (hconcatR s p).
+Notation "s $@hL p" := (hconcatL p s).
+Notation "s $@vR p" := (vconcatR s p).
+Notation "s $@vL p" := (vconcatL p s).
+Notation "s ^h$" := (hinverse _ _ s).
+Notation "s ^v$" := (vinverse _ _ s).
 
 (*
-section psquare
-  /-
-    Squares of pointed maps
-    We treat expressions of the form
-      psquare f g h k :≡ k ∘* f ~* g ∘* h
-    as squares, where f is the top, g is the bottom, h is the left face and k is the right face.
-    These squares are very useful for naturality squares
-  -/
-
-  variables {A' A₀₀ A₂₀ A₄₀ A₀₂ A₂₂ A₄₂ A₀₄ A₂₄ A₄₄ : Type*}
-            {f₁₀ f₁₀' : A₀₀ →* A₂₀} {f₃₀ : A₂₀ →* A₄₀}
-            {f₁₂ f₁₂' : A₀₂ →* A₂₂} {f₃₂ : A₂₂ →* A₄₂}
-            {f₁₄ : A₀₄ →* A₂₄} {f₃₄ : A₂₄ →* A₄₄}
-            {f₀₁ f₀₁' : A₀₀ →* A₀₂} {f₂₁ f₂₁' : A₂₀ →* A₂₂} {f₄₁ : A₄₀ →* A₄₂}
-            {f₀₃ : A₀₂ →* A₀₄} {f₂₃ : A₂₂ →* A₂₄} {f₄₃ : A₄₂ →* A₄₄}
-
-  definition hsquare_of_psquare (p : psquare f₁₀ f₁₂ f₀₁ f₂₁) : hsquare f₁₀ f₁₂ f₀₁ f₂₁ :=
-  to_homotopy p
-
-  variables (f₁₀ f₁₂ f₀₁ f₂₁)
-  definition phconst_square : psquare !pconst !pconst f₀₁ f₂₁ :=
-  !pcompose_pconst ⬝* !pconst_pcompose⁻¹*
-  definition pvconst_square : psquare f₁₀ f₁₂ !pconst !pconst :=
-  !pconst_pcompose ⬝* !pcompose_pconst⁻¹*
-
-  definition ptranspose (p : psquare f₁₀ f₁₂ f₀₁ f₂₁) : psquare f₀₁ f₂₁ f₁₀ f₁₂ :=
-  p⁻¹*
-
-  definition phconcat (p : psquare f₁₀ f₁₂ f₀₁ f₂₁) (q : psquare f₃₀ f₃₂ f₂₁ f₄₁) :
-    psquare (f₃₀ ∘* f₁₀) (f₃₂ ∘* f₁₂) f₀₁ f₄₁ :=
-  !passoc⁻¹* ⬝* pwhisker_right f₁₀ q ⬝* !passoc ⬝* pwhisker_left f₃₂ p ⬝* !passoc⁻¹*
-
-  definition pvconcat (p : psquare f₁₀ f₁₂ f₀₁ f₂₁) (q : psquare f₁₂ f₁₄ f₀₃ f₂₃) :
-    psquare f₁₀ f₁₄ (f₀₃ ∘* f₀₁) (f₂₃ ∘* f₂₁) :=
-  !passoc ⬝* pwhisker_left _ p ⬝* !passoc⁻¹* ⬝* pwhisker_right _ q ⬝* !passoc
-
-  definition phinverse {f₁₀ : A₀₀ ≃* A₂₀} {f₁₂ : A₀₂ ≃* A₂₂} (p : psquare f₁₀ f₁₂ f₀₁ f₂₁) :
-    psquare f₁₀⁻¹ᵉ* f₁₂⁻¹ᵉ* f₂₁ f₀₁ :=
-  !pid_pcompose⁻¹* ⬝* pwhisker_right _ (pleft_inv f₁₂)⁻¹* ⬝* !passoc ⬝*
-  pwhisker_left _
-    (!passoc⁻¹* ⬝* pwhisker_right _ p⁻¹* ⬝* !passoc ⬝* pwhisker_left _ !pright_inv ⬝* !pcompose_pid)
-
-  definition pvinverse {f₀₁ : A₀₀ ≃* A₀₂} {f₂₁ : A₂₀ ≃* A₂₂} (p : psquare f₁₀ f₁₂ f₀₁ f₂₁) :
-    psquare f₁₂ f₁₀ f₀₁⁻¹ᵉ* f₂₁⁻¹ᵉ* :=
-  (phinverse p⁻¹* )⁻¹*
-
-  definition phomotopy_hconcat (q : f₀₁' ~* f₀₁) (p : psquare f₁₀ f₁₂ f₀₁ f₂₁) :
-    psquare f₁₀ f₁₂ f₀₁' f₂₁ :=
-  p ⬝* pwhisker_left f₁₂ q⁻¹*
-
-  definition hconcat_phomotopy (p : psquare f₁₀ f₁₂ f₀₁ f₂₁) (q : f₂₁' ~* f₂₁) :
-    psquare f₁₀ f₁₂ f₀₁ f₂₁' :=
-  pwhisker_right f₁₀ q ⬝* p
-
-  definition phomotopy_vconcat (q : f₁₀' ~* f₁₀) (p : psquare f₁₀ f₁₂ f₀₁ f₂₁) :
-    psquare f₁₀' f₁₂ f₀₁ f₂₁ :=
-  pwhisker_left f₂₁ q ⬝* p
-
-  definition vconcat_phomotopy (p : psquare f₁₀ f₁₂ f₀₁ f₂₁) (q : f₁₂' ~* f₁₂) :
-    psquare f₁₀ f₁₂' f₀₁ f₂₁ :=
-  p ⬝* pwhisker_right f₀₁ q⁻¹*
-
-  infix ` ⬝h* `:73 := phconcat
-  infix ` ⬝v* `:73 := pvconcat
-  infixl ` ⬝hp* `:72 := hconcat_phomotopy
-  infixr ` ⬝ph* `:72 := phomotopy_hconcat
-  infixl ` ⬝vp* `:72 := vconcat_phomotopy
-  infixr ` ⬝pv* `:72 := phomotopy_vconcat
-  postfix `⁻¹ʰ*`:(max+1) := phinverse
-  postfix `⁻¹ᵛ*`:(max+1) := pvinverse
-
-  definition pwhisker_tl (f : A →* A₀₀) (q : psquare f₁₀ f₁₂ f₀₁ f₂₁) :
-    psquare (f₁₀ ∘* f) f₁₂ (f₀₁ ∘* f) f₂₁ :=
-  !passoc⁻¹* ⬝* pwhisker_right f q ⬝* !passoc
-
-  definition ap1_psquare (p : psquare f₁₀ f₁₂ f₀₁ f₂₁) :
-    psquare (Ω→ f₁₀) (Ω→ f₁₂) (Ω→ f₀₁) (Ω→ f₂₁) :=
-  !ap1_pcompose⁻¹* ⬝* ap1_phomotopy p ⬝* !ap1_pcompose
-
-  definition apn_psquare (n : ℕ) (p : psquare f₁₀ f₁₂ f₀₁ f₂₁) :
-    psquare (Ω→[n] f₁₀) (Ω→[n] f₁₂) (Ω→[n] f₀₁) (Ω→[n] f₂₁) :=
-  !apn_pcompose⁻¹* ⬝* apn_phomotopy n p ⬝* !apn_pcompose
-
-  end psquare
 
   definition pinverse_natural [constructor] {X Y : Type*} (f : X →* Y) :
     psquare (pinverse X) (pinverse Y) (Ω→ f) (Ω→ f) :=
@@ -151,4 +163,12 @@ section psquare
     (h : Πa, X (f a) →* X (g a)) {a a' : A} (p : a = a') :
    psquare (ptransport X (ap f p)) (ptransport X (ap g p)) (h a) (h a') :=
   by induction p; exact !pcompose_pid ⬝* !pid_pcompose⁻¹*
+
+  definition hsquare_of_psquare (p : psquare f₁₀ f₁₂ f₀₁ f₂₁) : hsquare f₁₀ f₁₂ f₀₁ f₂₁ :=
+  to_homotopy p
+  definition phconst_square : psquare !pconst !pconst f₀₁ f₂₁ :=
+  !pcompose_pconst ⬝* !pconst_pcompose⁻¹*
+  definition pvconst_square : psquare f₁₀ f₁₂ !pconst !pconst :=
+  !pconst_pcompose ⬝* !pcompose_pconst⁻¹*
+
  *)
