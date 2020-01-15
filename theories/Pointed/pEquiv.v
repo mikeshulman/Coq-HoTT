@@ -159,3 +159,57 @@ Proof.
   1: apply r.
   apply s.
 Defined.
+
+(** Pointed versions of [moveR_equiv_M] and friends. *)
+Definition moveR_pequiv_Mf {A B C} (f : B <~>* C) (g : A ->* B) (h : A ->* C)
+           (p : g ==* f^-1* o* h)
+  : (f o* g ==* h).
+Proof.
+  refine (pmap_postwhisker f p @* _).
+  refine ((pmap_compose_assoc _ _ _)^* @* _).
+  refine (pmap_prewhisker h (peisretr f) @* _).
+  apply pmap_postcompose_idmap.
+Defined.
+
+Definition moveL_pequiv_Mf {A B C} (f : B <~>* C) (g : A ->* B) (h : A ->* C)
+           (p : f^-1* o* h ==* g)
+  : (h ==* f o* g).
+Proof.
+  refine (_ @* pmap_postwhisker f p).
+  refine (_ @* (pmap_compose_assoc _ _ _)).
+  refine ((pmap_postcompose_idmap _)^* @* _).
+  apply pmap_prewhisker.
+  symmetry; apply peisretr.
+Defined.
+
+Definition moveL_pequiv_Vf {A B C} (f : B <~>* C) (g : A ->* B) (h : A ->* C)
+           (p : f o* g ==* h)
+  : g ==* f^-1* o* h.
+Proof.
+  refine (_ @* pmap_postwhisker f^-1* p).
+  refine (_ @* (pmap_compose_assoc _ _ _)).
+  refine ((pmap_postcompose_idmap _)^* @* _).
+  apply pmap_prewhisker.
+  symmetry; apply peissect.
+Defined.
+
+Definition moveR_pequiv_Vf {A B C} (f : B <~>* C) (g : A ->* B) (h : A ->* C)
+           (p : h ==* f o* g)
+   : f^-1* o* h ==* g.
+Proof.
+  refine (pmap_postwhisker f^-1* p @* _).
+  refine ((pmap_compose_assoc _ _ _)^* @* _).
+  refine (pmap_prewhisker g (peissect f) @* _).
+  apply pmap_postcompose_idmap.
+Defined.
+
+Definition moveR_pequiv_fV {A B C} (f : B ->* C) (g : A <~>* B) (h : A ->* C)
+           (p : f o* g ==* h)
+  : (f ==* h o* g^-1*).
+Proof.
+  refine (_ @* pmap_prewhisker g^-1* p).
+  refine (_ @* (pmap_compose_assoc _ _ _)^*).
+  refine ((pmap_precompose_idmap _)^* @* _).
+  apply pmap_postwhisker.
+  symmetry; apply peisretr.
+Defined.

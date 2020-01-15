@@ -137,6 +137,11 @@ Definition concat_pV_p {A : Type} {x y z : A} (p : x = z) (q : y = z) :
       match p with idpath => 1 end
   end) p.
 
+Definition concat_V_1p {A : Type} {x y : A} (p : x = y) :
+  p^ @ (1 @ p) = 1
+  :=
+  match p with idpath => 1 end.
+
 (** Inverse distributes over concatenation *)
 Definition inv_pp {A : Type} {x y z : A} (p : x = y) (q : y = z) :
   (p @ q)^ = q^ @ p^
@@ -144,6 +149,8 @@ Definition inv_pp {A : Type} {x y z : A} (p : x = y) (q : y = z) :
   match q with idpath =>
     match p with idpath => 1 end
   end.
+
+Arguments inv_pp : simpl nomatch.
 
 Definition inv_Vp {A : Type} {x y z : A} (p : y = x) (q : y = z) :
   (p^ @ q)^ = q^ @ p
@@ -407,6 +414,8 @@ Definition ap_V {A B : Type} (f : A -> B) {x y : A} (p : x = y) :
   ap f (p^) = (ap f p)^
   :=
   match p with idpath => 1 end.
+
+Arguments ap_V : simpl nomatch.
 
 (** [ap] itself is functorial in the first argument. *)
 

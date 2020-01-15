@@ -1,9 +1,11 @@
 Require Import Basics.
 Require Import Types.
 Require Import Fibrations.
+Require Import WildCat.
 Require Import Pointed.Core.
 Require Import Pointed.pEquiv.
 Require Import Pointed.Loops.
+Require Import Pointed.pType.
 
 Local Open Scope pointed_scope.
 
@@ -73,12 +75,24 @@ Proof.
     simpl; unfold hfiber.
     serapply equiv_functor_sigma_id.
     intro p; cbn.
-    rewrite transport_paths_Fl.
     refine (_ oE equiv_moveL_Mp _ _ _).
-    refine (equiv_moveR_Vp _ _ _ oE _).
-    rewrite concat_p1.
-    apply equiv_path_inverse. }
+    refine (_ oE equiv_concat_r (concat_p1 _) _).
+    refine (_ oE equiv_moveL_Vp _ _ _).
+    refine (_ oE equiv_path_inverse _ _).
+    apply equiv_concat_l.
+    apply transport_paths_Fl. }
   by pointed_reduce.
+Defined.
+
+Definition pr1_pfiber_loops_functor {A B} (f : A ->* B)
+  : loops_functor (pfib f) o* pfiber_loops_functor f
+    ==* pfib (loops_functor f).
+Proof.
+  serapply Build_pHomotopy.
+  - intros [u v].
+    refine (concat_1p _ @ concat_p1 _ @ _).
+    exact (@ap_pr1_path_sigma _ _ (point A; point_eq f) (point A;point_eq f) _ _).
+  - abstract (pointed_reduce; reflexivity).
 Defined.
 
 Definition pfiber_iterated_loops_functor {A B : pType} (n : nat) (f : A ->* B)
@@ -101,7 +115,7 @@ Proof.
   - exact h.
   - intros a e. exact ((p a)^ @ ap k e @ q).
 Defined.
-Print pHomotopy.
+
 Definition functor_pfiber {A B C D}
            {f : A ->* B} {g : C ->* D} {h : A ->* C} {k : B ->* D}
            (p : k o* f ==* g o* h)
@@ -114,11 +128,19 @@ Proof.
     - refine (concat_pp_p _ _ _ @ _). apply moveR_Vp. apply (point_htpy p)^.
 Defined.
 
-
 Definition pequiv_pfiber {A B C D}
            {f : A ->* B} {g : C ->* D} {h : A <~>* C} {k : B <~>* D}
            (p : k o* f ==* g o* h)
-  : pfiber f <~>* pfiber g.
+  : pfiber f <~>* pfiber g
+  := Build_pEquiv _ _ (functor_pfiber p) _.
+
+Definition square_functor_pfiber {A B C D}
+           {f : A ->* B} {g : C ->* D} {h : A ->* C} {k : B ->* D}
+           (p : k o* f ==* g o* h)
+  : h o* pfib f ==* pfib g o* functor_pfiber p.
 Proof.
-  serapply (pequiv_adjointify' (functor_pfiber p)).
-Admitted.
+  serapply Build_pHomotopy.
+  - intros x; reflexivity.
+  - cbn; unfold functor_sigma; cbn.
+    abstract (rewrite ap_pr1_path_sigma, concat_p1; reflexivity).
+Defined.

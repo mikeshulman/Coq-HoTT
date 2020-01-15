@@ -73,8 +73,13 @@ Definition loops_functor_compose {A B C : pType} (g : B ->* C) (f : A ->* B)
   ==* (pmap_compose (loops_functor g) (loops_functor f)).
 Proof.
   serapply Build_pHomotopy.
-  { intros p.
-    pointed_reduce.
+  { intros p. cbn.
+    refine ((inv_pp _ _ @@ 1) @ concat_pp_p _ _ _ @ _).
+    apply whiskerL.
+    refine (((ap_V _ _)^ @@ 1) @ _ @ concat_p_pp _ _ _ @ ((ap_pp _ _ _)^ @@ 1)).
+    apply whiskerL.
+    refine (_ @ concat_p_pp _ _ _ @ ((ap_pp _ _ _)^ @@ 1)).
+    apply whiskerR.
     apply ap_compose. }
   by pointed_reduce.
 Defined.

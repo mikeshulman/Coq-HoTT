@@ -58,6 +58,7 @@ theories/WildCat/Induced.v
 theories/WildCat/FunctorCat.v
 theories/WildCat/Yoneda.v
 theories/WildCat/Square.v
+theories/WildCat/NatTrans.v
 
 #
 #   Types
@@ -294,7 +295,7 @@ theories/Pointed/pType.v
 #
 #   Spectra
 #
-
+theories/Spectra.v
 theories/Spectra/Spectrum.v
 theories/Spectra/Coinductive.v
 theories/Spectra/GeneralizedSpectrum.v

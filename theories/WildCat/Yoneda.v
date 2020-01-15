@@ -7,6 +7,7 @@ Require Export WildCat.Type.
 Require Export WildCat.Opposite.
 Require Export WildCat.FunctorCat.
 Require Export WildCat.Prod.
+Require Export WildCat.NatTrans.
 
 (** ** Two-variable hom-functors *)
 

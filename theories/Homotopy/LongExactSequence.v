@@ -4,9 +4,11 @@ Require Import Spaces.Finite.
 Require Import Pointed.
 Require Import Homotopy.HomotopyGroup.
 Require Import Truncations.
+Require Import ExactSequence.
 
 Local Open Scope succ_scope.
 Local Open Scope pointed_scope.
+Import TrIdM.
 Set Implicit Arguments.
 
 Notation "'Hexists' x .. y , p" := (hexists (fun x => .. (hexists (fun y => p)) ..))
@@ -16,15 +18,18 @@ Notation "'Hexists' x .. y , p" := (hexists (fun x => .. (hexists (fun y => p)) 
 
 Local Notation pt := (point _).
 
-Record LongExactSequence (N : SuccStr) : Type :=
-{ carrier : N -> pType;
-  LES_is_hset : forall n, IsHSet (carrier n);
-  fn : forall n, carrier n.+1 ->* carrier n;
-  is_chain_complex : forall n x, fn n (fn n.+1 x) = pt;
-  is_exact : forall n y, fn n y = pt -> Hexists x, fn n.+1 x = y }.
+Record LongExactSequence (k : Modality) (N : SuccStr) : Type :=
+{ les_carrier : N -> pType;
+  les_fn : forall n, les_carrier n.+1 ->* les_carrier n;
+  les_iscomplex : forall n, IsComplex (les_fn n.+1) (les_fn n);
+  les_isexact : forall n, IsExact k (les_fn n.+1) (les_fn n)}.
 
-Coercion carrier : LongExactSequence >-> Funclass.
+Coercion les_carrier : LongExactSequence >-> Funclass.
+Global Existing Instance les_iscomplex.
+Global Existing Instance les_isexact.
 
+(* Do we still need this? *)
+(*
 Definition transfer_long_exact_sequence {N : SuccStr} {X : LongExactSequence N}
   {Y : N -> pType}
   (H : forall n, IsHSet (Y n))
@@ -41,14 +46,17 @@ Proof.
     assert (H2 : fn X n ((e _)^-1* y) = pt).
     { revert y q. equiv_intro (e n.+1) x. intro q.
       refine (ap (fn X n) (eissect _ _) @ (eissect (e _) _)^ @ _).
-      refine (ap (e n)^-1* (p _ _ @ q) @ point_eq (e n)^-1*). }
+      refine (ap (e n)^-1* (p _ _ @ q) @ point_eq (e n)^-1* ). }
     refine (Trunc_rec _ (is_exact X _ _ H2)).
     destruct 1 as [x r].
     refine (tr (e _ x; _)).
     refine ((p _ x)^ @ ap (e _) r @ eisretr _ _).
 Defined.
+*)
 
-(* TODO: truncate a fiber sequence into a long exact sequence. *)
+
+
+
 
 (** The Long Exact Sequence of Homotopy Groups *)
 
@@ -56,9 +64,35 @@ Local Notation "'0'" := (inl (inl (inr tt))).
 Local Notation "'1'" := (inl (inr tt)).
 Local Notation "'2'" := (inr tt).
 
+Definition loops_carrier (F X Y : pType) (n : N3) : pType :=
+  match n with
+  | (n, inl (inl (inl x))) => Empty_ind _ x
+  | (n, 0) => iterated_loops n Y
+  | (n, 1) => iterated_loops n X
+  | (n, 2) => iterated_loops n F
+  end.
+
+(* I don't know why [oo] stopped working here; [Tr n] still works. *)
+Definition loops_les {F X Y : pType} (i : F ->* X) (f : X ->* Y) `{IsExact (Mod_inr oo) F X Y i f}
+  : LongExactSequence (Tr (-1)) (N3).
+Proof.
+  srefine (Build_LongExactSequence (N3) (loops_carrier F X Y) _ _ _).
+  all:intros [n [[[[]|[]]|[]]|[]]]; cbn.
+  - apply iterated_loops_functor; exact f.
+  - apply iterated_loops_functor; exact i.
+  - srapply Build_pMap.
+    
+    refine (_ o* unfold_iterated_loops' n Y).
+    apply iterated_loops_functor.
+    exact (pfib (pfib f) o* (pfiber2_loops f)^-1* ).
+  - srefine (Build_pHomotopy _ _).
+    + intros x; cbn.
+
+
+
 Definition homotopy_groups {X Y : pType} (f : X ->* Y) (n : N3) : pType :=
   match n with
-  | (n, inl (inl (inl x))) => Build_pType Unit tt (* inaccessible case *)
+  | (n, inl (inl (inl x))) => Empty_ind _ x
   | (n, 0) => Pi n Y
   | (n, 1) => Pi n X
   | (n, 2) => Pi n (pfiber f)

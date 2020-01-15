@@ -20,7 +20,7 @@ Definition pmap_postwhisker {A B C : pType} {f g : A ->* B}
 Proof.
   srefine (Build_pHomotopy _ _); cbn.
   - exact (fun x => ap h (p x)).
-  - pointed_reduce; reflexivity.
+  - abstract (pointed_reduce; reflexivity).
 Defined.
 
 Definition pmap_prewhisker {A B C : pType} (f : A ->* B)
@@ -28,7 +28,7 @@ Definition pmap_prewhisker {A B C : pType} (f : A ->* B)
 Proof.
   srefine (Build_pHomotopy _ _); cbn.
   - exact (fun x => p (f x)).
-  - pointed_reduce; reflexivity.
+  - abstract (pointed_reduce; reflexivity).
 Defined.
 
 (** ** Composition of pointed homotopies *)
@@ -37,7 +37,7 @@ Definition phomotopy_compose {A B : pType} {f g h : A ->* B}
   (p : f ==* g) (q : g ==* h) : f ==* h.
 Proof.
   srefine (Build_pHomotopy (fun x => p x @ q x) _); cbn.
-  pointed_reduce; reflexivity.
+  abstract (pointed_reduce; reflexivity).
 Defined.
 
 Infix "@*" := phomotopy_compose : pointed_scope.
@@ -51,7 +51,7 @@ Definition phomotopy_inverse {A B : pType} {f g : A ->* B}
 Proof.
   intros p; srefine (Build_pHomotopy _ _); cbn.
   - intros x; exact ((p x)^).
-  - pointed_reduce; apply concat_Vp.
+  - abstract (pointed_reduce; apply concat_Vp).
 Defined.
 
 (* pointed homotopy is a symmetric relation *)
