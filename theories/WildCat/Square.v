@@ -76,7 +76,7 @@ section psquare
 
   definition pvinverse {f₀₁ : A₀₀ ≃* A₀₂} {f₂₁ : A₂₀ ≃* A₂₂} (p : psquare f₁₀ f₁₂ f₀₁ f₂₁) :
     psquare f₁₂ f₁₀ f₀₁⁻¹ᵉ* f₂₁⁻¹ᵉ* :=
-  (phinverse p⁻¹*)⁻¹*
+  (phinverse p⁻¹* )⁻¹*
 
   definition phomotopy_hconcat (q : f₀₁' ~* f₀₁) (p : psquare f₁₀ f₁₂ f₀₁ f₂₁) :
     psquare f₁₀ f₁₂ f₀₁' f₂₁ :=
@@ -147,8 +147,8 @@ section psquare
     psquare (loopn_succ_in n A)⁻¹ᵉ* (loopn_succ_in n B)⁻¹ᵉ* (Ω→[n] (Ω→ f)) (Ω→[n + 1] f) :=
   (loopn_succ_in_natural n f)⁻¹ʰ*
 
-  definition pnatural_square {A B : Type} (X : B → Type*) {f g : A → B}
+  definition pnatural_square {A B : Type} (X : B → Type* ) {f g : A → B}
     (h : Πa, X (f a) →* X (g a)) {a a' : A} (p : a = a') :
    psquare (ptransport X (ap f p)) (ptransport X (ap g p)) (h a) (h a') :=
   by induction p; exact !pcompose_pid ⬝* !pid_pcompose⁻¹*
-  *)
+ *)
