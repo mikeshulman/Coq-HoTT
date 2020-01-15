@@ -1,7 +1,7 @@
 Require Import Basics.
-Require Import DPath.
-Require Import Square.
-Require Import DSquare.
+Require Import Cubical.DPath.
+Require Import Cubical.Square.
+Require Import Cubical.DSquare.
 Require Import Types.Paths.
 
 Declare Scope cube_scope.
