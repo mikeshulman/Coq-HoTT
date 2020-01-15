@@ -121,4 +121,4 @@ Definition pequiv_pfiber {A B C D}
   : pfiber f <~>* pfiber g.
 Proof.
   serapply (pequiv_adjointify' (functor_pfiber p)).
-Defined.
+Admitted.
