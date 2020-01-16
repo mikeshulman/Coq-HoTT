@@ -1,5 +1,6 @@
 Require Import Basics.
 Require Import Types.
+Require Import Limits.Pullback.
 Require Import HSet.
 Require Import Algebra.Group.
 
@@ -13,6 +14,8 @@ Class IsSubgroup (G H : Group) := {
   issubgroup_incl :> GroupHomomorphism G H;
   isinj_issubgroup_incl :> IsInjective issubgroup_incl;
 }.
+
+Global Existing Instance isinj_issubgroup_incl.
 
 (* Subgroup inclusion is an embedding. *)
 Global Instance isembedding_issubgroup_incl `{!IsSubgroup G H}
@@ -32,6 +35,7 @@ Class Subgroup (H : Group) := {
 }.
 
 Coercion subgroup_group : Subgroup >-> Group.
+Global Existing Instance subgroup_issubgroup.
 
 Section Cosets.
 
@@ -274,4 +278,157 @@ Proof.
   rewrite <- p.
   apply grp_homo_op.
 Defined.
+
+(** Intersection of subgroups *)
+
+Definition grp_intersection {G : Group} (A B : Subgroup G) : Group.
+Proof.
+  serapply (Build_Group (Pullback (@issubgroup_incl A G _)
+    (@issubgroup_incl B G _))); repeat split.
+  1,2,6: exact _.
+  (** Operation *)
+  { intros [a [b p]] [c [d q]].
+    exists (a * c).
+    exists (b * d).
+    rewrite 2 grp_homo_op.
+    destruct p.
+    apply ap, q. }
+  (** Unit *)
+  { exists mon_unit.
+    exists mon_unit.
+    rewrite 2 grp_homo_unit.
+    reflexivity. }
+  (** Inverse *)
+  { intros [a [b p]].
+    exists (-a).
+    exists (-b).
+    rewrite 2 grp_homo_inv.
+    apply ap, p. }
+  { intros x y z.
+    apply path_pullback_hset.
+    1,2: cbn; apply associativity. }
+  { intros x.
+    apply path_pullback_hset.
+    1,2: cbn; apply left_identity. }
+  { intros x.
+    apply path_pullback_hset.
+     1,2: cbn; apply right_identity. }
+  { intros x.
+    apply path_pullback_hset.
+    1,2: cbn; apply left_inverse. }
+  { intros x.
+    apply path_pullback_hset.
+    1,2: cbn; apply right_inverse. }
+Defined.
+
+Definition grp_intersection_incl {G : Group} (A B : Subgroup G)
+  : GroupHomomorphism (grp_intersection A B) G.
+Proof.
+  serapply Build_GroupHomomorphism.
+  { intros x.
+    exact (issubgroup_incl (pr1 x)). }
+  intros [a [b p]] [c [d q]].
+  apply grp_homo_op.
+Defined.
+
+Global Instance isinjective_grp_intersection_incl {G : Group} (A B : Subgroup G)
+  : IsInjective (grp_intersection_incl A B).
+Proof.
+  cbn; intros [a [b p]] [c [d q]] r.
+  apply path_pullback_hset.
+  + cbn in r.
+    apply injective in r.
+    2: exact _.
+    assumption.
+  + cbn in *.
+    pose (p^ @ r @ q) as s.
+    apply injective in s.
+    2: exact _.
+    assumption.
+Defined.
+
+Global Instance subgroup_pullback {G : Group} (A B : Subgroup G)
+  : IsSubgroup (grp_intersection A B) G
+  := Build_IsSubgroup (grp_intersection A B) G (grp_intersection_incl A B) _.
+
+Definition grp_intersection_incl_pr1 {G : Group} (A B : Subgroup G)
+  : GroupHomomorphism (grp_intersection A B) A.
+Proof.
+  serapply Build_GroupHomomorphism.
+  { intros x.
+    exact (pr1 x). }
+  intro; reflexivity.
+Defined.
+
+Global Instance isinjective_grp_intersection_incl_pr1 {G : Group}
+  (A B : Subgroup G)
+  : IsInjective (grp_intersection_incl_pr1 A B).
+Proof.
+  cbn; intros [a [b p]] [c [d q]] r.
+  apply path_pullback_hset.
+  + exact r.
+  + cbn in *.
+    pose (p^ @ ap _ r @ q) as s.
+    apply injective in s.
+    2: exact _.
+    assumption.
+Defined.
+
+Global Instance subgroup_pullback_pr1 {G : Group} (A B : Subgroup G)
+  : IsSubgroup (grp_intersection A B) A
+  := Build_IsSubgroup _ _ (grp_intersection_incl_pr1 A B) _.
+
+
+Definition grp_intersection_incl_pr2 {G : Group} (A B : Subgroup G)
+  : GroupHomomorphism (grp_intersection A B) B.
+Proof.
+  serapply Build_GroupHomomorphism.
+  { intros x.
+    exact x.2.1. }
+  intro; reflexivity.
+Defined.
+
+Global Instance isinjective_grp_intersection_incl_pr2 {G : Group}
+  (A B : Subgroup G)
+  : IsInjective (grp_intersection_incl_pr2 A B).
+Proof.
+  cbn; intros [a [b p]] [c [d q]] r.
+  apply path_pullback_hset.
+  + cbn in *.
+    pose (p @ ap _ r @ q^) as s.
+    apply injective in s.
+    2: exact _.
+    assumption.
+  + cbn in *. exact r.
+Defined.
+
+Global Instance subgroup_pullback_pr2 {G : Group} (A B : Subgroup G)
+  : IsSubgroup (grp_intersection A B) B
+  := Build_IsSubgroup _ _ (grp_intersection_incl_pr2 A B) _.
+
+Definition subgroup_intersection {G : Group} (A B : Subgroup G) : Subgroup G
+  := Build_Subgroup G (grp_intersection A B) _.
+
+Definition subgroup_intersection_pr1 {G : Group} (A B : Subgroup G) : Subgroup A
+  := Build_Subgroup A (grp_intersection A B) _.
+
+Definition subgroup_intersection_pr2 {G : Group} (A B : Subgroup G) : Subgroup B
+  := Build_Subgroup B (grp_intersection A B) _.
+
+(* Global Instance isnormal_subgroup_intersection {G : Group} (A B : Subgroup G)
+  {H1 : IsNormalSubgroup A}
+  : IsNormalSubgroup (subgroup_intersection A B).
+Proof.
+  serapply Build_IsNormalSubgroup.
+  intros x y.
+  destruct H1 as [H1].
+  unfold in_cosetL, in_cosetR in *.
+  unfold hfiber in *.
+  pose (H1 x y).
+  serapply equiv_functor_sigma'.
+  + unfold subgroup_intersection. cbn.
+    unfold Pullback.
+Admitted. *)
+    
+
 

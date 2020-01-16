@@ -4,6 +4,8 @@ Require Import Truncations.
 Require Import HIT.Coeq.
 Require Import Algebra.Group.
 Require Import Algebra.Subgroup.
+Require Import Algebra.QuotientGroup.
+Require Import Colimits.Quotient.
 Require Import Cubical.
 Require Import WildCat.
 Import TrM.
@@ -21,6 +23,11 @@ Class AbGroup := {
   abgroup_inverse :> Negate abgroup_type;
   abgroup_isabgroup :> IsAbGroup abgroup_type;
 }.
+
+Existing Instance abgroup_sgop.
+Existing Instance abgroup_unit.
+Existing Instance abgroup_inverse.
+Existing Instance abgroup_isabgroup.
 
 (** We want abelian groups to be coerced to the underlying type. *)
 Coercion abgroup_type : AbGroup >-> Sortclass.
@@ -460,4 +467,53 @@ Instance hasmorext_abgroup `{Funext} : HasMorExt AbGroup :=
 
 Global Instance hasequivs_abgroup : HasEquivs AbGroup :=
   induced_hasequivs _.
+
+(** Subgroups of abelian groups *)
+
+Global Instance isnormal_ab_subgroup (G : AbGroup) (H : Subgroup G)
+  : IsNormalSubgroup H.
+Proof.
+  serapply Build_IsNormalSubgroup.
+  intros x y.
+  unfold in_cosetL, in_cosetR.
+  refine (equiv_functor_sigma' (Build_Equiv _ _ group_inverse _) _).
+  intros h.
+  simpl.
+  serapply equiv_iff_hprop.
+  + intros p.
+    rewrite grp_homo_inv.
+    rewrite p.
+    rewrite negate_sg_op.
+    rewrite (involutive x).
+    apply commutativity.
+  + intros p.
+    rewrite grp_homo_inv in p.
+    apply moveL_equiv_V in p.
+    rewrite p; cbn.
+    change (- (x * -y) = - x * y).
+    rewrite negate_sg_op.
+    rewrite (involutive y).
+    apply commutativity.
+Defined.
+
+
+(** Quotients of abelian groups *)
+
+Global Instance isabgroup_quotient {U : Univalence} (G : AbGroup) (H : Subgroup G)
+  : IsAbGroup (QuotientGroup G H).
+Proof.
+  ntc_rapply Build_IsAbGroup.
+  1: exact _.
+  intro x.
+  serapply Quotient_ind_hprop.
+  revert x.
+  serapply Quotient_ind_hprop.
+  intros x y.
+  apply (ap (tr o coeq)).
+  apply commutativity.
+Defined.
+
+Definition QuotientAbGroup {U : Univalence} (G : AbGroup) (H : Subgroup G)
+  : AbGroup := Build_AbGroup (QuotientGroup G H) _ _ _ _.
+
 
