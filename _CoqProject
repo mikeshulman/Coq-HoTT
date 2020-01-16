@@ -311,6 +311,7 @@ theories/Algebra/ooAction.v
 
 theories/Algebra/Z.v
 
+theories/Algebra/GradedAbGroup.v
 theories/Algebra/Group.v
 theories/Algebra/Subgroup.v
 theories/Algebra/Congruence.v
