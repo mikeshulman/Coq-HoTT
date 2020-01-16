@@ -285,12 +285,6 @@ Defined.
 
 (** ** Connecting maps *)
 
-Definition pequiv_pfiber' {A B C D}
-           {f : A ->* B} {g : C ->* D} {h : A <~>* C} {k : B <~>* D}
-           (p : Square f g h k)
-  : pfiber f <~>* pfiber g
-  := pequiv_pfiber p.
-
 (** It's useful to see [pfib_cxfib] as a degenerate square. *)
 Definition square_pfib_pequiv_cxfib
            {F X Y : pType} (i : F ->* X) (f : X ->* Y)
@@ -308,7 +302,7 @@ Definition connect_fiberseq {F X Y} (i : F ->* X) (f : X ->* Y)
   : FiberSeq (loops Y) F X.
 Proof.
   exists i.
-  exact (((pfiber2_loops f) o*E (pequiv_pfiber (square_pfib_pequiv_cxfib i f)))^-1*).
+  exact (((pfiber2_loops f) o*E (pequiv_pfiber _ _ (square_pfib_pequiv_cxfib i f)))^-1*).
 Defined.
 
 Definition connecting_map {F X Y} (i : F ->* X) (f : X ->* Y)
@@ -324,19 +318,19 @@ Proof.
           (pfib (pfib i)) (loops_functor f)
           (((loops_inv X) o*E
             (pfiber2_loops (pfib f)) o*E
-           (pequiv_pfiber (square_pequiv_pfiber (square_pfib_pequiv_cxfib i f))))^-1*)
-          (((pfiber2_loops f) o*E (pequiv_pfiber (square_pfib_pequiv_cxfib i f)))^-1*)
+           (pequiv_pfiber _ _ (square_pequiv_pfiber _ _ (square_pfib_pequiv_cxfib i f))))^-1*)
+          (((pfiber2_loops f) o*E (pequiv_pfiber _ _ (square_pfib_pequiv_cxfib i f)))^-1*)
           _ (pfib i)).
   refine (vinverse 
             ((loops_inv X) o*E
              (pfiber2_loops (pfib f)) o*E
-             (pequiv_pfiber (square_pequiv_pfiber (square_pfib_pequiv_cxfib i f))))
-            ((pfiber2_loops f) o*E (pequiv_pfiber (square_pfib_pequiv_cxfib i f))) _).
+             (pequiv_pfiber _ _ (square_pequiv_pfiber _ _ (square_pfib_pequiv_cxfib i f))))
+            ((pfiber2_loops f) o*E (pequiv_pfiber _ _ (square_pfib_pequiv_cxfib i f))) _).
   refine (vconcat (f03 := loops_inv X o* pfiber2_loops (pfib f))
-                  (f01 := pequiv_pfiber (square_pequiv_pfiber (square_pfib_pequiv_cxfib i f)))
+                  (f01 := pequiv_pfiber _ _ (square_pequiv_pfiber _ _ (square_pfib_pequiv_cxfib i f)))
                   (f23 := pfiber2_loops f)
-                  (f21 := pequiv_pfiber (square_pfib_pequiv_cxfib i f)) _ _).
-  - exact (square_pequiv_pfiber (square_pequiv_pfiber (square_pfib_pequiv_cxfib i f))).
+                  (f21 := pequiv_pfiber _ _ (square_pfib_pequiv_cxfib i f)) _ _).
+  - exact (square_pequiv_pfiber _ _ (square_pequiv_pfiber _ _ (square_pfib_pequiv_cxfib i f))).
   - exact (pfiber2_loops_functor f).
 Defined.
 

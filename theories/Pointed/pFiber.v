@@ -135,7 +135,7 @@ Proof.
 Defined.
 
 Definition square_pequiv_pfiber {A B C D}
-           {f : A ->* B} {g : C ->* D} {h : A <~>* C} {k : B <~>* D}
+           {f : A ->* B} {g : C ->* D} (h : A <~>* C) (k : B <~>* D)
            (p : k o* f ==* g o* h)
-  : h o* pfib f ==* pfib g o* pequiv_pfiber p
+  : h o* pfib f ==* pfib g o* pequiv_pfiber h k p
   := square_functor_pfiber p.
