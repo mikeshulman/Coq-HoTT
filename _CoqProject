@@ -320,6 +320,7 @@ theories/Algebra/QuotientGroup.v
 theories/Algebra/Kernel.v
 theories/Algebra/Image.v
 theories/Algebra/Homology.v
+theories/Algebra/SpectralSequences.v
 
 
 #
