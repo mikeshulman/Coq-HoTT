@@ -1,11 +1,9 @@
 Require Import Basics.
 Require Import Types.
 Require Import Fibrations.
-Require Import WildCat.
 Require Import Pointed.Core.
 Require Import Pointed.pEquiv.
 Require Import Pointed.Loops.
-Require Import Pointed.pType.
 
 Local Open Scope pointed_scope.
 
@@ -42,8 +40,8 @@ Defined.
 
 (** The triple-fiber functor is equal to the negative of the loopspace functor. *)
 Definition pfiber2_loops_functor {A B : pType} (f : A ->* B)
-: loops_inv _ o* pfiber2_loops f o* pfib (pfib (pfib f))
-  ==* loops_functor f o* pfiber2_loops (pfib f).
+: pfiber2_loops f o* pfib (pfib (pfib f))
+  ==* loops_functor f o* (loops_inv _ o* pfiber2_loops (pfib f)).
 Proof.
   pointed_reduce.
   simple refine (Build_pHomotopy _ _).
@@ -51,20 +49,11 @@ Proof.
     rewrite !transport_paths_Fl.
     rewrite inv_pp, !ap_V, !inv_V, ap_compose, !ap_pp, inv_pp.
     simpl; rewrite !concat_1p, !concat_p1.
-    rewrite ap_pr1_path_basedpaths'.
-    rewrite ap_V, inv_V; apply whiskerR.
-    match goal with
-        |- ?a = ap f (ap ?g ?z) =>
-        change (a = ap f (ap (pr1 o pr1) z))
-    end.
-    rewrite (ap_compose pr1 pr1).
-    rewrite ap_pr1_path_basedpaths'.
-    (** In order to destruct [r], we have to invert it to match Paulin-Mohring path induction.  I don't know why the [set] fails to catch the [r^] in the conclusion. *)
-    set (s := r^); change ((xp.2)^ = ap f (ap pr1 s)).
-    clearbody s; clear r; destruct s; reflexivity.
+    rewrite ap_pr1_path_basedpaths', ap_pp.
+    rewrite <- (inv_V r); set (s := r^); clearbody s; clear r; destruct s.
+    reflexivity.
   - reflexivity.
 Qed.
-
 
 Definition pfiber_loops_functor {A B : pType} (f : A ->* B)
   : pfiber (loops_functor f) <~>* loops (pfiber f).
@@ -133,3 +122,9 @@ Proof.
   - cbn; unfold functor_sigma; cbn.
     abstract (rewrite ap_pr1_path_sigma, concat_p1; reflexivity).
 Defined.
+
+Definition square_pequiv_pfiber {A B C D}
+           {f : A ->* B} {g : C ->* D} {h : A <~>* C} {k : B <~>* D}
+           (p : k o* f ==* g o* h)
+  : h o* pfib f ==* pfib g o* pequiv_pfiber p
+  := square_functor_pfiber p.
