@@ -2,6 +2,7 @@
 Require Import Basics.
 Require Import Types.
 Require Import SuccessorStructure.
+Require Import WildCat.
 Require Import Pointed.
 Require Import ReflectiveSubuniverse Modality Modalities.Identity.
 Require Import Truncations.
@@ -28,10 +29,11 @@ Defined.
 (** ** Very short complexes *)
 
 (** A (very short) complex is a pair of pointed maps whose composite is the zero map. *)
-Notation IsComplex i f := (f o* i ==* pConst).
+Definition IsComplex {F X Y} (i : F ->* X) (f : X ->* Y)
+  := (f o* i ==* pConst).
 
 (** This induces a map from the domain of [i] to the fiber of [f]. *)
-Definition cx_to_fiber {F X Y : pType} (i : F ->* X) (f : X ->* Y)
+Definition cxfib {F X Y : pType} {i : F ->* X} {f : X ->* Y}
            (cx : IsComplex i f)
   : F ->* pfiber f.
 Proof.
@@ -44,9 +46,9 @@ Proof.
 Defined.
 
 (** ...whose composite with the projection [pfib : pfiber i -> X] is [i].  *)
-Definition pfib_cx_to_fiber {F X Y : pType} (i : F ->* X) (f : X ->* Y)
+Definition pfib_cxfib {F X Y : pType} {i : F ->* X} {f : X ->* Y}
            (cx : IsComplex i f)
-  : pfib f o* cx_to_fiber i f cx ==* i.
+  : pfib f o* cxfib cx ==* i.
 Proof.
   serapply Build_pHomotopy.
   - intros u; reflexivity.
@@ -97,14 +99,29 @@ Proof.
   exact (pmap_prewhisker i ff @* cx).
 Defined.
 
+(** And likewise passage across squares with equivalences *)
+Definition iscomplex_squaric_i {F F' X X' Y : pType}
+           (i : F ->* X) (i' : F' ->* X')
+           (g : F' <~>* F) (h : X' <~>* X) (p : Square i' i g h)
+           (f : X ->* Y)
+           (cx: IsComplex i f)
+  : IsComplex i' (f o* h).
+Proof.
+  refine (pmap_compose_assoc _ _ _ @* _).
+  refine (pmap_postwhisker f p @* _).
+  refine ((pmap_compose_assoc _ _ _)^* @* _).
+  refine (pmap_prewhisker g cx @* _).
+  apply postcompose_pconst.
+Defined.
+
 
 (** ** Very short exact sequences and fiber sequences *)
 
-(** A complex is n-exact if the induced map [cx_to_fiber] is n-connected.  *)
+(** A complex is n-exact if the induced map [cxfib] is n-connected.  *)
 Class IsExact (n : Modality) {F X Y : pType} (i : F ->* X) (f : X ->* Y) :=
 {
   cx_isexact : IsComplex i f ;
-  conn_map_isexact : IsConnMap n (cx_to_fiber i f cx_isexact)
+  conn_map_isexact : IsConnMap n (cxfib cx_isexact)
 }.
 
 Global Existing Instance conn_map_isexact.
@@ -116,13 +133,54 @@ Definition isexact_homotopic_i n  {F X Y : pType}
   : IsExact n i' f.
 Proof.
   exists (iscomplex_homotopic_i ii f cx_isexact).
-  refine (conn_map_homotopic n (cx_to_fiber i f cx_isexact) _ _ _).
+  refine (conn_map_homotopic n (cxfib cx_isexact) _ _ _).
   intros u; cbn.
   refine (path_sigma' _ (ii u)^ _).
   exact (transport_paths_Fl _ _ @ ((inverse2 (ap_V _ _) @ inv_V _) @@ 1)).
 Defined.  
 
-(** When [n] is the identity modality, so that [cx_to_fiber] is an equivalence, we get simply a fiber sequence.  Fiber sequences can alternatively be defined as an equivalence to the fiber of some map. *)
+(** And also passage across squares with equivalences. *)
+Definition isexact_squaric_i n  {F F' X X' Y : pType}
+           (i : F ->* X) (i' : F' ->* X')
+           (g : F' <~>* F) (h : X' <~>* X) (p : Square i' i g h)
+           (f : X ->* Y)
+           `{IsExact n F X Y i f}
+  : IsExact n i' (f o* h).
+Proof.
+  exists (iscomplex_squaric_i i i' g h p f cx_isexact); cbn.
+  simple notypeclasses refine (cancelR_equiv_conn_map n (C := pfiber f) _ _).
+  - exact (@equiv_functor_hfiber _ _ _ _ (f o h) f h equiv_idmap
+             (fun x => 1%path) (point Y)).
+  - cbn; unfold functor_hfiber, functor_sigma; cbn.
+    refine (conn_map_homotopic n (@cxfib _ _ _ i f cx_isexact o g) _ _ _).
+    intros u; cbn.
+    refine (path_sigma' _ (p u)^ _).
+    abstract (
+        rewrite transport_paths_Fl, ap_V, inv_V,
+        !concat_1p, concat_p1, ap_idmap;
+        reflexivity
+      ).
+Defined.
+
+
+(** When [n] is the identity modality [oo], so that [cxfib] is an equivalence, we get simply a fiber sequence.  In particular, the fiber of a given map yields an oo-exact sequence. *)
+
+Definition iscomplex_pfib {X Y} (f : X ->* Y)
+  : IsComplex (pfib f) f.
+Proof.
+  serapply Build_pHomotopy.
+  - intros [x p]; exact p.
+  - cbn. exact (concat_p1 _ @ (concat_1p _)^).
+Defined.
+
+Global Instance isexact_pfib {X Y} (f : X ->* Y)
+  : IsExact oo (pfib f) f.
+Proof.
+  exists (iscomplex_pfib f).
+  exact _.
+Defined.    
+
+(** Fiber sequences can alternatively be defined as an equivalence to the fiber of some map. *)
 Definition FiberSeq (F X Y : pType) := { f : X ->* Y & F <~>* pfiber f }.
 
 Definition i_fiberseq {F X Y} (fs : FiberSeq F X Y)
@@ -146,15 +204,19 @@ Proof.
     change (IsEquiv fs.2); exact _.
 Defined.
 
-Definition fiberseq_isexact_oo {F X Y : pType} (i : F ->* X) (f : X ->* Y)
+Definition pequiv_cxfib {F X Y : pType} {i : F ->* X} {f : X ->* Y}
            `{IsExact oo F X Y i f}
-  : FiberSeq F X Y.
+  : F <~>* pfiber f.
 Proof.
-  exists f.
-  refine (Build_pEquiv _ _ (cx_to_fiber i f cx_isexact) _).
+  refine (Build_pEquiv _ _ (cxfib cx_isexact) _).
   apply isequiv_fcontr; intros u. 
   rapply conn_map_isexact.
 Defined.
+
+Definition fiberseq_isexact_oo {F X Y : pType} (i : F ->* X) (f : X ->* Y)
+           `{IsExact oo F X Y i f}
+  : FiberSeq F X Y
+  := (f ; pequiv_cxfib).
 
 (** It's easier to show that loops preserve fiber sequences than that they preserve oo-exact sequences. *)
 Definition fiberseq_loops {F X Y} (fs : FiberSeq F X Y)
@@ -173,12 +235,12 @@ Proof.
   refine (@isexact_homotopic_i
             oo _ _ _ _ (loops_functor i) _ (loops_functor f)
             (isexact_oo_fiberseq (fiberseq_loops (fiberseq_isexact_oo i f)))).
-  transitivity (loops_functor (pfib f) o* loops_functor (cx_to_fiber i f cx_isexact)).
+  transitivity (loops_functor (pfib f) o* loops_functor (cxfib cx_isexact)).
   - refine (_ @* loops_functor_compose _ _).
     apply loops_2functor.
-    symmetry; apply pfib_cx_to_fiber.
+    symmetry; apply pfib_cxfib.
   - refine (_ @* pmap_compose_assoc _ _ _).
-    refine (pmap_prewhisker (loops_functor (cx_to_fiber i f cx_isexact)) _).
+    refine (pmap_prewhisker (loops_functor (cxfib cx_isexact)) _).
     apply moveR_pequiv_fV.
     apply pr1_pfiber_loops_functor.
 Defined.
@@ -191,7 +253,7 @@ Proof.
 Defined.
 
 (** (n.+1)-truncation preserves n-exactness. *)
-Definition isexact_ptr (n : trunc_index)
+Global Instance isexact_ptr (n : trunc_index)
            {F X Y : pType} (i : F ->* X) (f : X ->* Y)
            `{IsExact (Tr n) F X Y i f}
   : IsExact (Tr n) (ptr_functor n.+1 i) (ptr_functor n.+1 f).
@@ -199,10 +261,10 @@ Proof.
   exists (iscomplex_ptr n.+1 i f cx_isexact).
   simple notypeclasses refine
     (cancelR_conn_map (Tr n) (@tr n.+1 F) 
-      (cx_to_fiber (ptr_functor n.+1 i) (ptr_functor n.+1 f) _)).
+      (@cxfib _ _ _ (ptr_functor n.+1 i) (ptr_functor n.+1 f) _)).
   { intros x; rapply isconnected_pred. }
   refine (conn_map_homotopic (Tr n) _ _ _
-           (conn_map_compose (Tr n) (cx_to_fiber i f _)
+           (conn_map_compose (Tr n) (cxfib _)
              (functor_hfiber (fun y => (to_O_natural (Tr n.+1) f y)^) (point Y)))).
   intros x; refine (path_sigma' _ 1 _); cbn.
   (* This is even simpler than it looks, because for truncations [to_O_natural n.+1 := 1], [to n.+1 := tr], and [cx_const := H]. *)
@@ -210,7 +272,7 @@ Proof.
 Defined.
 
 (** In particular, (n.+1)-truncation takes fiber sequences to n-exact ones. *)
-Definition isexact_ptr_oo (n : trunc_index)
+Global Instance isexact_ptr_oo (n : trunc_index)
            {F X Y : pType} (i : F ->* X) (f : X ->* Y) `{IsExact oo F X Y i f}
   : IsExact (Tr n) (ptr_functor n.+1 i) (ptr_functor n.+1 f).
 Proof.
@@ -223,29 +285,55 @@ Defined.
 
 (** ** Connecting maps *)
 
-(** The connecting maps for the long exact sequence of loop spaces. *)
-Definition connect {F X Y} (fs : FiberSeq F X Y)
-  : loops Y ->* F.
+(** It's useful to see [pfib_cxfib] as a degenerate square. *)
+Definition square_pfib_pequiv_cxfib
+           {F X Y : pType} (i : F ->* X) (f : X ->* Y)
+           `{IsExact oo F X Y i f}
+  : Square i (pfib f) (pequiv_cxfib) (pequiv_pmap_idmap).
 Proof.
-  srapply Build_pMap.
-  - intros p. apply (fs.2)^-1.
-    exists (point X).
-    exact (point_eq fs.1 @ p).
-  - cbn.
-    apply moveR_equiv_V.
-    refine (_ @ (point_eq fs.2)^).
-    exact (path_sigma' _ 1 (concat_p1 _)).
+  unfold Square.
+  refine (pmap_postcompose_idmap _ @* _).
+  symmetry; apply pfib_cxfib.
 Defined.
 
-Global Instance isexact_connect_L {F X Y} (i : F ->* X) (f : X ->* Y)
-       `{IsExact oo F X Y i f}
-  : IsExact oo (connect (fiberseq_isexact_oo i f)) i.
-Admitted.
+(** The connecting maps for the long exact sequence of loop spaces, defined as an extension to a fiber sequence. *)
+Definition connect_fiberseq {F X Y} (i : F ->* X) (f : X ->* Y)
+           `{IsExact oo F X Y i f}
+  : FiberSeq (loops Y) F X.
+Proof.
+  exists i.
+  exact (((pfiber2_loops f) o*E (pequiv_pfiber _ _ (square_pfib_pequiv_cxfib i f)))^-1*).
+Defined.
+
+Definition connecting_map {F X Y} (i : F ->* X) (f : X ->* Y)
+           `{IsExact oo F X Y i f}
+  : loops Y ->* F
+  := i_fiberseq (connect_fiberseq i f).
 
 Global Instance isexact_connect_R {F X Y} (i : F ->* X) (f : X ->* Y)
        `{IsExact oo F X Y i f}
-  : IsExact oo (loops_functor f) (connect (fiberseq_isexact_oo i f)).
-Admitted.
+  : IsExact oo (loops_functor f) (connecting_map i f).
+Proof.
+  refine (isexact_squaric_i (Y := F) oo
+          (pfib (pfib i)) (loops_functor f)
+          (((loops_inv X) o*E
+            (pfiber2_loops (pfib f)) o*E
+           (pequiv_pfiber _ _ (square_pequiv_pfiber _ _ (square_pfib_pequiv_cxfib i f))))^-1*)
+          (((pfiber2_loops f) o*E (pequiv_pfiber _ _ (square_pfib_pequiv_cxfib i f)))^-1*)
+          _ (pfib i)).
+  refine (vinverse 
+            ((loops_inv X) o*E
+             (pfiber2_loops (pfib f)) o*E
+             (pequiv_pfiber _ _ (square_pequiv_pfiber _ _ (square_pfib_pequiv_cxfib i f))))
+            ((pfiber2_loops f) o*E (pequiv_pfiber _ _ (square_pfib_pequiv_cxfib i f))) _).
+  refine (vconcat (f03 := loops_inv X o* pfiber2_loops (pfib f))
+                  (f01 := pequiv_pfiber _ _ (square_pequiv_pfiber _ _ (square_pfib_pequiv_cxfib i f)))
+                  (f23 := pfiber2_loops f)
+                  (f21 := pequiv_pfiber _ _ (square_pfib_pequiv_cxfib i f)) _ _).
+  - exact (square_pequiv_pfiber _ _ (square_pequiv_pfiber _ _ (square_pfib_pequiv_cxfib i f))).
+  - exact (pfiber2_loops_functor f).
+Defined.
+
 
 (** ** Long exact sequences *)
 
@@ -257,7 +345,19 @@ Record LongExactSequence (k : Modality) (N : SuccStr) : Type :=
 }.
 
 Coercion les_carrier : LongExactSequence >-> Funclass.
+Arguments les_fn {k N} S n : rename.
 Global Existing Instance les_isexact.
+
+(** Long exact sequences are preserved by truncation. *)
+Definition trunc_les (k : trunc_index) {N : SuccStr}
+           (S : LongExactSequence oo N)
+  : LongExactSequence (Tr k) N
+  := Build_LongExactSequence
+       (Tr k) N (fun n => pTr k.+1 (S n))
+       (fun n => ptr_functor k.+1 (les_fn S n)) _.
+
+
+(** ** LES of loop spaces and homotopy groups *)
 
 Local Notation "'0'" := (inl (inl (inr tt))).
 Local Notation "'1'" := (inl (inr tt)).
@@ -280,7 +380,13 @@ Proof.
   all:intros [n [[[[]|[]]|[]]|[]]]; cbn.
   { exact (iterated_loops_functor n f). }
   { exact (iterated_loops_functor n i). }
-  { exact (connect (fiberseq_isexact_oo (iterated_loops_functor n i)
-                                        (iterated_loops_functor n f))). }
+  { exact (connecting_map (iterated_loops_functor n i)
+                          (iterated_loops_functor n f)). }
   all:exact _.
 Defined.
+
+(** And from that, a long exact sequence of homotopy groups (though for now it is just a sequence of pointed sets). *)
+Definition Pi_les {F X Y : pType} (i : F ->* X) (f : X ->* Y)
+           `{IsExact oo F X Y i f}
+  : LongExactSequence (Tr (-1)) (N3)
+  := trunc_les (-1) (loops_les i f).

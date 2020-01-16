@@ -97,12 +97,14 @@ Definition pi_functor_type (n : nat) (X Y : pType) : Type
      end.
 
 (* Every such map is, in particular, a pointed map. *)
-Definition pi_functor_type_pmap n X Y : pi_functor_type n X Y -> (Pi n X ->* Pi n Y)
+Definition pi_functor_type_pmap n X Y : pi_functor_type n X Y -> (pForall (Pi n X) (constant_pfam (Pi n Y)))
   := match n return pi_functor_type n X Y -> (Pi n X ->* Pi n Y) with
      | 0    => fun f => f
      | n.+1 => fun f => f       (* This works because [pmap_GroupHomomorphism] is already a coercion. *)
      end.
-Coercion pi_functor_type_pmap : pi_functor_type >-> pMap.
+(* Note: because we define pMap as a special case of pForall, we must declare
+  all coercions into pForall, *not* into pMap. *)
+Coercion pi_functor_type_pmap : pi_functor_type >-> pForall.
 
 Definition pi_functor (n : nat) {X Y : pType}
   : (X ->* Y) -> pi_functor_type n X Y.

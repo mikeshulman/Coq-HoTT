@@ -59,24 +59,15 @@ Section GenSpectrum.
 
   Record sMap (X Y : GenPrespectrum N) := {
     spectrum_fun :> forall n, X n ->* Y n;
-    smap_htpy : forall n,
-      (glue Y n) o* (spectrum_fun n)
-      ==* (loops_functor (spectrum_fun n.+1)) o* (glue X n);
-  }.
+    smap_square : forall n, Square (spectrum_fun n) (loops_functor (spectrum_fun n.+1)) (glue X n) (glue Y n); }.
 
-  Arguments smap_htpy {_ _}.
+  Arguments smap_square {_ _}.
 
   Definition smap_idmap (X : GenPrespectrum N) : sMap X X.
   Proof.
     serapply Build_sMap.
     + intro; exact pmap_idmap.
-    + intro.
-      cbn.
-      refine (cat_idr _ $@ _).
-      refine ((cat_idl _)^$ $@ _).
-      refine (_ $@R _).
-      symmetry.
-      apply loops_functor_idmap.
+    + intro. exact (hrfl $@vR loops_functor_idmap _).
   Defined.
 
   Definition smap_compose {X Y Z : GenPrespectrum N}
@@ -85,15 +76,8 @@ Section GenSpectrum.
     intros f g.
     serapply Build_sMap.
     + refine (fun n => f n o* g n).
-    + intro n.
-      simpl.
-      refine ((cat_assoc _ _ _)^$ $@ _).
-      refine (smap_htpy f _ $@R _ $@ _).
-      symmetry.
-      refine (loops_functor_compose _ _ $@R _ $@ _).
-      refine (_ $@ (cat_assoc _ _ _)^$).
-      refine (cat_assoc _ _ _ $@ _).
-      refine (_ $@L (smap_htpy g _)^$).
+    + intro n. simpl. 
+      exact ((smap_square g n $@h smap_square f n) $@vR loops_functor_compose _ _).
   Defined.
 
   Global Instance is01cat_genprespectrum : Is01Cat (GenPrespectrum N).
@@ -117,38 +101,52 @@ Section GenSpectrum.
     + admit.
   Admitted.
 
-  Global Instance is01cat_genspectrum : Is01Cat (GenSpectrum N) :=
-    induced_01cat (to_gen_prespectrum _).
+Global Instance is01cat_genspectrum : Is01Cat (GenSpectrum N) :=
+  induced_01cat (to_gen_prespectrum _).
 
-  Definition sConst (X Y : GenPrespectrum N) : X $-> Y.
-  Proof.
-    refine (Build_sMap X Y (fun n => pConst) _).
-    intro n. refine (precompose_pconst _ @* (postcompose_pconst _)^* @* pmap_prewhisker _ (loops_functor_pconst)^*).
-  Defined.
+Definition sConst (X Y : GenPrespectrum N) : X $-> Y.
+Proof.
+  refine (Build_sMap X Y (fun n => pConst) _).
+  intro n. refine (precompose_pconst _ @* (postcompose_pconst _)^* @* pmap_prewhisker _ (loops_functor_pconst)^*).
+Defined.
 
 (** Fiber of a spectrum map. *)
+Definition sfiber {X Y : GenSpectrum N} (f : X $-> Y) : GenSpectrum N.
+Proof.
+  apply (Build_GenSpectrum N (fun n => pfiber (f n))).
+  intro n. exact (pfiber_loops_functor _ o*E pequiv_pfiber (equiv_glue X n) (equiv_glue Y n) (smap_square f n)).
+Defined.
 
-  Definition sfiber {X Y : GenSpectrum N} (f : X $-> Y) : GenSpectrum N.
-  Proof.
-    apply (Build_GenSpectrum N (fun n => pfiber (f n))).
-    intro n. refine (pfiber_loops_functor _ o*E _).
-  Admitted.
-(*  definition sfiber [constructor] {N : succ_str} {X Y : gen_spectrum N} (f : X →ₛ Y) :
+Definition sfib {X Y : GenSpectrum N} (f : X $-> Y) : sfiber f $-> X.
+Proof.
+  serapply Build_sMap; intro n.
+  + exact (pfib (f n)).
+  + refine (move_left_bottom _). refine (_ $@vR _).
+  1: apply square_functor_pfiber.
+  apply pr1_pfiber_loops_functor.
+Defined.
+
+(** Sections of parametrized spectra *)
+
+(*Definition spi (A : pType) (Y : A -> GenSpectrum N) : GenSpectrum N.
+Proof.
+  apply (Build_GenSpectrum N (fun n => ).
+  intro n. exact (pfiber_loops_functor _ o*E pequiv_pfiber (equiv_glue X n) (equiv_glue Y n) (smap_square f n)).
+Defined.
+
+  definition spi [constructor] {N : succ_str} (A : Type* ) (E : A → gen_spectrum N) :
     gen_spectrum N :=
-    spectrum.MK (λn, pfiber (f n))
-       (λn, (loop_pfiber (f (S n)))⁻¹ᵉ* ∘*ᵉ pfiber_pequiv_of_square _ _ (sglue_square f n))
+  spectrum.MK (λn, Π*a, E a n)
+    (λn, !loop_pppi_pequiv⁻¹ᵉ* ∘*ᵉ ppi_pequiv_right (λa, equiv_glue (E a) n))
 
-  /- the map from the fiber to the domain -/
-  definition spoint {N : succ_str} {X Y : gen_spectrum N} (f : X →ₛ Y) : sfiber f →ₛ X :=
-  smap.mk (λn, ppoint (f n))
+  definition spi_compose_left [constructor] {N : succ_str} {A : Type*} {E F : A -> gen_spectrum N}
+    (f : Πa, E a →ₛ F a) : spi A E →ₛ spi A F :=
+  smap.mk (λn, pppi_compose_left (λa, f a n))
     begin
       intro n,
---      refine _ ⬝vp* !ppoint_loop_pfiber_inv,
-      refine _ ⬝* !passoc,
-      refine _ ⬝* pwhisker_right _ !ppoint_loop_pfiber_inv⁻¹*,
-      rexact (pfiber_pequiv_of_square_ppoint (equiv_glue X n) (equiv_glue Y n) (sglue_square f n))⁻¹*
+      exact psquare_pppi_compose_left (λa, (glue_square (f a) n)) ⬝v*
+        (ptranspose !loop_pppi_pequiv_natural_right)⁻¹ᵛ*
     end*)
-
 
 End GenSpectrum.
 
