@@ -212,3 +212,15 @@ Section PullbackSigma.
 
 End PullbackSigma.
 
+Definition path_pullback_hset {A B C : Type} `{IsHSet A} (f : B -> A) (g : C -> A)
+  {p q : Pullback f g} (s : p.1 = q.1) (t : p.2.1 = q.2.1) : p = q.
+Proof.
+  destruct p as [a [b p]], q as [c [d q]].
+  apply (path_sigma _ _ _ s).
+  cbn in *.
+  destruct s.
+  cbn.
+  serapply path_sigma.
+  1: apply t.
+  serapply path_ishprop.
+Defined.
