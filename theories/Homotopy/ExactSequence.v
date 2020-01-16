@@ -1,12 +1,12 @@
 (* -*- mode: coq; mode: visual-line -*-  *)
-Require Import Basics.
-Require Import Types.
+Require Import Basics Types.
 Require Import SuccessorStructure.
 Require Import WildCat.
 Require Import Pointed.
 Require Import ReflectiveSubuniverse Modality Modalities.Identity.
 Require Import Truncations.
 Require Import Fibrations EquivalenceVarieties.
+Import TrM.
 
 Local Open Scope succ_scope.
 Open Scope pointed_scope.

@@ -1,5 +1,5 @@
 (* -*- mode: coq; mode: visual-line -*- *)
-Require Import Basics Types.
+Require Import Basics Types UnivalenceImpliesFunext.
 Require Import Pointed.Core.
 Require Import WildCat.
 Require Import pHomotopy pMap pEquiv.
