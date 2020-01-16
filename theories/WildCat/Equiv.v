@@ -39,7 +39,7 @@ Definition cate_fun {A} `{HasEquivs A} {a b : A} (f : a $<~> b)
 
 Coercion cate_fun : CatEquiv >-> Hom.
 
-(* Being an equivalence should be a typeclass, but we have to redefine it.  (Apparently [Existing Class] doesn't work.) *)
+(* Being an equivalence should be a typeclass, but we have to redefine it to work around https://github.com/coq/coq/issues/8994 . *)
 Class CatIsEquiv {A} `{HasEquivs A} {a b : A} (f : a $-> b)
   := catisequiv : CatIsEquiv' a b f.
 
