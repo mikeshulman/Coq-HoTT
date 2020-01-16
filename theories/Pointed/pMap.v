@@ -41,23 +41,28 @@ Defined.
 Definition pmap_compose_assoc {A B C D : pType} (h : C ->* D)
   (g : B ->* C) (f : A ->* B) : (h o* g) o* f ==* h o* (g o* f).
 Proof.
-  simple refine (Build_pHomotopy _ _); [ intros; reflexivity | ].
-  abstract (pointed_reduce; reflexivity).
+  simple refine (Build_pHomotopy _ _); cbn.
+  - intros ?; reflexivity.
+  - abstract (pointed_reduce; reflexivity).
 Defined.
 
 Definition pmap_precompose_idmap {A B : pType} (f : A ->* B)
 : f o* pmap_idmap ==* f.
 Proof.
-  simple refine (Build_pHomotopy _ _); [ intros; reflexivity | ].
-  abstract (pointed_reduce; reflexivity).
-Defined.
+  pointed_reduce.
+  simple refine (Build_pHomotopy _ _); cbn.
+  - intros ?; reflexivity.
+  - reflexivity.
+Qed.
 
 Definition pmap_postcompose_idmap {A B : pType} (f : A ->* B)
 : pmap_idmap o* f ==* f.
 Proof.
-  simple refine (Build_pHomotopy _ _); [ intros; reflexivity | ].
-  abstract (pointed_reduce; reflexivity).
-Defined.
+  pointed_reduce.
+  simple refine (Build_pHomotopy _ _); cbn.
+  - intros ?; reflexivity.
+  - reflexivity.
+Qed.
 
 (** ** Trivially pointed maps *)
 
@@ -75,7 +80,7 @@ Lemma precompose_pconst {A B C : pType} (f : B ->* C)
 Proof.
   serapply Build_pHomotopy.
   1: intro; apply point_eq.
-  exact (concat_p1 _ @ (concat_1p _)^).
+  exact (concat_p1 _ @ concat_1p _)^.
 Defined.
 
 (* postcomposing the zero map is the zero map *)
@@ -83,16 +88,15 @@ Lemma postcompose_pconst {A B C : pType} (f : A ->* B)
   : pConst o* f ==* @pConst A C.
 Proof.
   serapply Build_pHomotopy.
-  1: reflexivity.
-  refine (ap (fun x => concat x 1) (ap_const _ _)^).
+  1: reflexivity. 
+  exact (concat_p1 _ @ concat_p1 _ @ ap_const _ _)^.
 Defined.
 
 Lemma pmap_punit_pconst {A : pType} {f : A ->* pUnit} : f ==* pConst.
 Proof.
   serapply Build_pHomotopy.
   1: intro; apply path_unit.
-  refine (concat_p1 _ @ _).
-  apply eta_path_unit.
+  apply path_contr.
 Defined.
 
 Lemma pconst_factor {A B : pType} {f : pUnit ->* B} {g : A ->* pUnit}

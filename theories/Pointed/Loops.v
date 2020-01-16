@@ -246,7 +246,7 @@ Proof.
   induction n.
   - srefine (Build_pHomotopy _ _).
     + reflexivity.
-    + cbn.
+    + cbn. apply moveL_pV.
       refine (concat_1p _ @ _).
       refine (concat_1p _ @ _).
       refine (_ @ (concat_p1 _)^).

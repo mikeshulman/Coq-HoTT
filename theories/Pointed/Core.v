@@ -92,16 +92,10 @@ Definition pHomotopy {A : pType} {P : pFam A} (f g : pForall A P) : Type :=
 
 Infix "==*" := pHomotopy : pointed_scope.
 
-Definition Build_pHomotopy' {A : pType} {P : pFam A} {f g : pForall A P}
+Definition Build_pHomotopy {A : pType} {P : pFam A} {f g : pForall A P}
   (p : f == g) (q : p (point A) = dpoint_eq f @ (dpoint_eq g)^) : f ==* g.
 Proof.
   serapply Build_pForall;[exact p | exact q].
-Defined.
-
-Definition Build_pHomotopy {A B : pType} {f g : A ->* B}
-  (p : f == g) (q : p (point A) @ point_eq g = point_eq f) : f ==* g.
-Proof.
-  serapply Build_pForall; [ exact p | apply moveL_pV; exact q].
 Defined.
 
 Coercion pointed_htpy {A : pType} {P : pFam A} {f g : pForall A P}

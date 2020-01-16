@@ -203,7 +203,7 @@ Proof.
                   (merid x) (merid (point X))^ @ _).
     refine ((1 @@ ap_V _ _) @ _).
     refine (Susp_rec_beta_merid _ @@ inverse2 (Susp_rec_beta_merid _)).
-  - cbn. rewrite !inv_pp, !concat_pp_p, concat_1p; symmetry.
+  - cbn. apply moveL_pV. rewrite !inv_pp, !concat_pp_p, concat_1p; symmetry.
     apply moveL_Vp.
     refine (concat_pV_inverse2 _ _ (Susp_rec_beta_merid (point X)) @ _).
     apply moveL_Vp, moveL_Vp.
@@ -257,7 +257,7 @@ Proof.
     refine ((Susp_rec_beta_merid p
       @@ inverse2 (Susp_rec_beta_merid (point (loops X)))) @ _).
     exact (concat_p1 _).
-  - destruct X as [X x]; cbn; unfold point.
+  - apply moveL_pV. destruct X as [X x]; cbn; unfold point.
     apply whiskerR.
     rewrite (concat_pV_inverse2
                (ap (Susp_rec x x idmap) (merid 1))

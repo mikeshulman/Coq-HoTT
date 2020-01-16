@@ -170,7 +170,7 @@ Definition iscomplex_pfib {X Y} (f : X ->* Y)
 Proof.
   serapply Build_pHomotopy.
   - intros [x p]; exact p.
-  - cbn. exact (concat_p1 _ @ (concat_1p _)^).
+  - cbn. exact (concat_p1 _ @ concat_1p _)^.
 Defined.
 
 Global Instance isexact_pfib {X Y} (f : X ->* Y)
@@ -193,7 +193,7 @@ Proof.
   srapply Build_IsExact; [ serapply Build_pHomotopy | ].
   - intros u; cbn. 
     exact ((fs.2 u).2).
-  - cbn.
+  - apply moveL_pV. cbn.
     refine (concat_p1 _ @ _).
     apply moveL_Mp.
     refine (_ @ (point_eq fs.2)..2).

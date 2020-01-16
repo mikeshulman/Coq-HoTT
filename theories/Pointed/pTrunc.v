@@ -55,7 +55,7 @@ Proof.
   - intros x; strip_truncations; cbn.
     change (@tr n Y (f x) = tr (g x)).
     apply ap, p.
-  - exact ((ap_pp (@tr n _) _ _)^ @ ap _ (point_htpy p)).
+  - exact (ap _ (dpoint_eq p) @ ap_pp (@tr n _) _ _ @ whiskerL _ (ap_V _ _)). 
 Defined.
 
 Definition ptr_pequiv {X Y : pType} (n : trunc_index) (f : X <~>* Y)

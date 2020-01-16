@@ -130,7 +130,7 @@ Definition square_functor_pfiber {A B C D}
 Proof.
   serapply Build_pHomotopy.
   - intros x; reflexivity.
-  - cbn; unfold functor_sigma; cbn.
+  - apply moveL_pV. cbn; unfold functor_sigma; cbn.
     abstract (rewrite ap_pr1_path_sigma, concat_p1; reflexivity).
 Defined.
 
