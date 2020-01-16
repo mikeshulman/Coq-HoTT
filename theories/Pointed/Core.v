@@ -80,25 +80,46 @@ Infix "o*" := pmap_compose : pointed_scope.
 
 (** ** Pointed homotopies *)
 
+Definition phomotopy_fam {A : pType} {P : pFam A} (f g : pForall A P) : pFam A 
+  := (fun x => f x = g x; dpoint_eq f @ (dpoint_eq g)^).
+
 (* A pointed homotopy is a homotopy with a proof that the presevation
-   paths agree *)
-Record pHomotopy {A B : pType} (f g : pMap A B) :=
-  { pointed_htpy : f == g ;
-    point_htpy : pointed_htpy (point A) @ point_eq g = point_eq f }.
+   paths agree.
+   We define it instead as a special case of a [pForall]. This means that we can
+   define pointed homotopies between pointed homotopies. *)
+Definition pHomotopy {A : pType} {P : pFam A} (f g : pForall A P) : Type :=
+  pForall A (phomotopy_fam f g).
 
-Arguments Build_pHomotopy {A B f g} p q : rename.
-Arguments point_htpy {A B f g} p : rename.
-Arguments pointed_htpy {A B f g} p x.
+Infix "==*" := pHomotopy : pointed_scope.
 
-Coercion pointed_htpy : pHomotopy >-> pointwise_paths.
+Definition Build_pHomotopy' {A : pType} {P : pFam A} {f g : pForall A P}
+  (p : f == g) (q : p (point A) = dpoint_eq f @ (dpoint_eq g)^) : f ==* g.
+Proof.
+  serapply Build_pForall;[exact p | exact q].
+Defined.
 
-Definition pointed_htpy' {A B} (f g : pMap A B) (p : pHomotopy f g)
+Definition Build_pHomotopy {A B : pType} {f g : A ->* B}
+  (p : f == g) (q : p (point A) @ point_eq g = point_eq f) : f ==* g.
+Proof.
+  serapply Build_pForall; [ exact p | apply moveL_pV; exact q].
+Defined.
+
+Coercion pointed_htpy {A : pType} {P : pFam A} {f g : pForall A P}
+  (h : f ==* g) : f == g :=
+  h.
+
+Definition point_htpy {A : pType} {P : pFam A} {f g : pForall A P}
+  (h : f ==* g) : h (point A) @ dpoint_eq g = dpoint_eq f.
+Proof.
+  apply moveR_pM. exact (dpoint_eq h).
+Defined.
+
+Definition pointed_htpy' {A B} (f g : A ->* B) (p : pHomotopy f g)
   : forall x:A, f x = g x
   := fun x => pointed_htpy p x.
 
-Coercion pointed_htpy' : pHomotopy >-> Funclass.
+(* Coercion pointed_htpy' : pHomotopy >-> Funclass. *)
 
-Infix "==*" := pHomotopy : pointed_scope.
 
 (** ** Pointed equivalences *)
 
@@ -144,7 +165,7 @@ Ltac pointed_reduce :=
            | [ X : pType |- _ ] => destruct X as [X ?]
            | [ phi : pMap ?X ?Y |- _ ] => destruct phi as [phi ?]
            | [ phi : pForall ?X ?Y |- _ ] => destruct phi as [phi ?]
-           | [ alpha : pHomotopy ?f ?g |- _ ] => destruct alpha as [alpha ?]
+           | [ alpha : pHomotopy ?f ?g |- _ ] => let H := fresh in destruct alpha as [alpha H]; apply moveR_pM in H
            | [ equiv : pEquiv ?X ?Y |- _ ] => destruct equiv as [equiv ?]
          end;
   cbn in *; unfold point in *;

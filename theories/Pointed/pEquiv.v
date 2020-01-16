@@ -108,7 +108,7 @@ Proof.
 Defined.
 
 (* A pointed version of Sect (sometimes useful for proofs of some equivalences) *)
-Definition pSect {A B : pType} (s : A ->* B) (r : B ->* A)
+Definition pSect {A B : pType} (s : A ->* B) (r : B ->* A) : Type
   := r o* s ==* pmap_idmap.
 
 Arguments pSect _ _ / _ _.
@@ -144,8 +144,8 @@ Proof.
   serapply Build_pEquiv.
   1: assumption.
   serapply (isequiv_adjointify f f').
-  1: apply r.
-  apply s.
+  1: rapply r.
+  rapply s.
 Defined.
 
 (* In some situations you want the back and forth maps to be pointed

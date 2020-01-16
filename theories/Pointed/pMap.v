@@ -12,13 +12,13 @@ Proof.
   eqp_issig_contr (issig_pmap A B).
   { intros [f feq]; cbn.
     exists (fun a => 1%path).
-    apply concat_1p. }
+    exact (concat_pV _)^. }
   intros [f feq]; cbn.
   contr_sigsig f (fun a:A => idpath (f a)); cbn.
   refine (contr_equiv' {feq' : f (point A) = point B & feq = feq'} _).
   refine (equiv_functor_sigma' (equiv_idmap _) _); intros p.
-  refine (equiv_path_inverse _ _ oE _).
-  apply equiv_concat_r. symmetry; apply concat_1p.
+  refine (_^-1 oE equiv_path_inverse _ _).
+  apply equiv_moveR_1M.
 Defined.
 
 Definition path_pmap `{Funext} {A B : pType} {f g : A ->* B}

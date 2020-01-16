@@ -136,7 +136,7 @@ Proof.
   destruct n; intros x.
   - apply Trunc_functor_idmap.
   - etransitivity.
-    + apply O_functor_homotopy, iterated_loops_functor_idmap.
+    + apply O_functor_homotopy. rapply iterated_loops_functor_idmap.
     + apply O_functor_idmap.
 Defined.
 
@@ -147,7 +147,7 @@ Proof.
   destruct n; intro x.
   - cbn; apply Trunc_functor_compose.
   - etransitivity.
-    + apply O_functor_homotopy, iterated_loops_functor_compose.
+    + apply O_functor_homotopy. rapply iterated_loops_functor_compose.
     + refine (O_functor_compose 0%trunc _ _ x).
 Defined.
 
@@ -157,7 +157,7 @@ Definition pi_2functor (n : nat)
 Proof.
   destruct n; intros x.
   - apply O_functor_homotopy; exact p.
-  - apply O_functor_homotopy, iterated_loops_2functor; exact p.
+  - apply O_functor_homotopy. rapply iterated_loops_2functor; exact p.
 Defined.
 
 (* The homotopy groups of a loop space are those of the space shifted.  *)

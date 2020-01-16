@@ -12,14 +12,14 @@ Local Open Scope path_scope.
 Global Instance is01cat_ptype : Is01Cat pType
   := Build_Is01Cat pType pMap (@pmap_idmap) (@pmap_compose).
 
-Global Instance is01cat_pmap (A B : pType) : Is01Cat (A ->* B).
+Global Instance is01cat_pmap (A : pType) (P : pFam A) : Is01Cat (pForall A P).
 Proof.
-  srapply (Build_Is01Cat (A ->* B) (@pHomotopy A B)).
+  srapply (Build_Is01Cat _ (@pHomotopy A P)).
   - reflexivity.
   - intros a b c f g; transitivity b; assumption.
 Defined.
 
-Global Instance is0gpd_pmap (A B : pType) : Is0Gpd (A ->* B).
+Global Instance is0gpd_pmap (A : pType) (P : pFam A) : Is0Gpd (pForall A P).
 Proof.
   srapply Build_Is0Gpd.
   intros; symmetry; assumption.
