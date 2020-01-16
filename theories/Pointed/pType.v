@@ -2,7 +2,7 @@
 Require Import Basics Types.
 Require Import Pointed.Core.
 Require Import WildCat.
-Require Import pHomotopy pMap pEquiv.
+Require Import pHomotopy pMap pEquiv Loops.
 
 Local Open Scope pointed_scope.
 Local Open Scope path_scope.
@@ -81,10 +81,48 @@ Defined.
   
 Global Instance is1functor_pointed_type : Is1Functor pointed_type.
 Proof.
-  apply Build_Is1Functor. 
+  apply Build_Is1Functor.
   + intros ? ? ? ? h. exact h.
   + intros. reflexivity.
   + intros. reflexivity.
+Defined.
+
+Global Instance is0functor_loops
+  : Is0Functor loops.
+Proof.
+  apply Build_Is0Functor. intros. exact (loops_functor f).
+Defined.
+
+Global Instance is1functor_loops : Is1Functor loops.
+Proof.
+  apply Build_Is1Functor.
+  + intros ? ? ? ? h. exact (loops_2functor h).
+  + intros. apply loops_functor_idmap.
+  + intros. apply loops_functor_compose.
+Defined.
+
+Global Instance is0functor_iterated_loops (n : nat)
+  : Is0Functor (iterated_loops n).
+Proof.
+  apply Build_Is0Functor. intros. exact (iterated_loops_functor n f).
+Defined.
+
+Global Instance is1functor_iterated_loops (n : nat)
+  : Is1Functor (iterated_loops n).
+Proof.
+  apply Build_Is1Functor.
+  + intros ? ? ? ? h. exact (iterated_loops_2functor n h).
+  + intros. apply iterated_loops_functor_idmap.
+  + intros. apply iterated_loops_functor_compose.
+Defined.
+
+Global Instance is1natural_loops_inv : Is1Natural loops loops loops_inv.
+Proof.
+  apply Build_Is1Natural. intros A B f.
+  serapply Build_pHomotopy.
+  + intros p. refine (inv_Vp _ _ @ whiskerR _ (point_eq f) @ concat_pp_p _ _ _).
+    refine (inv_pp _ _ @ whiskerL (point_eq f)^ (ap_V f p)^).
+  + pointed_reduce. pointed_reduce. reflexivity.
 Defined.
 
 (* TODO: generalize to wild categories with 0 object. *)
@@ -95,6 +133,3 @@ Definition hconst_square {A B C D : pType} {f : A $-> B} {g : C $-> D} :
 Definition vconst_square {A B C D : pType} {f : A $-> B} {g : C $-> D} : 
   Square f g pConst pConst :=
   postcompose_pconst f $@ (precompose_pconst g)^$.
-
-(* TODO: show that loops_functor and iterated_loops_functor are 1-functors. *)
-(* TODO: show that loops_inv is a natural transformation. *)

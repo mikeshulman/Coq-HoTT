@@ -154,7 +154,7 @@ Definition pproduct {A : Type} (F : A -> pType) : pType
 
 (** The following tactic often allows us to "pretend" that pointed maps and homotopies preserve basepoints strictly.  We have carefully defined [pMap] and [pHomotopy] so that when destructed, their second components are paths with right endpoints free, to which we can apply Paulin-Morhing path-induction. *)
 Ltac pointed_reduce :=
-  unfold pointed_fun, pointed_htpy; cbn;
+  unfold pointed_fun, pointed_htpy; cbn in *;
   repeat match goal with
            | [ X : pType |- _ ] => destruct X as [X ?]
            | [ phi : pMap ?X ?Y |- _ ] => destruct phi as [phi ?]
