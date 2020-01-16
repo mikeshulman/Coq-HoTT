@@ -174,6 +174,16 @@ Proof.
   - intros; apply GpdHom_path, cat_idr_strong.
 Defined.
 
+(** Initial objects *)
+Definition IsInitial {A : Type} `{Is1Cat A} (x : A)
+  := forall (y : A), {f : x $-> y & forall g, f $== g}.
+Existing Class IsInitial.
+
+(** Terminal objects *)
+Definition IsTerminal {A : Type} `{Is1Cat A} (y : A)
+  := forall (x : A), {f : x $-> y & forall g, f $== g}.
+Existing Class IsTerminal.
+
 (** Generalizing function extensionality, "Morphism extensionality" states that homwise [GpdHom_path] is an equivalence. *)
 Class HasMorExt (A : Type) `{Is1Cat A} :=
   { isequiv_Htpy_path : forall a b f g, IsEquiv (@GpdHom_path (a $-> b) _ _ f g) }.
