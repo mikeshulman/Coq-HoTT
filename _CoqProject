@@ -317,6 +317,10 @@ theories/Algebra/Subgroup.v
 theories/Algebra/Congruence.v
 theories/Algebra/AbelianGroup.v
 theories/Algebra/QuotientGroup.v
+theories/Algebra/Kernel.v
+theories/Algebra/Image.v
+theories/Algebra/Homology.v
+
 
 #
 #   Tactics
