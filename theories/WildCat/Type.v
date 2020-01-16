@@ -61,3 +61,19 @@ Proof.
 Defined.
 
 Hint Immediate catie_isequiv : typeclass_instances.
+
+Global Instance isinitial_zero : IsInitial Empty.
+Proof.
+  intro A.
+  exists (Empty_rec _).
+  intros g.
+  rapply Empty_ind.
+Defined.
+
+Global Instance isterminal_unit : IsTerminal Unit.
+Proof.
+  intros A.
+  exists (fun _ => tt).
+  intros f x.
+  by destruct (f x).
+Defined.
