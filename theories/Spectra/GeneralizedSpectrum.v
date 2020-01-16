@@ -128,13 +128,13 @@ Defined.
 
 (** Sections of parametrized spectra *)
 
-Definition spi (A : pType) (Y : A -> GenSpectrum N) : GenSpectrum N.
+(*Definition spi (A : pType) (Y : A -> GenSpectrum N) : GenSpectrum N.
 Proof.
   apply (Build_GenSpectrum N (fun n => ).
   intro n. exact (pfiber_loops_functor _ o*E pequiv_pfiber (equiv_glue X n) (equiv_glue Y n) (smap_square f n)).
 Defined.
 
-  definition spi [constructor] {N : succ_str} (A : Type*) (E : A → gen_spectrum N) :
+  definition spi [constructor] {N : succ_str} (A : Type* ) (E : A → gen_spectrum N) :
     gen_spectrum N :=
   spectrum.MK (λn, Π*a, E a n)
     (λn, !loop_pppi_pequiv⁻¹ᵉ* ∘*ᵉ ppi_pequiv_right (λa, equiv_glue (E a) n))
@@ -146,7 +146,7 @@ Defined.
       intro n,
       exact psquare_pppi_compose_left (λa, (glue_square (f a) n)) ⬝v*
         (ptranspose !loop_pppi_pequiv_natural_right)⁻¹ᵛ*
-    end
+    end*)
 
 End GenSpectrum.
 
