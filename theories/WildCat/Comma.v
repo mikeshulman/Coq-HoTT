@@ -11,13 +11,9 @@ Section Comma.
     comma_codomain : B;
     comma_h : F comma_domain $-> G comma_codomain;
   }.
-(* 
-  Context  `{!IsGraph A, !IsGraph B} `{Is0Coh21Cat C} (X Y : Comma) .
-  Context {    comma_mor_domain : comma_domain X $-> comma_domain Y}.
-  Context {    comma_mor_codomain : comma_codomain X $-> comma_codomain Y}.
- *)
-  Record CommaMor `{!IsGraph A, !IsGraph B, Is0Coh21Cat C,
-    !Is0Coh1Functor F, !Is0Coh1Functor G} (X Y : Comma) :=
+
+  Record CommaMor `{!IsGraph A, !IsGraph B, Is1Cat C,
+    !Is0Functor F, !Is0Functor G} (X Y : Comma) :=
   {
     comma_mor_domain : comma_domain X $-> comma_domain Y;
     comma_mor_codomain : comma_codomain X $-> comma_codomain Y;
@@ -30,9 +26,8 @@ Section Comma.
   Arguments comma_mor_codomain {_ _ _ _ _ _ _ _}.
   Arguments comma_mor_h {_ _ _ _ _ _ _ _}.
 
-  Record Comma2Mor `{Is0Coh21Cat A, Is0Coh21Cat B, Is2Coh21Cat C,
-    !Is0Coh1Functor F, !Is0Coh21Functor F, !Is1Coh1Functor F,
-    !Is0Coh1Functor G, !Is0Coh21Functor G, !Is1Coh1Functor G} {X Y : Comma}
+  Record Comma2Mor `{Is1Cat A, Is1Cat B, Is21Cat C, !Is0Functor F,
+    !Is1Functor F, !Is0Functor G, !Is1Functor G} {X Y : Comma}
     (f g : CommaMor X Y) :=
   {
     comma_2mor_domain : comma_mor_domain f $== comma_mor_domain g;
@@ -47,15 +42,13 @@ Section Comma.
   Section Cat.
 
     Context
-      `{!Is0Coh1Cat A, !Is0Coh21Cat A, !Is1Coh1Cat A,
-        !Is0Coh1Cat B, !Is0Coh21Cat B, !Is1Coh1Cat B,
-        !Is0Coh1Cat C, !Is0Coh21Cat C, !Is1Coh1Cat C, !Is2Coh21Cat C,
-        !Is0Coh1Functor F, !Is0Coh21Functor F, !Is1Coh1Functor F,
-        !Is0Coh1Functor G, !Is0Coh21Functor G, !Is1Coh1Functor G}.
+      `{Is1Cat A, Is1Cat B, Is21Cat C,
+        !Is0Functor F, !Is1Functor F,
+        !Is0Functor G, !Is1Functor G}.
 
-    Global Instance is0coh1cat_comma : Is0Coh1Cat Comma.
+    Global Instance is01cat_comma : Is01Cat Comma.
     Proof.
-      serapply Build_Is0Coh1Cat.
+      serapply Build_Is01Cat.
       + exact CommaMor.
       + intros [a b h].
         serapply Build_CommaMor.
@@ -80,23 +73,30 @@ Section Comma.
         refine (_ $@L fmap_comp _ _ _).
     Defined.
 
-  Global Instance is0coh21cat_comma : Is0Coh21Cat Comma.
-  Proof.
-    serapply Build_Is0Coh21Cat.
-    + intros abh abh'.
-      serapply Build_Is0Coh1Cat.
-      - exact Comma2Mor.
-      - intros p.
+    Global Instance is01cat_commamor : forall a b : Comma, Is01Cat (a $-> b).
+    Proof.
+      intros x y.
+      serapply Build_Is01Cat.
+      + exact Comma2Mor.
+      + intro a.
         serapply (Build_Comma2Mor _ _ _ _ _ _ _ _).
-        * reflexivity.
-        * reflexivity.
-        * cbn.
-        (** Eugh *)
-  Admitted.
-        
+        1,2: exact (Id _).
+        cbn.
+    Admitted.
 
+    Global Instance is0gpd_commamor : forall a b : Comma, Is0Gpd (a $-> b).
+    Proof.
+    Admitted.
 
+    Global Instance is0functor_commamor_comp
+      : forall a b c : Comma, Is0Functor (uncurry (@cat_comp _ _ a b c)).
+    Proof.
+    Admitted.
 
+    Global Instance is0coh21cat_comma : Is1Cat Comma.
+    Proof.
+      serapply Build_Is1Cat.
+    Admitted.
 
   End Cat.
 
