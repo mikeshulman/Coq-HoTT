@@ -15,7 +15,7 @@ Local Open Scope mc_add_scope.
 Definition grp_image {A B : AbGroup} (f : A $-> B) : AbGroup.
 Proof.
   (** The underlying type is the (propositional) image of the type *)
-  serapply (Build_AbGroup (image (-1) f)); repeat split.
+  serapply (Build_AbGroup (image (Tr (-1)) f)); repeat split.
   + (** Group operation *)
     intros [a p] [b q].
     exists (a + b).
