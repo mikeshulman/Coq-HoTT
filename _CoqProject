@@ -86,10 +86,10 @@ theories/Types/Universe.v
 theories/Cubical.v
 
 theories/Cubical/DPath.v
-theories/Cubical/Square.v
-theories/Cubical/DSquare.v
-theories/Cubical/Cube.v
-theories/Cubical/DCube.v
+theories/Cubical/PathSquare.v
+theories/Cubical/DPathSquare.v
+theories/Cubical/PathCube.v
+theories/Cubical/DPathCube.v
 
 #
 #   Spaces
@@ -295,7 +295,7 @@ theories/Pointed/pType.v
 #
 #   Spectra
 #
-
+theories/Spectra.v
 theories/Spectra/Spectrum.v
 theories/Spectra/Coinductive.v
 theories/Spectra/GeneralizedSpectrum.v

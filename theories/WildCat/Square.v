@@ -1,3 +1,4 @@
+Require Import Basics.
 Require Import WildCat.Core.
 Require Import WildCat.Equiv.
 
@@ -80,8 +81,7 @@ Section Squares2.
   Definition vinverse' `{!CatIsEquiv f01} `{!CatIsEquiv f21} (s : Square f10 f12 f01 f21) : Square f12 f10 (f01^-1$) (f21^-1$) :=
    transpose (hinverse' (transpose s)).
 
-  (* Coq complains without the primes. *)
-  Definition vinverse (f01'' : x00 $<~> x02) (f21'' : x20 $<~> x22) (s : Square f10 f12 f01'' f21'') : Square f12 f10 (f01''^-1$) (f21''^-1$) :=
+  Definition vinverse (f01 : x00 $<~> x02) (f21 : x20 $<~> x22) (s : Square f10 f12 f01 f21) : Square f12 f10 (f01^-1$) (f21^-1$) :=
     transpose (hinverse' (transpose s)).
 
   (* whisker a map in one of the corners. For the bottom-left and top-right we have two choices. *)
@@ -103,20 +103,28 @@ Section Squares2.
   Definition whiskerRT {f : x $<~> x20} (s : Square f10 f12 f01 f21) : Square (f^-1$ $o f10) f12 f01 (f21 $o f) :=
     cat_assoc _ _ _ $@ (f21 $@L compose_h_Vh _ _) $@ s.
 
+  (* moving maps around the square *)
+  Definition move_bottom_left {f01 : x00 $-> x} {f01' : x $-> x02} (s : Square f10 f12 (f01' $o f01) f21) 
+    : Square f10 (f12 $o f01') f01 f21 :=
+    s $@ (cat_assoc _ _ _)^$.
+
+  Definition move_left_bottom {f12 : x02 $-> x} {f12' : x $-> x22} (s : Square f10 (f12' $o f12) f01 f21) 
+    : Square f10 f12' (f12 $o f01) f21 :=
+    s $@ cat_assoc _ _ _.
+
+  Definition move_right_top {f10 : x00 $-> x} {f10' : x $-> x20} (s : Square (f10' $o f10) f12 f01 f21) 
+    : Square f10 f12 f01 (f21 $o f10') :=
+    cat_assoc _ _ _ $@ s.
+
+  Definition move_top_right {f21 : x20 $-> x} {f21' : x $-> x22} (s : Square f10 f12 f01 (f21' $o f21)) 
+    : Square (f21 $o f10) f12 f01 f21' :=
+    (cat_assoc _ _ _)^$ $@ s.
+
   Definition fmap_square (F : A -> B) {H0F : Is0Functor F} {H1F : Is1Functor F} (s : Square f10 f12 f01 f21) : 
     Square (fmap F f10) (fmap F f12) (fmap F f01) (fmap F f21) :=
     (fmap_comp F _ _)^$ $@ fmap2 F s $@ fmap_comp F _ _.
 
 End Squares2.
-
-Reserved Infix "$@h" (at level 35).
-Reserved Infix "$@v" (at level 35).
-Reserved Infix "$@hR" (at level 34).
-Reserved Infix "$@hL" (at level 34).
-Reserved Infix "$@vR" (at level 34).
-Reserved Infix "$@vL" (at level 34).
-Reserved Notation "f ^h$" (at level 20).
-Reserved Notation "f ^v$" (at level 20).
 
 Notation "s $@h t" := (hconcat s t).
 Notation "s $@v t" := (vconcat s t).
@@ -127,48 +135,3 @@ Notation "s $@vL p" := (vconcatL p s).
 Notation "s ^h$" := (hinverse _ _ s).
 Notation "s ^v$" := (vinverse _ _ s).
 
-(*
-
-  definition pinverse_natural [constructor] {X Y : Type*} (f : X →* Y) :
-    psquare (pinverse X) (pinverse Y) (Ω→ f) (Ω→ f) :=
-  phomotopy.mk (ap1_gen_inv f (respect_pt f) (respect_pt f))
-    abstract begin
-      induction Y with Y y₀, induction f with f f₀, esimp at * ⊢, induction f₀, reflexivity
-    end end
-
-  definition pcast_natural [constructor] {A : Type} {B C : A → Type*} (f : Πa, B a →* C a)
-    {a₁ a₂ : A} (p : a₁ = a₂) : psquare (pcast (ap B p)) (pcast (ap C p)) (f a₁) (f a₂) :=
-  phomotopy.mk
-    begin induction p, reflexivity end
-    begin induction p, exact whisker_left idp !ap_id end
-
-  definition pequiv_of_eq_natural [constructor] {A : Type} {B C : A → Type*} (f : Πa, B a →* C a)
-    {a₁ a₂ : A} (p : a₁ = a₂) :
-    psquare (pequiv_of_eq (ap B p)) (pequiv_of_eq (ap C p)) (f a₁) (f a₂) :=
-  pcast_natural f p
-
-  definition loopn_succ_in_natural {A B : Type*} (n : ℕ) (f : A →* B) :
-    psquare (loopn_succ_in n A) (loopn_succ_in n B) (Ω→[n+1] f) (Ω→[n] (Ω→ f)) :=
-  begin
-    induction n with n IH,
-    { exact phomotopy.rfl },
-    { exact ap1_psquare IH }
-  end
-
-  definition loopn_succ_in_inv_natural {A B : Type*} (n : ℕ) (f : A →* B) :
-    psquare (loopn_succ_in n A)⁻¹ᵉ* (loopn_succ_in n B)⁻¹ᵉ* (Ω→[n] (Ω→ f)) (Ω→[n + 1] f) :=
-  (loopn_succ_in_natural n f)⁻¹ʰ*
-
-  definition pnatural_square {A B : Type} (X : B → Type* ) {f g : A → B}
-    (h : Πa, X (f a) →* X (g a)) {a a' : A} (p : a = a') :
-   psquare (ptransport X (ap f p)) (ptransport X (ap g p)) (h a) (h a') :=
-  by induction p; exact !pcompose_pid ⬝* !pid_pcompose⁻¹*
-
-  definition hsquare_of_psquare (p : psquare f₁₀ f₁₂ f₀₁ f₂₁) : hsquare f₁₀ f₁₂ f₀₁ f₂₁ :=
-  to_homotopy p
-  definition phconst_square : psquare !pconst !pconst f₀₁ f₂₁ :=
-  !pcompose_pconst ⬝* !pconst_pcompose⁻¹*
-  definition pvconst_square : psquare f₁₀ f₁₂ !pconst !pconst :=
-  !pconst_pcompose ⬝* !pcompose_pconst⁻¹*
-
- *)
