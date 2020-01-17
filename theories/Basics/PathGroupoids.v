@@ -920,6 +920,12 @@ Proof.
   destruct p, q; reflexivity.
 Defined.
 
+(** Transporting in the diagonal of a fibration. *)
+Definition transport_diagonal {A : Type} (Q : A -> A -> Type) {x y : A} (p : x = y) (q : Q x x) 
+  : transport (fun z => Q z z) p q = transport (Q y) p (transport (fun z => Q z x) p q).
+Proof. induction p. reflexivity. Defined.
+
+
 (** *** The behavior of [ap] and [apD]. *)
 
 (** In a constant fibration, [apD] reduces to [ap], modulo [transport_const]. *)

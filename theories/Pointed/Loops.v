@@ -45,7 +45,7 @@ Definition isconnected_loops `{Univalence} {n} (A : pType)
 (** ** Functoriality of loop spaces *)
 
 Definition loops_functor {A B : pType} (f : A ->* B)
-: (loops A) ->* (loops B).
+  : (loops A) ->* (loops B).
 Proof.
   refine (Build_pMap (loops A) (loops B)
             (fun p => (point_eq f)^ @ (ap f p @ point_eq f)) _).
@@ -462,58 +462,58 @@ Proof.
   + pointed_reduce. pointed_reduce. reflexivity.
 Defined.
 
-(** Loops on the pointed type of dependent pointed maps correspond to 
+(** Loops on the pointed type of dependent pointed maps correspond to
   pointed dependent maps into a family of loops. *)
-(* We define this in this direction, because the forward map is pointed by 
+(* We define this in this direction, because the forward map is pointed by
   reflexivity. *)
-Definition loops_ppforall `{Funext} {A : pType} (B : A -> pType) :
-  loops (ppforall x : A, B x) <~>* (ppforall x : A, loops (B x)).
+Definition loops_ppforall `{Funext} {A : pType} (B : A -> pType)
+  : loops (ppforall x : A, B x) <~>* (ppforall x : A, loops (B x)).
 Proof.
-  serapply Build_pEquiv'. 
+  serapply Build_pEquiv'.
   1: symmetry; exact (equiv_path_pforall (point_pforall B) (point_pforall B)).
   reflexivity.
 Defined.
 
 (** We need a bunch of lemmas to prove that [loops_ppforall] is natural. *)
 
-(** First we are going to generalize the underlying map of [loops_functor]. 
+(** First we are going to generalize the underlying map of [loops_functor].
   The reason of this generalization is that the generalization takes a path
   instead of a loop, and therefore we can apply path induction.
   This is ported from Lean.*)
 
 Definition ap_gen {A B : Type} (f : A -> B) {a a' : A}
-  {b b' : B} (q : f a = b) (q' : f a' = b') (p : a = a') 
-  : b = b' 
+  {b b' : B} (q : f a = b) (q' : f a' = b') (p : a = a')
+  : b = b'
   := q^ @ (ap f p @ q').
 
-Definition ap_gen_1 {A B : Type} (f : A -> B) {a : A} {b : B} (q : f a = b) 
+Definition ap_gen_1 {A B : Type} (f : A -> B) {a : A} {b : B} (q : f a = b)
   : ap_gen f q q 1 = 1
   := whiskerL q^ (concat_1p q) @ concat_Vp q.
 
 Definition ap_gen_con {A B : Type} (f : A -> B) {a₁ a₂ a₃ : A} {b₁ b₂ b₃ : B}
-  (q₁ : f a₁ = b₁) (q₂ : f a₂ = b₂) (q₃ : f a₃ = b₃) (p₁ : a₁ = a₂) (p₂ : a₂ = a₃) 
+  (q₁ : f a₁ = b₁) (q₂ : f a₂ = b₂) (q₃ : f a₃ = b₃) (p₁ : a₁ = a₂) (p₂ : a₂ = a₃)
   : ap_gen f q₁ q₃ (p₁ @ p₂) = ap_gen f q₁ q₂ p₁ @ ap_gen f q₂ q₃ p₂.
 Proof.
   induction p₂, q₃, q₂, q₁, p₁. reflexivity.
 Defined.
 
 Definition ap_gen_inv {A B : Type} (f : A -> B) {a₁ a₂ : A}
-  {b₁ b₂ : B} (q₁ : f a₁ = b₁) (q₂ : f a₂ = b₂) (p₁ : a₁ = a₂) :
-  ap_gen f q₂ q₁ p₁^ = (ap_gen f q₁ q₂ p₁)^.
-Proof. 
+  {b₁ b₂ : B} (q₁ : f a₁ = b₁) (q₂ : f a₂ = b₂) (p₁ : a₁ = a₂)
+  : ap_gen f q₂ q₁ p₁^ = (ap_gen f q₁ q₂ p₁)^.
+Proof.
   induction p₁, q₁, q₂. reflexivity.
 Defined.
 
-Definition ap_gen_1_eq {A B : Type} (f : A -> B) {a : A} (q : f a = f a) (r : q = 1) :
-  ap_gen_1 f q = ap (fun x => ap_gen f x x 1) r.
+Definition ap_gen_1_eq {A B : Type} (f : A -> B) {a : A} (q : f a = f a) (r : q = 1)
+  : ap_gen_1 f q = ap (fun x => ap_gen f x x 1) r.
 Proof.
   rewrite <- (inv_V r). induction r^. reflexivity.
 Defined.
 
 Definition natural_loops_ppforall_lem {A} {B C : pFam A}
-  {f : forall (a : A), B a -> C a} {f₀ : f (point A) (dpoint B) = dpoint C} {k : pForall A B} {k' : pForall A C}
-  (p : functor_pforall_right f f₀ k ==* k') :
-  ap_gen (f (point _)) (p (point _)) f₀ (dpoint_eq k) = dpoint_eq k'.
+  {f : forall (a : A), B a -> C a} {f₀ : f (point A) (dpoint B) = dpoint C}
+  {k : pForall A B} {k' : pForall A C} (p : functor_pforall_right f f₀ k ==* k')
+  : ap_gen (f (point _)) (p (point _)) f₀ (dpoint_eq k) = dpoint_eq k'.
 Proof.
   symmetry.
   apply moveL_Vp.
@@ -523,120 +523,100 @@ Defined.
 Definition natural_loops_ppforall_lem2 {A} {B C : pFam A}
   {f : forall (a : A), B a -> C a} {f₀ : f (point A) (dpoint B) = dpoint C} {k l : pForall A B}
   {k' l' : pForall A C} (p : functor_pforall_right f f₀ k ==* k')
-  (q : functor_pforall_right f f₀ l ==* l') :
-    ap_gen (f (point _)) (p (point _)) (q (point _)) (dpoint_eq k @ (dpoint_eq l)^) =
+  (q : functor_pforall_right f f₀ l ==* l')
+  : ap_gen (f (point _)) (p (point _)) (q (point _)) (dpoint_eq k @ (dpoint_eq l)^) =
     dpoint_eq k' @ (dpoint_eq l')^.
 Proof.
   refine (ap_gen_con (f (point _)) _ f₀ _ _ _ @ _).
   refine (natural_loops_ppforall_lem p @@ (ap_gen_inv _ _ _ _ @ inverse2 (natural_loops_ppforall_lem q))).
 Defined.
-Global Opaque trunc_equiv.
-
-
-Definition phomotopy_path' {A : pType} {P : pFam A} {f g : pForall A P}
-  (p : f = g) : f ==* g.
-Proof.
-  serapply Build_pHomotopy.
-  + intro x. exact (ap (fun f => pointed_fun f x) p).
-  + induction p. exact (concat_pV _)^.
-Defined.
-
-Definition phomotopy_path'_1 {A : pType} {P : pFam A} {f : pForall A P}
-  {p : f = f} (h : 1 = p) : phomotopy_path' p = phomotopy_reflexive f.
-Proof.
-  induction h. reflexivity.
-Defined.
-
-Definition phomotopy_path_1 `{Funext} {A : pType} {P : pFam A} {f : pForall A P}
-  {p : f = f} (h : 1 = p) : phomotopy_path p = phomotopy_reflexive f.
-Proof.
-  induction h. reflexivity.
-Defined.
-
-(* Definition phomotopy_path_eq `{Funext} {A : pType} {P : pFam A} {f g : pForall A P}
-  (p : f = g) : phomotopy_path p = phomotopy_path2 p.
-Proof.
-  reflexivity.
-Defined. *)
 
 (* This proof is very slow, and needs to be sped up *)
 Definition natural_loops_ppforall_lem3 `{Funext} {A} {B C : pFam A}
   {f : forall (a : A), B a -> C a} {f₀ : f (point A) (dpoint B) = dpoint C} {k l : pForall A B}
   {k' l' : pForall A C} (p : functor_pforall_right f f₀ k ==* k')
-  (q : functor_pforall_right f f₀ l ==* l') :
-  Square (A := Type) 
+  (q : functor_pforall_right f f₀ l ==* l')
+  : Square (A := Type)
          (ap_gen (functor_pforall_right f f₀) (path_pforall p) (path_pforall q))
-         (functor_pforall_right (B := (fun a => k a = l a; _)) 
+         (functor_pforall_right (B := (fun a => k a = l a; _))
                                 (B' := (fun a => k' a = l' a; _))
             (fun a => ap_gen (f a) (p a) (q a))
             (natural_loops_ppforall_lem2 p q))
          phomotopy_path
          phomotopy_path.
 Proof.
-  intro r. 
-  induction r, C as [C c0], B as [B b0], k as [k k₀]. 
-  simpl in f₀, f, k₀, k. 
+  intro r.
+  induction r, C as [C c0], B as [B b0], k as [k k₀].
+  simpl in f₀, f, k₀, k.
   induction f₀, k₀.
-  simpl. unfold path_pforall.
-  rewrite <- (eissect (equiv_path_pforall _ l') q).
-  rewrite (eisretr (equiv_path_pforall _ l') _).
-  set (q' := equiv_path_pforall _ l' q).
-  induction q'. clear q.
-  rewrite <- (eissect (equiv_path_pforall _ k') p).
-  rewrite (eisretr (equiv_path_pforall _ k') _).
-  set (p' := equiv_path_pforall _ k' p).
-  induction p'. clear p.
+  revert l' q.
+  (* I want to apply phomotopy_ind', but Coq cannot unify this with the goal
+  when using [refine]. This is a workaround, which works in this case. *)
+  serapply (phomotopy_ind _). cbn beta. rewrite path_pforall_1.
+  revert k' p.
+  serapply (phomotopy_ind _). cbn beta. rewrite path_pforall_1.
   reflexivity.
 Defined.
 
-Definition pforall_from_pointed {A : pType} {B : A -> Type} (f : forall x, B x) 
-  : pForall A (B; f (point A))
-  := Build_pForall A (B; (f (point A))) f 1%path.
+(** Reducing the term obtained by rewrite. *)
+Definition internal_paths_rew_r_unfold {A : Type} (P : A -> Type) {x y : A} (p : x = y) (u : P y)
+  : internal_paths_rew_r A x y P u p = transport P p^ u.
+Proof.
+  induction p. reflexivity.
+Defined.
 
-Definition fiberwise_pmap_from_point {A : pType} {B : A -> Type} {C : A -> Type} 
-  (f : forall x, B x -> C x) (b0 : B (point A)): 
-  forall x, pfam_pr1 (B; b0) x -> pfam_pr1 (C; f _ b0) x
+(** Definitionally equal to f, but useful to state the next lemma. *)
+Definition fiberwise_pmap_from_point {A : pType} {B : A -> Type} {C : A -> Type}
+  (f : forall x, B x -> C x) (b0 : B (point A))
+  : forall x, pfam_pr1 (B; b0) x -> pfam_pr1 (C; f _ b0) x
   := f.
 
-
-(* Definition natural_loops_ppforall_lem3_refl `{Funext} {A : pType} {B C : A -> Type}
-  {f : forall (a : A), B a -> C a} {k : forall a, B a} :
-    natural_loops_ppforall_lem3 (phomotopy_reflexive (functor_pforall_right (fiberwise_pmap_from_point f (k _)) 1 (pforall_from_pointed k))) (phomotopy_reflexive (functor_pforall_right (fiberwise_pmap_from_point f (k _)) 1 (pforall_from_pointed k))) 1 =
-  ap phomotopy_path (ap_gen_1 _ _). *)
-
-(* Proof.
-  refine !idp_con @ _,
-  refine !phomotopy_rec_idp'_refl @ _,
-  refine ap (transport _ _) !phomotopy_rec_idp'_refl @ _,
-  refine !tr_diag_eq_tr_tr^ @ _,
-  refine !eq_transport_Fl @ _,
-  refine !ap_inv⁻² @ !inv_inv @ !ap_compose @ ap02 _ _,
-  exact !ap_gen_idp_eq^
+(* Unfortunately, this lemma is very slow. The bottleneck is likely a bunch
+  of definitional reduction. *)
+Definition natural_loops_ppforall_lem3_refl `{Funext} {A : pType} {B C : A -> Type}
+  (f : forall (a : A), B a -> C a) (k : forall a, B a)
+  : natural_loops_ppforall_lem3
+      (reflexivity (functor_pforall_right (fiberwise_pmap_from_point f (k _))
+                                          1 (pforall_from_pointed k)))
+      (reflexivity (functor_pforall_right (fiberwise_pmap_from_point f (k _))
+                                          1 (pforall_from_pointed k)))
+      1 = ap phomotopy_path (ap_gen_1 _ _).
+Proof.
+  refine (phomotopy_ind_1 _ _ @ _).
+  refine (internal_paths_rew_r_unfold _ _ _ @ _).
+  refine (ap (transport _ _) _ @ _).
+  1: refine (phomotopy_ind_1 _ _ @ _).
+  1: exact (internal_paths_rew_r_unfold _ _ _).
+  refine ((transport_diagonal
+    (fun p1 p2 => (phomotopy_path o ap_gen _ p1 p2) 1 = _) _ _)^ @ _).
+  refine (transport_paths_Fl (f := fun p =>
+    (phomotopy_path o ap_gen _ p p)  1) _ _ @ _).
+  refine (concat_p1 _ @ _).
+  (* refine (inverse2 (ap_V _ _) @ _). (*curiously this fails.*) *)
+  rewrite ap_V, inv_V.
+  refine (ap_compose (fun p => ap_gen _ p p 1) phomotopy_path path_pforall_1 @ _).
+  refine ((ap _ (ap_gen_1_eq _ _ _))^).
 Defined.
- *)
 
 (** [loops_ppforall] is natural. *)
+(* Unfortunately, this lemma is very slow. The bottleneck is likely a bunch
+  of definitional reduction. *)
 Definition natural_loops_ppforall_right `{Funext} {A : pType} {B B' : A -> pType}
-  (f : forall a, B a ->* B' a) :
-  Square (loops_ppforall B) 
+  (f : forall a, B a ->* B' a)
+  : Square (loops_ppforall B)
          (loops_ppforall B')
          (loops_functor (functor_ppforall_right f))
          (functor_ppforall_right (fun a => loops_functor (f a))).
 Proof.
-  apply transpose. 
+  apply transpose.
   revert B' f. refine (fiberwise_pointed_map_rec _ _). intros B' f.
   serapply Build_pHomotopy.
-  + exact (natural_loops_ppforall_lem3 
-      (pmap_compose_ppforall_point (fun a => pmap_from_point (f a) (point _))) 
+  + exact (natural_loops_ppforall_lem3
+      (pmap_compose_ppforall_point (fun a => pmap_from_point (f a) (point _)))
       (pmap_compose_ppforall_point (fun a => pmap_from_point (f a) (point _)))).
-  +
+  + refine ((concat_p1 _)^ @ (_ @@ _)).
+    2: { refine ((inverse2 (concat_1p _ @ path_pforall_1))^). }
+    unfold pmap_compose_ppforall_point.
+    refine (natural_loops_ppforall_lem3_refl f (fun x => point (B x)) @ _).
+    exact (concat_p1 _)^.
 Defined.
-
-(*
-    fapply phomotopy.mk,
-    { exact natural_loops_ppforall (pmap_compose_pForall_pForall_const (λa, pmap_of_map (f a) (point _)))
-              (pmap_compose_pForall_pForall_const (λa, pmap_of_map (f a) (point _))) },
-    { exact !natural_loops_ppforall_refl ◾ (!idp_con @ !eq_of_phomotopy_refl) }
-  Defined.
-
-*)
