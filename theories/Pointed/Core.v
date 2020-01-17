@@ -174,6 +174,12 @@ Proof.
   issig.
 Defined.
 
+Definition issig_pforall (A : pType) (P : pFam A)
+: { f : forall x, P x & f (point A) = dpoint P } <~> (pForall A P).
+Proof.
+  issig.
+Defined.
+
 Definition issig_pmap (A B : pType)
 : { f : A -> B & f (point A) = point B } <~> (A ->* B).
 Proof.

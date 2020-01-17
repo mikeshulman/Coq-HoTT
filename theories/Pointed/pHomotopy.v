@@ -63,8 +63,8 @@ Global Instance phomotopy_symmetric {A B} : Symmetric (@pHomotopy A B)
 
 Notation "p ^*" := (phomotopy_inverse p) : pointed_scope.
 
-Definition issig_phomotopy {A B : pType} (f g : A ->* B)
-: { p : f == g & p (point A) = point_eq f @ (point_eq g)^ } <~> (f ==* g).
+Definition issig_phomotopy {A : pType} {P : pFam A} (f g : pForall A P)
+: { p : f == g & p (point A) = dpoint_eq f @ (dpoint_eq g)^ } <~> (f ==* g).
 Proof.
   issig.
 Defined.
