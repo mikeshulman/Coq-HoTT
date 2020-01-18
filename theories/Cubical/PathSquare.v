@@ -163,10 +163,18 @@ Defined.
 
 (* Transpose of a square *)
 Definition sq_tr {A : Type} {a00 a10 a01 a11 : A}
-  (px0 : a00 = a10) (px1 : a01 = a11) (p0x : a00 = a01) (p1x : a10 = a11)
+  {px0 : a00 = a10} {px1 : a01 = a11} {p0x : a00 = a01} {p1x : a10 = a11}
 : PathSquare px0 px1 p0x p1x -> PathSquare p0x p1x px0 px1.
 Proof.
   by intros [].
+Defined.
+
+(** [sq_tr] is "involutive" *)
+Definition sq_tr_sq_tr {A : Type} {a00 a10 a01 a11 : A}
+  {px0 : a00 = a10} {px1 : a01 = a11} {p0x : a00 = a01} {p1x : a10 = a11}
+  (s : PathSquare px0 px1 p0x p1x) : sq_tr (sq_tr s) = s.
+Proof. 
+  destruct s. reflexivity. 
 Defined.
 
 (* NOTE: sq_tr ought to be some sort of involution but it obviously isn't
@@ -174,16 +182,17 @@ Defined.
    "involution" but between equivalent types? But then that very equivalence
    is given by sq_tr so it seems a bit circular... *)
 
+Section sq_tr_args.
+Local Arguments sq_tr {_ _ _ _ _} _ _ _ _.
 Global Instance isequiv_sq_tr {A : Type} {a00 a10 a01 a11 : A}
   {px0 : a00 = a10} {px1 : a01 = a11} {p0x : a00 = a01} {p1x : a10 = a11}
   : IsEquiv (sq_tr px0 px1 p0x p1x).
 Proof.
   serapply isequiv_adjointify.
   1: apply sq_tr.
-  1,2: by intros [].
+  1,2: exact sq_tr_sq_tr.
 Defined.
-
-Arguments sq_tr {_ _ _ _ _ _ _ _ _}.
+End sq_tr_args.
 
 Definition sq_tr_refl_h {A} {a b : A} {p : a = b}
   : sq_tr (sq_refl_h p) = sq_refl_v p.
@@ -282,6 +291,74 @@ Section PathSquareRewriting.
   Definition sq_cGGG := sq_GGGG 1 qx1 q0x q1x.
 
 End PathSquareRewriting.
+
+Section MovePaths.
+  Context {A : Type} {x x00 x20 x02 x22 : A}
+  {f10 : x00 = x20} {f12 : x02 = x22} {f01 : x00 = x02} {f21 : x20 = x22}.
+  (** Operations to move paths around a square. We define all these operations
+    immediately as equvialences. 
+    The naming first number indicates in which argument the path that moves is 
+    on the left of the equivalence, and the second number where it is on the right.
+    The equivalences are all set up so that on the right, there is no path inversion.
+    For the [24] and [13] equivalences there is a path inverse on the left.
+    The corresponding equivalences [42] and [31] are the symmetric versions of these,
+    but the path inverse is in another place. *)
+
+  Definition sq_move_23 {f12'' : x02 = x} {f12' : x = x22} 
+    : PathSquare f10 (f12'' @ f12') f01 f21 <~> PathSquare f10 f12' (f01 @ f12'') f21.
+  Proof.
+    clear f12. destruct f12''. 
+    serapply Build_Equiv. 
+    + refine (fun s => sq_ccGc (concat_p1 _)^ (sq_cGcc (concat_1p _) s)).
+    + exact _.
+  Defined.
+
+  Definition sq_move_14 {f10'' : x00 = x} {f10' : x = x20} 
+    : PathSquare (f10'' @ f10') f12 f01 f21 <~> PathSquare f10'' f12 f01 (f10' @ f21).
+  Proof.
+    clear f10. destruct f10'. 
+    serapply Build_Equiv. 
+    + refine (fun s => sq_cccG (concat_1p _)^ (sq_Gccc (concat_p1 _) s)).
+    + exact _.
+  Defined.
+
+  Definition sq_move_24 {f12'' : x02 = x} {f12' : x22 = x} 
+    : PathSquare f10 (f12'' @ f12'^) f01 f21 <~> PathSquare f10 f12'' f01 (f21 @ f12').
+  Proof.
+    clear f12. destruct f12'. 
+    serapply Build_Equiv. 
+    + refine (fun s => sq_cccG (concat_p1 _)^ (sq_cGcc (concat_p1 _) s)).
+    + exact _.
+  Defined.
+
+  Definition sq_move_42 {f12'' : x02 = x} {f12' : x = x22} 
+    : PathSquare f10 f12'' f01 (f21 @ f12'^) <~> PathSquare f10 (f12'' @ f12') f01 f21.
+  Proof.
+    clear f12. destruct f12'. 
+    symmetry.
+    serapply Build_Equiv. 
+    + refine (fun s => sq_cccG (concat_p1 _)^ (sq_cGcc (concat_p1 _) s)).
+    + exact _.
+  Defined.
+
+  Definition sq_move_13 {f10'' : x = x00} {f10' : x = x20} 
+    : PathSquare (f10''^ @ f10') f12 f01 f21 <~> PathSquare f10' f12 (f10'' @ f01) f21.
+  Proof.
+    clear f10. destruct f10''. 
+    serapply Build_Equiv. 
+    + refine (fun s => sq_ccGc (concat_1p _)^ (sq_Gccc (concat_1p _) s)).
+    + exact _.
+  Defined.
+
+  Definition sq_move_31 {f10'' : x00 = x} {f10' : x = x20} 
+    : PathSquare f10' f12 (f10''^ @ f01) f21 <~> PathSquare (f10'' @ f10') f12 f01 f21.
+  Proof.
+    clear f10. destruct f10''. 
+    symmetry.
+    refine (Build_Equiv _ _ (fun s => sq_ccGc (concat_1p _)^ (sq_Gccc (concat_1p _) s)) _).
+  Defined.
+
+End MovePaths.
 
 Section DPathPathSquare.
 

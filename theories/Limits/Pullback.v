@@ -1,6 +1,6 @@
 (* -*- mode: coq; mode: visual-line -*- *)
 Require Import HoTT.Basics HoTT.Types.
-Require Import Fibrations.
+Require Import Fibrations Cubical.PathSquare.
 
 Local Open Scope path_scope.
 
@@ -211,6 +211,22 @@ Section PullbackSigma.
   Defined.
 
 End PullbackSigma.
+
+Definition issig_pullback {A B C : Type} (f : B -> A) (g : C -> A) :
+  { b : B & { c : C & f b = g c }} <~> Pullback f g := reflexivity _.
+
+Definition equiv_path_pullback {A B C : Type} {f : B -> A} {g : C -> A}
+  (x y : Pullback f g) : 
+  ({ p : x.1 = y.1 & { q : x.2.1 = y.2.1 & PathSquare x.2.2 y.2.2 (ap f p) (ap g q) }}) 
+  <~> x = y.
+Proof.
+  destruct x as [b [c p]], y as [b' [c' p']]. simpl.
+  refine (equiv_path_sigma _ _ _ oE _).
+  apply equiv_functor_sigma_id. intros q. destruct q. simpl.
+  refine (equiv_path_sigma _ _ _ oE _).
+  apply equiv_functor_sigma_id. intros q. destruct q. simpl.
+  symmetry. exact (Build_Equiv _ _ _ isequiv_sq_G1).
+Defined.
 
 Definition path_pullback_hset {A B C : Type} `{IsHSet A} (f : B -> A) (g : C -> A)
   {p q : Pullback f g} (s : p.1 = q.1) (t : p.2.1 = q.2.1) : p = q.
