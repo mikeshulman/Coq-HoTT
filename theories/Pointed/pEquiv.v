@@ -213,3 +213,20 @@ Proof.
   apply pmap_postwhisker.
   symmetry; apply peisretr.
 Defined.
+
+Definition equiv_ppforall_right `{Funext} {A : pType} {B B' : A -> pType}
+  (g : forall a, B a <~>* B' a) :
+  (ppforall a, B a) <~>* ppforall a, B' a.
+Proof.
+  rapply (Build_pEquiv _ _ (functor_ppforall_right g)). 
+  serapply isequiv_adjointify.
+  { exact (functor_ppforall_right (fun x => (g x)^-1*)). }
+  { intro f. apply path_pforall.
+    refine ((pmap_compose_ppforall_compose _ _ _)^* @* _).
+    refine (pmap_compose_ppforall_left _ (fun a => peisretr _) @* _).
+    apply pmap_compose_ppforall_pid_left. }
+  { intro f. apply path_pforall.
+    refine ((pmap_compose_ppforall_compose _ _ _)^* @* _).
+    refine (pmap_compose_ppforall_left _ (fun a => peissect _) @* _).
+    apply pmap_compose_ppforall_pid_left. }
+Defined.

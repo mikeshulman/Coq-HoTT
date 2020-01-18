@@ -230,6 +230,37 @@ Proof.
   + apply path_pforall. apply pmap_compose_ppforall_point.
 Defined.
 
+Definition pmap_compose_ppforall_compose {A : pType} {P Q R : A -> pType} 
+  (h : forall (a : A), Q a ->* R a) (g : forall (a : A), P a ->* Q a) 
+  (f : ppforall a, P a)
+  : pmap_compose_ppforall (fun a => h a o* g a) f ==* pmap_compose_ppforall h (pmap_compose_ppforall g f).
+Proof.
+
+(*phomotopy.mk homotopy.rfl
+  abstract !idp_con ⬝ whisker_right _ (!ap_con ⬝ whisker_right _ !ap_compose') ⬝ !con.assoc end.*)
+Admitted.
+
+Definition pmap_compose_ppforall2 {A : pType} {P Q : A -> pType} {g g' : forall (a : A), P a ->* Q a}
+  {f f' : ppforall (a : A), P a} (p : forall a, g a ==* g' a) (q : f ==* f') 
+  : pmap_compose_ppforall g f ==* pmap_compose_ppforall g' f'.
+Admitted.
+(*ppi_functor_right_phomotopy p q (to_homotopy_pt (p pt)).*)
+
+Definition pmap_compose_ppforall_left {A : pType} {P Q : A -> pType} {g g' : forall (a : A), P a ->* Q a}
+  (f : ppforall (a : A), P a) (p : forall a, g a ==* g' a) 
+  : pmap_compose_ppforall g f ==* pmap_compose_ppforall g' f.
+Admitted. (* pmap_compose_ppforall2 p phomotopy.rfl *)
+
+Definition pmap_compose_ppforall_pid_left {A : pType} {P : A -> pType}
+  (f : ppforall (a : A), P a) : pmap_compose_ppforall (fun a => pmap_idmap) f ==* f.
+Proof.
+  serapply Build_pHomotopy.
+  + reflexivity.
+  + symmetry. refine (whiskerR (concat_p1 _ @ ap_idmap _) _ @ concat_pV _).
+Defined.
+
+
+
 (** If we have a fiberwise pointed map, with a variable as codomain, this is an
   induction principle that allows us to assume it respects all basepoints by
   reflexivity*)

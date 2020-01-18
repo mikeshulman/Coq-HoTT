@@ -113,8 +113,9 @@ Proof.
   { intro q.
     refine (_ @ (concat_p1 _)^ @ (concat_1p _)^).
     apply moveR_Vp, concat_Ap. }
-  hott_simpl.
-Admitted.
+  simpl. generalize (p ispointed_type0). generalize (g ispointed_type0).
+  intros _ []. reflexivity.
+Defined.
 
 (* Iterated loops functor respects composition *)
 Lemma iterated_loops_functor_compose n A B C (f : B ->* C)
@@ -466,7 +467,7 @@ Defined.
   pointed dependent maps into a family of loops. *)
 (* We define this in this direction, because the forward map is pointed by
   reflexivity. *)
-Definition loops_ppforall `{Funext} {A : pType} (B : A -> pType)
+Definition equiv_loops_ppforall `{Funext} {A : pType} (B : A -> pType)
   : loops (ppforall x : A, B x) <~>* (ppforall x : A, loops (B x)).
 Proof.
   serapply Build_pEquiv'.
@@ -474,7 +475,7 @@ Proof.
   reflexivity.
 Defined.
 
-(** We need a bunch of lemmas to prove that [loops_ppforall] is natural. *)
+(** We need a bunch of lemmas to prove that [equiv_loops_ppforall] is natural. *)
 
 (** First we are going to generalize the underlying map of [loops_functor].
   The reason of this generalization is that the generalization takes a path
@@ -598,13 +599,13 @@ Proof.
   refine ((ap _ (ap_gen_1_eq _ _ _))^).
 Defined.
 
-(** [loops_ppforall] is natural. *)
+(** [equiv_loops_ppforall] is natural. *)
 (* Unfortunately, this lemma is very slow. The bottleneck is likely a bunch
   of definitional reduction. *)
 Definition natural_loops_ppforall_right `{Funext} {A : pType} {B B' : A -> pType}
   (f : forall a, B a ->* B' a)
-  : Square (loops_ppforall B)
-         (loops_ppforall B')
+  : Square (equiv_loops_ppforall B)
+         (equiv_loops_ppforall B')
          (loops_functor (functor_ppforall_right f))
          (functor_ppforall_right (fun a => loops_functor (f a))).
 Proof.
