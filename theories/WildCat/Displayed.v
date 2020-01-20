@@ -19,7 +19,7 @@ Reserved Infix "$$o@" (at level 30).
 Class IsDGraph {A : Type} (B : A -> Type) :=
 {
   isgraph_base : IsGraph A ;
-  DGraph_Hom : forall {a b : A} (f : a $-> b), B a -> B b -> Type
+  DHom : forall {a b : A} (f : a $-> b), B a -> B b -> Type
   (* where "x $-[ f ]-> y" := (DHom _ _ f x y) *)
 }.
 
@@ -27,11 +27,13 @@ Class IsDGraph {A : Type} (B : A -> Type) :=
 
 (** A wild displayed (0,1)-category has 1-morphisms and operations on them, but no coherence. *)
 
-Class Is01DCat {A : Type} `{Is01Cat A} (B : A -> Type) :=
+Global Existing Instance isgraph_base.
+
+
+Class Is01DCat {A : Type} `{!Is01Cat A} (B : A -> Type) `{!IsDGraph B} :=
 {
-(**  is_Dgraph : IsDGraph B; *)
-  DHom : forall {a b : A} (f : a $-> b), B a -> B b -> Type ; 
-  DId : forall {a : A} (x : B a), DHom (Id a) x x ;
+(*  DHom : forall {a b : A} (f : a $-> b), B a -> B b -> Type ; *)
+  DId : forall {a : A} (x : B a), (@DHom A B _ a a (Id a) x x) ; 
   DComp : forall {a b c : A} {g : b $-> c} {f : a $-> b}
                  {x : B a} {y : B b} {z : B c},
       DHom g y z -> DHom f x y  -> DHom (g $o f) x z
