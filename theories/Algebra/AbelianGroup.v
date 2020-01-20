@@ -1,10 +1,12 @@
-Require Import Basics.
-Require Import Types.
+Require Import HoTT.Basics HoTT.Types UnivalenceImpliesFunext.
 Require Import Truncations.
 Require Import HIT.Coeq.
 Require Import Algebra.Group.
 Require Import Algebra.Subgroup.
+Require Import Algebra.QuotientGroup.
+Require Import Colimits.Quotient.
 Require Import Cubical.
+Require Import WildCat.
 Import TrM.
 
 Local Open Scope mc_mult_scope.
@@ -20,6 +22,11 @@ Class AbGroup := {
   abgroup_inverse :> Negate abgroup_type;
   abgroup_isabgroup :> IsAbGroup abgroup_type;
 }.
+
+Existing Instance abgroup_sgop.
+Existing Instance abgroup_unit.
+Existing Instance abgroup_inverse.
+Existing Instance abgroup_isabgroup.
 
 (** We want abelian groups to be coerced to the underlying type. *)
 Coercion abgroup_type : AbGroup >-> Sortclass.
@@ -416,3 +423,96 @@ Proof.
   + change (a o eta == idmap); symmetry.
     apply ah.
 Defined.
+
+(** AbGroup forms a 01Cat *)
+Global Instance is01cat_AbGroup : Is01Cat AbGroup :=
+  induced_01cat group_abgroup.
+
+(* Global Instance is01cat_GroupHomomorphism {A B : AbGroup} : Is01Cat (A $-> B) :=
+  induced_01cat (@grp_homo_map A B).
+ *)
+(* Global Instance is0gpd_GroupHomomorphism {A B : AbGroup}: Is0Gpd (A $-> B) :=
+  induced_0gpd (@grp_homo_map A B).
+ *)
+(* Definition is0functor_comp_induced {A B : Type} (f : A -> B) {H : Is01Cat B}
+(*   (HF : forall x y z : B, Is0Functor (uncurry (@cat_comp B _ x y z)))  *)
+  (x y z : A) : 
+   Is0Functor (uncurry (@cat_comp A (induced_01cat f) x y z)).
+ *)
+
+(* Global Instance is0functor_comp_GroupHomomorphism {A B C : AbGroup}:
+  Is0Functor (uncurry (@cat_comp Group _ A B C)).
+Proof.
+  apply Build_Is0Functor.
+  intros [f g] [f' g'] [p p'] a ;
+    exact (p (g a) @ ap f' (p' a)).
+Defined.
+ *)
+
+(* Definition is0functor_comp_induced {A B : Type} (f : A -> B) {H : Is01Cat B} {H2 : forall x y : B, IsGraph (x $-> y)}
+  (HF : forall x y z : B, Is0Functor (uncurry (@cat_comp B _ x y z)))
+  (x y z : A) : Is0Functor (uncurry (@cat_comp A (induced_01cat f) x y z)).
+Proof.
+  constructor. intros. apply HF, f0.
+Defined.
+ *)
+ 
+(** AbGroup forms a 1Cat *)
+Global Instance is1cat_abgroup : Is1Cat AbGroup :=
+  induced_1cat _.
+
+Instance hasmorext_abgroup `{Funext} : HasMorExt AbGroup :=
+  induced_hasmorext _.
+
+Global Instance hasequivs_abgroup : HasEquivs AbGroup :=
+  induced_hasequivs _.
+
+(** Subgroups of abelian groups *)
+
+Global Instance isnormal_ab_subgroup (G : AbGroup) (H : Subgroup G)
+  : IsNormalSubgroup H.
+Proof.
+  serapply Build_IsNormalSubgroup.
+  intros x y.
+  unfold in_cosetL, in_cosetR.
+  refine (equiv_functor_sigma' (Build_Equiv _ _ group_inverse _) _).
+  intros h.
+  simpl.
+  serapply equiv_iff_hprop.
+  + intros p.
+    rewrite grp_homo_inv.
+    rewrite p.
+    rewrite negate_sg_op.
+    rewrite (involutive x).
+    apply commutativity.
+  + intros p.
+    rewrite grp_homo_inv in p.
+    apply moveL_equiv_V in p.
+    rewrite p; cbn.
+    change (- (x * -y) = - x * y).
+    rewrite negate_sg_op.
+    rewrite (involutive y).
+    apply commutativity.
+Defined.
+
+
+(** Quotients of abelian groups *)
+
+Global Instance isabgroup_quotient {U : Univalence} (G : AbGroup) (H : Subgroup G)
+  : IsAbGroup (QuotientGroup G H).
+Proof.
+  ntc_rapply Build_IsAbGroup.
+  1: exact _.
+  intro x.
+  serapply Quotient_ind_hprop.
+  revert x.
+  serapply Quotient_ind_hprop.
+  intros x y.
+  apply (ap (tr o coeq)).
+  apply commutativity.
+Defined.
+
+Definition QuotientAbGroup {U : Univalence} (G : AbGroup) (H : Subgroup G)
+  : AbGroup := Build_AbGroup (QuotientGroup G H) _ _ _ _.
+
+

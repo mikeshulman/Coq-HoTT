@@ -24,6 +24,12 @@ Section Induced_category.
       exact ( g1 $o g2).
   Defined.
 
+  Local Instance induced_0gpd `{Is0Gpd B} : Is0Gpd A.
+  Proof.
+    rapply Build_Is0Gpd.
+    intros a b g; cbn in *; exact (g^$).
+  Defined.
+
   (** The structure map along which we induce the category structure becomes a functor with respect to the induced structure *) 
   Local Instance inducingmap_is0functor `{Is01Cat B} : Is0Functor f.
   Proof.
@@ -52,6 +58,11 @@ Section Induced_category.
     + intros a b g h. cbn in *. exact idmap.
     + intros a. cbn in *. exact (Id _).
     + intros a b c g h. cbn in *. exact (Id _). 
+  Defined.
+
+  Instance induced_hasmorext `{HasMorExt B} : HasMorExt A.
+  Proof.
+    constructor. intros. apply H1.
   Defined.
 
   Definition induced_hasequivs `{HasEquivs B} : HasEquivs A.

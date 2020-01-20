@@ -1,7 +1,7 @@
 (* -*- mode: coq; mode: visual-line -*- *)
 
 Require Import Basics Types.
-Require Import TruncType HProp.
+Require Import TruncType HProp UnivalenceImpliesFunext.
 Require Import Modalities.Modality Modalities.Identity.
 
 (** * Truncations of types, in all dimensions. *)
@@ -211,6 +211,14 @@ Hint Immediate istruncmap_mapinO_tr : typeclass_instances.
 (** It's sometimes convenient to use "infinity" to refer to the identity modality in a similar way.  This clashes with some uses in higher topos theory, where "oo-truncated" means instead "hypercomplete", but this has not yet been a big problem. *)
 Notation oo := purely.
 (** Unfortunately, we can't import two or more copies of [Modalities_Theory] at the same time (the most recently imported shadows the other(s)).  If we ever want to talk about truncation and include [oo], we may want to define a "union" instance of [Modality]. *)
+
+(** ** Separatedness *)
+
+(** The [n.+1]-truncation is the separated subuniverse associated to the [n]-truncation.  *)
+Global Instance issepfor_Trunc : IsSepFor (n.+1) n.
+Proof.
+  intros A; split; intros; exact _.
+Defined.
 
 (** ** A few special things about the (-1)-truncation. *)
 

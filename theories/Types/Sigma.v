@@ -268,11 +268,20 @@ Definition pr1_path_V {A : Type} {P : A -> Type} {u v : sigT P} (p : u = v)
 : p^ ..1 = (p ..1)^
   := ap_V _ _.
 
-(** Applying [existT] to one argument is the same as [path_sigma] with reflexivity in the first place. *)
+(** Applying [ap] on an [exist] reduces to [path_sigma]. *)
 
+Definition ap_exist {A B : Type} (P : B -> Type)
+           (f : A -> B) (g : forall a, P (f a)) {x1 x2 : A} (p : x1 = x2)
+  : ap (fun x => exist P (f x) (g x)) p
+    = path_sigma' P (ap f p) ((transport_compose P f p (g x1))^ @ (apD g p)).
+Proof.
+  destruct p; reflexivity.
+Defined.
+
+(** Here's a related statement, which is not well-named. *)
 Definition ap_existT {A : Type} (P : A -> Type) (x : A) (y1 y2 : P x)
            (q : y1 = y2)
-: ap (existT P x) q = path_sigma' P 1 q.
+: ap (exist P x) q = path_sigma' P 1 q.
 Proof.
   destruct q; reflexivity.
 Defined.

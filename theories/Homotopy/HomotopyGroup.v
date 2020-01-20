@@ -97,12 +97,14 @@ Definition pi_functor_type (n : nat) (X Y : pType) : Type
      end.
 
 (* Every such map is, in particular, a pointed map. *)
-Definition pi_functor_type_pmap n X Y : pi_functor_type n X Y -> (Pi n X ->* Pi n Y)
+Definition pi_functor_type_pmap n X Y : pi_functor_type n X Y -> (pForall (Pi n X) (constant_pfam (Pi n Y)))
   := match n return pi_functor_type n X Y -> (Pi n X ->* Pi n Y) with
      | 0    => fun f => f
      | n.+1 => fun f => f       (* This works because [pmap_GroupHomomorphism] is already a coercion. *)
      end.
-Coercion pi_functor_type_pmap : pi_functor_type >-> pMap.
+(* Note: because we define pMap as a special case of pForall, we must declare
+  all coercions into pForall, *not* into pMap. *)
+Coercion pi_functor_type_pmap : pi_functor_type >-> pForall.
 
 Definition pi_functor (n : nat) {X Y : pType}
   : (X ->* Y) -> pi_functor_type n X Y.
@@ -134,7 +136,7 @@ Proof.
   destruct n; intros x.
   - apply Trunc_functor_idmap.
   - etransitivity.
-    + apply O_functor_homotopy, iterated_loops_functor_idmap.
+    + apply O_functor_homotopy. rapply iterated_loops_functor_idmap.
     + apply O_functor_idmap.
 Defined.
 
@@ -145,7 +147,7 @@ Proof.
   destruct n; intro x.
   - cbn; apply Trunc_functor_compose.
   - etransitivity.
-    + apply O_functor_homotopy, iterated_loops_functor_compose.
+    + apply O_functor_homotopy. rapply iterated_loops_functor_compose.
     + refine (O_functor_compose 0%trunc _ _ x).
 Defined.
 
@@ -155,7 +157,7 @@ Definition pi_2functor (n : nat)
 Proof.
   destruct n; intros x.
   - apply O_functor_homotopy; exact p.
-  - apply O_functor_homotopy, iterated_loops_2functor; exact p.
+  - apply O_functor_homotopy. rapply iterated_loops_2functor; exact p.
 Defined.
 
 (* The homotopy groups of a loop space are those of the space shifted.  *)

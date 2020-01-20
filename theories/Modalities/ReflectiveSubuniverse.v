@@ -486,6 +486,10 @@ Section Reflective_Subuniverse.
 
   Section Replete.
 
+    Definition inO_equiv_inO' (T : Type) {U : Type} `{In O T} (f : T <~> U)
+    : In O U
+      := inO_equiv_inO T f.
+
     (** An equivalent formulation of repleteness is that a type lies in the subuniverse as soon as its unit map is an equivalence. *)
     Definition inO_isequiv_to_O (T:Type)
     : IsEquiv (to O T) -> In O T
@@ -759,15 +763,14 @@ Section Reflective_Subuniverse.
     (** TODO: Manage the universes more carefully in this lemma, rather than simply allowing any universes to be inferred by unsetting strict universe declaration. *)
     Local Unset Strict Universe Declaration.
     Definition O_ind_from_inO_sigma
-    (** Work around https://coq.inria.fr/bugs/show_bug.cgi?id=3811 *)
-    : (forall (A:Type@{i}) (B:A -> Type@{j}) {A_inO : In@{Ou Oa i} O A} `{forall a, In@{Ou Oa j} O (B a)},
-         (In@{Ou Oa j} O (sig@{i j} (fun x:A => B x))))
-      ->
-      (forall (A:Type@{i}) (B: (O A) -> Type@{j}) `{forall a, In@{Ou Oa j} O (B a)}
-              (g : forall (a:A), (B (to O A a))),
-         { f : forall (z:O A), (B z) & forall a:A, f (to@{Ou Oa i} O A a) = g a }).
+               (H : forall (A:Type@{i}) (B:A -> Type@{j})
+                           {A_inO : In@{Ou Oa i} O A}
+                           `{forall a, In@{Ou Oa j} O (B a)},
+                   (In@{Ou Oa j} O (sig@{i j} (fun x:A => B x))))
+               (A:Type@{i}) (B: (O A) -> Type@{j}) `{forall a, In@{Ou Oa j} O (B a)}
+               (g : forall (a:A), (B (to O A a)))
+      : { f : forall (z:O A), (B z) & forall a:A, f (to@{Ou Oa i} O A a) = g a }.
     Proof.
-      intro H. intros A B ? g.
       pose (Z := sigT B).
       assert (In@{Ou Oa j} O Z).
       { apply H; [ exact _ | assumption ]. }
@@ -839,6 +842,39 @@ Section Reflective_Subuniverse.
       - unfold Sect; apply O_indpaths; try exact _.
         intros [a op]; revert op; apply O_indpaths; try exact _; intros p; simpl.
         abstract (repeat (simpl rewrite @O_rec_beta); reflexivity).
+    Defined.
+
+    (** ** Equivalences *)
+
+    (** Naively it might seem that we need closure under Sigmas (hence a modality) to deduce closure under [Equiv], but in fact the above closure under fibers is sufficient. *)
+
+    Global Instance inO_equiv `{Funext} (A B : Type)
+           `{In O A} `{In O B}
+      : In O (A <~> B).
+    Proof.
+      refine (inO_equiv_inO _ (issig_equiv A B)).
+      refine (inO_equiv_inO _ (equiv_functor_sigma equiv_idmap
+                                 (fun f => equiv_biinv_isequiv f))).
+      refine (inO_equiv_inO' (hfiber (fun fgh : (A->B)*((B->A)*(B->A)) => ((snd (snd fgh)) o (fst fgh) , (fst fgh) o (fst (snd fgh)))) (idmap, idmap)) _).
+      unfold hfiber, BiInv; cbn.
+      srefine (equiv_adjointify _ _ _ _).
+      - intros [[f [g h]] p].
+        apply (equiv_inverse (equiv_path_prod _ _)) in p.
+        destruct p as [p q]; cbn in *.
+        exists f; split; [ exists h | exists g ].
+        all:apply ap10; assumption.
+      - intros [f [[g p] [h q]]].
+        exists (f,(h,g)); cbn.
+        apply path_prod; apply path_arrow; assumption.
+      - intros [f [[g p] [h q]]]; cbn.
+        apply (path_sigma' _ 1); apply path_prod; apply (path_sigma' _ 1);
+          cbn; rewrite transport_1.
+        1:rewrite ap_fst_path_prod.
+        2:rewrite ap_snd_path_prod.
+        all:apply path_forall; intros x; rewrite ap10_path_arrow; reflexivity.
+      - intros [[f [g h]] p]; cbn. 
+        apply (path_sigma' _ 1); cbn.
+        refine (_ @ eta_path_prod p); apply ap011; apply eta_path_arrow.
     Defined.
 
     (** ** Paths *)
@@ -1334,6 +1370,14 @@ Section ConnectedTypes.
     apply (contr_equiv _ (to O A)^-1).
   Defined.
 
+  (** Any map between connected types is inverted by O. *)
+  Global Instance O_inverts_isconnected {A B : Type} (f : A -> B)
+             `{IsConnected O A} `{IsConnected O B}
+    : O_inverts O f.
+  Proof.
+    exact _.
+  Defined.
+
   (** Here's another way of stating the universal property for mapping out of connected types into modal ones. *)
   Definition extendable_const_isconnected_inO@{Ou Oa i j k l m} (n : nat)
              (** Work around https://coq.inria.fr/bugs/show_bug.cgi?id=3811 *)
@@ -1827,6 +1871,125 @@ Section ConnectedMaps.
   Defined.
 
 End ConnectedMaps.
+
+(** ** Containment of subuniverses *)
+
+Section Containment.
+  Context (O O' : ReflectiveSubuniverse).
+
+  (** We say that O is contained in O' if every O-modal type is O'-modal. *)
+  Class ContainedIn :=
+    inO_contains : forall A, In O A -> In O' A.
+
+  (** This implies that every O'-connected type or map is O-connected. *)
+  Global Instance isconnected_contains A `{ContainedIn} `{IsConnected O' A}
+    : IsConnected O A.
+  Proof.
+    rapply isconnected_from_elim; intros C C_inO f.
+    apply inO_contains in C_inO.
+    rapply (isconnected_elim O').
+  Defined.
+
+  Global Instance conn_map_contains {A B} (f : A -> B)
+             `{ContainedIn} `{IsConnMap O' A B f}
+    : IsConnMap O f.
+  Proof.
+    intros x; exact _.
+  Defined.
+
+End Containment.
+
+(** ** Separated subuniverses *)
+
+Class IsSepFor (O' O : ReflectiveSubuniverse)
+  := inO'_paths : forall (A : Type),
+      (forall (x y : A), In O (x = y)) <-> In O' A.
+
+Section Separated.
+  Context {O' O : ReflectiveSubuniverse} {sep : IsSepFor O' O}.
+
+  Global Instance inO'_paths' {A} (x y : A) `{In O' A}
+    : In O (x = y)
+    := snd (inO'_paths A) _ x y.
+
+  Global Instance inO'_inO {A} `{In O A} : In O' A.
+  Proof.
+    apply inO'_paths; rapply inO_paths.
+  Defined.
+
+  Global Instance inO'_hprop {A} {hp : IsHProp A} : In O' A.
+  Proof.
+    apply inO'_paths; intros x y; srapply inO_contr.
+  Defined.
+
+  (** Proposition 2.18 of CORS *)
+  Global Instance inO'_typeO `{Univalence} : In O' (Type_ O).
+  Proof.
+    apply inO'_paths; intros [A ?] [B ?].
+    refine (inO_equiv_inO _ (equiv_path_TypeO O _ _)); cbn.
+    refine (inO_equiv_inO _ (equiv_path_universe A B)).
+  Defined.
+
+  (** Proposition 2.26 of CORS *)
+  Global Instance isequiv_O'_path_cmp {A} (x y : A)
+    : IsEquiv (O_rec (O := O) (@ap _ _ (to O' A) x y)).
+  Proof.
+    (* TODO *)
+  Admitted.
+
+  Definition equiv_O'_path_cmp {A} (x y : A)
+    : O (x = y) <~> (to O' A x = to O' A y)
+    := Build_Equiv _ _ _ (isequiv_O'_path_cmp x y).
+
+  (** Lemma 2.27 of CORS *)
+  Global Instance O'_inverts_functor_sigma_to_O' {X} (P : O' X -> Type)
+    : @IsEquiv (O {x : X & P (to O' X x)}) (O {ox : O' X & P ox})
+               (O_functor O (fun xp:{x:X & P (to O' X x)} => (to O' X xp.1 ; xp.2))).
+  Proof.
+    (* TODO *)
+  Admitted.
+
+  Definition equiv_functor_sigma_to_O' {X} (P : O' X -> Type)
+    : (O {x : X & P (to O' X x)}) <~> (O {ox : O' X & P ox})
+    := Build_Equiv _ _ _ (O'_inverts_functor_sigma_to_O' P).
+
+  (** Corollary 2.29 of CORS *)
+  Global Instance O'_inverts_functor_hfiber {Y X : Type} (f : Y -> X)
+         (x : X)
+         : O_inverts O (functor_hfiber (fun y => (to_O_natural O' f y)^) x).
+  Proof.
+    srefine (isequiv_homotopic (_ : _ <~> _) _).
+    - unfold hfiber.
+      refine (_ oE (equiv_inverse (equiv_O_sigma_O O _))).
+      refine (equiv_functor_sigma_to_O'
+                (fun oy:O' Y => O_functor O' f oy = to O' X x) oE _).
+      apply equiv_O_functor. 
+      refine (equiv_functor_sigma' equiv_idmap _); intros y; cbn.
+      refine (_ oE equiv_O'_path_cmp (f y) x).
+      apply equiv_concat_l, to_O_natural.
+    - apply O_indpaths.
+      intros [y p]; cbn.
+      abstract (
+      rewrite O_rec_beta;
+      rewrite !(to_O_natural O _ _);
+      apply ap; refine (path_sigma' _ 1 _); cbn;
+      rewrite O_rec_beta, inv_V; reflexivity
+      ).
+  Defined.
+
+  (** Proposition 2.30 of CORS *)
+  (* Making this an [Instance] breaks typeclass inference in various places. *)
+  Definition conn_map_O'_inverts {Y X : Type} (f : Y -> X)
+         `{O_inverts O' f}
+    : IsConnMap O f.
+  Proof.
+    intros x.
+    refine (contr_equiv' (O (hfiber (O_functor O' f) (to O' X x))) _).
+    exact (equiv_inverse (Build_Equiv _ _
+             (O_functor O (functor_hfiber (fun y => (to_O_natural O' f y)^) x)) _)).
+  Defined.
+
+End Separated.
 
 
 End ReflectiveSubuniverses_Theory.

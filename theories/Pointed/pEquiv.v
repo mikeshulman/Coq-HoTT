@@ -108,7 +108,7 @@ Proof.
 Defined.
 
 (* A pointed version of Sect (sometimes useful for proofs of some equivalences) *)
-Definition pSect {A B : pType} (s : A ->* B) (r : B ->* A)
+Definition pSect {A B : pType} (s : A ->* B) (r : B ->* A) : Type
   := r o* s ==* pmap_idmap.
 
 Arguments pSect _ _ / _ _.
@@ -144,8 +144,8 @@ Proof.
   serapply Build_pEquiv.
   1: assumption.
   serapply (isequiv_adjointify f f').
-  1: apply r.
-  apply s.
+  1: rapply r.
+  rapply s.
 Defined.
 
 (* In some situations you want the back and forth maps to be pointed
@@ -158,4 +158,75 @@ Proof.
   serapply (isequiv_adjointify f f').
   1: apply r.
   apply s.
+Defined.
+
+(** Pointed versions of [moveR_equiv_M] and friends. *)
+Definition moveR_pequiv_Mf {A B C} (f : B <~>* C) (g : A ->* B) (h : A ->* C)
+           (p : g ==* f^-1* o* h)
+  : (f o* g ==* h).
+Proof.
+  refine (pmap_postwhisker f p @* _).
+  refine ((pmap_compose_assoc _ _ _)^* @* _).
+  refine (pmap_prewhisker h (peisretr f) @* _).
+  apply pmap_postcompose_idmap.
+Defined.
+
+Definition moveL_pequiv_Mf {A B C} (f : B <~>* C) (g : A ->* B) (h : A ->* C)
+           (p : f^-1* o* h ==* g)
+  : (h ==* f o* g).
+Proof.
+  refine (_ @* pmap_postwhisker f p).
+  refine (_ @* (pmap_compose_assoc _ _ _)).
+  refine ((pmap_postcompose_idmap _)^* @* _).
+  apply pmap_prewhisker.
+  symmetry; apply peisretr.
+Defined.
+
+Definition moveL_pequiv_Vf {A B C} (f : B <~>* C) (g : A ->* B) (h : A ->* C)
+           (p : f o* g ==* h)
+  : g ==* f^-1* o* h.
+Proof.
+  refine (_ @* pmap_postwhisker f^-1* p).
+  refine (_ @* (pmap_compose_assoc _ _ _)).
+  refine ((pmap_postcompose_idmap _)^* @* _).
+  apply pmap_prewhisker.
+  symmetry; apply peissect.
+Defined.
+
+Definition moveR_pequiv_Vf {A B C} (f : B <~>* C) (g : A ->* B) (h : A ->* C)
+           (p : h ==* f o* g)
+   : f^-1* o* h ==* g.
+Proof.
+  refine (pmap_postwhisker f^-1* p @* _).
+  refine ((pmap_compose_assoc _ _ _)^* @* _).
+  refine (pmap_prewhisker g (peissect f) @* _).
+  apply pmap_postcompose_idmap.
+Defined.
+
+Definition moveR_pequiv_fV {A B C} (f : B ->* C) (g : A <~>* B) (h : A ->* C)
+           (p : f o* g ==* h)
+  : (f ==* h o* g^-1*).
+Proof.
+  refine (_ @* pmap_prewhisker g^-1* p).
+  refine (_ @* (pmap_compose_assoc _ _ _)^*).
+  refine ((pmap_precompose_idmap _)^* @* _).
+  apply pmap_postwhisker.
+  symmetry; apply peisretr.
+Defined.
+
+Definition equiv_ppforall_right `{Funext} {A : pType} {B B' : A -> pType}
+  (g : forall a, B a <~>* B' a) :
+  (ppforall a, B a) <~>* ppforall a, B' a.
+Proof.
+  rapply (Build_pEquiv _ _ (functor_ppforall_right g)). 
+  serapply isequiv_adjointify.
+  { exact (functor_ppforall_right (fun x => (g x)^-1*)). }
+  { intro f. apply path_pforall.
+    refine ((pmap_compose_ppforall_compose _ _ _)^* @* _).
+    refine (pmap_compose_ppforall_left _ (fun a => peisretr _) @* _).
+    apply pmap_compose_ppforall_pid_left. }
+  { intro f. apply path_pforall.
+    refine ((pmap_compose_ppforall_compose _ _ _)^* @* _).
+    refine (pmap_compose_ppforall_left _ (fun a => peissect _) @* _).
+    apply pmap_compose_ppforall_pid_left. }
 Defined.

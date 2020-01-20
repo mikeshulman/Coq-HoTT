@@ -274,6 +274,9 @@ theories/Homotopy/BlakersMassey.v
 theories/Homotopy/Freudenthal.v
 theories/Homotopy/HSpace.v
 theories/Homotopy/ClassifyingSpace.v
+theories/Homotopy/EMSpace.v
+theories/Homotopy/SuccessorStructure.v
+theories/Homotopy/ExactSequence.v
 
 #
 #   Pointed
@@ -294,9 +297,11 @@ theories/Pointed/pType.v
 #
 #   Spectra
 #
-
+theories/Spectra.v
 theories/Spectra/Spectrum.v
 theories/Spectra/Coinductive.v
+theories/Spectra/GeneralizedSpectrum.v
+theories/Spectra/EMSpectrum.v
 
 #
 #   Algebra
@@ -308,11 +313,17 @@ theories/Algebra/ooAction.v
 
 theories/Algebra/Z.v
 
+theories/Algebra/GradedAbGroup.v
 theories/Algebra/Group.v
 theories/Algebra/Subgroup.v
 theories/Algebra/Congruence.v
 theories/Algebra/AbelianGroup.v
 theories/Algebra/QuotientGroup.v
+theories/Algebra/Kernel.v
+theories/Algebra/Image.v
+theories/Algebra/Homology.v
+theories/Algebra/SpectralSequence.v
+
 
 #
 #   Tactics

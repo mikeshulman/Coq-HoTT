@@ -1,5 +1,5 @@
 (* -*- mode: coq; mode: visual-line -*- *)
-Require Import Basics Types.
+Require Import Basics Types UnivalenceImpliesFunext.
 Require Import Pointed.Core.
 Require Import WildCat.
 Require Import pHomotopy pMap pEquiv.
@@ -12,14 +12,14 @@ Local Open Scope path_scope.
 Global Instance is01cat_ptype : Is01Cat pType
   := Build_Is01Cat pType pMap (@pmap_idmap) (@pmap_compose).
 
-Global Instance is01cat_pmap (A B : pType) : Is01Cat (A ->* B).
+Global Instance is01cat_pmap (A : pType) (P : pFam A) : Is01Cat (pForall A P).
 Proof.
-  srapply (Build_Is01Cat (A ->* B) (@pHomotopy A B)).
+  srapply (Build_Is01Cat _ (@pHomotopy A P)).
   - reflexivity.
   - intros a b c f g; transitivity b; assumption.
 Defined.
 
-Global Instance is0gpd_pmap (A B : pType) : Is0Gpd (A ->* B).
+Global Instance is0gpd_pmap (A : pType) (P : pFam A) : Is0Gpd (pForall A P).
 Proof.
   srapply Build_Is0Gpd.
   intros; symmetry; assumption.
@@ -58,8 +58,8 @@ Proof.
   - apply peissect.
   - cbn. refine (peisretr (Build_pEquiv _ _ f _)).
   - rapply (isequiv_adjointify f g).
-    + intros x; exact (pointed_htpy r x).
-    + intros x; exact (pointed_htpy s x).
+    + intros x; exact (r x).
+    + intros x; exact (s x).
 Defined.
 
 Global Instance isunivalent_ptype `{Univalence} : IsUnivalent1Cat pType.
@@ -73,3 +73,25 @@ Proof.
   - cbn.
     (* Some messy path algebra here. *)
 Abort.
+
+Global Instance is0functor_pointed_type : Is0Functor pointed_type.
+Proof.
+  apply Build_Is0Functor. intros. exact f.
+Defined.
+  
+Global Instance is1functor_pointed_type : Is1Functor pointed_type.
+Proof.
+  apply Build_Is1Functor.
+  + intros ? ? ? ? h. exact h.
+  + intros. reflexivity.
+  + intros. reflexivity.
+Defined.
+
+(* TODO: generalize to wild categories with 0 object. *)
+Definition hconst_square {A B C D : pType} {f : A $-> B} {g : C $-> D} : 
+  Square pConst pConst f g :=
+  precompose_pconst g $@ (postcompose_pconst f)^$.
+
+Definition vconst_square {A B C D : pType} {f : A $-> B} {g : C $-> D} : 
+  Square f g pConst pConst :=
+  postcompose_pconst f $@ (precompose_pconst g)^$.
