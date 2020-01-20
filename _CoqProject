@@ -60,6 +60,8 @@ theories/WildCat/FunctorCat.v
 theories/WildCat/Yoneda.v
 theories/WildCat/Induced.v
 theories/WildCat/CatCat.v
+theories/WildCat/Square.v
+theories/WildCat/NatTrans.v
 
 #
 #   Types
@@ -87,10 +89,10 @@ theories/Types/Universe.v
 theories/Cubical.v
 
 theories/Cubical/DPath.v
-theories/Cubical/Square.v
-theories/Cubical/DSquare.v
-theories/Cubical/Cube.v
-theories/Cubical/DCube.v
+theories/Cubical/PathSquare.v
+theories/Cubical/DPathSquare.v
+theories/Cubical/PathCube.v
+theories/Cubical/DPathCube.v
 
 #
 #   Spaces
