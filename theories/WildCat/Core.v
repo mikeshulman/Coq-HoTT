@@ -128,14 +128,14 @@ Definition Comp2 {A} `{Is1Cat A} {a b c : A}
 Infix "$o@" := Comp2.
 
 Definition WhiskerL_Htpy {A} `{Is1Cat A} {a b c : A}
-           {f g : a $-> b} (h : b $-> c) (p : f $-> g)
-  : h $o f $-> h $o g
+           {f g : a $-> b} (h : b $-> c) (p : f $== g)
+  : h $o f $== h $o g
   := (Id h) $o@ p.
 Notation "h $@L p" := (WhiskerL_Htpy h p).
 
 Definition WhiskerR_Htpy {A} `{Is1Cat A} {a b c : A}
-           {f g : b $-> c} (p : f $-> g) (h : a $-> b)
-  : f $o h $-> g $o h
+           {f g : b $-> c} (p : f $== g) (h : a $-> b)
+  : f $o h $== g $o h
   := p $o@ (Id h).
 Notation "p $@R h" := (WhiskerR_Htpy p h).
 
@@ -173,6 +173,16 @@ Proof.
   - intros; apply GpdHom_path, cat_idl_strong.
   - intros; apply GpdHom_path, cat_idr_strong.
 Defined.
+
+(** Initial objects *)
+Definition IsInitial {A : Type} `{Is1Cat A} (x : A)
+  := forall (y : A), {f : x $-> y & forall g, f $== g}.
+Existing Class IsInitial.
+
+(** Terminal objects *)
+Definition IsTerminal {A : Type} `{Is1Cat A} (y : A)
+  := forall (x : A), {f : x $-> y & forall g, f $== g}.
+Existing Class IsTerminal.
 
 (** Generalizing function extensionality, "Morphism extensionality" states that homwise [GpdHom_path] is an equivalence. *)
 Class HasMorExt (A : Type) `{Is1Cat A} :=
