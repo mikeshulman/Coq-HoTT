@@ -110,8 +110,6 @@ Proof.
     exact (DComp v1 u1, DComp v2 u2).
 Defined.
 
-Global Existing Instance is01Dcat_prod.
-
 (** comparison functors between product of sigmas and sigma of product *)
 Global Instance is0functor_sigma_prod {A1 A2 : Type} `{Is01Cat A1} `{Is01Cat A2} (B1 : A1 -> Type) (B2 : A2 -> Type) `{!Is01DCat B1} `{!Is01DCat B2} : @Is0Functor ((sig B1) * (sig B2)) ({ x : (A1 * A2) & (B1 (fst x)) * (B2 (snd x))}) _ _ (fun x => let (u,v) := x in ((u.1, v.1);(u.2, v.2))).
 Proof.
@@ -187,8 +185,6 @@ Definition DComp2 {A} {a01 : Is01Cat A} {a11 : Is1Cat A} {B : A -> Type} {b01 : 
                (uncurry (@cat_comp A _ a b c)) _ (fun h => (fun vu => @DComp A _ B _ a b c (fst h) (snd h) x y z (fst vu) (snd vu)))
                (is0Dfunctor_DComp) (g1, f1) (g2, f2) (q,p) (v1, u1) (v2, u2) (qq,pp)).
 
-Print DComp2.
-
 Arguments DComp2 {A _ _ B _ _ a b c x y z f1 f2 g1 g2 p q u1 u2 v1 v2} qq pp.
 
 Definition  dcat_assoc_opp {A : Type} `{!Is01Cat A} `{!Is1Cat A} (B : A -> Type) `{!Is01DCat B} `{!Is1DCat B}
@@ -198,50 +194,51 @@ Arguments dcat_assoc_opp {_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _} u v t.
 
 (** products of displayed 1-categories *)
 
-(** proofs below broken/not up to date 
-
 Global Instance is1Dcat_prod {A1 A2 : Type} `{!Is01Cat A1} `{!Is1Cat A1} `{!Is01Cat A2} `{!Is1Cat A2} (B1 : A1 -> Type) (B2 : A2 -> Type)  `{!Is01DCat B1}
       `{!Is01DCat B2} `{!Is1DCat B1} `{!Is1DCat B2}
   : @Is1DCat (A1 * A2) _  _ (fun x => (B1 (fst x)) * (B2 (snd x))) _.
 Proof.
-  serapply Build_Is1DCat.
-  - intros [a1 a2] [b1 b2] [x1 x2] [y1 y2]; cbn in *.
+  serapply Build_Is1DCat; intros [a1 a2] [b1 b2].
+  - intros [x1 x2] [y1 y2]; cbn in *.
     serapply Build_Is01DCat.
     + intros [f1 f2] [g1 g2] [p q] [u1 u2] [v1 v2]; cbn in *.
       exact ((DHom2 p u1 v1) * (DHom2 q u2 v2)).
     + intros [f1 f2] [u1 u2]; cbn in *.
-      About DId.
       exact ((@DId (a1 $-> b1) _ (fun k => DHom k x1 y1) _ f1 u1),
              (@DId (a2 $-> b2) _ (fun k => DHom k x2 y2) _ f2 u2)).
     + intros [f1 f2] [g1 g2] [h1 h2] [q1 q2] [p1 p2] [u1 u2] [v1 v2] [w1 w2] [qq1 qq2] [pp1 pp2]; cbn in *.
-      Print DComp2.
-      exact (DComp2 qq1 pp1, DComp2 qq2 pp2).
-
-
-      exact _.
-  - intros [f g] [x1 y1] [x2 y2].
-    exact ((DHom f x1 x2) * (DHom g y1 y2)).
-  - refine ((DId _), (DId _)).
-  - intros [c1 c2] [g1 g2] [f1 f2] [x1 x2] [y1 y2] [z1 z2] [v1 v2] [u1 u2].
-    exact (DComp v1 u1, DComp v2 u2).
+      exact (DComp qq1 pp1, DComp qq2 pp2).
+  - intros [x1 x2] [y1 y2]; cbn in *.
+    apply Build_Is0DGpd.
+    intros [f1 f2] [g1 g2] [p q] [u1 u2] [v1 v2] [pp qq]; cbn in *.
+    exact (dgpd_rev pp, dgpd_rev qq).
+  - intros [c1 c2] [x1 x2] [y1 y2] [z1 z2].
+    apply Build_Is0DFunctor.
+    intros [[h1 h2] [f1 f2]] [[k1 k2] [g1 g2]] [[q1 q2] [p1 p2]].
+    intros [[s1 s2] [u1 u2]] [[t1 t2] [v1 v2]] [[qq1 qq2] [pp1 pp2]]; cbn in *.
+    exact (DComp2 qq1 pp1, DComp2 qq2 pp2).
+  - intros [c1 c2] [d1 d2] [f1 f2] [g1 g2] [h1 h2]; cbn in *.
+    intros [x1 x2] [y1 y2] [z1 z2] [w1 w2] [u1 u2] [v1 v2] [t1 t2].
+    exact (dcat_assoc u1 v1 t1, dcat_assoc u2 v2 t2).
+  - intros [f1 f2] [x1 x2] [y1 y2] [u1 u2].
+    exact (dcat_idl u1, dcat_idl u2).
+  - intros [f1 f2] [x1 x2] [y1 y2] [u1 u2].
+    exact (dcat_idr u1, dcat_idr u2).
 Defined.
 
-Global Existing Instance is01Dcat_prod.
+(* broken proofs
 
-
-Global Instance is1cat_sigma {A : Type} `{!Is01Cat A} `{!Is1Cat A}
-     (B : A -> Type) `{!Is01DCat B} `{!Is1DCat B}
+Global Instance is1cat_sigma {A : Type} (B : A -> Type) `{Is1DCat A B} 
   : Is1Cat (sig B).
 Proof.
   rapply Build_Is1Cat.
   - intros [a x] [b y] [c z].
     serapply Build_Is0Functor.
     intros [[g1 v1] [f1 u1]] [[g2 v2] [f2 u2]]; cbn in *.
-    intros [p q]; cbn in *.
-    Check (pr1 p).
+    intros [ppp qqq]; cbn in *.
     
-    exists ((pr1 q) $o@ (pr1 p)).
-    exact (DComp2 qq pp).
+    exists ((pr1 qqq) $o@ (pr1 ppp)).
+    exact (DComp2 (pr2 qqq) (pr2 ppp)).
 
     intros 
     intros [a x] [b y] [c z] [d w] [f u] [g v] [h t]; cbn in *.
@@ -252,15 +249,17 @@ Proof.
     exact (cat_idr f ; dcat_idr u).
 Defined.
 
-Global Instance is1coh1functor_pr1 {A : Type} (B : A -> Type) `{Is1Coh1DCat A B} : Is1Coh1Functor (pr1 : (sig B) -> A).
+
+Global Instance is1coh1functor_pr1 {A : Type} (B : A -> Type) `{Is1DCat A B} : Is1Functor (pr1 : (sig B) -> A).
 Proof.
-  apply Build_Is1Coh1Functor.
-  - intros [a x]; cbn.
+  apply Build_Is1Functor.
+  - intros [a x] [b y] [f u] [g v]; cbn.
+    intros p.
+    exact (pr1 p).
     apply Id.
   - intros [a x] [b y] [c z] [f u] [g v]; cbn.
     apply Id.
 Defined.
-
 
 
 Global Instance is1cat_sigma {A : Type} (B : A -> Type) `{Is01DCat A B} {ha21 : Is0Coh21Cat A} {hab : Is0Coh21DCat B}
@@ -281,17 +280,40 @@ Proof.
   intros [a x] [b y] [f u] [g v] [p pp]; cbn.
   assumption.
 Defined.  
+*)
 
-(** 0-coherent displayed 21-functors *)
 
-Class Is0Coh21DFunctor  {A1 A2 : Type} (B1 : A1 -> Type) (B2 : A2 -> Type)
-        {HA1 : Is01Cat A1} {HA21 : Is0Coh21Cat A1} {HA2 : Is01Cat A2} {HA22 : Is0Coh21Cat A2} {HB1 : Is01DCat B1} {HB2 : Is01DCat B2} {ab1 : Is0Coh21DCat B1} {ab2 : Is0Coh21DCat B2}
-      (F : A1 -> A2) `{!Is0Functor F} `{!Is0Coh21Functor F}
-      (G : forall a:A1, B1 a -> B2 (F a)) 
-      `{!Is0Coh1DFunctor B1 B2 F G} 
-  := { fmapD2 : forall {a b : A1} {f g : a $-> b} {x : B1 a} {y : B1 b} (u : DHom f x y) (v : DHom g x y) (p : f $== g),
-         DHom2 p u v -> DHom2 (fmap2 F p) (fmapD G u) (fmapD G v)}.
-       
+(** A displayed 1-functor acts on 2-cells (satisfying no axioms) and also preserves composition and identities up to a 2-cell. *)
+
+Class Is1DFunctor  {A1 A2 : Type} (B1 : A1 -> Type) (B2 : A2 -> Type)
+  `{!Is01Cat A1} `{!Is01Cat A2}   `{!Is1Cat A1} `{!Is1Cat A2} `{!Is01DCat B1} `{!Is01DCat B2} `{!Is1DCat B1} `{!Is1DCat B2}
+      (F : A1 -> A2) `{!Is0Functor F} `{!Is1Functor F}
+      (G : forall a:A1, B1 a -> B2 (F a)) `{!Is0DFunctor B1 B2 F G} 
+  := {
+      fmapD2 : forall {a b : A1} {f g : a $-> b} {x : B1 a} {y : B1 b}
+                      (u : DHom f x y) (v : DHom g x y) (p : f $== g),
+        DHom2 p u v -> DHom2 (fmap2 F p) (fmapD G u) (fmapD G v) ;
+      fmapD_id : forall {a : A1} {x : B1 a}, DHom2 (fmap_id F a) (fmapD G (DId x)) ( DId (G a x));
+      fmapD_comp : forall {a b c : A1} {f : a $-> b} {g : b $-> c} {x : B1 a} {y : B1 b} {z : B1 c} (u : DHom f x y) (v : DHom g y z), DHom2 (fmap_comp F f g) (fmapD G (DComp v u)) (DComp (fmapD G v) (fmapD G u)) 
+                             
+    }.
+
+Arguments fmapD2 {A1 A2 B1 B2 _ _ _ _ _ _ _ _ F _ _ G _ _ a b f g x y} u v p.
+Arguments fmapD_id {_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ } x.
+Arguments fmapD_comp {_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ a b c f g x y z} u v.
+
+(* requires the is1cat_sigma proof
+
+Global Instance is1functor_sigma {A1 A2 : Type} (B1 : A1 -> Type) (B2 : A2 -> Type)
+         `{!Is01Cat A1} `{!Is01Cat A2}   `{!Is1Cat A1} `{!Is1Cat A2} `{!Is01DCat B1} `{!Is01DCat B2} `{!Is1DCat B1} `{!Is1DCat B2}
+      (F : A1 -> A2) `{!Is0Functor F} `{!Is1Functor F}
+      (G : forall a:A1, B1 a -> B2 (F a)) `{!Is0DFunctor B1 B2 F G}
+   `{!Is1DFunctor B1 B2 F G}  : Is1Functor (functor_sigma F G). 
+*)
+
+
+(* old 
+
 Global Instance is0coh21functor_sigma  {A1 A2 : Type} (B1 : A1 -> Type) (B2 : A2 -> Type)
         {HA1 : Is01Cat A1} {HA21 : Is0Coh21Cat A1} {HA2 : Is01Cat A2} {HA22 : Is0Coh21Cat A2} {HB1 : Is01DCat B1} {HB2 : Is01DCat B2} {ab1 : Is0Coh21DCat B1} {ab2 : Is0Coh21DCat B2}
       (F : A1 -> A2) `{!Is0Functor F} `{!Is0Coh21Functor F}
@@ -304,21 +326,6 @@ Proof.
   exact (fmap2 F p ; fmapD2 u v p pp).
 Defined.
 
-
-(** 1-coherent displayed 1-functors *)
-
-Class Is1Coh1DFunctor  {A1 A2 : Type} (B1 : A1 -> Type) (B2 : A2 -> Type)
-        {HA1 : Is01Cat A1} {HA12 : Is0Coh21Cat A1} {HA11 : Is1Coh1Cat A1} {HA2 : Is01Cat A2} {HA22 : Is0Coh21Cat A2} {HA21 : Is1Coh1Cat A2} {HB1 : Is01DCat B1} {HB2 : Is01DCat B2} {ab1 : Is0Coh21DCat B1} {ab2 : Is0Coh21DCat B2} {ab11 : Is1Coh1DCat B1} {ab21 : Is1Coh1DCat B2}
-      (F : A1 -> A2) `{!Is0Functor F} `{!Is0Coh21Functor F} `{!Is1Coh1Functor F}
-      (G : forall a:A1, B1 a -> B2 (F a)) 
-      `{!Is0Coh1DFunctor B1 B2 F G} `{!Is0Coh21DFunctor B1 B2 F G} 
-  := {
-      fmapD_id : forall {a : A1} {x : B1 a}, DHom2 (fmap_id F a) (fmapD G (DId x)) ( DId (G a x));
-      fmapD_comp : forall {a b c : A1} {f : a $-> b} {g : b $-> c} {x : B1 a} {y : B1 b} {z : B1 c} (u : DHom f x y) (v : DHom g y z), DHom2 (fmap_comp F f g) (fmapD G (DComp v u)) (DComp (fmapD G v) (fmapD G u)) 
-    }.
-
-Arguments fmapD_id {_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _} x.
-Arguments fmapD_comp  {_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ a b c f g x y z} u v.
 
 Global Instance is1coh1functor_sigma  {A1 A2 : Type} (B1 : A1 -> Type) (B2 : A2 -> Type)
              {HA1 : Is01Cat A1} {HA12 : Is0Coh21Cat A1} {HA11 : Is1Coh1Cat A1} {HA2 : Is01Cat A2} {HA22 : Is0Coh21Cat A2} {HA21 : Is1Coh1Cat A2} {HB1 : Is01DCat B1} {HB2 : Is01DCat B2} {ab1 : Is0Coh21DCat B1} {ab2 : Is0Coh21DCat B2} {ab11 : Is1Coh1DCat B1} {ab21 : Is1Coh1DCat B2}
