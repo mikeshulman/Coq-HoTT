@@ -53,7 +53,7 @@ Definition phomotopy_inverse {A : pType} {P : pFam A} {f g : pForall A P}
 Proof.
   intros p; srefine (Build_pHomotopy _ _); cbn.
   - intros x; exact ((p x)^).
-  - abstract (pointed_reduce; reflexivity).
+  - refine (inverse2 (dpoint_eq p) @ inv_pV _ _).
 Defined.
 
 (* pointed homotopy is a symmetric relation *)
@@ -67,4 +67,38 @@ Definition issig_phomotopy {A : pType} {P : pFam A} (f g : pForall A P)
 : { p : f == g & p (point A) = dpoint_eq f @ (dpoint_eq g)^ } <~> (f ==* g).
 Proof.
   issig.
+Defined.
+
+(** Some higher homotopies *)
+
+Definition phomotopy_compose_h1 {A : pType} {P : pFam A} {f g : pForall A P}
+ (p : f ==* g) : p @* reflexivity g ==* p.
+Proof.
+  serapply Build_pHomotopy.
+  + intro x. apply concat_p1.
+  + pointed_reduce. 
+    rewrite (concat_pp_V H (concat_p1 _))^. generalize (H @ concat_p1 _). 
+    clear H. intros H. destruct H.
+    generalize (p ispointed_type). generalize (g ispointed_type).
+    intros x q. destruct q. reflexivity.
+Defined.
+
+Definition phomotopy_compose_1h {A : pType} {P : pFam A} {f g : pForall A P}
+ (p : f ==* g) : reflexivity f @* p ==* p.
+Proof.
+  serapply Build_pHomotopy.
+  + intro x. apply concat_1p.
+  + pointed_reduce. 
+    rewrite (concat_pp_V H (concat_p1 _))^. generalize (H @ concat_p1 _). 
+    clear H. intros H. destruct H.
+    generalize (p ispointed_type). generalize (g ispointed_type).
+    intros x q. destruct q. reflexivity.
+Defined.
+
+Definition phomotopy_inverse_1 {A : pType} {P : pFam A} {f : pForall A P}
+  : (phomotopy_reflexive f) ^* ==* phomotopy_reflexive f.
+Proof.
+  serapply Build_pHomotopy.
+  + reflexivity.
+  + pointed_reduce. reflexivity.
 Defined.

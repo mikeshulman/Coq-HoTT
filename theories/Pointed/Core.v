@@ -112,9 +112,6 @@ Definition pointed_htpy' {A B} (f g : A ->* B) (p : pHomotopy f g)
   : forall x:A, f x = g x
   := fun x => pointed_htpy p x.
 
-(* Coercion pointed_htpy' : pHomotopy >-> Funclass. *)
-
-
 (** ** Pointed equivalences *)
 
 (* A pointed equivalence is a pointed map and a proof that it is
@@ -157,9 +154,10 @@ Ltac pointed_reduce :=
   unfold pointed_fun, pointed_htpy; cbn in *;
   repeat match goal with
            | [ X : pType |- _ ] => destruct X as [X ?]
+           | [ P : pFam ?X |- _ ] => destruct P as [P ?]
            | [ phi : pMap ?X ?Y |- _ ] => destruct phi as [phi ?]
            | [ phi : pForall ?X ?Y |- _ ] => destruct phi as [phi ?]
-           | [ alpha : pHomotopy ?f ?g |- _ ] => let H := fresh in destruct alpha as [alpha H]; apply moveR_pM in H
+           | [ alpha : pHomotopy ?f ?g |- _ ] => let H := fresh in destruct alpha as [alpha H]; try (apply moveR_pM in H)
            | [ equiv : pEquiv ?X ?Y |- _ ] => destruct equiv as [equiv ?]
          end;
   cbn in *; unfold point in *;

@@ -223,10 +223,10 @@ Proof.
   { exact (functor_ppforall_right (fun x => (g x)^-1*)). }
   { intro f. apply path_pforall.
     refine ((pmap_compose_ppforall_compose _ _ _)^* @* _).
-    refine (pmap_compose_ppforall_left _ (fun a => peisretr _) @* _).
+    refine (pmap_compose_ppforall2_left _ (fun a => peisretr _) @* _).
     apply pmap_compose_ppforall_pid_left. }
   { intro f. apply path_pforall.
     refine ((pmap_compose_ppforall_compose _ _ _)^* @* _).
-    refine (pmap_compose_ppforall_left _ (fun a => peissect _) @* _).
+    refine (pmap_compose_ppforall2_left _ (fun a => peissect _) @* _).
     apply pmap_compose_ppforall_pid_left. }
 Defined.
