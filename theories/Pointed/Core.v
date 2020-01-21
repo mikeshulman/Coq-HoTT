@@ -542,9 +542,9 @@ Proof.
   - exact _.
   - exact (Build_pEquiv _ _ f _).
   - reflexivity.
-  - exact (pequiv_inverse (Build_pEquiv _ _ f _)).
+  - exact (pequiv_inverse f).
   - apply peissect.
-  - cbn. refine (peisretr (Build_pEquiv _ _ f _)).
+  - cbn. refine (peisretr f).
   - rapply (isequiv_adjointify f g).
     + intros x; exact (r x).
     + intros x; exact (s x).

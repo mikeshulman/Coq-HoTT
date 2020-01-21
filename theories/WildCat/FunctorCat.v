@@ -88,9 +88,9 @@ Proof.
     + cbn. refine (is1natural_homotopic alpha _).
       intros a; apply cate_buildequiv_fun.
   - cbn; intros; apply cate_buildequiv_fun.
-  - intros ?; exists (fun a => (alpha a)^-1$).
+  - exists (fun a => (alpha a)^-1$).
     apply Build_Is1Natural; intros a b f.
-    exact (vinverse' (isnat alpha f)).
+    exact ((isnat alpha f)^v$).
   - intros; apply cate_issect.
   - intros; apply cate_isretr.
   - intros [gamma ?] r s a; cbn in *.

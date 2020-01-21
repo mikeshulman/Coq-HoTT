@@ -16,11 +16,11 @@ Class HasEquivs (A : Type) `{Is1Cat A} :=
   cate_buildequiv' : forall a b (f : a $-> b), CatIsEquiv' a b f -> CatEquiv' a b;
   cate_buildequiv_fun' : forall a b (f : a $-> b) (fe : CatIsEquiv' a b f),
       cate_fun' a b (cate_buildequiv' a b f fe) $== f;
-  cate_inv' : forall a b (f : a $-> b), CatIsEquiv' a b f -> (b $-> a);
-  cate_issect' : forall a b (f : a $-> b) (fe : CatIsEquiv' a b f),
-    cate_inv' _ _ f fe $o f $== Id a;
-  cate_isretr' : forall a b (f : a $-> b) (fe : CatIsEquiv' a b f),
-      f $o cate_inv' _ _ f fe $== Id b;
+  cate_inv' : forall a b (f : a $<~> b), b $-> a;
+  cate_issect' : forall a b (f : a $<~> b),
+    cate_inv' _ _ f $o cate_fun' _ _ f $== Id a;
+  cate_isretr' : forall a b (f : a $<~> b),
+      cate_fun' _ _ f $o cate_inv' _ _ f $== Id b;
   catie_adjointify' : forall a b (f : a $-> b) (g : b $-> a)
     (r : f $o g $== Id b) (s : g $o f $== Id a), CatIsEquiv' a b f;
 }.
@@ -70,30 +70,29 @@ Definition cate_adjointify {A} `{HasEquivs A} {a b : A}
   := @Build_CatEquiv _ _ _ _ a b f (catie_adjointify f g r s).
 
 (** This one we define to construct the whole inverse equivalence. *)
-Definition cate_inv {A} `{HasEquivs A} {a b : A} (f : a $-> b) {fe : CatIsEquiv f}
-  : b $<~> a.
+Definition cate_inv {A} `{HasEquivs A} {a b : A} (f : a $<~> b) : b $<~> a.
 Proof.
   simple refine (cate_adjointify _ _ _ _).
-  - exact (@cate_inv' A _ _ _ a b f fe).
+  - exact (cate_inv' a b f).
   - exact f.
-  - exact (@cate_issect' A _ _ _ a b f fe).
-  - exact (@cate_isretr' A _ _ _ a b f fe).
+  - exact (cate_issect' a b f).
+  - exact (cate_isretr' a b f).
 Defined.
 
 Notation "f ^-1$" := (cate_inv f).
 
-Definition cate_issect {A} `{HasEquivs A} {a b} (f : a $-> b) {fe : CatIsEquiv f}
+Definition cate_issect {A} `{HasEquivs A} {a b} (f : a $<~> b) 
   : f^-1$ $o f $== Id a.
 Proof.
-  refine (_ $@ @cate_issect' A _ _ _ a b f fe).
+  refine (_ $@ cate_issect' a b f).
   refine (_ $@R f).
   apply cate_buildequiv_fun'.
 Defined.
 
-Definition cate_isretr {A} `{HasEquivs A} {a b} (f : a $-> b) {fe : CatIsEquiv f}
+Definition cate_isretr {A} `{HasEquivs A} {a b} (f : a $<~> b)
   : f $o f^-1$ $== Id b.
 Proof.
-  refine (_ $@ @cate_isretr' A _ _ _ a b f fe).
+  refine (_ $@ cate_isretr' a b f).
   refine (f $@L _).
   apply cate_buildequiv_fun'.
 Defined.
@@ -206,7 +205,7 @@ Definition compose_hV_h {A} `{HasEquivs A} {a b c : A} (f : b $-> c) (g : b $<~>
 (** Any sufficiently coherent functor preserves equivalences.  *)
 Global Instance iemap {A B : Type} `{HasEquivs A} `{HasEquivs B}
        (F : A -> B) `{!Is0Functor F, !Is1Functor F}
-       {a b : A} (f : a $-> b) {fe : CatIsEquiv f}
+       {a b : A} (f : a $<~> b)
   : CatIsEquiv (fmap F f).
 Proof.
   refine (catie_adjointify (fmap F f) (fmap F f^-1$) _ _).

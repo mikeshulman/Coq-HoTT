@@ -55,8 +55,8 @@ Proof.
   - apply Build_Equiv.
   - intros; reflexivity.
   - intros; exact (f^-1).
-  - cbn. intros ? x; apply eissect.
-  - cbn. intros ? x; apply eisretr.
+  - cbn. intros ?; apply eissect.
+  - cbn. intros ?; apply eisretr.
   - intros g r s; refine (isequiv_adjointify f g r s).
 Defined.
 

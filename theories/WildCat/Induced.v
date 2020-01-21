@@ -80,12 +80,12 @@ Section Induced_category.
       exact ( cate_buildequiv' _ _ h).
     + intros a b h fe; cbn in *. 
       exact ( cate_buildequiv_fun' (f a) (f b) h fe) .
-    + intros a b h fe; cbn in *.
-      exact(cate_inv'  _ _ h fe ).
-    + intros a b h fe; cbn in *.
-      exact (cate_issect' _ _ h fe ).
-    + intros a b h fe; cbn in *.
-      exact (cate_isretr' _ _ _ _ ).
+    + intros a b h; cbn in *.
+      exact(cate_inv'  _ _ h ).
+    + intros a b h; cbn in *.
+      exact (cate_issect' _ _ h ).
+    + intros a b h; cbn in *.
+      exact (cate_isretr' _ _ _ ).
     + intros a b h g m n; cbn in *.  
       exact ( catie_adjointify' _ _ h g m n  ).
   Defined.
