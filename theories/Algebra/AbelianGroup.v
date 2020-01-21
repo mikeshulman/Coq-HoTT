@@ -23,6 +23,9 @@ Class AbGroup := {
   abgroup_isabgroup :> IsAbGroup abgroup_type;
 }.
 
+Definition Build_AbGroup' (G : Group) `{IsAbGroup G} : AbGroup
+  := Build_AbGroup G _ _ _ _.
+
 Existing Instance abgroup_sgop.
 Existing Instance abgroup_unit.
 Existing Instance abgroup_inverse.
@@ -498,21 +501,21 @@ Defined.
 
 (** Quotients of abelian groups *)
 
-Global Instance isabgroup_quotient {U : Univalence} (G : AbGroup) (H : Subgroup G)
+Global Instance isabgroup_quotient (G : AbGroup) (H : Subgroup G)
   : IsAbGroup (QuotientGroup G H).
 Proof.
   ntc_rapply Build_IsAbGroup.
   1: exact _.
   intro x.
   serapply Quotient_ind_hprop.
-  revert x.
+  intro y; revert x.
   serapply Quotient_ind_hprop.
-  intros x y.
+  intro x.
   apply (ap (tr o coeq)).
   apply commutativity.
 Defined.
 
-Definition QuotientAbGroup {U : Univalence} (G : AbGroup) (H : Subgroup G)
+Definition QuotientAbGroup (G : AbGroup) (H : Subgroup G)
   : AbGroup := Build_AbGroup (QuotientGroup G H) _ _ _ _.
 
 

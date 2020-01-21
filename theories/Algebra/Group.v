@@ -4,7 +4,6 @@ Require Export Classes.interfaces.abstract_algebra.
 Require Export Classes.theory.groups.
 Require Import Pointed.Core.
 Require Import WildCat.
-Require Basics.Utf8.
 
 Generalizable Variables G H A B C f g.
 
@@ -83,9 +82,9 @@ Class GroupHomomorphism (G H : Group) := Build_GroupHomomorphism' {
 Coercion grp_homo_map : GroupHomomorphism >-> Funclass.
 
 (* Group homomorphisms are pointed maps *)
-Definition pmap_GroupHomomorphism {G H : Group} (f : GroupHomomorphism G H) : pMap G H
+Definition pmap_grouphomomorphism {G H : Group} (f : GroupHomomorphism G H) : pMap G H
   := Build_pMap G H f (@monmor_unitmor _ _ _ _ _ _ _ (@grp_homo_ishomo G H f)).
-Coercion pmap_GroupHomomorphism : GroupHomomorphism >-> pMap.
+Coercion pmap_grouphomomorphism : GroupHomomorphism >-> pMap.
 
 Definition issig_GroupHomomorphism (G H : Group) : _ <~> GroupHomomorphism G H
   := ltac:(issig).
@@ -333,24 +332,21 @@ Proof.
   (** Inverse *)
   { intros [g h].
     exact (-g, -h). }
-  (** Group laws *)
-  serapply Build_IsGroup.
-  (** Monoid laws *)
-  { serapply Build_IsMonoid.
-    (** Semigroup lawss *)
-    { serapply Build_IsSemiGroup.
-      (** Associativity *)
-      intros [g1 h1] [g2 h2] [g3 h3].
-      apply path_prod; cbn.
-      1,2: apply associativity. }
-    (** Left identity *)
-    { intros [g h].
-      apply path_prod; cbn.
-      1,2: apply left_identity. }
-    (** Right identity *)
-    { intros [g h].
-      apply path_prod; cbn.
-      1,2: apply right_identity. } }
+  repeat split.
+  (** IsHSet *)
+  1: exact _.
+  (** Associativity *)
+  { intros [g1 h1] [g2 h2] [g3 h3].
+    apply path_prod; cbn.
+    1,2: apply associativity. }
+  (** Left identity *)
+  { intros [g h].
+    apply path_prod; cbn.
+    1,2: apply left_identity. }
+  (** Right identity *)
+  { intros [g h].
+    apply path_prod; cbn.
+    1,2: apply right_identity. }
   (** Left inverse *)
   { intros [g h].
     apply path_prod; cbn.
@@ -376,16 +372,16 @@ Proof.
 Defined.
 
 (** Group forms a 01Cat *)
-Global Instance is01cat_Group : Is01Cat Group :=
+Global Instance is01cat_group : Is01Cat Group :=
   (Build_Is01Cat Group GroupHomomorphism (@grp_homo_id) (@grp_homo_compose)).
 
-Global Instance is01cat_GroupHomomorphism {A B : Group} : Is01Cat (A $-> B) :=
+Global Instance is01cat_grouphomomorphism {A B : Group} : Is01Cat (A $-> B) :=
   induced_01cat (@grp_homo_map A B).
 
-Global Instance is0gpd_GroupHomomorphism {A B : Group}: Is0Gpd (A $-> B) := 
+Global Instance is0gpd_grouphomomorphism {A B : Group}: Is0Gpd (A $-> B) := 
   induced_0gpd (@grp_homo_map A B).
 
-Global Instance is0functor_postcomp_GroupHomomorphism
+Global Instance is0functor_postcomp_grouphomomorphism
        {A B C : Group} (h : B $-> C)
   : Is0Functor (@cat_postcomp Group _ A B C h).
 Proof.
@@ -393,7 +389,7 @@ Proof.
   intros [f ?] [g ?] p a ; exact (ap h (p a)).
 Defined.
 
-Global Instance is0functor_precomp_GroupHomomorphism
+Global Instance is0functor_precomp_grouphomomorphism
        {A B C : Group} (h : A $-> B)
   : Is0Functor (@cat_precomp Group _ A B C h).
 Proof.
@@ -404,40 +400,30 @@ Defined.
 (** Group forms a 1Cat *)
 Global Instance is1cat_group : Is1Cat Group.
 Proof.
-  srapply Build_Is1Cat; cbn; intros; reflexivity.
+  by serapply Build_Is1Cat.
 Defined.
 
 Instance hasmorext_group `{Funext} : HasMorExt Group.
 Proof.
   srapply Build_HasMorExt.
   intros A B f g; cbn in *.
-  simple notypeclasses refine (isequiv_homotopic ((equiv_path_grouphomomorphism)^-1) _). 
-  1,3: exact _.
-(*   1: exact _. *)
-  1: apply equiv_isequiv.
-  intros []. reflexivity. 
+  refine (isequiv_homotopic
+    (equiv_path_grouphomomorphism^-1%equiv) _).
+  by intros []. 
 Defined.
 
 Global Instance hasequivs_group : HasEquivs Group.
 Proof.
-  srefine (Build_HasEquivs Group _ _ GroupIsomorphism (fun G H f => IsEquiv f) _ _ _ _ _ _ _ _); intros A B f.
-  - exact f.
-  - cbn. exact _.
-  - apply Build_GroupIsomorphism.
-  - intro fe. reflexivity.
-  - intro fe. exact (grp_iso_inverse (Build_GroupIsomorphism _ _ f fe)).
-  - cbn. intros ? x; apply eissect.
-  - cbn. intros ? x; apply eisretr.
-  - intros g r s; refine (isequiv_adjointify f g r s).
+  unshelve econstructor.
+  + exact GroupIsomorphism.
+  + exact (fun G H f => IsEquiv f).
+  + intros G H f; exact f.
+  + exact Build_GroupIsomorphism.
+  + intros G H; exact grp_iso_inverse.
+  + cbn; exact _.
+  + reflexivity.
+  + intros ????; apply eissect.
+  + intros ????; apply eisretr.
+  + intros G H f g p q.
+    exact (isequiv_adjointify f g p q).
 Defined.
-
-
-(** TODO: If #1140 gets resolved, include this: *)
-(* Module GroupUtf8.
-
-  Import Basics.Utf8.
-  Infix "≅" := GroupIsomorphism.
-  Infix "×" := group_prod.
-
-End GroupUtf8.
- *)
