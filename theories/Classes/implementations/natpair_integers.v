@@ -29,7 +29,7 @@ Local Set Universe Minimization ToSet.
 
 Module NatPair.
 
-Module PairT.
+Module Import PairT.
 
 Record T (N : Type) := C { pos : N ; neg : N }.
 Arguments C {N} _ _.
@@ -301,8 +301,6 @@ Arguments Tapart {_ _ _} _ _.
 Arguments to_ring N {_} B {_ _ _ _ _ _} / _.
 
 End PairT.
-
-Import PairT.
 
 Section contents.
 Universe UN UNalt.
@@ -1119,37 +1117,8 @@ Global Instance Z_zero_product@{} : ZeroProduct Z
 End contents.
 
 Module Instances.
-  Global Existing Instance T_set.
-  Global Existing Instance inject.
-  Global Existing Instance Tle_hprop.
-  Global Existing Instance Tlt_hprop.
-  Global Existing Instance Tapart_hprop.
-  Global Existing Instance Z_of_pair.
-  Global Existing Instance Z_of_N.
-  Global Existing Instance R_dec.
-  Global Existing Instance Z0.
-  Global Existing Instance Z1.
-  Global Existing Instance Z_plus.
-  Global Existing Instance Z_mult.
-  Global Existing Instance Z_negate.
-  Global Existing Instance Z_of_N_injective.
-  Global Existing Instance Zle.
-  Global Existing Instance ishprop_Zle.
-  Global Existing Instance Zle_cast_embedding.
-  Global Existing Instance Z_order.
-  Global Existing Instance Zle_dec.
-  Global Existing Instance Zlt.
-  Global Existing Instance ishprop_Zlt.
-  Global Existing Instance Z_strict_srorder.
-  Global Existing Instance Zlt_dec.
-  Global Existing Instance Zapart.
-  Global Existing Instance ishprop_Zapart.
-  Global Existing Instance Z_trivial_apart.
-  Global Existing Instance Z_to_ring.
-  Global Existing Instance Z_integers.
-  Global Existing Instance Z_abs.
-  Global Existing Instance Z_zero_product.
-  Global Existing Instance Z_of_N_morphism.
+  Global Existing Instances
+    T_set inject Tle_hprop Tlt_hprop Tapart_hprop Z_of_pair Z_of_N R_dec Z0 Z1 Z_plus Z_mult Z_negate Z_of_N_injective Zle ishprop_Zle Zle_cast_embedding Z_order Zle_dec Zlt ishprop_Zlt Z_strict_srorder Zlt_dec Zapart ishprop_Zapart Z_trivial_apart Z_to_ring Z_integers Z_abs Z_zero_product Z_of_N_morphism.
 End Instances.
 
 End NatPair.
