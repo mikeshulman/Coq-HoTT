@@ -4,71 +4,6 @@ Require Import Pointed.Core.
 
 Local Open Scope pointed_scope.
 
-(* pointed homotopy is a reflexive relation *)
-Global Instance phomotopy_reflexive {A} {P : pFam A} 
-  : Reflexive (@pHomotopy A P).
-Proof.
-  intro.
-  serapply Build_pHomotopy.
-  + intro. reflexivity.
-  + exact ((concat_pV _)^).
-Defined.
-
-(** ** Whiskering of pointed homotopies by pointed functions *)
-
-Definition pmap_postwhisker {A B C : pType} {f g : A ->* B}
-  (h : B ->* C) (p : f ==* g) : h o* f ==* h o* g.
-Proof.
-  srefine (Build_pHomotopy _ _); cbn.
-  - exact (fun x => ap h (p x)).
-  - abstract (pointed_reduce; reflexivity).
-Defined.
-
-Definition pmap_prewhisker {A B C : pType} (f : A ->* B)
-  {g h : B ->* C} (p : g ==* h) : g o* f ==* h o* f.
-Proof.
-  srefine (Build_pHomotopy _ _); cbn.
-  - exact (fun x => p (f x)).
-  - abstract (pointed_reduce; reflexivity).
-Defined.
-
-(** ** Composition of pointed homotopies *)
-
-Definition phomotopy_compose {A : pType} {P : pFam A} {f g h : pForall A P}
-  (p : f ==* g) (q : g ==* h) : f ==* h.
-Proof.
-  srefine (Build_pHomotopy (fun x => p x @ q x) _); cbn.
-  refine (dpoint_eq p @@ dpoint_eq q @ concat_pp_p _ _ _ @ _).
-  apply whiskerL. apply concat_V_pp.
-Defined.
-
-Infix "@*" := phomotopy_compose : pointed_scope.
-
-(* pointed homotopy is a transitive relation *)
-Global Instance phomotopy_transitive {A B} : Transitive (@pHomotopy A B)
-  := @phomotopy_compose A B.
-
-Definition phomotopy_inverse {A : pType} {P : pFam A} {f g : pForall A P}
-: (f ==* g) -> (g ==* f).
-Proof.
-  intros p; srefine (Build_pHomotopy _ _); cbn.
-  - intros x; exact ((p x)^).
-  - refine (inverse2 (dpoint_eq p) @ inv_pV _ _).
-Defined.
-
-(* pointed homotopy is a symmetric relation *)
-Global Instance phomotopy_symmetric {A B} : Symmetric (@pHomotopy A B)
-  := @phomotopy_inverse A B.
-
-
-Notation "p ^*" := (phomotopy_inverse p) : pointed_scope.
-
-Definition issig_phomotopy {A : pType} {P : pFam A} (f g : pForall A P)
-: { p : f == g & p (point A) = dpoint_eq f @ (dpoint_eq g)^ } <~> (f ==* g).
-Proof.
-  issig.
-Defined.
-
 (** Some higher homotopies *)
 
 Definition phomotopy_compose_h1 {A : pType} {P : pFam A} {f g : pForall A P}
@@ -102,3 +37,35 @@ Proof.
   + reflexivity.
   + pointed_reduce. reflexivity.
 Defined.
+
+(** [phomotopy_path] sends concatenation to composition of pointed homotopies.*)
+Definition phomotopy_path_pp `{Funext} {A : pType} {P : pFam A} 
+  {f g h : pForall A P} (p : f = g) (q : g = h)
+  : phomotopy_path (p @ q) ==* phomotopy_path p @* phomotopy_path q.
+Proof.
+  induction p. induction q. symmetry. apply phomotopy_compose_h1.
+Defined.
+
+(** [phomotopy_path] sends inverses to inverses.*)
+Definition phomotopy_path_V `{Funext} {A : pType} {P : pFam A} 
+  {f g : pForall A P} (p : f = g)
+  : phomotopy_path (p^) ==* (phomotopy_path p)^*.
+Proof.
+  induction p. simpl. symmetry. apply phomotopy_inverse_1.
+Defined.
+
+Definition phomotopy_hcompose `{Funext} {A : pType} {P : pFam A} {f g h : pForall A P}
+ {p p' : f ==* g} {q q' : g ==* h} (r : p ==* p') (s : q ==* q') : 
+  p @* q ==* p' @* q'.
+Proof.
+  serapply Build_pHomotopy.
+  + intro x. exact (r x @@ s x). 
+  + revert q' s. serapply phomotopy_ind.
+    revert p' r. serapply phomotopy_ind.
+    revert h q.  serapply phomotopy_ind.
+    revert g p.  serapply phomotopy_ind.
+    pointed_reduce. reflexivity.
+Defined.
+
+Reserved Infix "@@*" (at level 30).
+Notation "p @@* q" := (phomotopy_hcompose p q).

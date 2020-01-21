@@ -1,6 +1,6 @@
 Require Import Basics.
 Require Import Types.
-Require Import Pointed.Core Pointed.pMap Pointed.pHomotopy.
+Require Import Pointed.Core.
 Require Import UnivalenceImpliesFunext.
 
 Local Open Scope pointed_scope.
@@ -13,16 +13,6 @@ Definition pequiv_pmap_idmap {A} : A <~>* A
 Global Instance pequiv_reflexive : Reflexive pEquiv.
 Proof.
   intro; apply pequiv_pmap_idmap.
-Defined.
-
-(* This inverse equivalence of a pointed equivalence is again
-   a pointed equivalence *)
-Definition pequiv_inverse {A B} (f : A <~>* B) : B <~>* A.
-Proof.
-  serapply Build_pEquiv.
-  1: apply (Build_pMap _ _ f^-1).
-  1: apply moveR_equiv_V; symmetry; apply point_eq.
-  exact _.
 Defined.
 
 Notation "f ^-1*" := (pequiv_inverse f) : pointed_scope.
@@ -45,58 +35,10 @@ Defined.
 
 Notation "g o*E f" := (pequiv_compose f g) : pointed_scope.
 
-Definition issig_pequiv (A B : pType)
-  : { f : A ->* B & IsEquiv f } <~> (A <~>* B).
-Proof.
-  issig.
-Defined.
-
-(* Two pointed equivalences are equal if their underlying pointed functions are pointed homotopic. *)
-Definition equiv_path_pequiv `{Funext} {A B : pType} (f g : A <~>* B)
-  : (f ==* g) <~> (f = g).
-Proof.
-  transitivity ((issig_pequiv A B)^-1 f = (issig_pequiv A B)^-1 g).
-  - refine (equiv_path_sigma_hprop _ _ oE _).
-    apply (equiv_path_pmap f g).
-  - symmetry; exact (equiv_ap' (issig_pequiv A B)^-1 f g).
-Defined.
-
-Definition path_pequiv `{Funext} {A B : pType} (f g : A <~>* B)
-  : (f ==* g) -> (f = g)
-  := fun p => equiv_path_pequiv f g p.
-
-(* The record for pointed equivalences is equivalently a different sigma type *)
-Definition issig_pequiv' (A B : pType)
-  : { f : A <~> B & f (point A) = point B } <~> (A <~>* B).
-Proof.
-  transitivity { f : A ->* B & IsEquiv f }.
-  2: issig.
-  refine ((equiv_functor_sigma' (P := fun f => IsEquiv f.1)
-    (issig_pmap A B) (fun f => equiv_idmap _)) oE _).
-  refine (_ oE (equiv_functor_sigma' (Q := fun f => f.1 (point A) = point B)
-    (issig_equiv A B)^-1 (fun f => equiv_idmap _))).
-  refine (_ oE (equiv_sigma_assoc _ _)^-1).
-  refine (equiv_sigma_assoc _ _ oE _).
-  refine (equiv_functor_sigma' 1 _).
-  intro; cbn; apply equiv_sigma_symm0.
-Defined.
-
 (* Sometimes we wish to construct a pEquiv from an equiv and a proof that it is pointed *)
 Definition Build_pEquiv' {A B : pType} (f : A <~> B)
   (p : f (point A) = point B)
   : A <~>* B := Build_pEquiv _ _ (Build_pMap _ _ f p) _.
-
-(* Under univalence, pointed equivalences are equivalent to paths *)
-Definition equiv_path_ptype `{Univalence} (A B : pType) : A <~>* B <~> A = B.
-Proof.
-  destruct A as [A a], B as [B b].
-  refine (equiv_ap issig_ptype (A;a) (B;b) oE _).
-  refine (equiv_path_sigma _ _ _ oE _).
-  refine (_ oE (issig_pequiv' _ _)^-1); simpl.
-  refine (equiv_functor_sigma' (equiv_path_universe A B) _); intros f.
-  apply equiv_concat_l.
-  apply transport_path_universe.
-Defined.
 
 Definition path_ptype `{Univalence} {A B : pType} : (A <~>* B) -> A = B
   := equiv_path_ptype A B.
@@ -106,34 +48,6 @@ Proof.
   intros p; apply (ap issig_ptype^-1) in p.
   srefine (Build_pEquiv' (equiv_path A B p..1) p..2).
 Defined.
-
-(* A pointed version of Sect (sometimes useful for proofs of some equivalences) *)
-Definition pSect {A B : pType} (s : A ->* B) (r : B ->* A) : Type
-  := r o* s ==* pmap_idmap.
-
-Arguments pSect _ _ / _ _.
-
-(* A pointed equivalence is a section of its inverse *)
-Definition peissect {A B : pType} (f : A <~>* B) : pSect f f^-1*.
-Proof.
-  pointed_reduce.
-  srefine (Build_pHomotopy _ _).
-  1: apply (eissect f).
-  pointed_reduce.
-  unfold moveR_equiv_V.
-  apply inverse, concat_1p.
-Qed.
-
-(* A pointed equivalence is a retraction of its inverse *)
-Definition peisretr {A B : pType} (f : A <~>* B) : pSect f^-1* f.
-Proof.
-  srefine (Build_pHomotopy _ _).
-  1: apply (eisretr f).
-  pointed_reduce.
-  unfold moveR_equiv_V.
-  hott_simpl.
-  apply eisadj.
-Qed.
 
 (* A version of equiv_adjointify for pointed equivalences
   where all data is pointed. There is a lot of unecessery data here
@@ -212,21 +126,4 @@ Proof.
   refine ((pmap_precompose_idmap _)^* @* _).
   apply pmap_postwhisker.
   symmetry; apply peisretr.
-Defined.
-
-Definition equiv_ppforall_right `{Funext} {A : pType} {B B' : A -> pType}
-  (g : forall a, B a <~>* B' a) :
-  (ppforall a, B a) <~>* ppforall a, B' a.
-Proof.
-  rapply (Build_pEquiv _ _ (functor_ppforall_right g)). 
-  serapply isequiv_adjointify.
-  { exact (functor_ppforall_right (fun x => (g x)^-1*)). }
-  { intro f. apply path_pforall.
-    refine ((pmap_compose_ppforall_compose _ _ _)^* @* _).
-    refine (pmap_compose_ppforall2_left _ (fun a => peisretr _) @* _).
-    apply pmap_compose_ppforall_pid_left. }
-  { intro f. apply path_pforall.
-    refine ((pmap_compose_ppforall_compose _ _ _)^* @* _).
-    refine (pmap_compose_ppforall2_left _ (fun a => peissect _) @* _).
-    apply pmap_compose_ppforall_pid_left. }
 Defined.
