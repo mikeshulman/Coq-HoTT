@@ -30,9 +30,12 @@ Proof.
     - intros f g h q p a; exact (p a $@ q a).
   + intros x y; serapply Build_Is0Gpd.
     intros f g p a; exact (gpd_rev (p a)).
-  + intros x y z; serapply Build_Is0Functor.
-    intros [a1 a2] [b1 b2] [f g] a.
-    exact (f a $o@ g a).
+  + intros x y z h; serapply Build_Is0Functor.
+    intros f g p a.
+    exact (h a $@L p a).
+  + intros x y z h; serapply Build_Is0Functor.
+    intros f g p a.
+    exact (p a $@R h a).
   + intros w x y z f g h a; apply cat_assoc.
   + intros x y f a; apply cat_idl.
   + intros x y f a; apply cat_idr.

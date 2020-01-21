@@ -385,14 +385,21 @@ Global Instance is01cat_GroupHomomorphism {A B : Group} : Is01Cat (A $-> B) :=
 Global Instance is0gpd_GroupHomomorphism {A B : Group}: Is0Gpd (A $-> B) := 
   induced_0gpd (@grp_homo_map A B).
 
-Global Instance is0functor_comp_GroupHomomorphism {A B C : Group} 
-  : Is0Functor (uncurry (@cat_comp Group _ A B C)).
+Global Instance is0functor_postcomp_GroupHomomorphism
+       {A B C : Group} (h : B $-> C)
+  : Is0Functor (@cat_postcomp Group _ A B C h).
 Proof.
   apply Build_Is0Functor.
-  intros [f g] [f' g'] [p p'] a ;
-    exact (p (g a) @ ap f' (p' a)).
+  intros [f ?] [g ?] p a ; exact (ap h (p a)).
 Defined.
 
+Global Instance is0functor_precomp_GroupHomomorphism
+       {A B C : Group} (h : A $-> B)
+  : Is0Functor (@cat_precomp Group _ A B C h).
+Proof.
+  apply Build_Is0Functor.
+  intros [f ?] [g ?] p a ; exact (p (h a)).
+Defined.
 
 (** Group forms a 1Cat *)
 Global Instance is1cat_group : Is1Cat Group.

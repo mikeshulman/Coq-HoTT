@@ -61,6 +61,7 @@ theories/WildCat/Yoneda.v
 theories/WildCat/Induced.v
 theories/WildCat/CatCat.v
 theories/WildCat/Square.v
+theories/WildCat/TwoOneCat.v
 theories/WildCat/NatTrans.v
 
 #
