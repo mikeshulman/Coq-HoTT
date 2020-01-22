@@ -1,5 +1,8 @@
 Require Import Basics.
 Require Import WildCat.Core.
+Require Import WildCat.Prod.
+Require Import WildCat.TwoOneCat.
+Require Import WildCat.Square.
 
 Section Comma.
 
@@ -12,14 +15,13 @@ Section Comma.
     comma_h : F comma_domain $-> G comma_codomain;
   }.
 
-  Record CommaMor `{!IsGraph A, !IsGraph B, Is1Cat C,
-    !Is0Functor F, !Is0Functor G} (X Y : Comma) :=
+  Record CommaMor `{!IsGraph A, !IsGraph B, Is1Cat C, !Is0Functor F, !Is0Functor G}
+    (X Y : Comma) :=
   {
     comma_mor_domain : comma_domain X $-> comma_domain Y;
     comma_mor_codomain : comma_codomain X $-> comma_codomain Y;
-    comma_mor_h : 
-      fmap G comma_mor_codomain $o comma_h X
-      $== comma_h Y $o fmap F comma_mor_domain;
+    comma_mor_h : Square (fmap F comma_mor_domain) (fmap G comma_mor_codomain)
+      (comma_h X) (comma_h Y);
   }.
   
   Arguments comma_mor_domain {_ _ _ _ _ _ _ _}.
@@ -34,9 +36,9 @@ Section Comma.
     
     comma_2mor_codomain : comma_mor_codomain f $== comma_mor_codomain g;
     
-    comma_2mor_h
-      : (comma_h Y) $@L (fmap2 F comma_2mor_domain) $o comma_mor_h f
-      $== comma_mor_h g $o (fmap2 G comma_2mor_codomain) $@R (comma_h X);
+    comma_2mor_h : Square ((comma_h Y) $@L (fmap2 F comma_2mor_domain))
+          ((fmap2 G comma_2mor_codomain) $@R (comma_h X))
+          (comma_mor_h f) (comma_mor_h g);
   }.
 
   Section Cat.
@@ -50,28 +52,24 @@ Section Comma.
     Proof.
       serapply Build_Is01Cat.
       + exact CommaMor.
-      + intros [a b h].
+      + intros abh.
         serapply Build_CommaMor.
         1,2: exact (Id _).
-        refine (fmap11 cat_comp (fmap_id G _) (Id _) $@ _).
-        refine (cat_idl h $@ _).
-        symmetry.
-        refine (fmap11 cat_comp (Id _) (fmap_id _ _) $@ _).
-        apply cat_idr.
-      + intros [a b h] [a' b' h'] [a'' b'' h''].
+        refine (vconcatL (fmap_id F _) _).
+        refine (vconcatR _ (fmap_id G _)).
+        apply hrefl.
+      + intros abh abh' abh''.
         intros [fa fb fh] [ga gb gh].
-        cbn in *.
         serapply Build_CommaMor.
         1: exact (fa $o ga).
         1: exact (fb $o gb).
-        refine (fmap_comp _ _ _ $@R h $@ _).
-        refine (cat_assoc _ _ _ $@ _).
-        refine (_ $@L gh $@ _).
-        refine ((cat_assoc _ _ _)^$ $@ _).
-        refine (fh $@R _ $@ _).
-        refine (cat_assoc _ _ _ $@ _^$).
-        refine (_ $@L fmap_comp _ _ _).
+        refine (vconcatL (fmap_comp F _ _) _).
+        refine (vconcatR _ (fmap_comp G _ _)).
+        exact (hconcat gh fh).
     Defined.
+
+    Axiom foo : Empty.
+    Ltac admit := apply Empty_ind, foo.
 
     Global Instance is01cat_commamor : forall a b : Comma, Is01Cat (a $-> b).
     Proof.
@@ -81,17 +79,40 @@ Section Comma.
       + intro a.
         serapply (Build_Comma2Mor _ _ _ _ _ _ _ _).
         1,2: exact (Id _).
-        cbn.
-    Admitted.
+        admit.
+      + admit.
+    Defined.
 
     Global Instance is0gpd_commamor : forall a b : Comma, Is0Gpd (a $-> b).
     Proof.
+      intros x y.
+      serapply Build_Is0Gpd.
+      intros a b [p q h].
+      unshelve econstructor.
+      1: exact p^$.
+      1: exact q^$.
+      cat_prewhisker
+      
+      serapply Build_CommaMor.
     Admitted.
 
-    Global Instance is0functor_commamor_comp
-      : forall a b c : Comma, Is0Functor (uncurry (@cat_comp _ _ a b c)).
+    Global Instance is0functor_commamor_postcomp
+      : forall (a b c : Comma) (g : b $-> c), Is0Functor (cat_postcomp a g).
     Proof.
     Admitted.
+
+    Global Instance is0functor_commamor_precomp
+      : forall (a b c : Comma) (f : a $-> b), Is0Functor (cat_precomp c f).
+    Proof.
+    Admitted.
+
+    Global Instance is1cat_comma : Is1Cat Comma.
+    Proof.
+      serapply Build_Is1Cat.
+      { intros a b c d f g h.
+        
+        serapply Build_Comma2Mor.
+        
 
     Global Instance is0coh21cat_comma : Is1Cat Comma.
     Proof.
