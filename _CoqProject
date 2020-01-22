@@ -278,6 +278,7 @@ theories/Homotopy/ClassifyingSpace.v
 theories/Homotopy/EMSpace.v
 theories/Homotopy/SuccessorStructure.v
 theories/Homotopy/ExactSequence.v
+theories/Homotopy/Splice.v
 
 #
 #   Pointed
@@ -302,6 +303,7 @@ theories/Spectra/Spectrum.v
 theories/Spectra/Coinductive.v
 theories/Spectra/GeneralizedSpectrum.v
 theories/Spectra/EMSpectrum.v
+theories/Spectra/HomotopyGroup.v
 
 #
 #   Algebra

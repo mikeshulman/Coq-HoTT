@@ -135,7 +135,7 @@ Proof.
   exact (equiv_ppforall_right (fun a => equiv_glue (Y a) n)).
 Defined.
 
-Definition spi_compose_left `{Funext} (A : pType) (Y Y' : A -> GenSpectrum N)
+Definition sforall_compose_left `{Funext} (A : pType) (Y Y' : A -> GenSpectrum N)
   (f : forall x, sMap (Y x) (Y' x)) 
   : sMap (sForall A Y) (sForall A Y').
 Proof.

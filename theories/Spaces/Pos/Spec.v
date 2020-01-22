@@ -204,3 +204,17 @@ Proof.
   apply q.
 Qed.
 
+Definition nat_pos : Pos -> nat.
+Proof.
+  refine (pos_peano_ind _ _ _).
+  + exact (S O).
+  + intros ? n.
+    exact (S n).
+Defined.
+
+Definition nat_pos_succ (n : Pos) : nat_pos (pos_succ n) = S (nat_pos n).
+Proof.
+  rapply pos_peano_ind_beta_pos_succ.
+Defined.
+
+Coercion nat_pos : Pos >-> nat.
