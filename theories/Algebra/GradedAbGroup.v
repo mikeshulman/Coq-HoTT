@@ -86,6 +86,29 @@ Proof.
   apply eisretr.
 Defined.
 
+Require Import WildCat.
+
+Section WildCat.
+
+  Context {G : AbGroup}.
+
+  Global Instance is01cat_gradedgroups : Is01Cat (GradedGroup G).
+  Proof.
+    serapply Build_Is01Cat.
+    + exact GradedHomomorphism.
+    + intros x.
+      serapply Build_GradedHomomorphism'.
+      1: reflexivity.
+      { intro g.
+        symmetry.
+        apply right_identity. }
+      { intros ? ? [].
+        apply grp_homo_id. }
+    + intros ???; exact gh_compose.
+  Defined.
+
+End WildCat.
+
 
 
 

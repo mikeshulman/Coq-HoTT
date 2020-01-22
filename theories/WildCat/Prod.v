@@ -91,9 +91,9 @@ Proof.
     + exact (Build_CatEquiv (fst f)).
     + exact (Build_CatEquiv (snd f)).
   - intros [fe1 fe2]; cbn; split; apply cate_buildequiv_fun.
-  - intros [fe1 fe2]; split; [ exact ((fst f)^-1$) | exact ((snd f)^-1$) ].
-  - intros [fe1 fe2]; split; apply cate_issect.
-  - intros [fe1 fe2]; split; apply cate_isretr.
+  - split; [ exact ((fst f)^-1$) | exact ((snd f)^-1$) ].
+  - split; apply cate_issect.
+  - split; apply cate_isretr.
   - intros g r s; split.
     + exact (catie_adjointify (fst f) (fst g) (fst r) (fst s)).
     + exact (catie_adjointify (snd f) (snd g) (snd r) (snd s)).
@@ -115,10 +115,9 @@ Definition fmap22 {A B C : Type} `{Is1Cat A} `{Is1Cat B} `{Is1Cat C}
 
 Global Instance iemap11 {A B C : Type} `{HasEquivs A} `{HasEquivs B} `{HasEquivs C}
            (F : A -> B -> C) `{!Is0Functor (uncurry F), !Is1Functor (uncurry F)}
-           {a1 a2 : A} {b1 b2 : B} (f1 : a1 $-> a2) (f2 : b1 $-> b2)
-           {f1e : CatIsEquiv f1} {f2e : CatIsEquiv f2}
+           {a1 a2 : A} {b1 b2 : B} (f1 : a1 $<~> a2) (f2 : b1 $<~> b2)
   : CatIsEquiv (fmap11 F f1 f2)
-  := @iemap _ _ _ _ _ _ _ _ (uncurry F) _ _ (a1, b1) (a2, b2) (f1, f2) _.
+  := @iemap _ _ _ _ _ _ _ _ (uncurry F) _ _ (a1, b1) (a2, b2) (f1, f2).
 
 Definition emap11 {A B C : Type} `{HasEquivs A} `{HasEquivs B} `{HasEquivs C}
            (F : A -> B -> C) `{!Is0Functor (uncurry F), !Is1Functor (uncurry F)}

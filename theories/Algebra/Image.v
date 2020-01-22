@@ -67,6 +67,20 @@ Proof.
   + intros ??; reflexivity.
 Defined.
 
+Definition grp_image_in {A B : AbGroup} (f : A $-> B)
+  : A $-> grp_image f.
+Proof.
+  serapply Build_GroupHomomorphism.
+  + intro a.
+    exists (f a).
+    apply tr.
+    exists a.
+    reflexivity.
+  + intros x y.
+    apply path_sigma_hprop.
+    apply (grp_homo_op f).
+Defined.
+
 Global Instance isinjective_grp_image_pr1 {A B : AbGroup} (f : A $-> B)
   : IsInjective (grp_image_pr1 f).
 Proof.

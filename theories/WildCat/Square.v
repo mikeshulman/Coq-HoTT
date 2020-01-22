@@ -45,7 +45,7 @@ Section Squares.
   Definition vconcat (s : Square f10 f12 f01 f21) (t : Square f12 f14 f03 f23) : Square f10 f14 (f03 $o f01) (f23 $o f21) :=
     cat_assoc _ _ _ $@ (f23 $@L s) $@ (cat_assoc _ _ _)^$ $@ (t $@R f01) $@ cat_assoc _ _ _.
 
-  Definition hinverse' `{!CatIsEquiv f10} `{!CatIsEquiv f12} (s : Square f10 f12 f01 f21) : Square f10^-1$ f12^-1$ f21 f01 :=
+  Definition hinverse (f10 : x00 $<~> x20) (f12 : x02 $<~> x22) (s : Square f10 f12 f01 f21) : Square f10^-1$ f12^-1$ f21 f01 :=
    (cat_idl _)^$ $@ ((cate_issect f12)^$ $@R _) $@ cat_assoc _ _ _ $@
    (_ $@L ((cat_assoc _ _ _)^$ $@ (s^$ $@R _) $@ cat_assoc _ _ _ $@ (_ $@L cate_isretr f10) $@ cat_idr _)).
 
@@ -75,14 +75,8 @@ Section Squares2.
     {f01 f01' : x00 $-> x02} {f21 f21' : x20 $-> x22} {f41 f41' : x40 $-> x42}
     {f03 : x02 $-> x04} {f23 : x22 $-> x24} {f43 : x42 $-> x44}.
 
-  Definition hinverse (f10 : x00 $<~> x20) (f12 : x02 $<~> x22) (s : Square f10 f12 f01 f21) : Square f10^-1$ f12^-1$ f21 f01 :=
-   hinverse' s.
-
-  Definition vinverse' `{!CatIsEquiv f01} `{!CatIsEquiv f21} (s : Square f10 f12 f01 f21) : Square f12 f10 (f01^-1$) (f21^-1$) :=
-   transpose (hinverse' (transpose s)).
-
   Definition vinverse (f01 : x00 $<~> x02) (f21 : x20 $<~> x22) (s : Square f10 f12 f01 f21) : Square f12 f10 (f01^-1$) (f21^-1$) :=
-    transpose (hinverse' (transpose s)).
+    transpose (hinverse _ _ (transpose s)).
 
   (* whisker a map in one of the corners. For the bottom-left and top-right we have two choices. *)
   Definition whiskerTL {f : x $-> x00} (s : Square f10 f12 f01 f21) : Square (f10 $o f) f12 (f01 $o f) f21 :=

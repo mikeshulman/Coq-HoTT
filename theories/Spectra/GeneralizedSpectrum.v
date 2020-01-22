@@ -128,11 +128,23 @@ Defined.
 
 (** Sections of parametrized spectra *)
 
-Definition spi `{Funext} (A : pType) (Y : A -> GenSpectrum N) : GenSpectrum N.
+Definition sForall `{Funext} (A : pType) (Y : A -> GenSpectrum N) : GenSpectrum N.
 Proof.
   apply (Build_GenSpectrum N (fun n => ppforall x, Y x n)).
-  intro n. refine ((equiv_loops_ppforall _) ^-1* o*E _).
+  intro n. refine (symmetric_cate _ _ (equiv_loops_ppforall _) o*E _).
+  exact (equiv_ppforall_right (fun a => equiv_glue (Y a) n)).
+Defined.
 
+
+Definition spi_compose_left `{Funext} (A : pType) (Y Y' : A -> GenSpectrum N)
+  (f : forall x, sMap (Y x) (Y' x)) 
+  : sMap (sForall A Y) (sForall A Y').
+Proof.
+  serapply Build_sMap.
+  + intro n. exact (functor_ppforall_right (fun a => f a n)).
+  + intro n. refine (_ $@v _).
+  2: { serapply vinverse. exact (transpose (natural_loops_ppforall_right (fun a => spectrum_fun _ _ (f a) (n.+1)))). }
+(*   apply (fmap_square (functor_ppforall_right _)). *)
 Admitted.
 (*
   definition spi [constructor] {N : succ_str} (A : Type* ) (E : A → gen_spectrum N) :
