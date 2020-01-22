@@ -282,3 +282,69 @@ Class Is1Gpd (A : Type) `{Is1Cat A, !Is0Gpd A} :=
   gpd_issect : forall {a b : A} (f : a $-> b), f^$ $o f $== Id a ;
   gpd_isretr : forall {a b : A} (f : a $-> b), f $o f^$ $== Id b ;
 }.
+
+(** Some more convenient equalities for morphisms in a 1-groupoid. The naming scheme is similar to [PathGroupoids.v].*)
+
+Definition gpd_V_hh {A} `{Is1Gpd A} {a b c : A} (f : b $-> c) (g : a $-> b) 
+  : f^$ $o (f $o g) $== g :=
+  (cat_assoc _ _ _)^$ $@ (gpd_issect f $@R g) $@ cat_idl g.
+
+Definition gpd_h_Vh {A} `{Is1Gpd A} {a b c : A} (f : c $-> b) (g : a $-> b) 
+  : f $o (f^$ $o g) $== g :=
+  (cat_assoc _ _ _)^$ $@ (gpd_isretr f $@R g) $@ cat_idl g.
+
+Definition gpd_hh_V {A} `{Is1Gpd A} {a b c : A} (f : b $-> c) (g : a $-> b) 
+  : (f $o g) $o g^$ $== f :=
+  cat_assoc _ _ _ $@ (f $@L gpd_isretr g) $@ cat_idr f.
+
+Definition gpd_hV_h {A} `{Is1Gpd A} {a b c : A} (f : b $-> c) (g : b $-> a) 
+  : (f $o g^$) $o g $== f :=
+  cat_assoc _ _ _ $@ (f $@L gpd_issect g) $@ cat_idr f.
+
+Definition gpd_moveL_1M {A : Type} `{Is1Gpd A} {x y : A} {p q : x $-> y}
+  (r : p $o q^$ $== Id _) : p $== q.
+Proof.
+  refine ((cat_idr p)^$ $@ (p $@L (gpd_issect q)^$) $@ (cat_assoc _ _ _)^$ $@ _).
+  refine ((r $@R q) $@ cat_idl q).
+Defined.
+
+Definition gpd_moveL_V1 {A : Type} `{Is1Gpd A} {x y : A} {p : x $-> y}
+  {q : y $-> x} (r : p $o q $== Id _) : p^$ $== q.
+Proof.
+  refine ((cat_idr p^$)^$ $@ (p^$ $@L r^$) $@ _).
+  apply gpd_V_hh.
+Defined.
+
+Definition gpd_moveR_hV {A : Type} `{Is1Gpd A} {x y z : A} {p : y $-> z}
+  {q : x $-> y} {r : x $-> z} (s : r $== p $o q) 
+  : r $o q^$ $== p 
+  := (s $@R q^$) $@ gpd_hh_V _ _.
+
+Definition gpd_moveR_Vh {A : Type} `{Is1Gpd A} {x y z : A} {p : y $-> z}
+  {q : x $-> y} {r : x $-> z} (s : r $== p $o q) 
+  : p^$ $o r $== q 
+  := (p^$ $@L s) $@ gpd_V_hh _ _.
+
+Definition gpd_moveL_hV {A : Type} `{Is1Gpd A} {x y z : A} {p : y $-> z}
+  {q : x $-> y} {r : x $-> z} (s : p $o q $== r) 
+  : p $== r $o q^$ 
+  := (gpd_moveR_hV s^$)^$.
+
+Definition gpd_moveL_Vh {A : Type} `{Is1Gpd A} {x y z : A} {p : y $-> z}
+  {q : x $-> y} {r : x $-> z} (s : p $o q $== r) 
+  : q $== p^$ $o r 
+  := (gpd_moveR_Vh s^$)^$.
+
+Definition gpd_rev2 {A : Type} `{Is1Gpd A} {x y : A} {p q : x $-> y}
+  (r : p $== q) : p^$ $== q^$.
+Proof.
+  apply gpd_moveL_V1. apply gpd_moveR_hV.
+  exact (r $@ (cat_idl q)^$).
+Defined.
+
+Definition gpd_rev_pp {A} `{Is1Gpd A} {a b c : A} (f : b $-> c) (g : a $-> b) 
+  : (f $o g)^$ $== g^$ $o f^$.
+Proof.
+  apply gpd_moveL_V1.
+  refine (cat_assoc _ _ _ $@ (f $@L gpd_h_Vh g f^$) $@ gpd_isretr f).
+Defined.
