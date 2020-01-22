@@ -135,7 +135,6 @@ Proof.
   exact (equiv_ppforall_right (fun a => equiv_glue (Y a) n)).
 Defined.
 
-
 Definition spi_compose_left `{Funext} (A : pType) (Y Y' : A -> GenSpectrum N)
   (f : forall x, sMap (Y x) (Y' x)) 
   : sMap (sForall A Y) (sForall A Y').
@@ -144,23 +143,9 @@ Proof.
   + intro n. exact (functor_ppforall_right (fun a => f a n)).
   + intro n. refine (_ $@v _).
   2: { serapply vinverse. exact (transpose (natural_loops_ppforall_right (fun a => spectrum_fun _ _ (f a) (n.+1)))). }
-(*   apply (fmap_square (functor_ppforall_right _)). *)
-Admitted.
-(*
-  definition spi [constructor] {N : succ_str} (A : Type* ) (E : A → gen_spectrum N) :
-    gen_spectrum N :=
-  spectrum.MK (λn, Π*a, E a n)
-    (λn, !loop_pppi_pequiv⁻¹ᵉ* ∘*ᵉ ppi_pequiv_right (λa, equiv_glue (E a) n))
+  apply functor_ppforall_right_square. intro a. apply smap_square.
+Defined.
 
-  definition spi_compose_left [constructor] {N : succ_str} {A : Type*} {E F : A -> gen_spectrum N}
-    (f : Πa, E a →ₛ F a) : spi A E →ₛ spi A F :=
-  smap.mk (λn, pppi_compose_left (λa, f a n))
-    begin
-      intro n,
-      exact psquare_pppi_compose_left (λa, (glue_square (f a) n)) ⬝v*
-        (ptranspose !loop_pppi_pequiv_natural_right)⁻¹ᵛ*
-    end
-*)
 End GenSpectrum.
 
 

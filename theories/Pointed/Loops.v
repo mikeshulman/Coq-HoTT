@@ -605,7 +605,7 @@ Defined.
   of definitional reduction. *)
 Definition natural_loops_ppforall_right `{Funext} {A : pType} {B B' : A -> pType}
   (f : forall a, B a ->* B' a)
-  : Square (equiv_loops_ppforall B)
+  : Square (A := pType) (equiv_loops_ppforall B)
          (equiv_loops_ppforall B')
          (loops_functor (functor_ppforall_right f))
          (functor_ppforall_right (fun a => loops_functor (f a))).
