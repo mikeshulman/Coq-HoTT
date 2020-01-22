@@ -551,20 +551,11 @@ Proof.
   induction r, C as [C c0], B as [B b0], k as [k k₀].
   simpl in f₀, f, k₀, k.
   induction f₀, k₀.
-  revert l' q.
-  (* I want to apply phomotopy_ind', but Coq cannot unify this with the goal
-  when using [refine]. This is a workaround, which works in this case. *)
-  serapply (phomotopy_ind _). cbn beta. rewrite path_pforall_1.
-  revert k' p.
-  serapply (phomotopy_ind _). cbn beta. rewrite path_pforall_1.
+  remember (path_pforall q) as q' eqn:r.
+  revert l' q q' r. refine (phomotopy_ind' _ _). 
+  remember (path_pforall p) as p' eqn:r.
+  revert k' p p' r. refine (phomotopy_ind' _ _). 
   reflexivity.
-Defined.
-
-(** Reducing the term obtained by rewrite. *)
-Definition internal_paths_rew_r_unfold {A : Type} (P : A -> Type) {x y : A} (p : x = y) (u : P y)
-  : internal_paths_rew_r A x y P u p = transport P p^ u.
-Proof.
-  induction p. reflexivity.
 Defined.
 
 (** Definitionally equal to f, but useful to state the next lemma. *)
@@ -584,21 +575,19 @@ Definition natural_loops_ppforall_lem3_refl `{Funext} {A : pType} {B C : A -> Ty
                                           1 (pforall_from_pointed k)))
       1 = ap phomotopy_path (ap_gen_1 _ _).
 Proof.
-  refine (phomotopy_ind_1 _ _ @ _).
-  refine (internal_paths_rew_r_unfold _ _ _ @ _).
+  refine (phomotopy_ind_1' _ _ @ _).
   refine (ap (transport _ _) _ @ _).
-  1: refine (phomotopy_ind_1 _ _ @ _).
-  1: exact (internal_paths_rew_r_unfold _ _ _).
+  1: exact (phomotopy_ind_1' _ _).
   refine ((transport_diagonal
     (fun p1 p2 => (phomotopy_path o ap_gen _ p1 p2) 1 = _) _ _)^ @ _).
   refine (transport_paths_Fl (f := fun p =>
     (phomotopy_path o ap_gen _ p p)  1) _ _ @ _).
   refine (concat_p1 _ @ _).
-  (* refine (inverse2 (ap_V _ _) @ _). (*curiously this fails.*) *)
+(*   refine (inverse2 (ap_V _ _) @ _). (*curiously this fails (also in steps).*) *)
   rewrite ap_V, inv_V.
   refine (ap_compose (fun p => ap_gen _ p p 1) phomotopy_path path_pforall_1 @ _).
   refine ((ap _ (ap_gen_1_eq _ _ _))^).
-Defined.
+Qed. (* I hope we don't need to know this term anytime soon *)
 
 (** [equiv_loops_ppforall] is natural. *)
 (* Unfortunately, this lemma is very slow. The bottleneck is likely a bunch

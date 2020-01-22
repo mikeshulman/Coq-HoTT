@@ -377,8 +377,10 @@ Defined.
 Definition phomotopy_ind' `{H0 : Funext} {A : pType} {P : pFam A}
   {k : pForall A P} (Q : forall (k' : pForall A P), (k ==* k') -> (k = k') -> Type)
   (q : Q k (reflexivity k) 1 % path) (k' : pForall A P) (H : k ==* k')
-  : Q k' H (path_pforall H).
+  (p : k = k') (r : path_pforall H = p)
+  : Q k' H p.
 Proof.
+  induction r.
   revert k' H. refine (phomotopy_ind _ _).
   exact (transport (Q _ (reflexivity _)) path_pforall_1^ q).
 Defined.
@@ -395,7 +397,7 @@ Defined.
 Definition phomotopy_ind_1' `{H0 : Funext} {A : pType} {P : pFam A}
   {k : pForall A P} (Q : forall (k' : pForall A P), (k ==* k') -> (k = k') -> Type)
   (q : Q k (reflexivity k) 1 % path)
-  : phomotopy_ind' Q q k (reflexivity k)
+  : phomotopy_ind' Q q k (reflexivity k) (path_pforall (reflexivity k)) (1 % path)
   = transport (Q k (reflexivity k)) path_pforall_1^ q.
 Proof.
   serapply phomotopy_ind_1.

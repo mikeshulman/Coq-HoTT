@@ -147,5 +147,3 @@ Proof.
 Defined.
 
 End GenSpectrum.
-
-

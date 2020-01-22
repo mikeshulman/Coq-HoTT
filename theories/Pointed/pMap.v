@@ -127,14 +127,6 @@ Proof.
   serapply Build_pHomotopy.
   1: { intro a. refine (p a (f a) @ ap (g' a) (q a)). }
   pointed_reduce. symmetry. apply concat_Ap.
-  (* Alternative proof using funext, possibly useful if we want to show
-    that [functor2_pforall_right] applied to reflexivity is reflexivity.
-  revert f' q. refine (phomotopy_ind _ _). induction r.
-  destruct C as [C c0]. simpl in g', g₀'. destruct g₀'. simpl.
-  refine (concat_p1 _ @ moveL_pV _ _ _ _).
-  refine (whiskerL _ (concat_p1 _) @ _^ @ whiskerL _ (concat_p1 _)^).
-  apply concat_Ap.
-  *)
 Defined.
 
 Definition functor2_pforall_right_refl {A : pType} {B C : pFam A} 
@@ -259,7 +251,7 @@ Definition functor_ppforall_right_compose `{Funext} {A : pType} {B1 B2 B3 : A ->
 Proof.
   serapply Build_pHomotopy_pForall.
   + intro x. apply pmap_compose_ppforall_compose.
-  + simpl. refine (_ $@ (phomotopy_path_path_pforall _ @@* _)^$).
+  + refine (_ $@ (phomotopy_path_path_pforall _ @@* _)^$).
     2: refine (gpd_rev2 (phomotopy_path_pp _ _ $@ 
       ((phomotopy_path2 (pmap_compose_ppforall_path_pforall _ _) @* phomotopy_path_path_pforall _) @@* 
         (phomotopy_path_path_pforall _))) $@ 
@@ -276,7 +268,7 @@ Proof.
   apply phomotopy_path. apply ap. funext a. exact (path_pforall (p a)).
 Defined.
 
-(* We need more boilerplate code to show that ppforall + functor_ppforall forms a functor,
+(* We need more category instances to show that ppforall + functor_ppforall forms a functor,
    so we currently declare this property in an ad-hoc way. *)
 Definition functor_ppforall_right_square `{Funext} {A : pType} 
   {B00 B02 B20 B22 : A -> pType} {f10 : forall a, B00 a $-> B20 a}
