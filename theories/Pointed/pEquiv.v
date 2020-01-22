@@ -25,24 +25,10 @@ Proof.
   intros ? ?; apply pequiv_inverse.
 Defined.
 
-(* pointed equivalences compose.
-  
-  Note: this definition is *not* currently definitionally equal to the composition
-  of wildcategory equivalences. This causes an universe inconsistency when the 
-  composed equivalences live in different universes.
-
-File "./theories/Pointed/Loops.v", line 368, characters 18-53:
-Error:
-In environment
-H : Univalence
-A : Type
-The term "pequiv_loops_functor (loops_type A)" has type
- "loops (loops (Type, A)) <~>* loops (A <~> A, 1%equiv)"
-while it is expected to have type "?A <~>* ?B" (universe inconsistency).
-*)
-
+(* pointed equivalences compose. *)
 Definition pequiv_compose {A B C : pType} (f : A <~>* B) (g : B <~>* C)
-  : A <~>* C := Build_pEquiv A C (g o* f) isequiv_compose.
+  : A <~>* C
+  := g $oE f.
 
 (* pointed equivalence is a transitive relation *)
 Global Instance pequiv_transitive : Transitive pEquiv.
