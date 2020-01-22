@@ -137,6 +137,16 @@ Proof.
   *)
 Defined.
 
+Definition functor2_pforall_right_refl {A : pType} {B C : pFam A} 
+  (g : forall a, B a -> C a) (g₀ : g (point A) (dpoint B) = dpoint C) 
+  (f : pForall A B) 
+  : functor2_pforall_right (fun a => reflexivity (g a)) (phomotopy_refl f) 
+      (concat_1p _) 
+    ==* phomotopy_refl (functor_pforall_right g g₀ f).
+Proof.
+  pointed_reduce. reflexivity.
+Defined.
+
 (* functorial action of [pForall A (pointed_fam B)] in [B]. *)
 Definition pmap_compose_ppforall {A : pType} {B B' : A -> pType}
   (g : forall a, B a ->* B' a) (f : ppforall a, B a) : ppforall a, B' a.
@@ -167,24 +177,6 @@ Proof.
     refine (ap_pp _ _ _ @ whiskerR (ap_compose _ _ _)^ _).
 Defined.
 
-(* Definition pmap_compose_ppforall_compose_point {A : pType} {P Q R : A -> pType} 
-  (g : forall a, Q a ->* R a) (f : forall a, P a ->* Q a)
-  : pmap_compose_ppforall_compose g f (point_pforall P) @* _ @* _ ==* _.
- *)(*
-Definition ppi_assoc_ppi_const_right (g : forall a, Q a ->* R a) (f : forall a, P a ->* Q a) :
-  ppi_assoc g f (ppi_const P) @*
-  (pmap_compose_ppi_phomotopy_right _ (pmap_compose_ppi_ppi_const f) @*
-  pmap_compose_ppi_ppi_const g) = pmap_compose_ppi_ppi_const (fun a => g a o* f a).
-Proof.
-  revert R g, refine fiberwise_pointed_map_rec _ _,
-  revert Q f, refine fiberwise_pointed_map_rec _ _,
-  intro Q f R g,
-  refine ap (fun x => _ @* (x @* _)) !pmap_compose_ppi2_refl @ _,
-  reflexivity
-Defined.
-*)
-
-
 Definition pmap_compose_ppforall2 {A : pType} {P Q : A -> pType} {g g' : forall (a : A), P a ->* Q a}
   {f f' : ppforall (a : A), P a} (p : forall a, g a ==* g' a) (q : f ==* f') 
   : pmap_compose_ppforall g f ==* pmap_compose_ppforall g' f'.
@@ -198,7 +190,23 @@ Defined.
 Definition pmap_compose_ppforall2_left {A : pType} {P Q : A -> pType} {g g' : forall (a : A), P a ->* Q a}
   (f : ppforall (a : A), P a) (p : forall a, g a ==* g' a) 
   : pmap_compose_ppforall g f ==* pmap_compose_ppforall g' f :=
-  pmap_compose_ppforall2 p (reflexivity f).
+  pmap_compose_ppforall2 p (phomotopy_refl f).
+
+Definition pmap_compose_ppforall2_right {A : pType} {P Q : A -> pType} (g : forall (a : A), P a ->* Q a)
+  {f f' : ppforall (a : A), P a} (q : f ==* f') 
+  : pmap_compose_ppforall g f ==* pmap_compose_ppforall g f' :=
+  pmap_compose_ppforall2 (fun a => phomotopy_refl (g a)) q.
+
+Definition pmap_compose_ppforall2_refl `{Funext} {A : pType} {P Q : A -> pType} 
+  (g : forall (a : A), P a ->* Q a) (f : ppforall (a : A), P a) 
+  : pmap_compose_ppforall2 (fun a => phomotopy_refl (g a)) (phomotopy_refl f) 
+    ==* phomotopy_refl _.
+Proof.
+  simpl. 
+  unfold pmap_compose_ppforall2.
+  revert Q g. refine (fiberwise_pointed_map_rec _ _). intros Q g.
+  serapply functor2_pforall_right_refl.
+Defined.
 
 Definition pmap_compose_ppforall_pid_left {A : pType} {P : A -> pType}
   (f : ppforall (a : A), P a) : pmap_compose_ppforall (fun a => pmap_idmap) f ==* f.
@@ -206,6 +214,30 @@ Proof.
   serapply Build_pHomotopy.
   + reflexivity.
   + symmetry. refine (whiskerR (concat_p1 _ @ ap_idmap _) _ @ concat_pV _).
+Defined.
+
+Definition pmap_compose_ppforall_path_pforall `{Funext} {A : pType} {P Q : A -> pType}
+  (g : forall a, P a ->* Q a) {f f' : ppforall a, P a} (p : f ==* f') :
+  ap (pmap_compose_ppforall g) (path_pforall p) =
+  path_pforall (pmap_compose_ppforall2_right g p).
+Proof.
+  revert f' p. refine (phomotopy_ind _ _).
+  refine (ap _ path_pforall_1 @ path_pforall_1^ @ ap _ _^).
+  exact (path_pforall (pmap_compose_ppforall2_refl _ _)).
+Defined.
+
+Definition pmap_compose_ppforall_compose_point `{Funext} {A : pType} {P Q R : A -> pType} 
+  (g : forall a, Q a ->* R a) (f : forall a, P a ->* Q a)
+  : Square (pmap_compose_ppforall_compose g f (point_pforall P)) 
+           (pmap_compose_ppforall_point g)^* 
+           (pmap_compose_ppforall_point (fun a => g a o* f a))
+           (pmap_compose_ppforall2_right _ (pmap_compose_ppforall_point f)).
+Proof.
+  revert R g. refine (fiberwise_pointed_map_rec _ _).
+  revert Q f. refine (fiberwise_pointed_map_rec _ _).
+  intros Q f R g.
+  refine (_ $@hR pmap_compose_ppforall2_refl _ _).
+  exact (phomotopy_refl _).
 Defined.
 
 (* functorial action of [ppForall A B] in [B]. *)
@@ -221,40 +253,32 @@ Proof.
 Defined.
 
 Definition functor_ppforall_right_compose `{Funext} {A : pType} {B1 B2 B3 : A -> pType}
-  (g : forall a, B2 a ->* B3 a) (f : forall a, B1 a ->* B2 a)
-  : functor_ppforall_right (fun a => g a o* f a) ==* 
+  (g : forall a, B2 a $-> B3 a) (f : forall a, B1 a $-> B2 a)
+  : functor_ppforall_right (fun a => g a o* f a) $==
     functor_ppforall_right g o* functor_ppforall_right f.
 Proof.
   serapply Build_pHomotopy_pForall.
   + intro x. apply pmap_compose_ppforall_compose.
-  + simpl. refine (_ @* (phomotopy_path_path_pforall _ @@* _)^*).
-Admitted.
-(*
-  begin
-    fapply phomotopy_mk_ppi,
-    { exact ppi_assoc g f },
-    { refine idp ◾** (!phomotopy_of_eq_con ⬝
-        (ap phomotopy_of_eq !pmap_compose_ppi_eq_of_phomotopy ⬝ !phomotopy_of_eq_of_phomotopy) ◾**
-        !phomotopy_of_eq_of_phomotopy) ⬝ _ ⬝ !phomotopy_of_eq_of_phomotopy⁻¹,
-      apply ppi_assoc_ppi_const_right },
-  end
-*)
+  + simpl. refine (_ $@ (phomotopy_path_path_pforall _ @@* _)^$).
+    2: refine (gpd_rev2 (phomotopy_path_pp _ _ $@ 
+      ((phomotopy_path2 (pmap_compose_ppforall_path_pforall _ _) @* phomotopy_path_path_pforall _) @@* 
+        (phomotopy_path_path_pforall _))) $@ 
+      gpd_rev_pp _ _).
+    refine (_ $@ (cat_assoc _ _ _)^$).
+    apply gpd_moveL_Vh.
+    apply pmap_compose_ppforall_compose_point.
+Defined.
 
 Definition functor2_ppforall_right `{Funext} {A : pType} {B B' : A -> pType}
-  (g g' : forall a, B a ->* B' a) 
+  {g g' : forall a, B a ->* B' a} (p : forall a, g a ==* g' a)
   : functor_ppforall_right g ==* functor_ppforall_right g'.
-  
-Admitted.
-(*
-  begin
-    apply phomotopy_of_eq, apply ap pppi_compose_left, apply eq_of_homotopy, intro a,
-    apply eq_of_phomotopy, exact p a
-  end
-*)
+Proof.
+  apply phomotopy_path. apply ap. funext a. exact (path_pforall (p a)).
+Defined.
 
 (* We need more boilerplate code to show that ppforall + functor_ppforall forms a functor,
    so we currently declare this property in an ad-hoc way. *)
-(* Definition functor_ppforall_right_square `{Funext} {A : pType} 
+Definition functor_ppforall_right_square `{Funext} {A : pType} 
   {B00 B02 B20 B22 : A -> pType} {f10 : forall a, B00 a $-> B20 a}
   {f01 : forall a, B00 a $-> B02 a} {f21 : forall a, B20 a $-> B22 a}
   {f12 : forall a, B02 a $-> B22 a} 
@@ -262,15 +286,10 @@ Admitted.
   : Square (A := pType) (H0 := is1cat_ptype) (functor_ppforall_right f10) (functor_ppforall_right f12)
            (functor_ppforall_right f01) (functor_ppforall_right f21).
 Proof.
-  apply functor_ppforall_right_compose.
+  refine ((functor_ppforall_right_compose _ _)^$ $@ _).
+  refine (_ $@ functor_ppforall_right_compose _ _).
+  exact (functor2_ppforall_right s).
 Defined.
- *)(*
-  begin
-    refine (pppi_compose_left_pcompose fright ftop)⁻¹* ⬝* _ ⬝*
-           (pppi_compose_left_pcompose fbot fleft),
-    exact pppi_compose_left_phomotopy psq
-  end
-*)
 
 Definition equiv_ppforall_right `{Funext} {A : pType} {B B' : A -> pType}
   (g : forall a, B a $<~> B' a) :

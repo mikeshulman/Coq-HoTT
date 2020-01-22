@@ -23,6 +23,13 @@ Proof.
   induction p. induction q. symmetry. apply phomotopy_compose_p1.
 Defined.
 
+Definition phomotopy_path2 `{Funext} {A : pType} {P : pFam A}
+  {f g : pForall A P} {p p' : f = g} (q : p = p')
+  : phomotopy_path p ==* phomotopy_path p'.
+Proof.
+  induction q. reflexivity.
+Defined.
+
 (** [phomotopy_path] sends inverses to inverses.*)
 Definition phomotopy_path_V `{Funext} {A : pType} {P : pFam A}
   {f g : pForall A P} (p : f = g)
