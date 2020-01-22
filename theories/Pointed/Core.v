@@ -215,14 +215,14 @@ Defined.
 
 (** Various operations with pointed homotopies *)
 
+Definition phomotopy_refl {A : pType} {P : pFam A} (f : pForall A P) : f ==* f
+  := Build_pHomotopy (fun x => 1) (concat_pV _)^.
+
 (* pointed homotopy is a reflexive relation *)
 Global Instance phomotopy_reflexive {A} {P : pFam A} 
   : Reflexive (@pHomotopy A P).
 Proof.
-  intro.
-  serapply Build_pHomotopy.
-  + intro. reflexivity.
-  + exact ((concat_pV _)^).
+  exact phomotopy_refl.
 Defined.
 
 (** ** Composition of pointed homotopies *)
@@ -275,7 +275,7 @@ Proof.
     exact (concat_pp_p _ _ _ @ whiskerL _ (point_htpy p)).
 Defined.
 
-(** ** Associativity of pointed map composition *)
+(** ** 1-categorical properties of [pType]. *)
 
 Definition pmap_compose_assoc {A B C D : pType} (h : C ->* D)
   (g : B ->* C) (f : A ->* B) : (h o* g) o* f ==* h o* (g o* f).
@@ -494,23 +494,102 @@ Infix "->**" := ppMap : pointed_scope.
 Notation "'ppforall'  x .. y , P" := (ppForall _ (fun x => .. (ppForall _ (fun y => P)) ..))
   (at level 200, x binder, y binder, right associativity).
 
+(** 1-categorical properties of [pForall]. We prove some results using function
+  extensionality for simplicity. *)
+
+Definition phomotopy_postwhisker `{Funext} {A : pType} {P : pFam A} {f g h : pForall A P}
+  {p p' : f ==* g} (r : p ==* p') (q : g ==* h) :
+  p @* q ==* p' @* q.
+Proof.
+  serapply Build_pHomotopy.
+  + intro x. exact (whiskerR (r x) (q x)).
+  + revert p' r. serapply phomotopy_ind.
+    revert h q.  serapply phomotopy_ind.
+    revert g p.  serapply phomotopy_ind.
+    pointed_reduce. reflexivity.
+Defined.
+
+Definition phomotopy_prewhisker `{Funext} {A : pType} {P : pFam A} {f g h : pForall A P}
+  (p : f ==* g) {q q' : g ==* h} (s : q ==* q') :
+  p @* q ==* p @* q'.
+Proof.
+  serapply Build_pHomotopy.
+  + intro x. exact (whiskerL (p x) (s x)).
+  + revert q' s. serapply phomotopy_ind.
+    revert h q.  serapply phomotopy_ind.
+    revert g p.  serapply phomotopy_ind.
+    pointed_reduce. reflexivity.
+Defined.
+
+Definition phomotopy_compose_assoc `{Funext} {A : pType} {P : pFam A} 
+  {f g h k : pForall A P}
+  (p : f ==* g) (q : g ==* h) (r : h ==* k) : p @* (q @* r) ==* (p @* q) @* r.
+Proof.
+  serapply Build_pHomotopy.
+  + intro x. exact (concat_p_pp (p x) (q x) (r x)).
+  + revert k r. serapply phomotopy_ind.
+    revert h q. serapply phomotopy_ind.
+    revert g p. serapply phomotopy_ind.
+    pointed_reduce. reflexivity.
+Defined.
+
+Definition phomotopy_compose_p1 {A : pType} {P : pFam A} {f g : pForall A P}
+ (p : f ==* g) : p @* reflexivity g ==* p.
+Proof.
+  serapply Build_pHomotopy.
+  + intro x. apply concat_p1.
+  + pointed_reduce.
+    rewrite (concat_pp_V H (concat_p1 _))^. generalize (H @ concat_p1 _).
+    clear H. intros H. destruct H.
+    generalize (p ispointed_type). generalize (g ispointed_type).
+    intros x q. destruct q. reflexivity.
+Defined.
+
+Definition phomotopy_compose_1p {A : pType} {P : pFam A} {f g : pForall A P}
+ (p : f ==* g) : reflexivity f @* p ==* p.
+Proof.
+  serapply Build_pHomotopy.
+  + intro x. apply concat_1p.
+  + pointed_reduce.
+    rewrite (concat_pp_V H (concat_p1 _))^. generalize (H @ concat_p1 _).
+    clear H. intros H. destruct H.
+    generalize (p ispointed_type). generalize (g ispointed_type).
+    intros x q. destruct q. reflexivity.
+Defined.
+
+Definition phomotopy_compose_pV `{Funext} {A : pType} {P : pFam A} {f g : pForall A P}
+ (p : f ==* g) : p @* p ^* ==* phomotopy_refl f.
+Proof.
+  serapply Build_pHomotopy.
+  + intro x. apply concat_pV.
+  + revert g p. serapply phomotopy_ind. 
+    pointed_reduce. reflexivity.
+Defined.
+
+Definition phomotopy_compose_Vp `{Funext} {A : pType} {P : pFam A} {f g : pForall A P}
+ (p : f ==* g) : p ^* @* p ==* phomotopy_refl g.
+Proof.
+  serapply Build_pHomotopy.
+  + intro x. apply concat_Vp.
+  + revert g p. serapply phomotopy_ind. 
+    pointed_reduce. reflexivity.
+Defined.
 
 (** * pType as a wild category *)
 
 Global Instance is01cat_ptype : Is01Cat pType
   := Build_Is01Cat pType pMap (@pmap_idmap) (@pmap_compose).
 
-Global Instance is01cat_pmap (A : pType) (P : pFam A) : Is01Cat (pForall A P).
+Global Instance is01cat_pforall (A : pType) (P : pFam A) : Is01Cat (pForall A P).
 Proof.
   srapply (Build_Is01Cat _ (@pHomotopy A P)).
-  - reflexivity.
-  - intros a b c f g; transitivity b; assumption.
+  - exact phomotopy_refl.
+  - intros a b c f g. exact (phomotopy_compose g f).
 Defined.
 
-Global Instance is0gpd_pmap (A : pType) (P : pFam A) : Is0Gpd (pForall A P).
+Global Instance is0gpd_pforall (A : pType) (P : pFam A) : Is0Gpd (pForall A P).
 Proof.
-  srapply Build_Is0Gpd.
-  intros. simpl. symmetry; assumption.
+  srapply Build_Is0Gpd. intros ? ? h. exact (phomotopy_inverse h).
 Defined.
 
 Global Instance is1cat_ptype : Is1Cat pType.
@@ -557,9 +636,34 @@ Proof.
   intros []; apply path_pequiv.
   srefine (Build_pHomotopy _ _).
   - intros x; reflexivity.
-  - cbn.
-    (* Some messy path algebra here. *)
+  - (* Some messy path algebra here. *)
 Abort.
+
+Global Instance is1cat_pforall `{Funext} (A : pType) (P : pFam A) : Is1Cat (pForall A P).
+Proof.
+  econstructor.
+  - intros f g h p; rapply Build_Is0Functor.
+    intros q r s. exact (phomotopy_postwhisker s p).
+  - intros f g h p; rapply Build_Is0Functor.
+    intros q r s. exact (phomotopy_prewhisker p s).
+  - intros ? ? ? ? p q r. simpl. exact (phomotopy_compose_assoc p q r).
+  - intros ? ? p; exact (phomotopy_compose_p1 p).
+  - intros ? ? p; exact (phomotopy_compose_1p p).
+Defined.
+
+Global Instance is1gpd_pforall `{Funext} (A : pType) (P : pFam A) : Is1Gpd (pForall A P).
+Proof.
+  econstructor.
+  + intros ? ? p. exact (phomotopy_compose_pV p).
+  + intros ? ? p. exact (phomotopy_compose_Vp p).
+Defined.
+
+(* Global Instance is21cat_pType `{Funext} : Is21Cat pType.
+Proof.
+  econstructor.
+  - exact _.
+  - intros ? ? ? f. simpl.
+Defined. *)
 
 Global Instance is0functor_pointed_type : Is0Functor pointed_type.
 Proof.
