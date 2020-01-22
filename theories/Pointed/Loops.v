@@ -2,7 +2,7 @@ Require Import HoTT.Basics HoTT.Types.
 Require Import HSet Fibrations Factorization HoTT.Truncations HProp.
 Require Import UnivalenceImpliesFunext.
 Require Import Pointed.Core Pointed.pMap Pointed.pEquiv Pointed.pHomotopy.
-Require Import WildCat Pointed.pType.
+Require Import WildCat.
 
 Import TrM.
 
@@ -178,12 +178,12 @@ Global Instance isconnected_loops_functor `{Univalence} {n : trunc_index}
       (equiv_functor_sigma' 1 (fun q => equiv_moveR_Vp _ p _))
       (isconnected_equiv' n _
         (equiv_functor_sigma' 1 (fun q => equiv_moveR_pM _ _ _))
-        (isconnected_equiv' n _ (hfiber_ap _)^-1 (isconnected_paths _ _))). 
+        (isconnected_equiv' n _ (hfiber_ap _)^-1 (isconnected_paths _ _))).
 
 (** It follows that loop spaces "commute with images". *)
 Definition equiv_loops_image `{Univalence} n {A B : pType} (f : A ->* B)
   : loops (Build_pType (image n.+1 f) (factor1 (image n.+1 f) (point A)))
-  <~> image n (loops_functor f). 
+  <~> image n (loops_functor f).
 Proof.
   set (C := (Build_pType (image n.+1 f) (factor1 (image n.+1 f) (point A)))).
   pose (g := Build_pMap A C (factor1 (image n.+1 f)) 1).

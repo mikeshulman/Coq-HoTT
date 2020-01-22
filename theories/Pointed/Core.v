@@ -560,3 +560,16 @@ Proof.
   - cbn.
     (* Some messy path algebra here. *)
 Abort.
+
+Global Instance is0functor_pointed_type : Is0Functor pointed_type.
+Proof.
+  apply Build_Is0Functor. intros. exact f.
+Defined.
+
+Global Instance is1functor_pointed_type : Is1Functor pointed_type.
+Proof.
+  apply Build_Is1Functor.
+  + intros ? ? ? ? h. exact h.
+  + intros. reflexivity.
+  + intros. reflexivity.
+Defined.

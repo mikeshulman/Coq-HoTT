@@ -55,6 +55,15 @@ Proof.
   apply pmap_punit_pconst.
 Defined.
 
+(* TODO: generalize to wild categories with 0 object. *)
+Definition hconst_square {A B C D : pType} {f : A $-> B} {g : C $-> D} : 
+  Square pConst pConst f g :=
+  precompose_pconst g $@ (postcompose_pconst f)^$.
+
+Definition vconst_square {A B C D : pType} {f : A $-> B} {g : C $-> D} : 
+  Square f g pConst pConst :=
+  postcompose_pconst f $@ (precompose_pconst g)^$.
+
 (** If we have a fiberwise pointed map, with a variable as codomain, this is an
   induction principle that allows us to assume it respects all basepoints by
   reflexivity*)
@@ -234,6 +243,7 @@ Admitted.
 Definition functor2_ppforall_right `{Funext} {A : pType} {B B' : A -> pType}
   (g g' : forall a, B a ->* B' a) 
   : functor_ppforall_right g ==* functor_ppforall_right g'.
+  
 Admitted.
 (*
   begin
