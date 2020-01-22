@@ -2,6 +2,7 @@ Require Import Basics.
 Require Import Types.
 Require Import Pointed.Core.
 Require Import UnivalenceImpliesFunext.
+Require Import WildCat.
 
 Local Open Scope pointed_scope.
 
@@ -15,7 +16,8 @@ Proof.
   intro; apply pequiv_pmap_idmap.
 Defined.
 
-Notation "f ^-1*" := (pequiv_inverse f) : pointed_scope.
+(* We can probably get rid of the following notation, and use ^-1$ instead. *)
+Notation "f ^-1*" := (@cate_inv pType _ _ hasequivs_ptype _ _ f) : pointed_scope.
 
 (* pointed equivalence is a symmetric relation *)
 Global Instance pequiv_symmetric : Symmetric pEquiv.
@@ -25,7 +27,7 @@ Defined.
 
 (* pointed equivalences compose *)
 Definition pequiv_compose {A B C : pType} (f : A <~>* B) (g : B <~>* C)
-  : A <~>* C := (Build_pEquiv A C (g o* f) isequiv_compose).
+  : A <~>* C := compose_cate g f.
 
 (* pointed equivalence is a transitive relation *)
 Global Instance pequiv_transitive : Transitive pEquiv.
@@ -53,26 +55,14 @@ Defined.
   where all data is pointed. There is a lot of unecessery data here
   but sometimes it is easier to prove equivalences using this. *)
 Definition pequiv_adjointify {A B : pType} (f : A ->* B) (f' : B ->* A)
-  (r : pSect f' f) (s : pSect f f') : A <~>* B.
-Proof.
-  serapply Build_pEquiv.
-  1: assumption.
-  serapply (isequiv_adjointify f f').
-  1: rapply r.
-  rapply s.
-Defined.
+  (r : pSect f' f) (s : pSect f f') : A <~>* B
+  := (Build_pEquiv _ _ f (isequiv_adjointify f f' r s)).
 
 (* In some situations you want the back and forth maps to be pointed
    but not the sections *)
 Definition pequiv_adjointify' {A B : pType} (f : A ->* B) (f' : B ->* A)
-  (r : Sect f' f) (s : Sect f f') : A <~>* B.
-Proof.
-  serapply Build_pEquiv.
-  1: assumption.
-  serapply (isequiv_adjointify f f').
-  1: apply r.
-  apply s.
-Defined.
+  (r : Sect f' f) (s : Sect f f') : A <~>* B
+  := (Build_pEquiv _ _ f (isequiv_adjointify f f' r s)).
 
 (** Pointed versions of [moveR_equiv_M] and friends. *)
 Definition moveR_pequiv_Mf {A B C} (f : B <~>* C) (g : A ->* B) (h : A ->* C)
