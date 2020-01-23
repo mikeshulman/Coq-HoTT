@@ -1,7 +1,5 @@
 Require Import Basics Types.
 Require Import WildCat.Core.
-Require Import WildCat.Initial.
-
 
 Class IsPointedCat (A : Type) `{Is1Cat A} := {
   zero_object : A;

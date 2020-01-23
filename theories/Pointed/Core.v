@@ -643,7 +643,7 @@ Abort.
 
 Global Instance ispointedcat_ptype : IsPointedCat pType.
 Proof.
-  unshelve econstructor.
+  serapply Build_IsPointedCat.
   + exact pUnit.
   + intro A.
     exists pConst.
@@ -662,7 +662,7 @@ Proof.
     - serapply path_contr.
 Defined.
 
-Definition path_pconst_is_zero (A B : pType)
+Definition path_zero_morphism_pconst (A B : pType)
   : (@pConst A B) = zero_morphism := idpath.
 
 Global Instance is1cat_pforall `{Funext} (A : pType) (P : pFam A) : Is1Cat (pForall A P).

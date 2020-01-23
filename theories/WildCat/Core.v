@@ -169,12 +169,12 @@ Defined.
 
 (** Initial objects *)
 Definition IsInitial {A : Type} `{Is1Cat A} (x : A)
-  := forall (y : A), {f : x $-> y & forall g, f $== g}.
+  := forall (y : A), {f : x $-> y & forall g, g $== f}.
 Existing Class IsInitial.
 
 (** Terminal objects *)
 Definition IsTerminal {A : Type} `{Is1Cat A} (y : A)
-  := forall (x : A), {f : x $-> y & forall g, f $== g}.
+  := forall (x : A), {f : x $-> y & forall g, g $== f}.
 Existing Class IsTerminal.
 
 (** Generalizing function extensionality, "Morphism extensionality" states that homwise [GpdHom_path] is an equivalence. *)
