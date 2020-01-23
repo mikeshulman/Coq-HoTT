@@ -65,6 +65,7 @@ theories/WildCat/TwoOneCat.v
 theories/WildCat/NatTrans.v
 theories/WildCat/Comma.v
 theories/WildCat/Initial.v
+theories/WildCat/PointedCat.v
 
 #
 #   Types

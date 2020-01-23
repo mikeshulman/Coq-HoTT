@@ -7,6 +7,7 @@ Require Export WildCat.Induced.
 Require Export WildCat.FunctorCat.
 Require Export WildCat.NatTrans.
 Require Export WildCat.Yoneda.
+Require Export WildCat.Initial.
 (* Examples *)
 Require Export WildCat.Type.
 Require Export WildCat.UnitCat.
@@ -16,3 +17,5 @@ Require Export WildCat.Forall.
 Require Export WildCat.Sum.
 (* Higher categories *)
 Require Export WildCat.TwoOneCat.
+(* Pointed categories *)
+Require Export WildCat.PointedCat.

@@ -641,6 +641,30 @@ Proof.
   - (* Some messy path algebra here. *)
 Abort.
 
+Global Instance ispointedcat_ptype : IsPointedCat pType.
+Proof.
+  unshelve econstructor.
+  + exact pUnit.
+  + intro A.
+    exists pConst.
+    intro f.
+    serapply Build_pHomotopy.
+    - intros [].
+      exact (point_eq _).
+    - symmetry; cbn.
+      apply concat_p1.
+  + intro B.
+    exists pConst.
+    intro f.
+    serapply Build_pHomotopy.
+    - intros b.
+      apply path_unit.
+    - serapply path_contr.
+Defined.
+
+Definition path_pconst_is_zero (A B : pType)
+  : (@pConst A B) = zero_morphism := idpath.
+
 Global Instance is1cat_pforall `{Funext} (A : pType) (P : pFam A) : Is1Cat (pForall A P).
 Proof.
   econstructor.
@@ -679,3 +703,4 @@ Proof.
   + intros. reflexivity.
   + intros. reflexivity.
 Defined.
+
