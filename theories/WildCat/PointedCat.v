@@ -7,6 +7,9 @@ Class IsPointedCat (A : Type) `{Is1Cat A} := {
   isterminal_zero_object : IsTerminal zero_object;
 }.
 
+Global Existing Instance isinitial_zero_object.
+Global Existing Instance isterminal_zero_object.
+
 Definition zero_morphism {A : Type} `{IsPointedCat A} {a b : A} : a $-> b
   := (isinitial_zero_object b).1 $o (isterminal_zero_object a).1.
 

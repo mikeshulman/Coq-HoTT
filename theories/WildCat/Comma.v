@@ -79,21 +79,20 @@ Section Comma.
       + intro a.
         serapply (Build_Comma2Mor _ _ _ _ _ _ _ _).
         1,2: exact (Id _).
-        admit.
-      + admit.
-    Defined.
+    Admitted.
 
     Global Instance is0gpd_commamor : forall a b : Comma, Is0Gpd (a $-> b).
     Proof.
       intros x y.
       serapply Build_Is0Gpd.
+      (* 
       intros a b [p q h].
       unshelve econstructor.
       1: exact p^$.
       1: exact q^$.
       cat_prewhisker
       
-      serapply Build_CommaMor.
+      serapply Build_CommaMor. *)
     Admitted.
 
     Global Instance is0functor_commamor_postcomp
@@ -110,9 +109,7 @@ Section Comma.
     Proof.
       serapply Build_Is1Cat.
       { intros a b c d f g h.
-        
-        serapply Build_Comma2Mor.
-        
+    Admitted.
 
     Global Instance is0coh21cat_comma : Is1Cat Comma.
     Proof.

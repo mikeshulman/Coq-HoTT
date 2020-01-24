@@ -227,7 +227,7 @@ Section ConstantFunctor.
 
   Context {A B : Type}.
 
-  Global Instance is0coh1functor_const
+  Global Instance is01functor_const
     `{IsGraph A} `{Is01Cat B} (x : B)
     : Is0Functor (fun _ : A => x).
   Proof.
