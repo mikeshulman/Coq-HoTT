@@ -23,26 +23,24 @@ Section ZeroLaws.
 
   Local Arguments zero_morphism {_ _ _ _} _ _.
 
-  Definition pc_zero_source (h : 1 $-> a) : h $== 0
+  Definition cat_zero_source (h : 1 $-> a) : h $== 0
     := (isinitial_zero_object a).2 h
       $@ ((isinitial_zero_object a).2 0)^$.
 
-  Definition pc_zero_target (h : a $-> 1) : h $== 0
+  Definition cat_zero_target (h : a $-> 1) : h $== 0
     := (isterminal_zero_object a).2 h
       $@ ((isterminal_zero_object a).2 0)^$.
 
-  Definition comp_f0 : g $o 0 $== zero_morphism a c.
-  Proof.
-    refine ((cat_assoc _ _ _)^$ $@ _).
-    apply cat_prewhisker.
-    apply (isinitial_zero_object c).2.
-  Defined.
-
-  Definition comp_0f : 0 $o f $== zero_morphism a c.
+  Definition cat_zerol : 0 $o f $== zero_morphism a c.
   Proof.
     refine (cat_assoc _ _ _ $@ _).
-    apply cat_postwhisker.
-    apply (isterminal_zero_object a).2.
+    apply cat_postwhisker, (isterminal_zero_object a).2.
+  Defined.
+
+  Definition cat_zeror : g $o 0 $== zero_morphism a c.
+  Proof.
+    refine ((cat_assoc _ _ _)^$ $@ _).
+    apply cat_prewhisker, (isinitial_zero_object c).2.
   Defined.
 
 End ZeroLaws.
