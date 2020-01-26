@@ -62,7 +62,7 @@ Defined.
 Definition grp_image_pr1 {A B : AbGroup} (f : A $-> B)
   : grp_image f $-> B.
 Proof.
-  simple notypeclasses refine (Build_GroupHomomorphism _).
+  serapply Build_GroupHomomorphism.
   + apply pr1.
   + intros ??; reflexivity.
 Defined.
@@ -70,7 +70,7 @@ Defined.
 Definition grp_image_in {A B : AbGroup} (f : A $-> B)
   : A $-> grp_image f.
 Proof.
-  simple notypeclasses refine (Build_GroupHomomorphism _).
+  serapply Build_GroupHomomorphism.
   + intro a.
     exists (f a).
     apply tr.
@@ -94,3 +94,5 @@ Global Instance issubgroup_grp_image {A B : AbGroup}
 
 Definition AbImage {A B : AbGroup} (f : A $-> B)
   : Subgroup B := Build_Subgroup _ (grp_image f) _.
+
+
