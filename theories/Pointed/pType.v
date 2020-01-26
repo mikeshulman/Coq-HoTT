@@ -15,7 +15,7 @@ Global Instance is01cat_ptype : Is01Cat pType
 
 Global Instance is01cat_pmap (A B : pType) : Is01Cat (A ->* B).
 Proof.
-  srapply (Build_Is01Cat (A ->* B) (@pHomotopy A B)).
+  srapply (Build_Is01Cat (A ->* B) (@pHomotopy A (constant_pfam B))).
   - reflexivity.
   - intros a b c f g; transitivity b; assumption.
 Defined.
@@ -28,12 +28,7 @@ Defined.
 
 Global Instance is1cat_ptype : Is1Cat pType.
 Proof.
-  simple refine (Build_Is1Cat _ _ _ _ _ _ _ _); try exact _.
-  - intros A B C; rapply Build_Is0Functor.
-    intros [f1 f2] [g1 g2] [p q]; cbn.
-    transitivity (f1 o* g2).
-    + apply pmap_postwhisker; assumption.
-    + apply pmap_prewhisker; assumption.
+  simple refine (Build_Is1Cat _ _ _ _ _ _ _ _ _); try exact _.
   - intros ? ? ? ? f g h; exact (pmap_compose_assoc h g f).
   - intros ? ? f; exact (pmap_postcompose_idmap f).
   - intros ? ? f; exact (pmap_precompose_idmap f).
@@ -42,8 +37,6 @@ Defined.
 Global Instance hasmorext_ptype `{Funext} : HasMorExt pType.
 Proof.
   srapply Build_HasMorExt; intros A B f g.
-  refine (isequiv_homotopic (equiv_path_pmap f g)^-1 _).
-  intros []; reflexivity.
 Defined.
 
 
