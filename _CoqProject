@@ -330,6 +330,7 @@ theories/Algebra/QuotientGroup.v
 theories/Algebra/Kernel.v
 theories/Algebra/Image.v
 theories/Algebra/Homology.v
+theories/Algebra/ExactCouple.v
 theories/Algebra/SpectralSequence.v
 
 
