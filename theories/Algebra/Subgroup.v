@@ -324,7 +324,7 @@ Defined.
 Definition grp_intersection_incl {G : Group} (A B : Subgroup G)
   : GroupHomomorphism (grp_intersection A B) G.
 Proof.
-  simple notypeclasses refine (Build_GroupHomomorphism _).
+  serapply Build_GroupHomomorphism.
   { intros x.
     exact (issubgroup_incl (pr1 x)). }
   intros [a [b p]] [c [d q]].
@@ -354,7 +354,7 @@ Global Instance subgroup_pullback {G : Group} (A B : Subgroup G)
 Definition grp_intersection_incl_pr1 {G : Group} (A B : Subgroup G)
   : GroupHomomorphism (grp_intersection A B) A.
 Proof.
-  simple notypeclasses refine (Build_GroupHomomorphism _).
+  serapply Build_GroupHomomorphism.
   { intros x.
     exact (pr1 x). }
   intro; reflexivity.
@@ -382,7 +382,7 @@ Global Instance subgroup_pullback_pr1 {G : Group} (A B : Subgroup G)
 Definition grp_intersection_incl_pr2 {G : Group} (A B : Subgroup G)
   : GroupHomomorphism (grp_intersection A B) B.
 Proof.
-  simple notypeclasses refine (Build_GroupHomomorphism _).
+  serapply Build_GroupHomomorphism.
   { intros x.
     exact x.2.1. }
   intro; reflexivity.
