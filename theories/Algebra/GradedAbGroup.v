@@ -54,7 +54,7 @@ Proof.
     rewrite simple_associativity.
     reflexivity.
   + cbn; intros x y p.
-    serapply Build_GroupHomomorphism.
+    simple notypeclasses refine (Build_GroupHomomorphism _).
     { intro z.
       serapply (homo _ _ g).
       3: serapply (homo _ _ f).
@@ -71,7 +71,7 @@ Proof.
   serapply Build_GradedHomomorphism.
   1: exact mon_unit.
   intro x.
-  serapply Build_GroupHomomorphism.
+  simple notypeclasses refine (Build_GroupHomomorphism _).
   { intro.
     apply mon_unit. }
   intros _ _.
