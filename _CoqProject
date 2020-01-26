@@ -306,7 +306,6 @@ theories/Pointed/pType.v
 #
 theories/Spectra.v
 theories/Spectra/Spectrum.v
-theories/Spectra/Coinductive.v
 theories/Spectra/GeneralizedSpectrum.v
 theories/Spectra/EMSpectrum.v
 theories/Spectra/HomotopyGroup.v

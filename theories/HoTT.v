@@ -106,6 +106,7 @@ Require Export HoTT.Spaces.BAut.Rigid.
 Require Export HoTT.Spaces.Finite.
 
 Require Export HoTT.Spaces.No.
+Require Export HoTT.Spaces.Card.
 Require Export HoTT.Spaces.Universe.
 
 Require Export HoTT.Spaces.Torus.Torus.
@@ -139,8 +140,12 @@ Require Export HoTT.Homotopy.Wedge.
 Require Export HoTT.Homotopy.Join.
 Require Export HoTT.Homotopy.HSpace.
 Require Export HoTT.Homotopy.ClassifyingSpace.
+Require Export HoTT.Homotopy.EMSpace.
+Require Export HoTT.Homotopy.ExactSequence.
+Require Export HoTT.Homotopy.Splice.
+Require Export HoTT.Homotopy.HSpaceS1.
 
-Require Export HoTT.Spectra.Spectrum.
+Require Export HoTT.Spectra.
 
 Require Export HoTT.Tactics.
 Require Export HoTT.Tactics.EvalIn.
