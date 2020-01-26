@@ -1,4 +1,4 @@
-Require Import Basics Types.
+Require Import Basics.
 Require Import WildCat.Core.
 
 Class IsPointedCat (A : Type) `{Is1Cat A} := {
