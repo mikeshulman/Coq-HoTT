@@ -51,7 +51,7 @@ Defined.
 Definition grp_homo_kernel_pr1 {A B : AbGroup} (f : GroupHomomorphism A B)
   : GroupHomomorphism (grp_kernel f) A.
 Proof.
-  simple notypeclasses refine (Build_GroupHomomorphism _).
+  serapply Build_GroupHomomorphism.
   - apply pr1.
   - intros a b; reflexivity.
 Defined.
