@@ -310,7 +310,7 @@ Definition equiv_path_pforall `{Funext} {A : pType} {P : pFam A} (f g : pForall 
   : (f ==* g) <~> (f = g).
 Proof.
   refine (_ oE (issig_phomotopy f g)^-1).
-  eqp_issig_contr (issig_pforall A P).
+  revert f g; apply (equiv_path_issig_contr (issig_pforall A P)).
   { intros [f feq]; cbn.
     exists (fun a => 1%path).
     exact (concat_pV _)^. }
