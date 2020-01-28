@@ -275,9 +275,10 @@ theories/Homotopy/Wedge.v
 theories/Homotopy/Join.v
 
 theories/Homotopy/WhiteheadsPrinciple.v
+theories/Homotopy/HSpace.v
+theories/Homotopy/HSpaceS1.v
 theories/Homotopy/BlakersMassey.v
 theories/Homotopy/Freudenthal.v
-theories/Homotopy/HSpace.v
 theories/Homotopy/ClassifyingSpace.v
 theories/Homotopy/EMSpace.v
 theories/Homotopy/SuccessorStructure.v
@@ -298,13 +299,13 @@ theories/Pointed/pEquiv.v
 theories/Pointed/pTrunc.v
 theories/Pointed/pHomotopy.v
 theories/Pointed/pSusp.v
+theories/Pointed/pType.v
 
 #
 #   Spectra
 #
 theories/Spectra.v
 theories/Spectra/Spectrum.v
-theories/Spectra/Coinductive.v
 theories/Spectra/GeneralizedSpectrum.v
 theories/Spectra/EMSpectrum.v
 theories/Spectra/HomotopyGroup.v
@@ -328,6 +329,7 @@ theories/Algebra/QuotientGroup.v
 theories/Algebra/Kernel.v
 theories/Algebra/Image.v
 theories/Algebra/Homology.v
+theories/Algebra/ExactCouple.v
 theories/Algebra/SpectralSequence.v
 
 
