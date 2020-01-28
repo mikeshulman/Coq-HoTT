@@ -152,7 +152,6 @@ Defined.
 Definition grp_homo_compose {G H K : Group}
   : GroupHomomorphism H K -> GroupHomomorphism G H -> GroupHomomorphism G K.
 Proof.
-  pose @compose_sg_morphism.
   intros f g.
   serapply (Build_GroupHomomorphism (f o g)).
 Defined.
@@ -224,7 +223,7 @@ Definition equiv_path_group {U : Univalence} {G H : Group}
 Proof.
   refine (equiv_compose'
     (B := sig (fun f : G <~> H => IsMonoidPreserving f)) _ _).
-  { eqp_issig_contr issig_group.
+  { revert G H; apply (equiv_path_issig_contr issig_group).
     + intros [G [? [? [? ?]]]].
       exists 1%equiv.
       exact _.
