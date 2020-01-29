@@ -91,6 +91,15 @@ Notation "u ^$$" := (dgpd_rev u).
 
 Definition dGpdHom {A} (B : A -> Type) `{Is0DGpd A B} {a b : A} (f : a $-> b) (x : B a) (y : B b) := dHom f x y.
 
+Print dGpdHom.
+
+Definition dGpdHom_path {A} (B : A -> Type) `{Is0DGpd A B} {a b : A} (p : a = b) (x : B a) (y : B b) (q : (transport B p x) = y) : dGpdHom B (GpdHom_path p) x y.
+Proof.
+  destruct p, q.
+  unfold GpdHom_path.
+  refine (transport (fun y => (dGpdHom B (Id a) x y)) ((transport_1 B x)^) _).
+  apply dId.
+Defined.
 
 Global Instance is0gpd_sigma {A : Type} (B : A -> Type) `{Is0DGpd A B}
   : Is0Gpd (sig B).
@@ -314,9 +323,80 @@ Proof.
   - intros [a x] [b y] [c z] [f u] [g v].
     exact (fmap_comp F f g ; fmapd_comp u v).
 Defined.
-
                                            
-(** TODO strong versions of the above *)
+(** Often, the coherences in both the base and the fiber are actually equalities rather than homotopies. *)
+
+Class Is1DCat_Strong {A : Type} 
+      (B : A -> Type) `{Is01DCat A B} `{!Is1Cat_Strong A} :=  
+  {
+    isdgraph_dHom_strong : forall {a b : A} {x : B a} {y : B b},
+      @IsDGraph (a $-> b) (fun f => dHom f x y) _;
+    is01dcat_dHom_strong : forall {a b : A} {x : B a} {y : B b},
+      @Is01DCat  (a $-> b) _ (fun f => dHom f x y) _;
+    isdgpd_dHom_strong : forall {a b : A} {x : B a} {y : B b},
+        @Is0DGpd (a $-> b) (fun f => dHom f x y) _ _ _ _;
+    is0dfunctor_dcat_postcomp_strong : forall {a b c : A} (x : B a) {y : B b} {z : B c}
+                                  (f : a $-> b) {g : b $-> c}
+                                  (v : dHom g y z),
+        (@Is0DFunctor _ _ (fun ff => dHom ff x y) (fun h => dHom h x z) _ _ _ _ _ _ (cat_postcomp a g) _ (fun fff => dcat_postcomp B x fff v)) ;
+    is0dfunctor_dcat_precomp_strong : forall {a b c : A} {x : B a} {y : B b} (z : B c)
+                                 {f : a $-> b} (g : b $-> c)
+                                 (u : dHom f x y),
+        (@Is0DFunctor _ _ (fun gg => dHom gg y z) (fun h => dHom h x z) _ _ _ _ _ _ (cat_precomp c f) _ (fun ggg => dcat_precomp B z ggg u)) ;
+    dcat_assoc_strong : forall {a b c d : A}
+                        {f : a $-> b} {g : b $-> c} {h : c $-> d}
+                        {x : B a} {y : B b} {z : B c} {w : B d}
+                        (u : dHom f x y) (v : dHom g y z) (t : dHom h z w),
+        (transport (fun k => dHom k x w) (cat_assoc_strong f g h) ((t $$o v) $$o u)) = (t $$o (v $$o u)); 
+    dcat_idl_strong : forall {a b : A} {f : a $-> b} {x : B a} {y : B b}
+                      (u : dHom f x y),
+        (transport (fun k => dHom k x y) (cat_idl_strong f)  ((dId y) $$o u)) = u ;
+    dcat_idr_strong : forall {a b : A} {f : a $-> b} {x : B a} {y : B b}
+                      (u : dHom f x y),
+        (transport (fun k => dHom k x y) (cat_idr_strong f) (u $$o (dId x))) = u
+  }.
+
+Global Existing Instance isdgraph_dHom_strong.
+Global Existing Instance is01dcat_dHom_strong.
+Global Existing Instance isdgpd_dHom_strong.
+Global Existing Instance is0dfunctor_dcat_postcomp_strong.
+Global Existing Instance is0dfunctor_dcat_precomp_strong.
+
+
+Arguments dcat_assoc_strong {_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _} u v t.
+Arguments dcat_idl_strong {_ _ _ _ _ _ _ _ _ _ _ _} u.
+Arguments dcat_idr_strong {_ _ _ _  _ _ _ _ _ _ _ _} u.
+
+
+Definition  dcat_assoc_opp_strong  {A : Type} (B : A -> Type) `{Is01DCat A B} `{!Is1Cat_Strong A} `{! Is1DCat_Strong B}
+            {a b c d : A} {f : a $-> b} {g : b $-> c} {h : c $-> d}
+            {x : B a} {y : B b} {z : B c} {w : B d}
+            (u : dHom f x y) (v : dHom g y z) (t : dHom h z w) :
+  (transport (fun k => dHom k x w) (cat_assoc_opp_strong f g h) (t $$o (v $$o u))) = ((t $$o v) $$o u).
+Proof.
+  unfold cat_assoc_opp_strong.
+  apply (moveR_transport_V (fun k => dHom k x w) (cat_assoc_strong f g h) _ _).
+  exact ((dcat_assoc_strong u v t)^).
+Defined.
+
+Arguments dcat_assoc_opp_strong {_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _} u v t.
+
+Global Instance is1dcat_is1dcat_strong {A : Type} (B : A -> Type) `{Is1DCat_Strong A B} : Is1DCat B.
+Proof.
+  srefine (Build_Is1DCat A B _ _ _ _ _ _ _ _ _ _ _ _).
+  all:intros a b.
+  - intros x y ; apply isdgraph_dHom_strong.
+  - intros x y ; apply is01dcat_dHom_strong.
+  - intros x y ; apply isdgpd_dHom_strong.
+  - intros c x y z; apply is0dfunctor_dcat_postcomp_strong.
+  - intros c x y z; apply is0dfunctor_dcat_precomp_strong.
+  - intros c d f g h x y z w u v t; cbn in *.
+    exact (dGpdHom_path (fun k => dHom k x w) (cat_assoc_strong f g h) ((t $$o v) $$o u) (t $$o (v $$o u)) (dcat_assoc_strong u v t)).
+  - intros f x y u; cbn in *.
+    exact (dGpdHom_path (fun k => dHom k x y) (cat_idl_strong f) (dId y $$o u) u (dcat_idl_strong u)).
+  - intros f x y u. 
+    exact (dGpdHom_path (fun k => dHom k x y) (cat_idr_strong f) (u $$o dId x) u (dcat_idr_strong u)).
+Defined.
 
 (** products of displayed (0,1)-categories *)
 
