@@ -89,15 +89,19 @@ Class Is0DGpd {A : Type} (B : A -> Type)
 
 Notation "u ^$$" := (dgpd_rev u).
 
-Definition dGpdHom {A} (B : A -> Type) `{Is0DGpd A B} {a b : A} (f : a $-> b) (x : B a) (y : B b) := dHom f x y.
+Definition dGpdHom {A} {B : A -> Type} `{Is0DGpd A B} {a b : A} (f : a $-> b) (x : B a) (y : B b) := dHom f x y.
 
-Print dGpdHom.
+(* gpd_comp is in diagrammatic order so I had to make the same choice here *)
+Definition dgpd_comp {A} {B : A -> Type} `{Is0DGpd A B} {a b c : A} {g : b $== c} {f : a $== b} {x : B a} {y : B b} {z : B c}
+  : dGpdHom f x y -> dGpdHom g y z -> dGpdHom (f $@ g) x z
+  := fun u v => v $$o u.
+Infix "$$@" := dgpd_comp.
 
-Definition dGpdHom_path {A} (B : A -> Type) `{Is0DGpd A B} {a b : A} (p : a = b) (x : B a) (y : B b) (q : (transport B p x) = y) : dGpdHom B (GpdHom_path p) x y.
+Definition dGpdHom_path {A} (B : A -> Type) `{Is0DGpd A B} {a b : A} (p : a = b) (x : B a) (y : B b) (q : (transport B p x) = y) : dGpdHom  (GpdHom_path p) x y.
 Proof.
   destruct p, q.
   unfold GpdHom_path.
-  refine (transport (fun y => (dGpdHom B (Id a) x y)) ((transport_1 B x)^) _).
+  refine (transport (fun y => (dGpdHom (Id a) x y)) ((transport_1 B x)^) _).
   apply dId.
 Defined.
 
@@ -289,40 +293,6 @@ Proof.
   - intros [a x] [b y] [c z] [f u] [g v]; cbn.
     apply Id.
 Defined.
-
-(** A displayed 1-functor acts on 2-cells (satisfying no axioms) and also preserves composition and identities up to a 2-cell. *)
-
-Class Is1DFunctor {A1 A2 : Type} (B1 : A1 -> Type) (B2 : A2 -> Type)
-      `{Is1DCat A1 B1} `{Is1DCat A2 B2} (F : A1 -> A2)
-      `{!Is0Functor F} `{!Is1Functor F} (G : forall a:A1, B1 a -> B2 (F a)) `{!Is0DFunctor B1 B2 F G}
-  := {
-      fmapd2 : forall {a b : A1} {f g : a $-> b} {x : B1 a} {y : B1 b}
-                      (u : dHom f x y) (v : dHom g x y) (p : f $== g),
-        dHom2 p u v -> dHom2 (fmap2 F p) (fmapd G u) (fmapd G v) ;
-      fmapd_id : forall {a : A1} {x : B1 a}, dHom2 (fmap_id F a) (fmapd G (dId x)) ( dId (G a x)) ;
-      fmapd_comp : forall {a b c : A1} {f : a $-> b} {g : b $-> c}
-                          {x : B1 a} {y : B1 b} {z : B1 c}
-                          (u : dHom f x y) (v : dHom g y z),
-          dHom2 (fmap_comp F f g) (fmapd G (dcat_comp v u))
-                (dcat_comp (fmapd G v) (fmapd G u))
-    }.
-
-Arguments fmapd2 {A1 A2 B1 B2 _ _ _ _ _ _ _ _ _ _ F _ _ G _ _ a b f g x y} u v p.
-Arguments fmapd_id {A1 A2 B1 B2 _ _ _ _ _ _ _ _ _ _ F _ _ G _ _ a} x.
-Arguments fmapd_comp  {A1 A2 B1 B2 _ _ _ _ _ _ _ _ _ _ F _ _ G _ _ a b c f g x y z} u v.
-
-
-Global Instance is1functor_sigma {A1 A2 : Type} (B1 : A1 -> Type) (B2 : A2 -> Type) (F : A1 -> A2) (G : forall a : A1, B1 a -> B2 (F a))
-   `{Is1DFunctor A1 A2 B1 B2 F G}  : Is1Functor (functor_sigma F G). 
-Proof.
-  srapply Build_Is1Functor.
-  - intros [a x] [b y] [f u] [g v] [p pp]; cbn in *.
-    exact (fmap2 F p ; fmapd2 u v p pp).
-  - intros [a x]; cbn.
-    exact (fmap_id F a ; fmapd_id x).
-  - intros [a x] [b y] [c z] [f u] [g v].
-    exact (fmap_comp F f g ; fmapd_comp u v).
-Defined.
                                            
 (** Often, the coherences in both the base and the fiber are actually equalities rather than homotopies. *)
 
@@ -397,6 +367,74 @@ Proof.
   - intros f x y u. 
     exact (dGpdHom_path (fun k => dHom k x y) (cat_idr_strong f) (u $$o dId x) u (dcat_idr_strong u)).
 Defined.
+
+(** A displayed 1-functor acts on 2-cells (satisfying no axioms) and also preserves composition and identities up to a 2-cell. *)
+
+Class Is1DFunctor {A1 A2 : Type} (B1 : A1 -> Type) (B2 : A2 -> Type)
+      `{Is1DCat A1 B1} `{Is1DCat A2 B2} (F : A1 -> A2)
+      `{!Is0Functor F} `{!Is1Functor F} (G : forall a:A1, B1 a -> B2 (F a)) `{!Is0DFunctor B1 B2 F G}
+  := {
+      fmapd2 : forall {a b : A1} {f g : a $-> b} {x : B1 a} {y : B1 b}
+                      (u : dHom f x y) (v : dHom g x y) (p : f $== g),
+        dHom2 p u v -> dHom2 (fmap2 F p) (fmapd G u) (fmapd G v) ;
+      fmapd_id : forall {a : A1} {x : B1 a}, dHom2 (fmap_id F a) (fmapd G (dId x)) ( dId (G a x)) ;
+      fmapd_comp : forall {a b c : A1} {f : a $-> b} {g : b $-> c}
+                          {x : B1 a} {y : B1 b} {z : B1 c}
+                          (u : dHom f x y) (v : dHom g y z),
+          dHom2 (fmap_comp F f g) (fmapd G (dcat_comp v u))
+                (dcat_comp (fmapd G v) (fmapd G u))
+    }.
+
+Arguments fmapd2 {A1 A2 B1 B2 _ _ _ _ _ _ _ _ _ _ F _ _ G _ _ a b f g x y} u v p pp.
+Arguments fmapd_id {A1 A2 B1 B2 _ _ _ _ _ _ _ _ _ _ F _ _ G _ _ a} x.
+Arguments fmapd_comp  {A1 A2 B1 B2 _ _ _ _ _ _ _ _ _ _ F _ _ G _ _ a b c f g x y z} u v.
+
+About fmap_id.
+
+Global Instance is1functor_sigma {A1 A2 : Type} (B1 : A1 -> Type) (B2 : A2 -> Type) (F : A1 -> A2) (G : forall a : A1, B1 a -> B2 (F a))
+   `{Is1DFunctor A1 A2 B1 B2 F G}  : Is1Functor (functor_sigma F G). 
+Proof.
+  srapply Build_Is1Functor.
+  - intros [a x] [b y] [f u] [g v] [p pp]; cbn in *.
+    exact (fmap2 F p ; fmapd2 u v p pp).
+  - intros [a x]; cbn.
+    exact (fmap_id F a ; fmapd_id x).
+  - intros [a x] [b y] [c z] [f u] [g v].
+    exact (fmap_comp F f g ; fmapd_comp u v).
+Defined.
+
+
+Section CompositeFunctor.
+
+Context {A1 A2 A3 : Type} {B1 : A1 -> Type} {B2 : A2 -> Type} {B3 : A3 -> Type} `{Is1DCat A1 B1} `{Is1DCat A2 B2} `{Is1DCat A3 B3}
+          (F : A1 -> A2) `{!Is0Functor F, !Is1Functor F}
+          (G : A2 -> A3) `{!Is0Functor G, !Is1Functor G}
+          (FF : forall a:A1, B1 a -> B2 (F a)) (GG : forall a:A2, B2 a -> B3 (G a)) `{!Is0DFunctor B1 B2 F FF, !Is1DFunctor B1 B2 F FF}
+          `{!Is0DFunctor B2 B3 G GG, !Is1DFunctor B2 B3 G GG}.
+
+Global Instance is0dfunctor_compose : Is0DFunctor B1 B3 (G o F) (fun (a : A1) (x : B1 a) => ((GG (F a)) o (FF a)) x).
+  Proof.
+    srapply Build_Is0DFunctor.
+    intros a b f x y u.
+    exact (fmapd GG (fmapd FF u)).
+  Defined.
+
+  Global Instance is1dfunctor_compose : Is1DFunctor B1 B3 (G o F) (fun (a : A1) (x : B1 a) => ((GG (F a)) o (FF a)) x).
+  Proof.
+    apply Build_Is1DFunctor.
+    - intros a b f g x y u v p pp; exact (fmapd2 (fmapd FF u) (fmapd FF v) (fmap2 F p) (fmapd2 u v p pp)).
+    - intros a x.
+      refine (_ $$@ _).
+      + refine (fmapd2 _ _ (fmap_id F a) (fmapd_id x)).
+      + apply fmapd_id.
+    - intros a b c f g x y z u v.
+      refine (_ $$@ _).
+      + refine (fmapd2 _ _ (fmap_comp F f g) (fmapd_comp u v)).
+      + refine (fmapd_comp _ _).
+  Defined.      
+
+End CompositeFunctor.
+
 
 (** products of displayed (0,1)-categories *)
 
