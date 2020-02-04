@@ -4,6 +4,7 @@ Require Export Classes.interfaces.abstract_algebra.
 Require Export Classes.theory.groups.
 Require Import Pointed.Core.
 Require Import WildCat.
+Require Basics.Utf8.
 
 Generalizable Variables G H A B C f g.
 
@@ -362,7 +363,7 @@ Proof.
 Defined.
 
 (** Group forms a 01Cat *)
-Global Instance is01cat_group : Is01Cat Group :=
+Global Instance is01cat_Group : Is01Cat Group :=
   (Build_Is01Cat Group GroupHomomorphism (@grp_homo_id) (@grp_homo_compose)).
 
 Global Instance is01cat_grouphomomorphism {A B : Group} : Is01Cat (A $-> B) :=

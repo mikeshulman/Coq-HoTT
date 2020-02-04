@@ -44,8 +44,8 @@
    1. Compile the latest version of the HoTT Book to update the LaTeX
       labels. Do not forget to pull in changes from HoTT/HoTT.
 
-   2. Run `etc/Book.py` as described by `etc/Book.py` if you run it without
-      arguments. If it complains, fix things.
+   2. Run `cat ../book/*.aux | etc/Book.py contrib/HoTTBook.v`.
+      If it complains, fix things.
 
    3. Add contents to new entries.
 
@@ -532,7 +532,7 @@ Definition Book_4_2_1 := @HoTT.Basics.Overture.IsEquiv.
 (* ================================================== lem:coh-equiv *)
 (** Lemma 4.2.2 *)
 
-Definition Book_4_2_2 := @HoTT.Basics.Equivalences.other_adj.
+Definition Book_4_2_2 := @HoTT.Basics.Equivalences.eisadj_other.
 
 (* ================================================== thm:equiv-iso-adj *)
 (** Theorem 4.2.3 *)
@@ -676,7 +676,7 @@ Definition Book_4_7_6 := @HoTT.Fibrations.hfiber_functor_sigma.
 (* ================================================== thm:total-fiber-equiv *)
 (** Theorem 4.7.7 *)
 
-Definition Book_4_7_7 := @HoTT.Fibrations.isequiv_from_functor_sigma.
+Definition Book_4_7_7 := @HoTT.Fibrations.equiv_total_iff_equiv_fiberwise.
 
 (* ================================================== thm:fiber-of-a-fibration *)
 (** Lemma 4.8.1 *)
@@ -766,7 +766,7 @@ Definition Book_4_9_5 := @HoTT.FunextVarieties.WeakFunext_implies_Funext.
 (* ================================================== thm:identity-systems *)
 (** Theorem 5.8.2 *)
 
-
+Definition Book_5_8_2_iv_implies_iii := @HoTT.PathAny.equiv_path_from_contr.
 
 (* ================================================== thm:ML-identity-systems *)
 (** Theorem 5.8.4 *)
@@ -1429,18 +1429,15 @@ Definition Book_7_6_2 := @HoTT.Fibrations.equiv_istruncmap_ap.
 
 Definition Book_8_8_1 := @HoTT.Homotopy.WhiteheadsPrinciple.isequiv_issurj_tr0_isequiv_ap.
 
-
 (* ================================================== thm:whitehead1 *)
 (** Corollary 8.8.2 *)
 
 Definition Book_8_8_2 := @HoTT.Homotopy.WhiteheadsPrinciple.isequiv_isbij_tr0_isequiv_loops.
 
-
 (* ================================================== thm:whiteheadn *)
 (** Theorem 8.8.3 *)
 
 Definition Book_8_8_3 := @HoTT.Homotopy.WhiteheadsPrinciple.whiteheads_principle.
-
 
 (* ================================================== thm:whitehead-contr *)
 (** Corollary 8.8.4 *)
@@ -1449,6 +1446,11 @@ Definition Book_8_8_3 := @HoTT.Homotopy.WhiteheadsPrinciple.whiteheads_principle
 
 (* ================================================== thm:pik-conn *)
 (** Corollary 8.8.5 *)
+
+
+
+(* ================================================== lem:encode-decode-loop *)
+(** Lemma 8.9.1 *)
 
 
 
