@@ -18,7 +18,7 @@ Class Is1Natural {A B : Type} `{IsGraph A} `{Is1Cat B}
     Square (fmap F f) (fmap G f) (alpha a) (alpha a');
 }.
 
-Arguments isnat {_ _ _ _ _ _ _ _ _} alpha {alnat _ _} f : rename.
+Arguments isnat {_ _ _ _ _ _ _ _ _ _} alpha {alnat _ _} f : rename.
 
 (** The transposed natural square *)
 Definition isnat_tr {A B : Type} `{IsGraph A} `{Is1Cat B}

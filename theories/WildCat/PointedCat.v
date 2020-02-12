@@ -24,7 +24,7 @@ Section ZeroLaws.
   Context {A : Type} `{IsPointedCat A} {a b c : A}
     (f : a $-> b) (g : b $-> c).
 
-  Local Arguments zero_morphism {_ _ _ _} _ _.
+  Local Arguments zero_morphism {_ _ _ _ _} _ _.
 
   Definition cat_zero_source (h : 1 $-> a) : h $== 0
     := (isinitial_zero_object a).2 h

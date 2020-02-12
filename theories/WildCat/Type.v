@@ -4,13 +4,25 @@ Require Export WildCat.Equiv.
 
 (** ** The category of types *)
 
-Global Instance is01cat_type : Is01Cat Type
-  := Build_Is01Cat Type (fun a b => a -> b)
-                      (fun a => idmap) (fun a b c g f => g o f).
+Global Instance isgraph_type : IsGraph Type
+  := Build_IsGraph Type (fun a b => a -> b).
 
-Global Instance is01cat_arrow {A B : Type}: Is01Cat (A $-> B)
-  := Build_Is01Cat _ (fun f g => f == g) (fun f a => idpath)
-                      (fun f g h p q a => q a @ p a).
+Global Instance is01cat_type : Is01Cat Type.
+Proof.
+  econstructor.
+  + intro; exact idmap.
+  + exact (fun a b c g f => g o f).
+Defined.
+
+Global Instance isgraph_arrow {A B : Type} : IsGraph (A $-> B)
+  := Build_IsGraph _ (fun f g => f == g).
+
+Global Instance is01cat_arrow {A B : Type} : Is01Cat (A $-> B).
+Proof.
+  econstructor.
+  - exact (fun f a => idpath).
+  - exact (fun f g h p q a => q a @ p a).
+Defined.
 
 Global Instance is0gpd_arrow {A B : Type}: Is0Gpd (A $-> B).
 Proof.
@@ -48,7 +60,7 @@ Defined.
 
 Global Instance hasequivs_type : HasEquivs Type.
 Proof.
-  srefine (Build_HasEquivs Type _ _ Equiv (@IsEquiv) _ _ _ _ _ _ _ _); intros A B.
+  srefine (Build_HasEquivs Type _ _ _ Equiv (@IsEquiv) _ _ _ _ _ _ _ _); intros A B.
   all:intros f.
   - exact f.
   - exact _.
