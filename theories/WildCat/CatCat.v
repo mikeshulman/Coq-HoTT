@@ -18,19 +18,26 @@ Require Import WildCat.Induced.
 Record WildCat01 :=
 {
   cat01_carrier : Type;
+  cat01_isgraph : IsGraph cat01_carrier;
   cat01_is01cat : Is01Cat cat01_carrier;
 }.
 
 (* note for morgan: this allows us to consider WildCats as types. *)
 Coercion cat01_carrier : WildCat01 >-> Sortclass.
 
+Global Existing Instance cat01_isgraph.
 Global Existing Instance cat01_is01cat.
+
+Global Instance isgraph_wildcat01 : IsGraph WildCat01.
+Proof.
+  econstructor.
+  intros A B.
+  exact (Fun01 A B).
+Defined.
 
 Global Instance is01cat_wildcat01 : Is01Cat WildCat01.
 Proof.
   serapply Build_Is01Cat.
-  + intros A B.  
-    exact (Fun01 A B).
   + intros C. cbn in *.
     exists idmap; exact _.
   + intros A B C [G g] [F f].
@@ -46,6 +53,7 @@ Defined.
 Record WildCat :=
 {
   cat_carrier : Type;
+  cat_isgraph : IsGraph cat_carrier;
   cat_is01cat : Is01Cat cat_carrier;
   cat_is1cat : Is1Cat cat_carrier
 }.
@@ -53,18 +61,24 @@ Record WildCat :=
 (* note for morgan: this allows us to consider WildCats as types. *)
 Coercion cat_carrier : WildCat >-> Sortclass. 
 
-Global Existing Instance cat_is01cat. 
+Global Existing Instance cat_isgraph.
+Global Existing Instance cat_is01cat.
 Global Existing Instance cat_is1cat.
 
-(** The proof below is almost identical to that showing that WildCat01 is a (0,1)-category, but we use [Fun11] instead of [Fun01]. *)
+(** The proofs below are almost identical to those showing that WildCat01 is a (0,1)-category, but we use [Fun11] instead of [Fun01]. *)
+Global Instance isgraph_wildcat : IsGraph WildCat.
+Proof.
+  econstructor.
+  intros A B.
+  exact (Fun11 A B).
+Defined.
+
 Global Instance is01cat_wildcat : Is01Cat WildCat.
 Proof.
   serapply Build_Is01Cat.
-  + intros A B.
-    exact (Fun11 A B).
-  + intro A; rapply (Build_Fun11 idmap).
+  + intro A; rapply (Build_Fun11 _ _ idmap).
   + intros C D E [F ? ?] [G ? ?]; cbn in *.
-    srapply (Build_Fun11 (F o G)).
+    srapply (Build_Fun11 _ _ (F o G)).
 Defined.
 
 (** Now we show WildCat is a 2-category, with a 1-category structure on Fun02 given by natural transformations. *) 

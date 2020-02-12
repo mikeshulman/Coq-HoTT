@@ -3,6 +3,11 @@ Require Import WildCat.Core.
 
 (** Empty category *)
 
+Global Instance isgraph_empty : IsGraph Empty.
+Proof.
+  by apply Build_IsGraph.
+Defined.
+
 Global Instance is01cat_empty : Is01Cat Empty.
 Proof.
   srapply Build_Is01Cat; intros [].
@@ -15,5 +20,5 @@ Defined.
 
 Global Instance is1cat_empty : Is1Cat Empty.
 Proof.
-  simple notypeclasses refine (Build_Is1Cat _ _ _ _ _ _ _ _ _); intros [].
+  unshelve econstructor; intros [].
 Defined.

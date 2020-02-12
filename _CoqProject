@@ -284,13 +284,10 @@ theories/Homotopy/BlakersMassey.v
 theories/Homotopy/Freudenthal.v
 theories/Homotopy/ClassifyingSpace.v
 theories/Homotopy/EMSpace.v
-<<<<<<< HEAD
 theories/Homotopy/SuccessorStructure.v
 theories/Homotopy/ExactSequence.v
 theories/Homotopy/Splice.v
-=======
 theories/Homotopy/CayleyDickson.v
->>>>>>> master
 
 #
 #   Pointed
