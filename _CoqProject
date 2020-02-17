@@ -68,6 +68,7 @@ theories/WildCat/TwoOneCat.v
 theories/WildCat/NatTrans.v
 #theories/WildCat/Comma.v
 theories/WildCat/PointedCat.v
+theories/WildCat/Displayed.v
 
 theories/WildCat/ooCat.v
 

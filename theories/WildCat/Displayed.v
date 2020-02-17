@@ -27,6 +27,14 @@ Class IsDGraph {A : Type} (B : A -> Type) `{IsGraph A} :=
 
 Arguments dHom {_ _ _ _ a b} f x y.
 
+Global Instance isgraph_sigma {A : Type} (B : A -> Type) `{IsDGraph A B}
+  : IsGraph (sig B).
+Proof.
+  apply Build_IsGraph.
+  intros [a x] [b y].
+  exact {f : a $-> b & dHom f x y}.
+Defined.
+
 Class Is01DCat {A : Type} `{Is01Cat A} (B : A -> Type) `{!IsDGraph B} :=
 {
   dId : forall {a : A} (x : B a), dHom (Id a) x x;
@@ -37,11 +45,15 @@ Class Is01DCat {A : Type} `{Is01Cat A} (B : A -> Type) `{!IsDGraph B} :=
 
 Notation "v $$o u" := (dcat_comp v u).
 
-Definition dcat_postcomp {A} `{Is01Cat A} (B : A -> Type) `{!IsDGraph B} `{!Is01DCat B} {a b c : A} (x : B a) {y : B b} {z : B c} (f : a $-> b) {g : b $-> c} (v : dHom g y z)
+Definition dcat_postcomp {A} `{Is01Cat A} (B : A -> Type)
+  `{!IsDGraph B} `{!Is01DCat B} {a b c : A} (x : B a) {y : B b} {z : B c}
+  (f : a $-> b) {g : b $-> c} (v : dHom g y z)
   : (dHom f x y) -> (dHom (g $o f) x z)
   := fun u => v $$o u.
 
-Definition dcat_precomp {A} `{Is01Cat A} (B : A -> Type) `{!IsDGraph B} `{!Is01DCat B} {a b c : A} {x : B a} {y : B b} (z : B c) {f : a $-> b} (g : b $-> c) (u : dHom f x y)
+Definition dcat_precomp {A} `{Is01Cat A} (B : A -> Type)
+  `{!IsDGraph B} `{!Is01DCat B} {a b c : A} {x : B a} {y : B b} (z : B c)
+  {f : a $-> b} (g : b $-> c) (u : dHom f x y)
   : (dHom g y z) -> (dHom (g $o f) x z)
   := fun v => v $$o u.
 
@@ -63,45 +75,50 @@ Proof.
   - apply dcat_comp'.
 Defined.
 *)
-    
+
 Global Instance is01cat_sigma {A : Type} (B : A -> Type) `{Is01DCat A B}
   : Is01Cat (sig B).
 Proof.
   srapply Build_Is01Cat.
-  - intros [a x] [b y]; exact {f : a $-> b & dHom f x y}.
   - cbn. intros [a x]; exact (Id a; dId x).
   - cbn. intros [a x] [b y] [c z] [g v] [f u]. exact (g $o f; v $$o u).
 Defined.
 
-Global Instance is0functor_pr1 {A : Type} (B : A -> Type) `{Is01DCat A B} : Is0Functor (pr1 : (sig B) -> A).
+Global Instance is0functor_pr1 {A : Type} (B : A -> Type) `{Is01DCat A B}
+  : Is0Functor (pr1 : (sig B) -> A).
 Proof.
   apply Build_Is0Functor.
   intros [a x] [b y] [f u]; cbn.
   assumption.
-Defined.  
+Defined.
 
 (** A wild displayed 0-groupoid is a wild displayed (0,1)-category whose morphisms can be reversed. *)
 
-Class Is0DGpd {A : Type} (B : A -> Type)
-      `{Is01DCat A B} {ag : Is0Gpd A} :=
-  { dgpd_rev : forall {a b : A} {f : a $-> b} {x : B a} {y : B b},
-      dHom f x y -> dHom (f^$) y x }.
+Class Is0DGpd {A : Type} (B : A -> Type) `{Is01DCat A B} {ag : Is0Gpd A} :=
+{
+  dgpd_rev : forall {a b : A} {f : a $-> b} {x : B a} {y : B b},
+                                    dHom f x y -> dHom (f^$) y x ;
+}.
 
 Notation "u ^$$" := (dgpd_rev u).
 
-Definition dGpdHom {A} {B : A -> Type} `{Is0DGpd A B} {a b : A} (f : a $-> b) (x : B a) (y : B b) := dHom f x y.
+Definition dGpdHom {A} {B : A -> Type} `{Is0DGpd A B} {a b : A}
+  (f : a $-> b) (x : B a) (y : B b)
+  := dHom f x y.
 
 (* gpd_comp is in diagrammatic order so I had to make the same choice here *)
-Definition dgpd_comp {A} {B : A -> Type} `{Is0DGpd A B} {a b c : A} {g : b $== c} {f : a $== b} {x : B a} {y : B b} {z : B c}
+Definition dgpd_comp {A} {B : A -> Type} `{Is0DGpd A B} {a b c : A}
+  {g : b $== c} {f : a $== b} {x : B a} {y : B b} {z : B c}
   : dGpdHom f x y -> dGpdHom g y z -> dGpdHom (f $@ g) x z
   := fun u v => v $$o u.
+
 Infix "$$@" := dgpd_comp.
 
-Definition dGpdHom_path {A} (B : A -> Type) `{Is0DGpd A B} {a b : A} (p : a = b) (x : B a) (y : B b) (q : (transport B p x) = y) : dGpdHom  (GpdHom_path p) x y.
+Definition dGpdHom_path {A} (B : A -> Type) `{Is0DGpd A B} {a b : A}
+  (p : a = b) (x : B a) (y : B b) (q : transport B p x = y)
+  : dGpdHom (GpdHom_path p) x y.
 Proof.
   destruct p, q.
-  unfold GpdHom_path.
-  refine (transport (fun y => (dGpdHom (Id a) x y)) ((transport_1 B x)^) _).
   apply dId.
 Defined.
 
@@ -117,15 +134,20 @@ Defined.
 (** A displayed 0-functor acts on morphisms, but satisfies no axioms. *)
 
 Class Is0DFunctor {A1 A2 : Type} (B1 : A1 -> Type) (B2 : A2 -> Type)
-      `{Is01DCat A1 B1} `{Is01DCat A2 B2}
-      (F : A1 -> A2) `{!Is0Functor F}
-      (G : forall a:A1, B1 a -> B2 (F a))
-  := { fmapd : forall {a b : A1} {f : a $-> b} {x : B1 a} {y : B1 b},
-         dHom f x y -> dHom (fmap F f) (G a x) (G b y) }.
+  `{Is01DCat A1 B1} `{Is01DCat A2 B2}
+  (F : A1 -> A2) `{!Is0Functor F}  (G : forall (a : A1), B1 a -> B2 (F a)) :=
+{
+  fmapd : forall {a b : A1} {f : a $-> b} {x : B1 a} {y : B1 b},
+         dHom f x y -> dHom (fmap F f) (G a x) (G b y) ;
+}.
 
-Arguments fmapd {A1 A2 B1 B2 _ _ _ _ _ _ F _} G {_ a b f x y} u : rename.
+Arguments fmapd {A1 A2 B1 B2 _ _ _ _ _ _ _ _ F _} G {_ a b f x y} u : rename.
 
-Global Instance is0functor_sigma {A1 A2 : Type} (B1 : A1 -> Type) (B2 : A2 -> Type) `{Is01DCat A1 B1} `{Is01DCat A2 B2} (F : A1 -> A2) {ff : Is0Functor F} (G : forall a:A1, B1 a -> B2 (F a)) {gg : Is0DFunctor B1 B2 F G} : Is0Functor (functor_sigma F G).
+Global Instance is0functor_sigma {A1 A2 : Type} (B1 : A1 -> Type)
+  (B2 : A2 -> Type) `{Is01DCat A1 B1} `{Is01DCat A2 B2} (F : A1 -> A2)
+  {ff : Is0Functor F} (G : forall a:A1, B1 a -> B2 (F a))
+  {gg : Is0DFunctor B1 B2 F G}
+  : Is0Functor (functor_sigma F G).
 Proof.
   srapply Build_Is0Functor.
   intros [a x] [b y].
@@ -140,100 +162,91 @@ Defined.
 
 (** A wild displayed 1-category (a.k.a. (1,1)-category) has its hom-types enhanced to 0-groupoids, its composition operations to 0-functors, and its composition associative and unital up to these 2-cells. *)
 
-Class Is1DCat {A : Type} 
-      (B : A -> Type) `{Is01DCat A B} `{!Is1Cat A} :=  
-  {
-    isdgraph_dHom : forall {a b : A} {x : B a} {y : B b},
-      @IsDGraph (a $-> b) (fun f => dHom f x y) _;
-    is01dcat_dHom : forall {a b : A} {x : B a} {y : B b},
-      @Is01DCat  (a $-> b) _ (fun f => dHom f x y) _;
-    isdgpd_dHom : forall {a b : A} {x : B a} {y : B b},
-        @Is0DGpd (a $-> b) (fun f => dHom f x y) _ _ _ _;
-    is0dfunctor_dcat_postcomp : forall {a b c : A} (x : B a) {y : B b} {z : B c}
-                                  (f : a $-> b) {g : b $-> c}
-                                  (v : dHom g y z),
-        (@Is0DFunctor _ _ (fun ff => dHom ff x y) (fun h => dHom h x z) _ _ _ _ _ _ (cat_postcomp a g) _ (fun fff => dcat_postcomp B x fff v)) ;
-    is0dfunctor_dcat_precomp : forall {a b c : A} {x : B a} {y : B b} (z : B c)
-                                 {f : a $-> b} (g : b $-> c)
-                                 (u : dHom f x y),
-        (@Is0DFunctor _ _ (fun gg => dHom gg y z) (fun h => dHom h x z) _ _ _ _ _ _ (cat_precomp c f) _ (fun ggg => dcat_precomp B z ggg u)) ;
-(*  is0Dfunctor_dcat_comp : forall {a b c : A}
-                               {x : B a} {y : B b} {z : B c},
-        (@Is0DFunctor ((b $-> c) * (a $-> b)) (a $-> c)
-                      (fun gf => dHom (fst gf) y z * dHom (snd gf) x y)
-                      (fun k => dHom k x z) _ _
-                      (is01Dcat_prod (fun g => dHom g y z)
-                                        (fun f => dHom f x y) ) _ _ _
-                      (uncurry (@cat_comp A _ a b c)) _
-                      (fun h => (fun vu =>
-                                   @dcat_comp A _ B _ _ a b c (fst h) (snd h)
-                                          x y z (fst vu) (snd vu)))); *)
-    dcat_assoc : forall {a b c d : A}
-                        {f : a $-> b} {g : b $-> c} {h : c $-> d}
-                        {x : B a} {y : B b} {z : B c} {w : B d}
-                        (u : dHom f x y) (v : dHom g y z) (t : dHom h z w),
-        (@dHom (a $-> d) (fun k => dHom k x w) _ _
-               ((h $o g) $o f) (h $o ( g $o f))
-               (cat_assoc f g h) ((t $$o v) $$o u) (t $$o (v $$o u)));  
-    dcat_idl : forall {a b : A} {f : a $-> b} {x : B a} {y : B b}
-                      (u : dHom f x y),
-        @dHom (a $-> b) (fun k => dHom k x y) _ _
-              ((Id b) $o f) f (cat_idl f) ((dId y) $$o u) u ;
-    dcat_idr : forall {a b : A} {f : a $-> b} {x : B a} {y : B b}
-                      (u : dHom f x y),
-        @dHom (a $-> b) (fun k => dHom k x y) _ _
-              (f $o (Id a)) f (cat_idr f) (u $$o (dId x)) u
-  }.
+Class Is1DCat {A : Type} (B : A -> Type) `{Is01DCat A B} `{!Is1Cat A} :=
+{
+  (** dHoms are dgraphs *)
+  isdgraph_dHom : forall {a b : A} {x : B a} {y : B b},
+    @IsDGraph (a $-> b) (fun f => dHom f x y) _;
+  (** dHoms are 01dcats *)
+  is01dcat_dHom : forall {a b : A} {x : B a} {y : B b},
+    @Is01DCat  (a $-> b) _ _ (fun f => dHom f x y) _;
+  (** dHoms are 0dgpds *)
+  isdgpd_dHom : forall {a b : A} {x : B a} {y : B b},
+    @Is0DGpd (a $-> b) (fun f => dHom f x y) _ _ _ _ _;
+  (** post composition is a 0dfunctor *)
+  is0dfunctor_dcat_postcomp : forall {a b c : A} (x : B a) {y : B b} {z : B c}
+    (f : a $-> b) {g : b $-> c} (v : dHom g y z),
+    @Is0DFunctor _ _ (fun ff => dHom ff x y) (fun h => dHom h x z) _ _ _ _ _ _ _ _
+      (cat_postcomp a g) _ (fun fff => dcat_postcomp B x fff v) ;
+  (** pre composition is a 0dfunctor *)
+  is0dfunctor_dcat_precomp : forall {a b c : A} {x : B a} {y : B b} (z : B c)
+    {f : a $-> b} (g : b $-> c) (u : dHom f x y),
+    @Is0DFunctor _ _ (fun gg => dHom gg y z) (fun h => dHom h x z) _ _ _ _ _ _ _ _
+      (cat_precomp c f) _ (fun ggg => dcat_precomp B z ggg u) ;
+  (** dassociativity *)
+  dcat_assoc : forall {a b c d : A} {f : a $-> b} {g : b $-> c} {h : c $-> d}
+    {x : B a} {y : B b} {z : B c} {w : B d}
+    (u : dHom f x y) (v : dHom g y z) (t : dHom h z w),
+      @dHom (a $-> d) (fun k => dHom k x w) _ _ ((h $o g) $o f) (h $o ( g $o f))
+       (cat_assoc f g h) ((t $$o v) $$o u) (t $$o (v $$o u)) ;
+  (** d left identity *)
+  dcat_idl : forall {a b : A} {f : a $-> b} {x : B a} {y : B b} (u : dHom f x y),
+    @dHom (a $-> b) (fun k => dHom k x y) _ _ ((Id b) $o f) f (cat_idl f) ((dId y) $$o u) u ;
+  (** d right identity *)
+  dcat_idr : forall {a b : A} {f : a $-> b} {x : B a} {y : B b} (u : dHom f x y),
+    @dHom (a $-> b) (fun k => dHom k x y) _ _ (f $o (Id a)) f (cat_idr f) (u $$o (dId x)) u ;
+}.
 
 Global Existing Instance isdgraph_dHom.
 Global Existing Instance is01dcat_dHom.
 Global Existing Instance isdgpd_dHom.
 Global Existing Instance is0dfunctor_dcat_postcomp.
 Global Existing Instance is0dfunctor_dcat_precomp.
-(* Global Existing Instance is0dfunctor_dcat_comp. *)
 
-Arguments dcat_assoc {_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _} u v t.
-Arguments dcat_idl {_ _ _ _ _ _ _ _ _ _ _ _} u.
-Arguments dcat_idr {_ _ _ _  _ _ _ _ _ _ _ _} u.
+Arguments dcat_assoc {_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _} u v t.
+Arguments dcat_idl {_ _ _ _ _ _ _ _ _ _ _ _ _} u.
+Arguments dcat_idr {_ _ _ _  _ _ _ _ _ _ _ _ _} u.
 
-Definition  dcat_assoc_opp  {A : Type} (B : A -> Type) `{Is01DCat A B} `{!Is1Cat A} `{! Is1DCat B}
-            {a b c d : A} {f : a $-> b} {g : b $-> c} {h : c $-> d}
-            {x : B a} {y : B b} {z : B c} {w : B d}
-            (u : dHom f x y) (v : dHom g y z) (t : dHom h z w) : (@dHom (a $-> d) (fun k => dHom k x w) _ _ (h $o (g $o f)) ((h $o g) $o f) ((cat_assoc f g h)^$) (t $$o (v $$o u)) ((t $$o v) $$o u)) := ((dcat_assoc u v t)^$$).  
+Definition dcat_assoc_opp {A : Type} (B : A -> Type) `{Is1DCat A B}
+  {a b c d : A} {f : a $-> b} {g : b $-> c} {h : c $-> d}
+  {x : B a} {y : B b} {z : B c} {w : B d}
+  (u : dHom f x y) (v : dHom g y z) (t : dHom h z w)
+  : @dHom (a $-> d) (fun k => dHom k x w) _ _ (h $o (g $o f)) ((h $o g) $o f)
+    ((cat_assoc f g h)^$) (t $$o (v $$o u)) ((t $$o v) $$o u)
+  := (dcat_assoc u v t)^$$.
 
-Arguments dcat_assoc_opp {_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _} u v t.
+Arguments dcat_assoc_opp {_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _} u v t.
 
-Definition dHom2  {A : Type} {a01 : Is01Cat A} {a11 : Is1Cat A} {B : A -> Type} {b00 : IsDGraph B} {b01 : Is01DCat B} {b11 : Is1DCat B} {a b : A} {x : B a} {y : B b} {f : a $-> b} {g : a $-> b} (p : f $== g) (u : dHom f x y) (v : dHom g x y) : Type := dHom  p u v.
+Definition dHom2 {A : Type} {B : A -> Type} `{Is1DCat A B} {a b : A} {x : B a}
+  {y : B b} {f : a $-> b} {g : a $-> b} (p : f $== g) (u : dHom f x y) (v : dHom g x y)
+  : Type
+  := dHom p u v.
 
-
-Definition dcat_postwhisker  {A : Type} {a01 : Is01Cat A} {a11 : Is1Cat A} {B : A -> Type} {b00 : IsDGraph B} {b01 : Is01DCat B} {b11 : Is1DCat B}
-          {a b c : A} {x : B a} {y : B b} {z : B c}
-           {f g : a $-> b} {u : dHom f x y} {v : dHom g x y} {h : b $-> c} (w : dHom h y z) {p : f $== g} (pp : dHom2 p u v)
+Definition dcat_postwhisker  {A : Type} {B : A -> Type} `{Is1DCat A B}
+  {a b c : A} {x : B a} {y : B b} {z : B c} {f g : a $-> b} {u : dHom f x y}
+  {v : dHom g x y} {h : b $-> c} (w : dHom h y z) {p : f $== g} (pp : dHom2 p u v)
   : dHom2 (cat_postwhisker h p) (w $$o u) (w $$o v).
 Proof.
-  Print fmapd.
-  apply (@fmapd _ _ (fun ff => dHom ff x y) (fun hh => dHom hh x z) _ _ _ _ _ _  (cat_postcomp a h) _ (fun fff => dcat_postcomp B x fff w)).
+  apply (@fmapd _ _ (fun ff => dHom ff x y) (fun hh => dHom hh x z) _ _ _ _ _ _ _ _  (cat_postcomp a h) _ (fun fff => dcat_postcomp B x fff w)).
   - apply is0dfunctor_dcat_postcomp; assumption. 
   - assumption.
 Defined.
 
-Arguments dcat_postwhisker {_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _} w {_} pp.
+Arguments dcat_postwhisker {_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _} w {_} pp.
 
 (* Notation "w $$@L pp" := (dcat_postwhisker w pp). *)
 
-
-Definition dcat_prewhisker  {A : Type} {a01 : Is01Cat A} {a11 : Is1Cat A} {B : A -> Type} {b00 : IsDGraph B} {b01 : Is01DCat B} {b11 : Is1DCat B}
-          {a b c : A} {x : B a} {y : B b} {z : B c}
-           {f : a $-> b} (u : dHom f x y) {g h : b $-> c} {v : dHom g y z}  {w : dHom h y z} {q : g $== h} (qq : dHom2 q v w)
+Definition dcat_prewhisker  {A : Type} {B : A -> Type} `{Is1DCat A B}
+  {a b c : A} {x : B a} {y : B b} {z : B c} {f : a $-> b} (u : dHom f x y)
+  {g h : b $-> c} {v : dHom g y z}  {w : dHom h y z} {q : g $== h} (qq : dHom2 q v w)
   : dHom2 (cat_prewhisker q f) (v $$o u) (w $$o u).
 Proof.
-  Print fmapd.
-  apply (@fmapd _ _ (fun gg => dHom gg y z) (fun hh => dHom hh x z) _ _ _ _ _ _  (cat_precomp c f) _ (fun fff => dcat_precomp B z fff u)).
+  apply (@fmapd _ _ (fun gg => dHom gg y z) (fun hh => dHom hh x z) _ _ _ _ _ _ _ _ (cat_precomp c f) _ (fun fff => dcat_precomp B z fff u)).
   - apply is0dfunctor_dcat_precomp; assumption. 
   - assumption.
 Defined.
 
-Arguments dcat_prewhisker {_ _ _ _ _ _ _ _ _ _ _ _ _ _} u {_ _ _ _ _} qq.
+Arguments dcat_prewhisker {_ _ _ _ _ _ _ _ _ _ _ _ _ _ _} u {_ _ _ _ _} qq.
 
 (* Notation "qq $$@R u" := (dcat_postwhisker u pp). *)
 
@@ -252,16 +265,17 @@ Global Instance is1cat_sigma {A : Type} (B : A -> Type) `{Is1DCat A B}
 Proof.
   serapply Build_Is1Cat.
   - intros [a x] [b y].
+    srapply Build_IsGraph.
+    intros [f u] [g v].
+    exact { p : f $== g & (dHom2 p u v)}.
+  - intros [a x] [b y].
     serapply Build_Is01Cat.
-    + intros [f u] [g v].
-      exact { p : f $== g & (dHom2 p u v)}.
     + intros [f u].
       exists (Id f).
       apply  is01dcat_dHom.
     + intros [f u] [g v] [h w] [q qq] [p pp].
       exists (q $o p).
-      Print dcat_comp.
-      apply (@dcat_comp _ _ _ _ _ f g h q p u v w qq pp).
+      serapply dcat_comp; assumption.
   - intros [a x] [b y].
     apply Build_Is0Gpd.
     intros [f u] [g v] [p pp].
@@ -282,7 +296,8 @@ Proof.
     exact (cat_idr f ; dcat_idr u).
 Defined.
 
-Global Instance is1functor_pr1 {A : Type} (B : A -> Type) `{Is1DCat A B} : Is1Functor (pr1 : (sig B) -> A).
+Global Instance is1functor_pr1 {A : Type} (B : A -> Type) `{Is1DCat A B}
+  : Is1Functor (pr1 : (sig B) -> A).
 Proof.
   apply Build_Is1Functor.
   - intros [a x] [b y] [f u] [g v]; cbn.
@@ -293,26 +308,25 @@ Proof.
   - intros [a x] [b y] [c z] [f u] [g v]; cbn.
     apply Id.
 Defined.
-                                           
-(** Often, the coherences in both the base and the fiber are actually equalities rather than homotopies. *)
 
+(** Often, the coherences in both the base and the fiber are actually equalities rather than homotopies. *)
 Class Is1DCat_Strong {A : Type} 
       (B : A -> Type) `{Is01DCat A B} `{!Is1Cat_Strong A} :=  
   {
     isdgraph_dHom_strong : forall {a b : A} {x : B a} {y : B b},
       @IsDGraph (a $-> b) (fun f => dHom f x y) _;
     is01dcat_dHom_strong : forall {a b : A} {x : B a} {y : B b},
-      @Is01DCat  (a $-> b) _ (fun f => dHom f x y) _;
+      @Is01DCat  (a $-> b) _ _ (fun f => dHom f x y) _;
     isdgpd_dHom_strong : forall {a b : A} {x : B a} {y : B b},
-        @Is0DGpd (a $-> b) (fun f => dHom f x y) _ _ _ _;
+        @Is0DGpd (a $-> b) (fun f => dHom f x y) _ _ _ _ _;
     is0dfunctor_dcat_postcomp_strong : forall {a b c : A} (x : B a) {y : B b} {z : B c}
                                   (f : a $-> b) {g : b $-> c}
                                   (v : dHom g y z),
-        (@Is0DFunctor _ _ (fun ff => dHom ff x y) (fun h => dHom h x z) _ _ _ _ _ _ (cat_postcomp a g) _ (fun fff => dcat_postcomp B x fff v)) ;
+        (@Is0DFunctor _ _ (fun ff => dHom ff x y) (fun h => dHom h x z) _ _ _ _ _ _ _ _ (cat_postcomp a g) _ (fun fff => dcat_postcomp B x fff v)) ;
     is0dfunctor_dcat_precomp_strong : forall {a b c : A} {x : B a} {y : B b} (z : B c)
                                  {f : a $-> b} (g : b $-> c)
                                  (u : dHom f x y),
-        (@Is0DFunctor _ _ (fun gg => dHom gg y z) (fun h => dHom h x z) _ _ _ _ _ _ (cat_precomp c f) _ (fun ggg => dcat_precomp B z ggg u)) ;
+        (@Is0DFunctor _ _ (fun gg => dHom gg y z) (fun h => dHom h x z) _ _ _ _ _ _ _ _ (cat_precomp c f) _ (fun ggg => dcat_precomp B z ggg u)) ;
     dcat_assoc_strong : forall {a b c d : A}
                         {f : a $-> b} {g : b $-> c} {h : c $-> d}
                         {x : B a} {y : B b} {z : B c} {w : B d}
@@ -333,9 +347,9 @@ Global Existing Instance is0dfunctor_dcat_postcomp_strong.
 Global Existing Instance is0dfunctor_dcat_precomp_strong.
 
 
-Arguments dcat_assoc_strong {_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _} u v t.
-Arguments dcat_idl_strong {_ _ _ _ _ _ _ _ _ _ _ _} u.
-Arguments dcat_idr_strong {_ _ _ _  _ _ _ _ _ _ _ _} u.
+Arguments dcat_assoc_strong {_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _} u v t.
+Arguments dcat_idl_strong {_ _ _ _ _ _ _ _ _ _ _ _ _} u.
+Arguments dcat_idr_strong {_ _ _ _  _ _ _ _ _ _ _ _ _} u.
 
 
 Definition  dcat_assoc_opp_strong  {A : Type} (B : A -> Type) `{Is01DCat A B} `{!Is1Cat_Strong A} `{! Is1DCat_Strong B}
@@ -349,11 +363,11 @@ Proof.
   exact ((dcat_assoc_strong u v t)^).
 Defined.
 
-Arguments dcat_assoc_opp_strong {_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _} u v t.
+Arguments dcat_assoc_opp_strong {_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _} u v t.
 
 Global Instance is1dcat_is1dcat_strong {A : Type} (B : A -> Type) `{Is1DCat_Strong A B} : Is1DCat B.
 Proof.
-  srefine (Build_Is1DCat A B _ _ _ _ _ _ _ _ _ _ _ _).
+  simple notypeclasses refine (Build_Is1DCat A B _ _ _ _ _ _ _ _ _ _ _ _ _).
   all:intros a b.
   - intros x y ; apply isdgraph_dHom_strong.
   - intros x y ; apply is01dcat_dHom_strong.
@@ -385,9 +399,9 @@ Class Is1DFunctor {A1 A2 : Type} (B1 : A1 -> Type) (B2 : A2 -> Type)
                 (dcat_comp (fmapd G v) (fmapd G u))
     }.
 
-Arguments fmapd2 {A1 A2 B1 B2 _ _ _ _ _ _ _ _ _ _ F _ _ G _ _ a b f g x y} u v p pp.
-Arguments fmapd_id {A1 A2 B1 B2 _ _ _ _ _ _ _ _ _ _ F _ _ G _ _ a} x.
-Arguments fmapd_comp  {A1 A2 B1 B2 _ _ _ _ _ _ _ _ _ _ F _ _ G _ _ a b c f g x y z} u v.
+Arguments fmapd2 {A1 A2 B1 B2 _ _ _ _ _ _ _ _ _ _ _ _ F _ _ G _ _ a b f g x y} u v p pp.
+Arguments fmapd_id {A1 A2 B1 B2 _ _ _ _ _ _ _ _ _ _ _ _ F _ _ G _ _ a} x.
+Arguments fmapd_comp  {A1 A2 B1 B2 _ _ _ _ _ _ _ _ _ _ _ _ F _ _ G _ _ a b c f g x y z} u v.
 
 About fmap_id.
 
@@ -412,12 +426,13 @@ Context {A1 A2 A3 : Type} {B1 : A1 -> Type} {B2 : A2 -> Type} {B3 : A3 -> Type} 
           (FF : forall a:A1, B1 a -> B2 (F a)) (GG : forall a:A2, B2 a -> B3 (G a)) `{!Is0DFunctor B1 B2 F FF, !Is1DFunctor B1 B2 F FF}
           `{!Is0DFunctor B2 B3 G GG, !Is1DFunctor B2 B3 G GG}.
 
-Global Instance is0dfunctor_compose : Is0DFunctor B1 B3 (G o F) (fun (a : A1) (x : B1 a) => ((GG (F a)) o (FF a)) x).
-  Proof.
-    srapply Build_Is0DFunctor.
-    intros a b f x y u.
-    exact (fmapd GG (fmapd FF u)).
-  Defined.
+Global Instance is0dfunctor_compose
+  : Is0DFunctor B1 B3 (G o F) (fun (a : A1) (x : B1 a) => ((GG (F a)) o (FF a)) x).
+Proof.
+  serapply (Build_Is0DFunctor _ _ _ _).
+  intros a b f x y u.
+  exact (fmapd GG (fmapd FF u)).
+Defined.
 
   Global Instance is1dfunctor_compose : Is1DFunctor B1 B3 (G o F) (fun (a : A1) (x : B1 a) => ((GG (F a)) o (FF a)) x).
   Proof.
@@ -431,14 +446,16 @@ Global Instance is0dfunctor_compose : Is0DFunctor B1 B3 (G o F) (fun (a : A1) (x
       refine (_ $$@ _).
       + refine (fmapd2 _ _ (fmap_comp F f g) (fmapd_comp u v)).
       + refine (fmapd_comp _ _).
-  Defined.      
+  Defined.
 
 End CompositeFunctor.
 
 
 (** products of displayed (0,1)-categories *)
 
-Global Instance isDgraph_prod {A1 A2 : Type} (B1 : A1 -> Type) (B2 : A2 -> Type) `{IsDGraph A1 B1} `{IsDGraph A2 B2} : @IsDGraph (A1 * A2) (fun x => (B1 (fst x)) * (B2 (snd x))) _.
+Global Instance isDgraph_prod {A1 A2 : Type} (B1 : A1 -> Type) (B2 : A2 -> Type)
+  `{IsDGraph A1 B1} `{IsDGraph A2 B2}
+  : @IsDGraph (A1 * A2) (fun x => (B1 (fst x)) * (B2 (snd x))) _.
 Proof.
   apply Build_IsDGraph.
   intros [a1 a2] [b1 b2] [f1 f2] [x1 x2] [y1 y2].
@@ -446,8 +463,9 @@ Proof.
 Defined.
 
 
-Global Instance is01Dcat_prod {A1 A2 : Type} (B1 : A1 -> Type) (B2 : A2 -> Type)  `{Is01DCat A1 B1} `{Is01DCat A2 B2}
-  : @Is01DCat (A1 * A2) (is01cat_prod A1 A2) (fun x => (B1 (fst x)) * (B2 (snd x))) _.
+Global Instance is01Dcat_prod {A1 A2 : Type} (B1 : A1 -> Type) (B2 : A2 -> Type)
+  `{Is01DCat A1 B1} `{Is01DCat A2 B2}
+  : @Is01DCat (A1 * A2) _ (is01cat_prod A1 A2) (fun x => (B1 (fst x)) * (B2 (snd x))) _.
 Proof.
   srapply Build_Is01DCat; intros [a1 a2] [b1 b2]; cbn.
   - refine ((dId _), (dId _)).
@@ -456,7 +474,7 @@ Proof.
 Defined.
 
 Global Instance is0Dgpd_prod {A1 A2 : Type} (B1 : A1 -> Type) (B2 : A2 -> Type) `{Is0DGpd A1 B1} `{Is0DGpd A2 B2}
-       : @Is0DGpd (A1 * A2) (fun x => (B1 (fst x)) * (B2 (snd x))) _ _ _ _.
+       : @Is0DGpd (A1 * A2) (fun x => (B1 (fst x)) * (B2 (snd x))) _ _ _ _ _.
 Proof.
   srapply Build_Is0DGpd.
   intros [a1 a2] [b1 b2] [f1 f2] [x1 x2] [y1 y2] [u1 u2]; cbn in *.
@@ -481,15 +499,13 @@ Proof.
   exact ((f1 ; u1) , (f2; u2)).
 Defined.
 
-
-
 (** products of displayed 1-categories *)
 
-Global Instance is1Dcat_prod {A1 A2 : Type} `{!Is01Cat A1} `{!Is1Cat A1} `{!Is01Cat A2} `{!Is1Cat A2} (B1 : A1 -> Type) (B2 : A2 -> Type)  `{!IsDGraph B1} `{! IsDGraph B2} `{!Is01DCat B1}
-      `{!Is01DCat B2} `{!Is1DCat B1} `{!Is1DCat B2}
-  : @Is1DCat (A1 * A2) (fun x => (B1 (fst x)) * (B2 (snd x))) (is01cat_prod A1 A2) (isDgraph_prod B1 B2) (is01Dcat_prod B1 B2) (is1cat_prod A1 A2).
+Global Instance is1Dcat_prod {A1 A2 : Type} (B1 : A1 -> Type) (B2 : A2 -> Type)
+  `{Is1DCat A1 B1} `{Is1DCat A2 B2}
+  : @Is1DCat (A1 * A2) (fun x => (B1 (fst x)) * (B2 (snd x))) _ (is01cat_prod A1 A2) (isDgraph_prod B1 B2) (is01Dcat_prod B1 B2) (is1cat_prod A1 A2).
 Proof.
-  srapply (@Build_Is1DCat (A1 * A2)  (fun x => (B1 (fst x)) * (B2 (snd x)))
+  srapply (@Build_Is1DCat (A1 * A2)  (fun x => (B1 (fst x)) * (B2 (snd x))) _
                          (is01cat_prod A1 A2) (isDgraph_prod B1 B2)
                          (is01Dcat_prod B1 B2) (is1cat_prod A1 A2));
     intros [a1 a2] [b1 b2]; cbn in *.
