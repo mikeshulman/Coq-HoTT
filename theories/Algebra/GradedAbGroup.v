@@ -92,10 +92,12 @@ Section WildCat.
 
   Context {G : AbGroup}.
 
+  Global Instance isgraph_gradedgroups : IsGraph (GradedGroup G)
+    := Build_IsGraph (GradedGroup G) GradedHomomorphism.
+
   Global Instance is01cat_gradedgroups : Is01Cat (GradedGroup G).
   Proof.
     serapply Build_Is01Cat.
-    + exact GradedHomomorphism.
     + intros x.
       serapply Build_GradedHomomorphism'.
       1: reflexivity.

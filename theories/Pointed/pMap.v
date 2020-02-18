@@ -275,7 +275,7 @@ Definition functor_ppforall_right_square `{Funext} {A : pType}
   {f01 : forall a, B00 a $-> B02 a} {f21 : forall a, B20 a $-> B22 a}
   {f12 : forall a, B02 a $-> B22 a} 
   (s : forall a, Square (f10 a) (f12 a) (f01 a) (f21 a))
-  : Square (A := pType) (H0 := is1cat_ptype) (functor_ppforall_right f10) (functor_ppforall_right f12)
+  : Square (A := pType) (functor_ppforall_right f10) (functor_ppforall_right f12)
            (functor_ppforall_right f01) (functor_ppforall_right f21).
 Proof.
   refine ((functor_ppforall_right_compose _ _)^$ $@ _).

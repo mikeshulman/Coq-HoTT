@@ -3,12 +3,23 @@ Require Import WildCat.Core.
 Require Import WildCat.Prod.
 Require Import WildCat.TwoOneCat.
 Require Import WildCat.Square.
+Require Import WildCat.Displayed.
 
 Section Comma.
 
   Context {A B C : Type}
-    (F : A -> C) (G : B -> C).
+    (F : A -> C) (G : B -> C)
+    `{Is1Functor A C F, Is1Functor B C G}.
 
+  Definition DComma : A * B -> Type
+    := fun x => F (fst x) $-> G (snd x).
+
+  Global Instance isdgraph_dcomma : IsDGraph DComma.
+  Proof.
+    srapply Build_IsDGraph.
+    intros [a1 b1] [a2 b2] fg.
+    cbv.
+    
   Record Comma `{IsGraph C} := {
     comma_domain : A;
     comma_codomain : B;

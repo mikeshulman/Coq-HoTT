@@ -80,70 +80,60 @@ Section GenSpectrum.
       exact ((smap_square g n $@h smap_square f n) $@vR loops_functor_compose _ _).
   Defined.
 
-  Global Instance is01cat_genprespectrum : Is01Cat (GenPrespectrum N).
+  Global Instance isgraph_genprespectrum : IsGraph (GenPrespectrum N)
+    := Build_IsGraph (GenPrespectrum N) sMap.
+
+  Global Instance is01cat_genprespectrum : Is01Cat (GenPrespectrum N)
+    := Build_Is01Cat (GenPrespectrum N) _ smap_idmap (@smap_compose).
+
+  Global Instance isgraph_genspectrum : IsGraph (GenSpectrum N)
+    := induced_graph (to_gen_prespectrum _).
+
+  Global Instance is01cat_genspectrum : Is01Cat (GenSpectrum N)
+    := induced_01cat (to_gen_prespectrum _).
+
+  Definition sConst (X Y : GenPrespectrum N) : X $-> Y.
   Proof.
-    serapply Build_Is01Cat.
-    + exact sMap.
-    + exact smap_idmap.
-    + cbn; intros X Y Z.
-      exact smap_compose.
+    refine (Build_sMap X Y (fun n => pConst) _).
+    intro n.
+    refine (_ @* pmap_prewhisker _ (loops_functor_pconst)^* ).
+    refine (precompose_pconst _ @* (postcompose_pconst _)^* ).
   Defined.
 
-  Global Instance is1cat_genprespectrum : Is1Cat (GenPrespectrum N).
+  (** Fiber of a spectrum map. *)
+  Definition sfiber {X Y : GenSpectrum N} (f : X $-> Y) : GenSpectrum N.
   Proof.
-    serapply Build_Is1Cat.
-    + intros X Y.
-      serapply Build_Is01Cat.
-      - (* homotopies between spectra maps *)
-        admit.
-      - admit.
-      - admit.
-    + admit.
-  Admitted.
+    apply (Build_GenSpectrum N (fun n => pfiber (f n))).
+    intro n. exact (pfiber_loops_functor _ o*E pequiv_pfiber (equiv_glue X n) (equiv_glue Y n) (smap_square f n)).
+  Defined.
 
-Global Instance is01cat_genspectrum : Is01Cat (GenSpectrum N) :=
-  induced_01cat (to_gen_prespectrum _).
+  Definition sfib {X Y : GenSpectrum N} (f : X $-> Y) : sfiber f $-> X.
+  Proof.
+    serapply Build_sMap; intro n.
+    + exact (pfib (f n)).
+    + refine (move_left_bottom _). refine (_ $@vR _).
+    1: apply square_functor_pfiber.
+    apply pr1_pfiber_loops_functor.
+  Defined.
 
-Definition sConst (X Y : GenPrespectrum N) : X $-> Y.
-Proof.
-  refine (Build_sMap X Y (fun n => pConst) _).
-  intro n. refine (precompose_pconst _ @* (postcompose_pconst _)^* @* pmap_prewhisker _ (loops_functor_pconst)^*).
-Defined.
+  (** Sections of parametrized spectra *)
 
-(** Fiber of a spectrum map. *)
-Definition sfiber {X Y : GenSpectrum N} (f : X $-> Y) : GenSpectrum N.
-Proof.
-  apply (Build_GenSpectrum N (fun n => pfiber (f n))).
-  intro n. exact (pfiber_loops_functor _ o*E pequiv_pfiber (equiv_glue X n) (equiv_glue Y n) (smap_square f n)).
-Defined.
+  Definition sForall `{Funext} (A : pType) (Y : A -> GenSpectrum N) : GenSpectrum N.
+  Proof.
+    apply (Build_GenSpectrum N (fun n => ppforall x, Y x n)).
+    intro n. refine (symmetric_cate _ _ (equiv_loops_ppforall _) o*E _).
+    exact (equiv_ppforall_right (fun a => equiv_glue (Y a) n)).
+  Defined.
 
-Definition sfib {X Y : GenSpectrum N} (f : X $-> Y) : sfiber f $-> X.
-Proof.
-  serapply Build_sMap; intro n.
-  + exact (pfib (f n)).
-  + refine (move_left_bottom _). refine (_ $@vR _).
-  1: apply square_functor_pfiber.
-  apply pr1_pfiber_loops_functor.
-Defined.
-
-(** Sections of parametrized spectra *)
-
-Definition sForall `{Funext} (A : pType) (Y : A -> GenSpectrum N) : GenSpectrum N.
-Proof.
-  apply (Build_GenSpectrum N (fun n => ppforall x, Y x n)).
-  intro n. refine (symmetric_cate _ _ (equiv_loops_ppforall _) o*E _).
-  exact (equiv_ppforall_right (fun a => equiv_glue (Y a) n)).
-Defined.
-
-Definition sforall_compose_left `{Funext} (A : pType) (Y Y' : A -> GenSpectrum N)
-  (f : forall x, sMap (Y x) (Y' x)) 
-  : sMap (sForall A Y) (sForall A Y').
-Proof.
-  serapply Build_sMap.
-  + intro n. exact (functor_ppforall_right (fun a => f a n)).
-  + intro n. refine (_ $@v _).
-  2: { serapply vinverse. exact (transpose (natural_loops_ppforall_right (fun a => spectrum_fun _ _ (f a) (n.+1)))). }
-  apply functor_ppforall_right_square. intro a. apply smap_square.
-Defined.
+  Definition sforall_compose_left `{Funext} (A : pType) (Y Y' : A -> GenSpectrum N)
+    (f : forall x, sMap (Y x) (Y' x)) 
+    : sMap (sForall A Y) (sForall A Y').
+  Proof.
+    serapply Build_sMap.
+    + intro n. exact (functor_ppforall_right (fun a => f a n)).
+    + intro n. refine (_ $@v _).
+    2: { serapply vinverse. exact (transpose (natural_loops_ppforall_right (fun a => spectrum_fun _ _ (f a) (n.+1)))). }
+    apply functor_ppforall_right_square. intro a. apply smap_square.
+  Defined.
 
 End GenSpectrum.

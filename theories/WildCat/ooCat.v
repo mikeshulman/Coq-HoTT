@@ -197,7 +197,7 @@ CoInductive IsDFunctor0 {A1 A2 : Type} {B1 : A1 -> Type} {B2 : A2 -> Type}
   isdfunctor0_dfmap : forall (a b : A1) (u : B1 a) (v : B1 b),
       @IsDFunctor0 _ _ _ _ _ _ _ _ (fmap F) _ (dfmap a b u v) ;
 }.
-      
+
 Existing Class IsDFunctor0.
 Arguments dfmap {A1 A2 B1 B2 _ _ _ _} F {_} G {_ a b u v f} p.
 Global Existing Instance isdfunctor0_dfmap.

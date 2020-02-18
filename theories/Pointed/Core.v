@@ -579,12 +579,18 @@ Defined.
 
 (** * pType as a wild category *)
 
+Global Instance isgraph_ptype : IsGraph pType
+  := Build_IsGraph pType pMap.
+
 Global Instance is01cat_ptype : Is01Cat pType
-  := Build_Is01Cat pType pMap (@pmap_idmap) (@pmap_compose).
+  := Build_Is01Cat pType _ (@pmap_idmap) (@pmap_compose).
+
+Global Instance isgraph_pforall (A : pType) (P : pFam A) : IsGraph (pForall A P)
+  := Build_IsGraph _ pHomotopy.
 
 Global Instance is01cat_pforall (A : pType) (P : pFam A) : Is01Cat (pForall A P).
 Proof.
-  srapply (Build_Is01Cat _ (@pHomotopy A P)).
+  econstructor.
   - exact phomotopy_refl.
   - intros a b c f g. exact (phomotopy_compose g f).
 Defined.
@@ -617,7 +623,7 @@ Defined.
 
 Global Instance hasequivs_ptype : HasEquivs pType.
 Proof.
-  srapply (Build_HasEquivs _ _ _ pEquiv (fun A B f => IsEquiv f));
+  srapply (Build_HasEquivs _ _ _ _ pEquiv (fun A B f => IsEquiv f));
     intros A B f; cbn; intros.
   - exact f.
   - exact _.
