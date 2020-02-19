@@ -1176,7 +1176,7 @@ Definition GenDInserter (l : Stream Laxity)
   := GenDComma l F G (a,a).
 
 Notation DIsoInserter := (GenDInserter all_pseudo).
-Notation DInserter := (GenDComma one_colax).
+Notation DInserter := (GenDInserter one_colax).
 
 Global Instance isdglob_gendinserter (l : Stream Laxity)
        {A B : Type} `{IsGlob A} `{HasEquivs B}
@@ -1190,7 +1190,7 @@ Definition GenInserter (l : Stream Laxity)
   := sig (GenDInserter l F G).
 
 Notation IsoInserter := (GenInserter all_pseudo).
-Notation Inserter := (GenComma one_colax).
+Notation Inserter := (GenInserter one_colax).
 
 (** For instance, the category of prespectra (resp. spectra) should be the inserter (resp. isoinserter) of the identity functor of (nat -> pType) over a functor [shift o loops]. *)
 
@@ -1300,3 +1300,89 @@ Existing Class IsCat2.
 Global Existing Instance iscat2_hom.
 
 (* TODO: Examples *)
+
+
+
+
+(** Having an initial object *)
+Class HasInitial (A : Type) `{IsGlob A} := {
+  initial_obj : A;
+  isinitial_initial_obj : IsInitial initial_obj;
+}.
+
+Global Existing Instance isinitial_initial_obj.
+
+(** Constant 0 functor *)
+CoFixpoint isfunctor0_const {A B : Type} `{IsCat0 A} `{IsCat0 B} {x : B}
+  : IsFunctor0 (@const A B x).
+Proof.
+  simple notypeclasses refine (Build_IsFunctor0 _ _ _).
+  { intros a b f.
+    apply cat_id. }
+  intros a b.
+  rapply isfunctor0_const.
+Defined.
+
+Global Existing Instance isfunctor0_const.
+
+(** Constant 1 functor *)
+CoFixpoint isfunctor1_const {A B : Type} `{IsCat1 A} `{IsCat1 B} {x : B}
+  : IsFunctor1 (@const A B x).
+Proof.
+  simple notypeclasses refine (Build_IsFunctor1 _ _ _ _ _ _ _ _ _ _ _ _).
+  { intro a.
+    reflexivity. }
+  { intros a b c f g.
+    symmetry.
+    cbn.
+    apply cat_idl. }
+  intros a b.
+  rapply isfunctor1_const.
+Defined.
+
+Global Existing Instance isfunctor1_const.
+
+(** Unit category *)
+CoFixpoint isglob_unit : IsGlob Unit
+  := Build_IsGlob Unit (fun _ _ => Unit) (fun _ _ => isglob_unit).
+
+Global Existing Instance isglob_unit.
+
+CoFixpoint iscat0_unit : IsCat0 Unit.
+Proof.
+  simple notypeclasses refine (Build_IsCat0 _ _ _ _ _ _ _).
+  1: intro; exact tt.
+  1: intros ? ? ? ? ?; exact tt.
+  (** We cannot use isfunctor0_const since that requires IsCat0 *)
+  1,2:
+    intros ? ? ? ?; cofix e;
+    simple notypeclasses refine (Build_IsFunctor0 _ _ _);
+    intros ? ?; [ intro; exact tt | exact e ].
+  intros a b.
+  apply iscat0_unit.
+Defined.
+
+Global Existing Instance iscat0_unit.
+
+(** Having a left adjoint *)
+Definition HasLeftAdjoint {A B : Type} (F : A -> B)
+  `{IsFunctor0 A B F, !IsCat0 A, !IsCat0 B, !HasEquivs B}
+  := forall (x : B), HasInitial (Comma (@const A B x) F).
+
+(** Having a right adjint *)
+Definition HasRightAdjoint {A B : Type} (F : A -> B)
+  `{IsFunctor0 A B F, !IsCat0 A, !IsCat0 B, !HasEquivs B}
+  := forall (x : B), HasInitial (Comma F (@const A B x) ).
+
+(** Diagonal functor *)
+(** TODO:
+  If we had wild functor categories we could define C^J for some categories C and J.
+  This would then allow us to define the diagonal functor delta C --> C^J.
+  Then C has J-shaped (co)limits if delta has a (left/)right adjoint.
+ *)
+
+
+
+
+
+
