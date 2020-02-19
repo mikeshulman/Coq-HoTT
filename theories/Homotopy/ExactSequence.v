@@ -238,11 +238,8 @@ Proof.
   induction n as [|n IHn]; [ assumption | apply isexact_loops; assumption ].
 Defined.
 
-Section We_shouldnt_need_univalence.
-Context `{Univalence}.
-
 (** (n.+1)-truncation preserves n-exactness. *)
-Global Instance isexact_ptr (n : trunc_index)
+Global Instance isexact_ptr `{Univalence} (n : trunc_index)
            {F X Y : pType} (i : F ->* X) (f : X ->* Y)
            `{IsExact (Tr n) F X Y i f}
   : IsExact (Tr n) (ptr_functor n.+1 i) (ptr_functor n.+1 f).
@@ -264,7 +261,7 @@ Proof.
 Defined.
 
 (** In particular, (n.+1)-truncation takes fiber sequences to n-exact ones. *)
-Global Instance isexact_ptr_oo (n : trunc_index)
+Global Instance isexact_ptr_oo `{Univalence} (n : trunc_index)
            {F X Y : pType} (i : F ->* X) (f : X ->* Y) `{IsExact oo F X Y i f}
   : IsExact (Tr n) (ptr_functor n.+1 i) (ptr_functor n.+1 f).
 Proof.
@@ -273,8 +270,6 @@ Proof.
   intros z; apply isconnected_contr.
   exact (conn_map_isexact (f := f) (i := i) z).
 Defined.
-
-End We_shouldnt_need_univalence.
 
 (** ** Connecting maps *)
 
@@ -341,18 +336,13 @@ Coercion les_carrier : LongExactSequence >-> Funclass.
 Arguments les_fn {k N} S n : rename.
 Global Existing Instance les_isexact.
 
-Section We_shouldnt_need_univalence.
-Context `{Univalence}.
-
 (** Long exact sequences are preserved by truncation. *)
-Definition trunc_les (k : trunc_index) {N : SuccStr}
+Definition trunc_les `{Univalence} (k : trunc_index) {N : SuccStr}
            (S : LongExactSequence oo N)
   : LongExactSequence (Tr k) N
   := Build_LongExactSequence
        (Tr k) N (fun n => pTr k.+1 (S n))
        (fun n => ptr_functor k.+1 (les_fn S n)) _.
-
-End We_shouldnt_need_univalence.
 
 
 (** ** LES of loop spaces and homotopy groups *)
@@ -383,13 +373,8 @@ Proof.
   all:exact _.
 Defined.
 
-Section We_shouldnt_need_univalence.
-Context `{Univalence}.
-
 (** And from that, a long exact sequence of homotopy groups (though for now it is just a sequence of pointed sets). *)
-Definition Pi_les {F X Y : pType} (i : F ->* X) (f : X ->* Y)
+Definition Pi_les `{Univalence} {F X Y : pType} (i : F ->* X) (f : X ->* Y)
            `{IsExact oo F X Y i f}
   : LongExactSequence (Tr (-1)) (N3)
   := trunc_les (-1) (loops_les i f).
-
-End We_shouldnt_need_univalence.
