@@ -168,7 +168,7 @@ Proof.
   unfold transformation_op.
   cbn.
   intros a b f.
-  serapply isnat_tr.
+  srapply isnat_tr.
 Defined.
 
 (** Opposite categories preserve having equivalences. *)

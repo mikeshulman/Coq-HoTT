@@ -15,7 +15,7 @@ Definition equiv_path_hfiber {A B : Type} {f : A -> B} {y : B}
 : { q : x1.1 = x2.1 & x1.2 = ap f q @ x2.2 } <~> (x1 = x2).
 Proof.
   refine (equiv_path_sigma _ _ _ oE _).
-  refine (equiv_functor_sigma' 1 _).
+  apply equiv_functor_sigma_id.
   intros p; simpl.
   refine (_ oE equiv_moveR_Vp _ _ _).
   exact (equiv_concat_l (transport_paths_Fl _ _) _).
@@ -39,7 +39,7 @@ Definition hfiber_ap {A B : Type} {f : A -> B} {x1 x2 : A}
 Proof.
   refine (equiv_path_hfiber (x1;p) (x2;1%path) oE _).
   unfold hfiber; simpl.
-  refine (equiv_functor_sigma' 1 _); intros q.
+  apply equiv_functor_sigma_id; intros q.
   refine (_ oE equiv_path_inverse _ _).
   exact (equiv_concat_r (concat_p1 _)^ _).
 Defined.
@@ -91,7 +91,7 @@ Definition functor_hfiber2 {A B C D}
            (p : k o f == g o h) {b : B} {b' : D} (q : k b = b')
   : hfiber f b -> hfiber g b'.
 Proof.
-  serapply functor_sigma.
+  srapply functor_sigma.
   - exact h.
   - intros a e. exact ((p a)^ @ ap k e @ q).
 Defined.
@@ -123,19 +123,14 @@ Proof.
   unfold hfiber, functor_hfiber, functor_sigma.
   refine (_ oE (equiv_sigma_assoc _ _)^-1).
   refine (equiv_sigma_assoc _ _ oE _).
-  apply (equiv_functor_sigma' 1); intros a; cbn.
-  refine (_ oE
-         (equiv_functor_sigma'
-            (P := fun r => { s : h a = c & s # ((p a)^ @ ap k r) = q })
-            1 (fun r => equiv_path_sigma _
-                          (h a; (p a)^ @ ap k r) (c; q)))^-1).
-  refine (equiv_functor_sigma'
-            (P := fun r => { s : f a = b & s # (((p a)^)^ @ ap g r) = q^ })
-            1 (fun r => equiv_path_sigma _
-                          (f a; ((p a)^)^ @ ap g r) (b; q^)) oE _).
+  apply equiv_functor_sigma_id; intros a; cbn.
+  refine (_ oE (equiv_functor_sigma_id _)^-1).
+  2:intros; apply equiv_path_sigma.
+  refine (equiv_functor_sigma_id _ oE _).
+  1:intros; apply equiv_path_sigma. cbn.
   refine (equiv_sigma_symm _ oE _).
-  refine (equiv_functor_sigma' 1 _); intros r.
-  refine (equiv_functor_sigma' 1 _); intros s; cbn.
+  apply equiv_functor_sigma_id; intros r.
+  apply equiv_functor_sigma_id; intros s; cbn.
   refine (equiv_concat_l (transport_paths_Fl _ _) _ oE _).
   refine (_ oE (equiv_concat_l (transport_paths_Fl _ _) _)^-1).
   refine ((equiv_ap inverse _ _)^-1 oE _).
@@ -189,30 +184,30 @@ Section UnstableOctahedral.
   Proof.
     unfold hfiber, hfiber_compose_map.
     refine (_ oE (equiv_sigma_assoc _ _)^-1).
-    refine (equiv_functor_sigma' 1 _); intros a; simpl.
-    refine (equiv_compose' (B := {p : g (f a) = g b & {q : f a = b & transport (fun y => g y = g b) q p = 1}}) _ _).
-    - refine (_ oE equiv_sigma_symm _).
+    apply equiv_functor_sigma_id; intros a; simpl.
+    refine (_ oE _); revgoals.
+    - refine (equiv_functor_sigma_id
+                (fun p => (equiv_path_sigma _ _ _)^-1)).
+    - cbn. refine (_ oE equiv_sigma_symm _).
       apply equiv_sigma_contr; intros p.
       destruct p; simpl; exact _.
-    - refine (equiv_functor_sigma' 1
-                (fun p => (equiv_path_sigma _ _ _)^-1)).
   Defined.
 
   Definition hfiber_compose (c : C)
   : hfiber (g o f) c <~> { w : hfiber g c & hfiber f w.1 }.
   Proof.
     unfold hfiber.
-    refine (equiv_sigma_assoc
-              (fun x => g x = c) (fun w => {x : A & f x = w.1}) oE _).
-    refine (equiv_functor_sigma' 1
-             (fun b => equiv_sigma_symm (fun a p => f a = b)) oE _).
+    refine (equiv_sigma_assoc _ _ oE _).
+    refine (equiv_functor_sigma_id _ oE _).
+    1: intros; apply equiv_sigma_symm.
     refine (equiv_sigma_symm _ oE _).
-    refine (equiv_functor_sigma' 1 _); intros a.
-    refine (equiv_functor_sigma' 1
-              (fun b => equiv_sigma_symm0 _ _) oE _); simpl.
-    refine ((equiv_sigma_assoc (fun b => f a = b) (fun w => g w.1 = c))^-1 oE _).
+    apply equiv_functor_sigma_id; intros a; cbn.
+    refine (equiv_functor_sigma_id _ oE _).
+    1: intros; apply equiv_sigma_symm0.
+    refine ((equiv_sigma_assoc' _ _)^-1 oE _).
     symmetry.
-    exact (equiv_contr_sigma (fun (w:{b:B & f a = b}) => g w.1 = c)).
+    refine (_ oE equiv_contr_sigma _).
+    reflexivity.
   Defined.
 
   Global Instance istruncmap_compose `{!IsTruncMap n g} `{!IsTruncMap n f}
@@ -244,19 +239,14 @@ Definition hfiber_functor_sigma {A B} (P : A -> Type) (Q : B -> Type)
   {w : hfiber f b & hfiber (g w.1) ((w.2)^ # v)}.
 Proof.
   unfold hfiber, functor_sigma.
-  equiv_via ({x : sigT P & {p : f x.1 = b & p # (g x.1 x.2) = v}}).
-  { refine (equiv_functor_sigma' 1
-             (fun x => (equiv_path_sigma Q _ _)^-1)). }
+  refine (_ oE equiv_functor_sigma_id _).
+  2:intros; symmetry; apply equiv_path_sigma.
   refine (_ oE (equiv_sigma_assoc P _)^-1).
-  equiv_via ({a:A & {q:f a = b & {p : P a & q # (g a p) = v}}}).
-  { refine (equiv_functor_sigma' 1 (fun a => _)); simpl.
-    refine (equiv_sigma_symm _). }
-  refine (_ oE (equiv_sigma_assoc (fun a => f a = b)
-                 (fun w => {p : P w.1 & w.2 # (g w.1 p) = v}))).
-  refine (equiv_functor_sigma' 1 _);
-    intros [a p]; simpl.
-  refine (equiv_functor_sigma' 1 _);
-    intros u; simpl.
+  refine (_ oE equiv_functor_sigma_id _).
+  2:intros a; cbn; apply equiv_sigma_symm.
+  refine (_ oE equiv_sigma_assoc' _ _).
+  apply equiv_functor_sigma_id; intros [a p]; simpl.
+  apply equiv_functor_sigma_id; intros u; simpl.
   apply equiv_moveL_transport_V.
 Defined.
 
@@ -359,6 +349,10 @@ Global Instance isequiv_ap_isembedding {A B} (f : A -> B) `{!IsEmbedding f}
 Proof.
   intros x y. apply isequiv_fcontr,_.
 Defined.
+
+Definition equiv_ap_isembedding {A B} (f : A -> B) `{!IsEmbedding f} (x y : A)
+  : (x = y) <~> (f x = f y)
+  := Build_Equiv _ _ (ap f) _.
 
 Definition isembedding_isequiv_ap {A B} (f : A -> B) `{!forall x y, IsEquiv (@ap _ _ f x y)}
   : IsEmbedding f.

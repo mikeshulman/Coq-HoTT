@@ -62,7 +62,7 @@ Infix "->*" := pMap : pointed_scope.
 Definition Build_pMap (A B : pType) (f : A -> B) (p : f (point A) = point B)
   : A ->* B.
 Proof.
-  serapply Build_pForall. 1: exact f. exact p.
+  srapply Build_pForall. 1: exact f. exact p.
 Defined.
 
 Definition point_eq {A B : pType} (f : A ->* B) : f (point A) = point B :=
@@ -96,7 +96,7 @@ Infix "==*" := pHomotopy : pointed_scope.
 Definition Build_pHomotopy {A : pType} {P : pFam A} {f g : pForall A P}
   (p : f == g) (q : p (point A) = dpoint_eq f @ (dpoint_eq g)^) : f ==* g.
 Proof.
-  serapply Build_pForall;[exact p | exact q].
+  srapply Build_pForall;[exact p | exact q].
 Defined.
 
 Coercion pointed_htpy {A : pType} {P : pFam A} {f g : pForall A P}
@@ -400,7 +400,7 @@ Definition phomotopy_ind_1' `{H0 : Funext} {A : pType} {P : pFam A}
   : phomotopy_ind' Q q k (reflexivity k) (path_pforall (reflexivity k)) (1 % path)
   = transport (Q k (reflexivity k)) path_pforall_1^ q.
 Proof.
-  serapply phomotopy_ind_1.
+  srapply phomotopy_ind_1.
 Defined.
 
 (** Operations on equivalences needed to make pType a wild category with equivalences *)
@@ -409,7 +409,7 @@ Defined.
    a pointed equivalence *)
 Definition pequiv_inverse {A B} (f : A <~>* B) : B <~>* A.
 Proof.
-  serapply Build_pEquiv.
+  srapply Build_pEquiv.
   1: apply (Build_pMap _ _ f^-1).
   1: apply moveR_equiv_V; symmetry; apply point_eq.
   exact _.
@@ -503,11 +503,11 @@ Definition phomotopy_postwhisker `{Funext} {A : pType} {P : pFam A} {f g h : pFo
   {p p' : f ==* g} (r : p ==* p') (q : g ==* h) :
   p @* q ==* p' @* q.
 Proof.
-  serapply Build_pHomotopy.
+  srapply Build_pHomotopy.
   + intro x. exact (whiskerR (r x) (q x)).
-  + revert p' r. serapply phomotopy_ind.
-    revert h q.  serapply phomotopy_ind.
-    revert g p.  serapply phomotopy_ind.
+  + revert p' r. srapply phomotopy_ind.
+    revert h q.  srapply phomotopy_ind.
+    revert g p.  srapply phomotopy_ind.
     pointed_reduce. reflexivity.
 Defined.
 
@@ -515,11 +515,11 @@ Definition phomotopy_prewhisker `{Funext} {A : pType} {P : pFam A} {f g h : pFor
   (p : f ==* g) {q q' : g ==* h} (s : q ==* q') :
   p @* q ==* p @* q'.
 Proof.
-  serapply Build_pHomotopy.
+  srapply Build_pHomotopy.
   + intro x. exact (whiskerL (p x) (s x)).
-  + revert q' s. serapply phomotopy_ind.
-    revert h q.  serapply phomotopy_ind.
-    revert g p.  serapply phomotopy_ind.
+  + revert q' s. srapply phomotopy_ind.
+    revert h q.  srapply phomotopy_ind.
+    revert g p.  srapply phomotopy_ind.
     pointed_reduce. reflexivity.
 Defined.
 
@@ -527,18 +527,18 @@ Definition phomotopy_compose_assoc `{Funext} {A : pType} {P : pFam A}
   {f g h k : pForall A P}
   (p : f ==* g) (q : g ==* h) (r : h ==* k) : p @* (q @* r) ==* (p @* q) @* r.
 Proof.
-  serapply Build_pHomotopy.
+  srapply Build_pHomotopy.
   + intro x. exact (concat_p_pp (p x) (q x) (r x)).
-  + revert k r. serapply phomotopy_ind.
-    revert h q. serapply phomotopy_ind.
-    revert g p. serapply phomotopy_ind.
+  + revert k r. srapply phomotopy_ind.
+    revert h q. srapply phomotopy_ind.
+    revert g p. srapply phomotopy_ind.
     pointed_reduce. reflexivity.
 Defined.
 
 Definition phomotopy_compose_p1 {A : pType} {P : pFam A} {f g : pForall A P}
  (p : f ==* g) : p @* reflexivity g ==* p.
 Proof.
-  serapply Build_pHomotopy.
+  srapply Build_pHomotopy.
   + intro x. apply concat_p1.
   + pointed_reduce.
     rewrite (concat_pp_V H (concat_p1 _))^. generalize (H @ concat_p1 _).
@@ -550,7 +550,7 @@ Defined.
 Definition phomotopy_compose_1p {A : pType} {P : pFam A} {f g : pForall A P}
  (p : f ==* g) : reflexivity f @* p ==* p.
 Proof.
-  serapply Build_pHomotopy.
+  srapply Build_pHomotopy.
   + intro x. apply concat_1p.
   + pointed_reduce.
     rewrite (concat_pp_V H (concat_p1 _))^. generalize (H @ concat_p1 _).
@@ -562,18 +562,18 @@ Defined.
 Definition phomotopy_compose_pV `{Funext} {A : pType} {P : pFam A} {f g : pForall A P}
  (p : f ==* g) : p @* p ^* ==* phomotopy_refl f.
 Proof.
-  serapply Build_pHomotopy.
+  srapply Build_pHomotopy.
   + intro x. apply concat_pV.
-  + revert g p. serapply phomotopy_ind. 
+  + revert g p. srapply phomotopy_ind. 
     pointed_reduce. reflexivity.
 Defined.
 
 Definition phomotopy_compose_Vp `{Funext} {A : pType} {P : pFam A} {f g : pForall A P}
  (p : f ==* g) : p ^* @* p ==* phomotopy_refl g.
 Proof.
-  serapply Build_pHomotopy.
+  srapply Build_pHomotopy.
   + intro x. apply concat_Vp.
-  + revert g p. serapply phomotopy_ind. 
+  + revert g p. srapply phomotopy_ind. 
     pointed_reduce. reflexivity.
 Defined.
 
@@ -649,12 +649,12 @@ Abort.
 
 Global Instance ispointedcat_ptype : IsPointedCat pType.
 Proof.
-  serapply Build_IsPointedCat.
+  srapply Build_IsPointedCat.
   + exact pUnit.
   + intro A.
     exists pConst.
     intro f.
-    serapply Build_pHomotopy.
+    srapply Build_pHomotopy.
     - intros [].
       exact (point_eq _).
     - symmetry; cbn.
@@ -662,10 +662,10 @@ Proof.
   + intro B.
     exists pConst.
     intro f.
-    serapply Build_pHomotopy.
+    srapply Build_pHomotopy.
     - intros b.
       apply path_unit.
-    - serapply path_contr.
+    - srapply path_contr.
 Defined.
 
 Definition path_zero_morphism_pconst (A B : pType)

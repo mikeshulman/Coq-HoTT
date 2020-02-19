@@ -160,7 +160,7 @@ Proof.
   rewrite negate_involutive.
   rewrite (right_identity (-y * x)).
   change (in_cosetL y x <~> in_cosetL x y).
-  serapply equiv_iff_hprop;
+  srapply equiv_iff_hprop;
   by intro; symmetry.
 Defined.
 
@@ -179,7 +179,7 @@ Definition equiv_in_cosetL_symm {G : Group} `{!IsSubgroup N G}
   : forall x y, in_cosetL x y <~> in_cosetL y x.
 Proof.
   intros x y.
-  serapply equiv_iff_hprop.
+  srapply equiv_iff_hprop.
   all: by intro.
 Defined.
 
@@ -187,7 +187,7 @@ Definition equiv_in_cosetR_symm {G : Group} `{!IsSubgroup N G}
   : forall x y, in_cosetR x y <~> in_cosetR y x.
 Proof.
   intros x y.
-  serapply equiv_iff_hprop.
+  srapply equiv_iff_hprop.
   all: by intro.
 Defined.
 
@@ -283,7 +283,7 @@ Defined.
 
 Definition grp_intersection {G : Group} (A B : Subgroup G) : Group.
 Proof.
-  serapply (Build_Group (Pullback (@issubgroup_incl A G _)
+  srapply (Build_Group (Pullback (@issubgroup_incl A G _)
     (@issubgroup_incl B G _))); repeat split.
   1,2,6: exact _.
   (** Operation *)
@@ -324,7 +324,7 @@ Defined.
 Definition grp_intersection_incl {G : Group} (A B : Subgroup G)
   : GroupHomomorphism (grp_intersection A B) G.
 Proof.
-  serapply Build_GroupHomomorphism.
+  srapply Build_GroupHomomorphism.
   { intros x.
     exact (issubgroup_incl (pr1 x)). }
   intros [a [b p]] [c [d q]].
@@ -354,7 +354,7 @@ Global Instance subgroup_pullback {G : Group} (A B : Subgroup G)
 Definition grp_intersection_incl_pr1 {G : Group} (A B : Subgroup G)
   : GroupHomomorphism (grp_intersection A B) A.
 Proof.
-  serapply Build_GroupHomomorphism.
+  srapply Build_GroupHomomorphism.
   { intros x.
     exact (pr1 x). }
   intro; reflexivity.
@@ -382,7 +382,7 @@ Global Instance subgroup_pullback_pr1 {G : Group} (A B : Subgroup G)
 Definition grp_intersection_incl_pr2 {G : Group} (A B : Subgroup G)
   : GroupHomomorphism (grp_intersection A B) B.
 Proof.
-  serapply Build_GroupHomomorphism.
+  srapply Build_GroupHomomorphism.
   { intros x.
     exact x.2.1. }
   intro; reflexivity.
@@ -419,13 +419,13 @@ Definition subgroup_intersection_pr2 {G : Group} (A B : Subgroup G) : Subgroup B
   {H1 : IsNormalSubgroup A}
   : IsNormalSubgroup (subgroup_intersection A B).
 Proof.
-  serapply Build_IsNormalSubgroup.
+  srapply Build_IsNormalSubgroup.
   intros x y.
   destruct H1 as [H1].
   unfold in_cosetL, in_cosetR in *.
   unfold hfiber in *.
   pose (H1 x y).
-  serapply equiv_functor_sigma'.
+  srapply equiv_functor_sigma'.
   + unfold subgroup_intersection. cbn.
     unfold Pullback.
 Admitted. *)

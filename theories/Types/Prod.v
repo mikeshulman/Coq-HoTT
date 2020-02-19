@@ -260,6 +260,12 @@ Definition equiv_functor_prod_r {A A' B : Type} (f : A <~> A')
   : A * B <~> A' * B
   := f *E 1.
 
+(** ** Logical equivalences *)
+
+Definition iff_functor_prod {A A' B B' : Type} (f : A <-> A') (g : B <-> B')
+  : A * B <-> A' * B'
+  := (functor_prod (fst f) (fst g) , functor_prod (snd f) (snd g)).
+
 (** ** Symmetry *)
 
 (** This is a special property of [prod], of course, not an instance of a general family of facts about types. *)
@@ -388,4 +394,14 @@ Proof.
   - apply inr; intros [_ x2]; exact (y2 x2).
   - apply inr; intros [x1 _]; exact (y1 x1).
   - apply inr; intros [x1 _]; exact (y1 x1).
+Defined.
+
+(** Interaction of ap and uncurry *)
+
+(* The function in ap011 can be uncurried *)
+Definition ap_uncurry {A B C} (f : A -> B -> C) {a a' : A} (p : a = a')
+  {b b' : B} (q : b = b')
+  : ap (uncurry f) (path_prod' p q) = ap011 f p q.
+Proof.
+  by destruct q, p.
 Defined.

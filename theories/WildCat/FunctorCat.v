@@ -27,7 +27,7 @@ Definition NatTrans {A B : Type} `{IsGraph A} `{Is1Cat B} (F G : A -> B)
 
 Global Instance isgraph_fun01 (A B : Type) `{IsGraph A} `{Is1Cat B} : IsGraph (Fun01 A B).
 Proof.
-  serapply Build_IsGraph.
+  srapply Build_IsGraph.
   intros [F ?] [G ?].
   exact (NatTrans F G).
 Defined.
@@ -49,28 +49,28 @@ Proof.
   - intros [F ?] [G ?]; apply Build_IsGraph.
     intros [alpha ?] [gamma ?].
     exact (forall a, alpha a $== gamma a).
-  - intros [F ?] [G ?]; serapply Build_Is01Cat.
+  - intros [F ?] [G ?]; srapply Build_Is01Cat.
     + intros [alpha ?] a; cbn.
       reflexivity.
     + intros [alpha ?] [gamma ?] [phi ?] nu mu a.
       exact (mu a $@ nu a).
-  - intros [F ?] [G ?]; serapply Build_Is0Gpd.
+  - intros [F ?] [G ?]; srapply Build_Is0Gpd.
     intros [alpha ?] [gamma ?] mu a.
     exact ((mu a)^$).
   - intros [F ?] [G ?] [K ?] [alpha ?].
-    serapply Build_Is0Functor.
+    srapply Build_Is0Functor.
     intros [phi ?] [mu ?] f a.
     exact (alpha a $@L f a).
   - intros [F ?] [G ?] [K ?] [alpha ?].
-    serapply Build_Is0Functor.
+    srapply Build_Is0Functor.
     intros [phi ?] [mu ?] f a.
     exact (f a $@R alpha a).
   - intros [F ?] [G ?] [K ?] [L ?] [alpha ?] [gamma ?] [phi ?] a; cbn.
-    serapply cat_assoc.
+    srapply cat_assoc.
   - intros [F ?] [G ?] [alpha ?] a; cbn.
-    serapply cat_idl.
+    srapply cat_idl.
   - intros [F ?] [G ?] [alpha ?] a; cbn.
-    serapply cat_idr.
+    srapply cat_idr.
 Defined.
 
 (** It also inherits a notion of equivalence, namely a natural transformation that is a pointwise equivalence.  Note that this is not a "fully coherent" notion of equivalence, since the functors and transformations are not themselves fully coherent. *)

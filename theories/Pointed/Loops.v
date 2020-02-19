@@ -4,8 +4,6 @@ Require Import UnivalenceImpliesFunext.
 Require Import Pointed.Core Pointed.pMap Pointed.pEquiv Pointed.pHomotopy.
 Require Import WildCat.
 
-Import TrM.
-
 Local Open Scope pointed_scope.
 Local Open Scope path_scope.
 
@@ -67,7 +65,7 @@ Definition loops_functor_compose {A B C : pType} (g : B ->* C) (f : A ->* B)
   : (loops_functor (pmap_compose g f))
   ==* (pmap_compose (loops_functor g) (loops_functor f)).
 Proof.
-  serapply Build_pHomotopy.
+  srapply Build_pHomotopy.
   { intros p. cbn.
     refine ((inv_pp _ _ @@ 1) @ concat_pp_p _ _ _ @ _).
     apply whiskerL.
@@ -83,7 +81,7 @@ Defined.
 Definition loops_functor_idmap (A : pType)
   : loops_functor (@pmap_idmap A) ==* pmap_idmap.
 Proof.
-  serapply Build_pHomotopy.
+  srapply Build_pHomotopy.
   { intro p.
     refine (concat_1p _ @ concat_p1 _ @ ap_idmap _). }
   reflexivity.
@@ -99,7 +97,7 @@ Defined.
 
 Lemma loops_functor_pconst {A B : pType} : loops_functor (@pConst A B) ==* pConst.
 Proof.
-  serapply Build_pHomotopy.
+  srapply Build_pHomotopy.
   + intro p. refine (concat_1p _ @ concat_p1 _ @ ap_const _ _).
   + reflexivity.
 Defined.
@@ -109,7 +107,7 @@ Definition loops_2functor {A B : pType} {f g : A ->* B} (p : f ==* g)
   : (loops_functor f) ==* (loops_functor g).
 Proof.
   pointed_reduce.
-  serapply Build_pHomotopy; cbn.
+  srapply Build_pHomotopy; cbn.
   { intro q.
     refine (_ @ (concat_p1 _)^ @ (concat_1p _)^).
     apply moveR_Vp, concat_Ap. }
@@ -157,28 +155,45 @@ Proof.
   induction n as [|n IHn]; [ assumption | apply loops_2functor, IHn ].
 Defined.
 
+(** The fiber of [loops_functor f] is equivalent to a fiber of [ap f]. *)
+Definition hfiber_loops_functor {A B : pType} (f : A ->* B) (p : loops B)
+  : {q : loops A & ap f q = (point_eq f @ p) @ (point_eq f)^}
+    <~> hfiber (loops_functor f) p.
+Proof.
+  apply equiv_functor_sigma_id; intros q.
+  refine (equiv_moveR_Vp _ _ _ oE _).
+  apply equiv_moveR_pM.
+Defined.
+
 (** The loop space functor decreases the truncation level by one.  *)
 Global Instance istrunc_loops_functor {n} (A B : pType) (f : A ->* B)
   `{IsTruncMap n.+1 _ _ f} : IsTruncMap n (loops_functor f).
 Proof.
-  intro p.
-  refine (trunc_equiv' _ (equiv_functor_sigma' 1
-    (fun q => equiv_moveR_Vp _ _ _))).
-  refine (trunc_equiv' _ (equiv_functor_sigma' 1
-    (fun q => equiv_moveR_pM _ _ _))).
+  intro p. apply (trunc_equiv' _ (hfiber_loops_functor f p)).
 Defined.
 
 (** And likewise the connectedness.  *)
-(* Note: We give the definition explicitly since it was slow before. *)
 Global Instance isconnected_loops_functor `{Univalence} {n : trunc_index}
   (A B : pType) (f : A ->* B) `{IsConnMap n.+1 _ _ f}
-  : IsConnMap n (loops_functor f)
-  := fun (p : loops B) =>
-    isconnected_equiv' n _
-      (equiv_functor_sigma' 1 (fun q => equiv_moveR_Vp _ p _))
-      (isconnected_equiv' n _
-        (equiv_functor_sigma' 1 (fun q => equiv_moveR_pM _ _ _))
-        (isconnected_equiv' n _ (hfiber_ap _)^-1 (isconnected_paths _ _))).
+  : IsConnMap n (loops_functor f).
+Proof.
+  intros p; eapply isconnected_equiv'.
+  - refine (hfiber_loops_functor f p oE _).
+    symmetry; apply hfiber_ap.
+  - exact _.
+Defined.
+
+Definition isconnected_iterated_loops_functor `{Univalence}
+  (k : nat) (A B : pType) (f : A ->* B)
+  : forall n : trunc_index, IsConnMap (trunc_index_inc' n k) f
+                       -> IsConnMap n (iterated_loops_functor k f).
+Proof.
+  induction k; intros n C.
+  - exact C.
+  - apply isconnected_loops_functor.
+    apply IHk.
+    exact C.
+Defined.
 
 (** It follows that loop spaces "commute with images". *)
 Definition equiv_loops_image `{Univalence} n {A B : pType} (f : A ->* B)
@@ -204,7 +219,7 @@ Defined.
 (** Loop inversion is a pointed equivalence *)
 Definition loops_inv (A : pType) : loops A <~>* loops A.
 Proof.
-  serapply Build_pEquiv.
+  srapply Build_pEquiv.
   1: exact (Build_pMap (loops A) (loops A) inverse 1).
   apply isequiv_path_inverse.
 Defined.
@@ -214,7 +229,7 @@ Definition pequiv_loops_functor {A B : pType}
   : A <~>* B -> loops A <~>* loops B.
 Proof.
   intro f.
-  serapply pequiv_adjointify.
+  srapply pequiv_adjointify.
   1: apply loops_functor, f.
   1: apply loops_functor, (pequiv_inverse f).
   1,2: refine ((loops_functor_compose _ _)^* @* _ @* loops_functor_idmap _).
@@ -332,7 +347,7 @@ Defined.
 
 (* Loops neutralise sigmas when truncated *)
 Lemma loops_psigma_trunc (n : nat) : forall (Aa : pType)
-  (Pp : pFam Aa) (istrunc_Pp : IsTrunc_pFam (nat_to_trunc_index_2 n) Pp),
+  (Pp : pFam Aa) (istrunc_Pp : IsTrunc_pFam (trunc_index_inc minus_two n) Pp),
   iterated_loops n (psigma Pp)
   <~>* iterated_loops n Aa.
 Proof.
@@ -377,7 +392,7 @@ Defined.
 Theorem equiv_istrunc_istrunc_loops `{Univalence} n X
   : IsTrunc n.+2 X <~> forall x, IsTrunc n.+1 (loops (X, x)).
 Proof.
-  serapply equiv_iff_hprop.
+  srapply equiv_iff_hprop.
   intro tr_loops.
   intros x y p.
   destruct p.
@@ -398,7 +413,7 @@ Proof.
   intro A.
   transitivity (forall x, IsTrunc n (loops (A, x))).
   1: destruct n; apply equiv_istrunc_istrunc_loops.
-  serapply equiv_functor_forall_id.
+  srapply equiv_functor_forall_id.
   intro a.
   apply (equiv_composeR' (IHn (loops (A, a)))).
   cbn; refine (equiv_iff_hprop _ _).
@@ -417,7 +432,7 @@ Proof.
   { srefine (Build_pEquiv' _ _).
     1: exact (equiv_ap (equiv_concat_r _ _) _ _).
     reflexivity. }
-  serapply Build_pEquiv'.
+  srapply Build_pEquiv'.
   { apply equiv_concat_lr.
     1: symmetry; apply concat_pV.
     apply concat_pV. }
@@ -458,7 +473,7 @@ Defined.
 Global Instance is1natural_loops_inv : Is1Natural loops loops loops_inv.
 Proof.
   apply Build_Is1Natural. intros A B f.
-  serapply Build_pHomotopy.
+  srapply Build_pHomotopy.
   + intros p. refine (inv_Vp _ _ @ whiskerR _ (point_eq f) @ concat_pp_p _ _ _).
     refine (inv_pp _ _ @ whiskerL (point_eq f)^ (ap_V f p)^).
   + pointed_reduce. pointed_reduce. reflexivity.
@@ -471,7 +486,7 @@ Defined.
 Definition equiv_loops_ppforall `{Funext} {A : pType} (B : A -> pType)
   : loops (ppforall x : A, B x) <~>* (ppforall x : A, loops (B x)).
 Proof.
-  serapply Build_pEquiv'.
+  srapply Build_pEquiv'.
   1: symmetry; exact (equiv_path_pforall (point_pforall B) (point_pforall B)).
   reflexivity.
 Defined.
@@ -601,7 +616,7 @@ Definition natural_loops_ppforall_right `{Funext} {A : pType} {B B' : A -> pType
 Proof.
   apply transpose.
   revert B' f. refine (fiberwise_pointed_map_rec _ _). intros B' f.
-  serapply Build_pHomotopy.
+  srapply Build_pHomotopy.
   + exact (natural_loops_ppforall_lem3
       (pmap_compose_ppforall_point (fun a => pmap_from_point (f a) (point _)))
       (pmap_compose_ppforall_point (fun a => pmap_from_point (f a) (point _)))).

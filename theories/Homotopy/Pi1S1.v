@@ -10,7 +10,6 @@ Require Import HIT.Spheres.
 Require Import Truncations.
 Require Import Algebra.Z.
 Require Import Truncations.
-Import TrM.
 
 (* Calculation of Pi 1 S1 *)
 
@@ -30,7 +29,7 @@ Section Pi1S1.
   Proof.
     (** We give the isomorphism backwards, so we check the operation is preserved coming from the integer side. *)
     symmetry.
-    serapply Build_GroupIsomorphism'.
+    srapply Build_GroupIsomorphism'.
     { equiv_via (base = base).
       2: exact (equiv_tr 0 (loops (S1, base))).
       symmetry.

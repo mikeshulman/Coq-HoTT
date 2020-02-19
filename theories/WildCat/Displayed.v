@@ -263,19 +263,19 @@ Arguments dcat_comp2 {A _ _ B _ _ a b c x y z f1 f2 g1 g2 p q u1 u2 v1 v2} qq pp
 Global Instance is1cat_sigma {A : Type} (B : A -> Type) `{Is1DCat A B} 
   : Is1Cat (sig B).
 Proof.
-  serapply Build_Is1Cat.
+  srapply Build_Is1Cat.
   - intros [a x] [b y].
     srapply Build_IsGraph.
     intros [f u] [g v].
     exact { p : f $== g & (dHom2 p u v)}.
   - intros [a x] [b y].
-    serapply Build_Is01Cat.
+    srapply Build_Is01Cat.
     + intros [f u].
       exists (Id f).
       apply  is01dcat_dHom.
     + intros [f u] [g v] [h w] [q qq] [p pp].
       exists (q $o p).
-      serapply dcat_comp; assumption.
+      srapply dcat_comp; assumption.
   - intros [a x] [b y].
     apply Build_Is0Gpd.
     intros [f u] [g v] [p pp].
@@ -429,7 +429,7 @@ Context {A1 A2 A3 : Type} {B1 : A1 -> Type} {B2 : A2 -> Type} {B3 : A3 -> Type} 
 Global Instance is0dfunctor_compose
   : Is0DFunctor B1 B3 (G o F) (fun (a : A1) (x : B1 a) => ((GG (F a)) o (FF a)) x).
 Proof.
-  serapply (Build_Is0DFunctor _ _ _ _).
+  srapply (Build_Is0DFunctor _ _ _ _).
   intros a b f x y u.
   exact (fmapd GG (fmapd FF u)).
 Defined.

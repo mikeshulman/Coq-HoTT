@@ -7,8 +7,6 @@ Require Import Truncations.
 Require Import Spaces.Nat.
 Require Import Modalities.ReflectiveSubuniverse.
 
-Import TrM.
-
 Local Open Scope pointed_scope.
 Local Open Scope path_scope.
 
@@ -33,7 +31,7 @@ Definition Pi (n : nat) (X : pType) : HomotopyGroup_type n.
 Proof.
   destruct n.
   1: exact (pTr 0 X).
-  serapply (Build_Group (Tr 0 (iterated_loops n.+1 X)));
+  srapply (Build_Group (Tr 0 (iterated_loops n.+1 X)));
   repeat split.
   (** Operation *)
   + intros x y.
@@ -42,7 +40,7 @@ Proof.
   (** Unit *)
   + exact (tr 1).
   (** Inverse *)
-  + serapply Trunc_rec; intro x.
+  + srapply Trunc_rec; intro x.
     exact (tr x^).
   (** IsHSet *)
   + exact _.
@@ -81,7 +79,7 @@ End PiUtf8.
 Global Instance isabgroup_pi (n : nat) (X : pType)
   : IsAbGroup (Pi n.+2 X).
 Proof.
-  ntc_rapply Build_IsAbGroup.
+  nrapply Build_IsAbGroup.
   1: exact _.
   intros x y.
   strip_truncations.
@@ -112,7 +110,7 @@ Proof.
   destruct n.
   + exact (ptr_functor 0).
   + intro f.
-    serapply Build_GroupHomomorphism.
+    srapply Build_GroupHomomorphism.
     { apply Trunc_functor.
       apply iterated_loops_functor.
       assumption. }
@@ -148,7 +146,7 @@ Proof.
   - cbn; apply Trunc_functor_compose.
   - etransitivity.
     + apply O_functor_homotopy. rapply iterated_loops_functor_compose.
-    + refine (O_functor_compose 0%trunc _ _ x).
+    + refine (O_functor_compose (Tr 0) _ _ x).
 Defined.
 
 Definition pi_2functor (n : nat)
@@ -184,9 +182,9 @@ Definition groupiso_pi_functor (n : nat)
   {X Y : pType} (e : X <~>* Y)
   : GroupIsomorphism (Pi n.+1 X) (Pi n.+1 Y).
 Proof.
-  serapply Build_GroupIsomorphism.
+  srapply Build_GroupIsomorphism.
   1: apply (pi_functor n.+1 e).
-  ntc_refine (Trunc_functor_isequiv _ _).
+  nrefine (Trunc_functor_isequiv _ _).
   refine (isequiv_homotopic _ (pequiv_iterated_loops_functor_is_iterated_loops_functor n.+1 e)).
 Defined.
 
@@ -195,10 +193,10 @@ Lemma pi_prod (X Y : pType) {n : nat}
   : GroupIsomorphism (Pi n.+1 (X * Y))
       (group_prod (Pi n.+1 X) (Pi n.+1 Y)).
 Proof.
-  serapply Build_GroupIsomorphism'.
+  srapply Build_GroupIsomorphism'.
   { refine (equiv_O_prod_cmp _ _ _ oE _).
     apply Trunc_functor_equiv.
-    serapply iterated_loops_prod. }
+    srapply iterated_loops_prod. }
   intros x y.
   strip_truncations; simpl.
   set (Z := (iterated_loops_prod X Y)).

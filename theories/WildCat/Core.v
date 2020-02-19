@@ -226,7 +226,7 @@ Section ConstantFunctor.
     `{IsGraph A} `{Is01Cat B} (x : B)
     : Is0Functor (fun _ : A => x).
   Proof.
-    serapply Build_Is0Functor.
+    srapply Build_Is0Functor.
     intros a b f; apply Id.
   Defined.
 
@@ -234,7 +234,7 @@ Section ConstantFunctor.
    `{Is1Cat A} `{Is1Cat B} (x : B)
     : Is1Functor (fun _ : A => x).
   Proof.
-    serapply Build_Is1Functor.
+    srapply Build_Is1Functor.
     - intros a b f g p; apply Id.
     - intro; apply Id.
     - intros a b c f g. cbn.

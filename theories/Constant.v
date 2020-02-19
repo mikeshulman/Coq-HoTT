@@ -3,7 +3,6 @@ Require Import HoTT.Basics HoTT.Types.
 Require Import HProp FunextVarieties.
 Require Import Extensions Factorization Modalities.Modality.
 Require Import HoTT.Truncations.
-Import TrM.
 
 Local Open Scope path_scope.
 Local Open Scope trunc_scope.
@@ -20,8 +19,9 @@ Global Instance ishprop_fix_wconst {X : Type} (f : X -> X)
 Proof.
   apply hprop_inhabited_contr; intros [x0 p0].
   refine (contr_equiv' {x:X & f x0 = x} _); unfold FixedBy.
-  refine (equiv_functor_sigma' (equiv_idmap X)
-           (fun x => equiv_concat_l (wconst x x0) x)).
+  apply equiv_functor_sigma_id. intros x.
+  apply equiv_concat_l.
+  apply wconst.
 Defined.
 
 (** It follows that if a type [X] admits a weakly constant endofunction [f], then [FixedBy f] is equivalent to [merely X]. *)

@@ -34,7 +34,7 @@ Section ExactCouple.
 
   Definition gh_image_pr1 {A B : GradedGroup G} (f : A $-> B) : GrImage f $-> B.
   Proof.
-    serapply Build_GradedHomomorphism'.
+    srapply Build_GradedHomomorphism'.
     1: reflexivity.
     { intro x.
       symmetry.
@@ -45,7 +45,7 @@ Section ExactCouple.
 
   Definition gh_image_in {A B : GradedGroup G} (f : A $-> B) : A $-> GrImage f.
   Proof.
-    serapply Build_GradedHomomorphism'.
+    srapply Build_GradedHomomorphism'.
     1: exact (deg f).
     1: apply deg_eq.
     intros x y p.

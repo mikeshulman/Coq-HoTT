@@ -28,7 +28,7 @@ Section TorusEquivCircle.
   (* We define the map from the Torus to the Circles *)
   Definition t2c : Torus -> S1 * S1.
   Proof.
-    serapply Torus_rec.
+    srapply Torus_rec.
     + exact (base, base). (* The point of the torus is taken to (base, base *)
     + exact (path_prod' loop 1). (* loop_a is taken to loop in the first *)
     + exact (path_prod' 1 loop). (* loop_b is taken to loop in the second *)
@@ -38,14 +38,14 @@ Section TorusEquivCircle.
   (* We now define the curried function from the circles to the torus *)
   Definition c2t' : S1 -> S1 -> Torus.
   Proof.
-    serapply S1_rec.
-    + serapply S1_rec.    (* Double circle recursion *)
+    srapply S1_rec.
+    + srapply S1_rec.    (* Double circle recursion *)
       - exact tbase.      (* The basepoint is sent to the point of the torus *)
       - exact loop_b.     (* The second loop is sent to loop_b *)
     + apply path_forall.  (* We use function extensionality here to induct *)
-      serapply S1_ind_dp. (* Circle induction as a DPath *)
+      srapply S1_ind_dp. (* Circle induction as a DPath *)
       - exact loop_a.     (* The first loop is sent to loop_a *)
-      - serapply sq_dp^-1. (* This DPath is actually a square *)
+      - srapply sq_dp^-1. (* This DPath is actually a square *)
         apply (pr1 c2t_square_and_cube). (* We apply the cap we found above *)
   Defined.
 
@@ -59,20 +59,20 @@ Section TorusEquivCircle.
   Definition c2t'_beta :
     {bl1 : PathSquare (ap (fun y => c2t' base y) loop) loop_b 1 1 &
     {bl2 : PathSquare (ap (fun x => c2t' x base) loop) loop_a 1 1 &
-    PathCube (sq_ap2 c2t' loop loop) surf bl2 bl2 bl1 bl1}}.
+    PathCube (sq_ap011 c2t' loop loop) surf bl2 bl2 bl1 bl1}}.
   Proof.
     refine (_;_;_).
-    unfold sq_ap2.
+    unfold sq_ap011.
     (* 1. Unfusing ap *)
-    refine (cu_concat_lr (cu_ds (dp_apD_nat _ _ _
-      (fun y => ap_compose _ (fun f => f y) _))) _
+    refine (cu_concat_lr (cu_ds (dp_apD_nat
+      (fun y => ap_compose _ (fun f => f y) _) _)) _
       (sji0:=?[X1]) (sji1:=?X1) (sj0i:=?[Y1]) (sj1i:=?Y1) (pj11:=1)).
     (* 2. Reducing c2t' on loop *)
-    refine (cu_concat_lr (cu_ds (dp_apD_nat _ _ _
-      (fun x => ap_apply_l _ _ @ apD10 (ap _(S1_rec_beta_loop _ _ _)) x))) _
+    refine (cu_concat_lr (cu_ds (dp_apD_nat
+      (fun x => ap_apply_l _ _ @ apD10 (ap _(S1_rec_beta_loop _ _ _)) x) _)) _
       (sji0:=?[X2]) (sji1:=?X2) (sj0i:=?[Y2]) (sj1i:=?Y2) (pj11:=1)).
     (* 3. Reducing ap10 on function extensionality *)
-    refine (cu_concat_lr (cu_ds (dp_apD_nat _ _ _ (ap10_path_forall _ _ _))) _
+    refine (cu_concat_lr (cu_ds (dp_apD_nat (ap10_path_forall _ _ _) _)) _
       (sji0:=?[X3]) (sji1:=?X3) (sj0i:=?[Y3]) (sj1i:=?Y3) (pj11:=1)).
     (* 4. Reducing S1_ind_dp on loop *)
     refine (cu_concat_lr (cu_G11 (ap _ (S1_ind_dp_beta_loop _ _ _))) _
@@ -140,9 +140,9 @@ Section TorusEquivCircle.
 
   Local Notation apcs := (ap_compose_sq _ _ _).
 
-  Definition sq_ap2_compose {A B C D : Type} (f : A -> B -> C) (g : C -> D)
+  Definition sq_ap011_compose {A B C D : Type} (f : A -> B -> C) (g : C -> D)
     {a a' : A} (p : a = a') {b b' : B} (q : b = b')
-    : PathCube (sq_ap2 (fun x y => g (f x y)) p q) (sq_ap g (sq_ap2 f p q))
+    : PathCube (sq_ap011 (fun x y => g (f x y)) p q) (sq_ap g (sq_ap011 f p q))
         apcs apcs apcs apcs.
   Proof.
     by destruct p, q.
@@ -168,7 +168,7 @@ Section TorusEquivCircle.
     apply cu_rot_tb_fb.
     refine (cu_ccGGGG _ _ _ _ _).
     1,2,3,4: exact (eisretr _ _)^.
-    refine((sq_ap2_compose c2t' t2c loop loop)
+    refine((sq_ap011_compose c2t' t2c loop loop)
       @lr (cu_ap t2c (c2t'_beta.2.2))
       @lr (Torus_rec_beta_surf _ _ _ _ _)
       @lr (cu_flip_lr (sq_ap_idmap _))

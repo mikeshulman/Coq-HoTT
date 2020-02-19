@@ -3,28 +3,14 @@ Require Import Basics Types.
 Require Import SuccessorStructure.
 Require Import WildCat.
 Require Import Pointed.
-Require Import ReflectiveSubuniverse Modality Modalities.Identity.
+Require Import ReflectiveSubuniverse Modality Modalities.Identity Modalities.Descent.
 Require Import Truncations.
 Require Import Fibrations EquivalenceVarieties.
-Import TrM.
 
 Local Open Scope succ_scope.
 Open Scope pointed_scope.
 
 (** * Exact sequences *)
-
-(** ** Modalities *)
-
-(** The notion of exactness makes sense relative to any modality.  To state it in that level of generality would require module-type hackery.  But in practice we only want to apply it to the (-1)-truncation and to the identity modality.  Unfortunately none of the standard families of modalities includes both of those, but we can take a union of the truncation modalities with the identity modality. *)
-Module TrId_Modalities :=  Modalities_FamUnion Truncation_Modalities Identity_Modalities.
-Module Import TrIdM := Modalities_Theory TrId_Modalities.
-
-(** Unfortunately this way we don't automatically inherit the useful shortcuts about truncation modalities, so we have to redefine some of them. *)
-Global Instance issepfor_TrId (n : trunc_index) : IsSepFor (Tr n.+1) (Tr n).
-Proof.
-  intros A; split; intros; apply inO_tr_istrunc; exact _.
-Defined.
-
 
 (** ** Very short complexes *)
 
@@ -50,7 +36,7 @@ Definition pfib_cxfib {F X Y : pType} {i : F ->* X} {f : X ->* Y}
            (cx : IsComplex i f)
   : pfib f o* cxfib cx ==* i.
 Proof.
-  serapply Build_pHomotopy.
+  srapply Build_pHomotopy.
   - intros u; reflexivity.
   - cbn.
     rewrite ap_pr1_path_sigma; hott_simpl.
@@ -168,7 +154,7 @@ Defined.
 Definition iscomplex_pfib {X Y} (f : X ->* Y)
   : IsComplex (pfib f) f.
 Proof.
-  serapply Build_pHomotopy.
+  srapply Build_pHomotopy.
   - intros [x p]; exact p.
   - cbn. exact (concat_p1 _ @ concat_1p _)^.
 Defined.
@@ -190,7 +176,7 @@ Definition i_fiberseq {F X Y} (fs : FiberSeq F X Y)
 Global Instance isexact_oo_fiberseq {F X Y : pType} (fs : FiberSeq F X Y)
   : IsExact oo (i_fiberseq fs) fs.1.
 Proof.
-  srapply Build_IsExact; [ serapply Build_pHomotopy | ].
+  srapply Build_IsExact; [ srapply Build_pHomotopy | ].
   - intros u; cbn. 
     exact ((fs.2 u).2).
   - apply moveL_pV. cbn.
@@ -252,6 +238,9 @@ Proof.
   induction n as [|n IHn]; [ assumption | apply isexact_loops; assumption ].
 Defined.
 
+Section We_shouldnt_need_univalence.
+Context `{Univalence}.
+
 (** (n.+1)-truncation preserves n-exactness. *)
 Global Instance isexact_ptr (n : trunc_index)
            {F X Y : pType} (i : F ->* X) (f : X ->* Y)
@@ -263,12 +252,15 @@ Proof.
     (cancelR_conn_map (Tr n) (@tr n.+1 F) 
       (@cxfib _ _ _ (ptr_functor n.+1 i) (ptr_functor n.+1 f) _)).
   { intros x; rapply isconnected_pred. }
-  refine (conn_map_homotopic (Tr n) _ _ _
-           (conn_map_compose (Tr n) (cxfib _)
-             (functor_hfiber (fun y => (to_O_natural (Tr n.+1) f y)^) (point Y)))).
-  intros x; refine (path_sigma' _ 1 _); cbn.
-  (* This is even simpler than it looks, because for truncations [to_O_natural n.+1 := 1], [to n.+1 := tr], and [cx_const := H]. *)
-  exact (1 @@ (concat_p1 _)^).
+  nrapply conn_map_homotopic.
+  2:nrapply (conn_map_compose _ (cxfib _)
+               (functor_hfiber (fun y => (to_O_natural (Tr n.+1) f y)^)
+                               (point Y))).
+  3:pose @O_lex_leq_Tr; rapply (OO_conn_map_functor_hfiber_to_O).
+  - intros x; refine (path_sigma' _ 1 _); cbn.
+    (* This is even simpler than it looks, because for truncations [to_O_natural n.+1 := 1], [to n.+1 := tr], and [cx_const := H]. *)
+    exact (1 @@ (concat_p1 _)^).
+  - exact _.
 Defined.
 
 (** In particular, (n.+1)-truncation takes fiber sequences to n-exact ones. *)
@@ -282,6 +274,7 @@ Proof.
   exact (conn_map_isexact (f := f) (i := i) z).
 Defined.
 
+End We_shouldnt_need_univalence.
 
 (** ** Connecting maps *)
 
@@ -348,6 +341,9 @@ Coercion les_carrier : LongExactSequence >-> Funclass.
 Arguments les_fn {k N} S n : rename.
 Global Existing Instance les_isexact.
 
+Section We_shouldnt_need_univalence.
+Context `{Univalence}.
+
 (** Long exact sequences are preserved by truncation. *)
 Definition trunc_les (k : trunc_index) {N : SuccStr}
            (S : LongExactSequence oo N)
@@ -355,6 +351,8 @@ Definition trunc_les (k : trunc_index) {N : SuccStr}
   := Build_LongExactSequence
        (Tr k) N (fun n => pTr k.+1 (S n))
        (fun n => ptr_functor k.+1 (les_fn S n)) _.
+
+End We_shouldnt_need_univalence.
 
 
 (** ** LES of loop spaces and homotopy groups *)
@@ -385,8 +383,13 @@ Proof.
   all:exact _.
 Defined.
 
+Section We_shouldnt_need_univalence.
+Context `{Univalence}.
+
 (** And from that, a long exact sequence of homotopy groups (though for now it is just a sequence of pointed sets). *)
 Definition Pi_les {F X Y : pType} (i : F ->* X) (f : X ->* Y)
            `{IsExact oo F X Y i f}
   : LongExactSequence (Tr (-1)) (N3)
   := trunc_les (-1) (loops_les i f).
+
+End We_shouldnt_need_univalence.

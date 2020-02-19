@@ -227,8 +227,8 @@ Section on_both.
   : (Pmor_iso_T (x; xp) (x; xp') 1 1 (left_identity _ _ _ _) (right_identity _ _ _ _))
       <~> Pmor_iso_T' xp xp'.
   Proof.
-    refine (equiv_functor_sigma' (equiv_idmap _) _); intro.
-    refine (equiv_functor_sigma' (equiv_idmap _) _); intro.
+    refine (equiv_functor_sigma_id _); intro.
+    refine (equiv_functor_sigma_id _); intro.
     refine (equiv_functor_sigma' (equiv_iff_hprop _ _) (fun _ => equiv_iff_hprop _ _));
       cbn; intro H';
       first [ apply moveL_transport_V in H'
@@ -347,9 +347,9 @@ Section on_both.
       refine ((@Pmor_iso_adjust s0 s1 d1)^-1 o _).
       refine (@Pidtoiso _ _ _). }
     { (* Do this in small steps to make it fast. *)
-      ntc_refine isequiv_compose. 1:apply isequiv_inverse.
-      ntc_refine isequiv_compose. 2:apply isequiv_inverse.
-      ntc_refine isequiv_functor_sigma. 1:apply A_cat.
+      nrefine isequiv_compose. 1:apply isequiv_inverse.
+      nrefine isequiv_compose. 2:apply isequiv_inverse.
+      nrefine isequiv_functor_sigma. 1:apply A_cat.
       destruct s, d.
       simpl Overture.pr1.
       intro p; destruct p.

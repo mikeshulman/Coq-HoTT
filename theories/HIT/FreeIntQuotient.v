@@ -3,7 +3,6 @@ Require Import HoTT.Basics HoTT.Types UnivalenceImpliesFunext.
 Require Import TruncType HProp HSet.
 Require Import Spaces.Int.
 Require Import HIT.Coeq HIT.Circle HIT.Flattening Truncations.
-Import TrM.
 
 Local Open Scope path_scope.
 
@@ -33,7 +32,7 @@ Section FreeIntAction.
                                   (fun _ => R) (fun _ => f))^-1
               oE _));
     try exact _.
-    - unshelve erapply equiv_adjointify.
+    - unshelve rapply equiv_adjointify.
       + simple refine (Wtil_rec _ _ _).
         * intros u r; exact (coeq r).
         * intros u r; cbn. exact ((cglue r)^).
@@ -66,7 +65,7 @@ Section FreeIntAction.
                    (Wtil Unit Unit idmap idmap (unit_name R) (unit_name f))
                    (cct tt) (fun r0 : R => (ppt tt r0)^) r).
         symmetry; apply inv_V.
-    - refine (equiv_functor_sigma' 1 _); intros x.
+    - apply equiv_functor_sigma_id; intros x.
       apply equiv_path.
       revert x; refine (S1_ind _ 1 _); cbn.
       rewrite transport_paths_FlFr, concat_p1.

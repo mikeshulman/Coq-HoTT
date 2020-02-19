@@ -65,7 +65,7 @@ Section GenSpectrum.
 
   Definition smap_idmap (X : GenPrespectrum N) : sMap X X.
   Proof.
-    serapply Build_sMap.
+    srapply Build_sMap.
     + intro; exact pmap_idmap.
     + intro. exact (hrfl $@vR loops_functor_idmap _).
   Defined.
@@ -74,7 +74,7 @@ Section GenSpectrum.
     : sMap Y Z -> sMap X Y -> sMap X Z.
   Proof.
     intros f g.
-    serapply Build_sMap.
+    srapply Build_sMap.
     + refine (fun n => f n o* g n).
     + intro n. simpl. 
       exact ((smap_square g n $@h smap_square f n) $@vR loops_functor_compose _ _).
@@ -109,7 +109,7 @@ Section GenSpectrum.
 
   Definition sfib {X Y : GenSpectrum N} (f : X $-> Y) : sfiber f $-> X.
   Proof.
-    serapply Build_sMap; intro n.
+    srapply Build_sMap; intro n.
     + exact (pfib (f n)).
     + refine (move_left_bottom _). refine (_ $@vR _).
     1: apply square_functor_pfiber.
@@ -129,10 +129,10 @@ Section GenSpectrum.
     (f : forall x, sMap (Y x) (Y' x)) 
     : sMap (sForall A Y) (sForall A Y').
   Proof.
-    serapply Build_sMap.
+    srapply Build_sMap.
     + intro n. exact (functor_ppforall_right (fun a => f a n)).
     + intro n. refine (_ $@v _).
-    2: { serapply vinverse. exact (transpose (natural_loops_ppforall_right (fun a => spectrum_fun _ _ (f a) (n.+1)))). }
+    2: { srapply vinverse. exact (transpose (natural_loops_ppforall_right (fun a => spectrum_fun _ _ (f a) (n.+1)))). }
     apply functor_ppforall_right_square. intro a. apply smap_square.
   Defined.
 

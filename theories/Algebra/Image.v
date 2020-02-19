@@ -7,7 +7,6 @@ Require Import Algebra.Subgroup.
 Require Import WildCat.
 Require Import Truncations.
 Require Import Factorization.
-Import TrM.
 
 Local Open Scope mc_add_scope.
 
@@ -15,7 +14,7 @@ Local Open Scope mc_add_scope.
 Definition grp_image {A B : AbGroup} (f : A $-> B) : AbGroup.
 Proof.
   (** The underlying type is the (propositional) image of the type *)
-  serapply (Build_AbGroup (image (Tr (-1)) f)); repeat split.
+  srapply (Build_AbGroup (image (Tr (-1)) f)); repeat split.
   + (** Group operation *)
     intros [a p] [b q].
     exists (a + b).
@@ -40,29 +39,29 @@ Proof.
     apply ap, p.2.
   + exact _.
   + intros [a p] [b q] [c r].
-    serapply path_sigma_hprop.
+    srapply path_sigma_hprop.
     cbn; apply associativity.  
   + intros [a p].
-    serapply path_sigma_hprop.
+    srapply path_sigma_hprop.
     cbn; apply left_identity.
   + intros [a p].
-    serapply path_sigma_hprop.
+    srapply path_sigma_hprop.
     cbn; apply right_identity.
   + intros [a p].
-    serapply path_sigma_hprop.
+    srapply path_sigma_hprop.
     cbn; apply left_inverse.
   + intros [a p].
-    serapply path_sigma_hprop.
+    srapply path_sigma_hprop.
     cbn; apply right_inverse.
   + intros [a p] [b q].
-    serapply path_sigma_hprop.
+    srapply path_sigma_hprop.
     cbn; apply commutativity.
 Defined.
 
 Definition grp_image_pr1 {A B : AbGroup} (f : A $-> B)
   : grp_image f $-> B.
 Proof.
-  serapply Build_GroupHomomorphism.
+  srapply Build_GroupHomomorphism.
   + apply pr1.
   + intros ??; reflexivity.
 Defined.
@@ -70,7 +69,7 @@ Defined.
 Definition grp_image_in {A B : AbGroup} (f : A $-> B)
   : A $-> grp_image f.
 Proof.
-  serapply Build_GroupHomomorphism.
+  srapply Build_GroupHomomorphism.
   + intro a.
     exists (f a).
     apply tr.

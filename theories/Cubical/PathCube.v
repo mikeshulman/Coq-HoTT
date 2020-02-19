@@ -2,7 +2,7 @@ Require Import Basics.
 Require Import Cubical.DPath.
 Require Import Cubical.PathSquare.
 Require Import Cubical.DPathSquare.
-Require Import Types.Paths.
+Require Import Types.Paths Types.Prod.
 
 Declare Scope cube_scope.
 Delimit Scope cube_scope with cube.
@@ -105,7 +105,7 @@ Global Instance isequiv_cu_path {A}
   {si0i : PathSquare p00i p10i pi00 pi01} {si1i : PathSquare p01i p11i pi10 pi11}
   : IsEquiv (cu_path s0ii s1ii sii0 sii1 si0i si1i).
 Proof.
-  serapply isequiv_adjointify.
+  srapply isequiv_adjointify.
   1,2: by intros [].
   destruct sii0, sii1.
   cbn.
@@ -234,7 +234,7 @@ Global Instance isequiv_cu_rot_tb_fb
   {si0i : PathSquare p00i p10i pi00 pi01} {si1i : PathSquare p01i p11i pi10 pi11}
   : IsEquiv (cu_rot_tb_fb s0ii s1ii sii0 sii1 si0i si1i).
 Proof.
-  serapply isequiv_adjointify.
+  srapply isequiv_adjointify.
   1,2 : by intros [].
   unfold Sect.
   rewrite <- (eissect tr s0ii).
@@ -699,8 +699,9 @@ Defined.
 (* Uncurry a function in sq_ap2 *)
 Definition sq_ap_uncurry {A B C} (f : A -> B -> C)
   {a a' : A} (p : a = a') {b b' : B} (q : b = b')
-  : PathCube (sq_ap (uncurry f) (sq_prod hr vr)) (sq_ap2 f p q)
-  (ap_uncurry _ _ _) (ap_uncurry _ _ _) (ap_uncurry _ _ _) (ap_uncurry _ _ _).
+  : PathCube (sq_ap (uncurry f) (sq_prod hr vr)) (sq_ap011 f p q)
+    (sq_G1 (ap_uncurry _ _ _)) (sq_G1 (ap_uncurry _ _ _))
+    (sq_G1 (ap_uncurry _ _ _)) (sq_G1 (ap_uncurry _ _ _)).
 Proof.
   by destruct p, q.
 Defined.

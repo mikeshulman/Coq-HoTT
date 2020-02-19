@@ -462,6 +462,11 @@ Definition equiv_functor_sigma_id `{P : A -> Type} `{Q : A -> Type}
 : sigT P <~> sigT Q
   := equiv_functor_sigma' 1 g.
 
+Definition equiv_functor_sigma_pb {A B : Type} {Q : B -> Type}
+           (f : A <~> B)
+: sigT (Q o f) <~> sigT Q
+  := equiv_functor_sigma f (fun a => 1%equiv).
+
 (** Lemma 3.11.9(i): Summing up a contractible family of types does nothing. *)
 
 Global Instance isequiv_pr1_contr {A} {P : A -> Type}
@@ -502,6 +507,18 @@ Definition equiv_sigma_assoc `(P : A -> Type) (Q : {a : A & P a} -> Type)
        _ _ _
        (@Build_IsEquiv
           {a : A & {p : P a & Q (a;p)}} (sigT Q)
+          (fun apq => ((apq.1; apq.2.1); apq.2.2))
+          (fun apq => (apq.1.1; (apq.1.2; apq.2)))
+          (fun _ => 1)
+          (fun _ => 1)
+          (fun _ => 1)).
+
+Definition equiv_sigma_assoc' `(P : A -> Type) (Q : forall a : A, P a -> Type)
+: {a : A & {p : P a & Q a p}} <~> {ap : sigT P & Q ap.1 ap.2}
+  := @Build_Equiv
+       _ _ _
+       (@Build_IsEquiv
+          {a : A & {p : P a & Q a p}} {ap : sigT P & Q ap.1 ap.2}
           (fun apq => ((apq.1; apq.2.1); apq.2.2))
           (fun apq => (apq.1.1; (apq.1.2; apq.2)))
           (fun _ => 1)
@@ -564,6 +581,12 @@ Definition equiv_sigT_ind `{P : A -> Type}
            (Q : sigT P -> Type)
 : (forall (x:A) (y:P x), Q (x;y)) <~> (forall xy, Q xy)
   := Build_Equiv _ _ (sigT_ind Q) _.
+
+(** And a curried version *)
+Definition equiv_sigT_ind' `{P : A -> Type}
+           (Q : forall a, P a -> Type)
+: (forall (x:A) (y:P x), Q x y) <~> (forall xy, Q xy.1 xy.2)
+  := equiv_sigT_ind (fun xy => Q xy.1 xy.2).
 
 (** *** The negative universal property. *)
 

@@ -37,7 +37,7 @@ Defined.
 
 Global Instance is01cat_wildcat01 : Is01Cat WildCat01.
 Proof.
-  serapply Build_Is01Cat.
+  srapply Build_Is01Cat.
   + intros C. cbn in *.
     exists idmap; exact _.
   + intros A B C [G g] [F f].
@@ -75,7 +75,7 @@ Defined.
 
 Global Instance is01cat_wildcat : Is01Cat WildCat.
 Proof.
-  serapply Build_Is01Cat.
+  srapply Build_Is01Cat.
   + intro A; rapply (Build_Fun11 _ _ idmap).
   + intros C D E [F ? ?] [G ? ?]; cbn in *.
     srapply (Build_Fun11 _ _ (F o G)).
@@ -85,17 +85,17 @@ Defined.
 
 Global Instance is1cat_wildcat : Is1Cat WildCat.
 (** Proof.
-  serapply Build_Is1Coh1Cat.
+  srapply Build_Is1Coh1Cat.
   + intros A B C D f g h.
   exact (Fun1 A B).
   + intros C. cbn in *.
   unfold Fun1. 
-  exists (idmap). serapply Build_Is0Coh1Functor. intros a b. cbn.
+  exists (idmap). srapply Build_Is0Coh1Functor. intros a b. cbn.
   exact (idmap).
   + intros A B C; cbn in *; unfold Fun1.
   intros [G g] [F f]. 
   exists ( G o F). 
-  serapply Build_Is0Coh1Functor.
+  srapply Build_Is0Coh1Functor.
   intros u v h. cbn in *.  exact (fmap G ( fmap F h)).
   Defined. *)
 Admitted. 

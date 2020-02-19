@@ -400,8 +400,8 @@ Global Instance isqiso_inv {A : Type} `{IsCat0 A}
 Proof.
   unshelve econstructor.
   - exact f.
-  - serapply qiso_isretr.
-  - serapply qiso_issect.
+  - srapply qiso_isretr.
+  - srapply qiso_issect.
   - exact _.
   - exact _.
 Defined.
@@ -513,7 +513,7 @@ Definition cate_adjointify {A} `{HasEquivs A} {a b : A}
 
 Definition cate_inv {A} `{HasEquivs A} {a b : A} (f : a $<~> b) : b $<~> a.
 Proof.
-  serapply (Build_CatEquiv (qiso_inv f)); try exact _.
+  srapply (Build_CatEquiv (qiso_inv f)); try exact _.
   rapply catie_isqiso.
 Defined.
 
@@ -527,7 +527,7 @@ Definition cate_buildequiv_fun {A} `{HasEquivs A} {a b : A}
            (f : a $-> b) {fe : CatIsEquiv f}
   : cate_fun (Build_CatEquiv f) $<~> f.
 Proof.
-  serapply (Build_CatEquiv (cate_buildequiv_fun' A _ _ _ f _)); try exact _.
+  srapply (Build_CatEquiv (cate_buildequiv_fun' A _ _ _ f _)); try exact _.
   apply catie_isqiso, isqiso_cate_buildequiv_fun'.
 Defined.
 
@@ -593,7 +593,7 @@ Definition cat_interchange_opp {A : Type} `{IsCat1 A}
 Global Instance catie_id {A : Type} `{IsCat1 A} (a : A)
   : CatIsEquiv (cat_id a).
 Proof.
-  serapply catie_adjointify.
+  srapply catie_adjointify.
   - exact (cat_id a).
   - exact (cat_idl (cat_id a)).
   - exact (cat_idl (cat_id a)).
@@ -651,11 +651,11 @@ Proof.
     - refine (fmap_id F a $o _).
       refine (_ $o qiso_inv (fmap_comp F f (qiso_inv f))).
       apply fmap; try exact _.
-      serapply qiso_issect.
+      srapply qiso_issect.
     - refine (fmap_id F b $o _).
       refine (_ $o qiso_inv (fmap_comp F (qiso_inv f) f)).
       apply fmap; try exact _.
-      serapply qiso_isretr.
+      srapply qiso_isretr.
     - refine (isqiso_compose _ _ _ _ _ _ _ _ _ _ _ _).
     - refine (isqiso_compose _ _ _ _ _ _ _ _ _ _ _ _). }
 Fail Guarded.

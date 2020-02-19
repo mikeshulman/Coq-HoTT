@@ -7,7 +7,7 @@ Require Import Spectrum.
 
 Definition EMSpectrum `{Univalence} (A : AbGroup) : Spectrum.
 Proof.
-  serapply Build_Spectrum_nat.
+  srapply Build_Spectrum_nat.
   1: exact (EilenbergMacLane A).
   intro n. symmetry. apply pequiv_loops_em_em.
 Defined.

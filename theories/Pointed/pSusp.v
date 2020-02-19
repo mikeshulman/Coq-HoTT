@@ -9,7 +9,6 @@ Require Import Pointed.pEquiv.
 Require Import Homotopy.Suspension.
 Require Import Homotopy.Freudenthal.
 Require Import Truncations.
-Import TrM.
 
 Generalizable Variables X A B f g n.
 
@@ -32,17 +31,16 @@ Definition psusp (X : pType) : pType
 
 (** ** Suspension Functor *)
 
-(* Definition of suspension functor *)
+(* Definition of pointed suspension functor *)
 Definition psusp_functor {X Y : pType} (f : X ->* Y) : psusp X ->* psusp Y
-  := Build_pMap (psusp X) (psusp Y)
-    (Susp_rec North South (fun x => merid (f x))) 1.
+  := Build_pMap (psusp X) (psusp Y) (functor_susp f) 1.
 
 (* Suspension functor preserves composition *)
 Definition psusp_functor_compose {X Y Z : pType} (g : Y ->* Z) (f : X ->* Y)
   : psusp_functor (g o* f) ==* psusp_functor g o* psusp_functor f.
 Proof.
   pointed_reduce; srefine (Build_pHomotopy _ _); cbn.
-  { serapply Susp_ind; try reflexivity; cbn.
+  { srapply Susp_ind; try reflexivity; cbn.
     intros x.
     refine (transport_paths_FlFr _ _ @ _).
     rewrite concat_p1; apply moveR_Vp.
@@ -54,8 +52,8 @@ Qed.
 Definition psusp_functor_idmap {X : pType}
   : psusp_functor (@pmap_idmap X) ==* pmap_idmap.
 Proof.
-  serapply Build_pHomotopy.
-  { serapply Susp_ind; try reflexivity.
+  srapply Build_pHomotopy.
+  { srapply Susp_ind; try reflexivity.
     intro x.
     refine (transport_paths_FFlr _ _ @ _).
     by rewrite ap_idmap, Susp_rec_beta_merid,
@@ -67,9 +65,9 @@ Definition psusp_2functor {X Y} {f g : X ->* Y} (p : f ==* g)
   : psusp_functor f ==* psusp_functor g.
 Proof.
   pointed_reduce.
-  serapply Build_pHomotopy.
+  srapply Build_pHomotopy.
   { simpl.
-    serapply Susp_ind.
+    srapply Susp_ind.
     1,2: reflexivity.
     intro x; cbn.
     rewrite transport_paths_FlFr.
@@ -83,7 +81,7 @@ Defined.
 Definition pequiv_psusp_functor {X Y : pType} (f : X <~>* Y)
   : psusp X <~>* psusp Y.
 Proof.
-  serapply pequiv_adjointify.
+  srapply pequiv_adjointify.
   1: apply psusp_functor, f.
   1: apply psusp_functor, f^-1*.
   1,2: refine ((psusp_functor_compose _ _)^* @* _ @* psusp_functor_idmap).
@@ -101,42 +99,24 @@ Module Book_Loop_Susp_Adjunction.
   : (psusp A ->* B) <~> (A ->* loops B).
   Proof.
     refine (_ oE (issig_pmap (psusp A) B)^-1).
-    refine (_ oE (equiv_functor_sigma'
+    refine (_ oE (equiv_functor_sigma_pb
                  (Q := fun NSm => fst NSm.1 = point B)
-                 (equiv_Susp_rec A B)
-                 (fun f => 1%equiv))).
+                 (equiv_Susp_rec A B))).
     refine (_ oE (equiv_sigma_assoc _ _)^-1); simpl.
-    refine (_ oE
-              (equiv_functor_sigma'
-                 (Q := fun a => {_ : fst a = point B & A -> fst a = snd a })
-                 (equiv_idmap (B * B))
-                 (fun NS => equiv_sigma_symm0
-                              (A -> fst NS = snd NS)
-                              (fst NS = point B)))).
+    refine (_ oE equiv_functor_sigma_id _).
+    2:intros; apply equiv_sigma_symm0.
     refine (_ oE (equiv_sigma_prod _)^-1); simpl.
-    refine (_ oE
-              (equiv_functor_sigma'
-                 (Q := fun b => {_ : b = point B & { p : B & A -> b = p}})
-                 1
-                 (fun b => equiv_sigma_symm (A := B) (B := b = point B)
-                             (fun p _ => A -> b = p)))).
-    refine (_ oE
-              (equiv_sigma_assoc (fun b => b = point B)
-                                 (fun bq => {p:B & A -> bq.1 = p}))).
+    refine (_ oE equiv_functor_sigma_id _).
+    2:intros; apply equiv_sigma_symm.
+    refine (_ oE equiv_sigma_assoc' _ _).
     refine (_ oE equiv_contr_sigma _); simpl.
     refine (_ oE (equiv_sigma_contr
                    (A := {p : B & A -> point B = p})
                    (fun pm => { q : point B = pm.1 & pm.2 (point A) = q }))^-1).
     refine (_ oE (equiv_sigma_assoc _ _)^-1); simpl.
-    refine (_ oE
-              (equiv_functor_sigma'
-                 (Q := fun b => {q : point B = b & {p : A -> point B = b & p (point A) = q}})
-                 1
-                 (fun b => equiv_sigma_symm (fun p q => p (point A) = q)))).
-    refine (_ oE
-              (equiv_sigma_assoc
-                 (fun b => point B = b)
-                 (fun bq => {p : A -> point B = bq.1 & p (point A) = bq.2}))).
+    refine (_ oE equiv_functor_sigma_id _).
+    2:intros; apply equiv_sigma_symm.
+    refine (_ oE equiv_sigma_assoc' _ _).
     refine (_ oE equiv_contr_sigma _); simpl.
     refine (issig_pmap A (loops B)).
   Defined.
@@ -185,7 +165,7 @@ Defined.
 Lemma pequiv_ptr_loop_psusp `{Univalence} (X : pType) n `{IsConnected n.+1 X}
   : pTr (n +2+ n) X <~>* pTr (n +2+ n) (loops (psusp X)).
 Proof.
-  simple notypeclasses refine (Build_pEquiv _ _ _ (isequiv_conn_map_ino (n +2+ n) _)).
+  snrefine (Build_pEquiv _ _ _ (isequiv_conn_map_ino (n +2+ n) _)).
   { apply ptr_functor.
     apply loop_susp_unit. }
   all:exact _.

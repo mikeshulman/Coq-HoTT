@@ -32,7 +32,7 @@ Global Instance isequiv_dp_path_transport {A} (P : A -> Type) {a0 a1}
   (p : a0 = a1) (b0 : P a0) (b1 : P a1)
   : IsEquiv (@dp_path_transport A P a0 a1 p b0 b1).
 Proof.
-  serapply isequiv_adjointify; by destruct p.
+  srapply isequiv_adjointify; by destruct p.
 Defined.
 
 Definition equiv_dp_path_transport {A : Type} (P : A -> Type)
@@ -82,6 +82,13 @@ Proof.
   by destruct p.
 Defined.
 
+(* which corresponds to ordinary apD *)
+Definition dp_path_transport_apD {A P} (f : forall a, P a) {a0 a1 : A} (p : a0 = a1)
+  : dp_path_transport (apD f p) = dp_apD f p.
+Proof.
+  by destruct p.
+Defined.
+
 (* A DPath over a constant family is just a path *)
 Definition dp_const {A C} {a0 a1 : A} {p : a0 = a1} {x y}
   : (x = y) -> DPath (fun _ => C) p x y.
@@ -94,6 +101,10 @@ Global Instance isequiv_dp_const {A C} {a0 a1 : A} {p : a0 = a1} {x y}
 Proof.
   destruct p; exact _.
 Defined.
+
+Definition equiv_dp_const {A C} {a0 a1 : A} {p : a0 = a1} {x y}
+  : (x = y) <~> DPath (fun _ => C) p x y
+  := Build_Equiv _ _ dp_const _.
 
 (* dp_apD of a non-dependent map is just a constant DPath *)
 Definition dp_apD_const {A B} (f : A -> B) {a0 a1 : A}
@@ -328,10 +339,10 @@ Global Instance isequiv_path_sigma_dp_uncurried
   {A P} {x x' : A} {y : P x} {y' : P x'}
   : IsEquiv (@path_sigma_dp_uncurried A P x x' y y').
 Proof.
-  serapply isequiv_adjointify.
+  srapply isequiv_adjointify.
   { intro r.
     exists (ap pr1 r).
-    serapply dp_compose.
+    srapply dp_compose.
     apply (dp_apD pr2 r). }
   { intros r.
     set (xy := (x; y)) in *.
@@ -363,7 +374,7 @@ Proof.
   refine (equiv_compose' _ (equiv_apD10 _ _ _)).
   apply equiv_functor_forall_id.
   intro a.
-  serapply equiv_adjointify.
+  srapply equiv_adjointify.
   + by intros ? ? [].
   + intro F; exact (F a 1).
   + repeat (intro; apply path_forall).
@@ -414,9 +425,9 @@ Proof.
   simpl.
   intro nm.
   apply path_sigma_dp_uncurried.
-  erapply equiv_functor_sigma_id.
+  rapply equiv_functor_sigma_id.
   { intro p.
-    symmetry; serapply (dp_compose (exist B x1)). }
+    symmetry; srapply (dp_compose (exist B x1)). }
   apply nm.
 Defined.
 

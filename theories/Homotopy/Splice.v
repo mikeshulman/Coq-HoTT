@@ -42,8 +42,6 @@ Proof.
   rewrite p. reflexivity.
 Defined.
 
-Module Import TrIdM := Modalities_Theory TrId_Modalities. (* Am I doing this right? *)
-
 Local Notation "'0'" := (inl (inl (inr tt))).
 Local Notation "'1'" := (inl (inr tt)).
 Local Notation "'2'" := (inr tt).

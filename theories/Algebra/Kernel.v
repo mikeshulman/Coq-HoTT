@@ -12,7 +12,7 @@ Local Open Scope mc_add_scope.
 
 Definition grp_kernel {A B : AbGroup} (f : GroupHomomorphism A B) : AbGroup.
 Proof.
-  serapply (Build_AbGroup (hfiber f abgroup_unit)); repeat split.
+  srapply (Build_AbGroup (hfiber f abgroup_unit)); repeat split.
   + (** Operation *)
     intros [a p] [b q].
     exists (a + b).
@@ -29,29 +29,29 @@ Proof.
   + (** HSet *)
     exact _.
   + intros [a p] [b q] [c r].
-    serapply path_sigma_hprop.
+    srapply path_sigma_hprop.
     cbn; apply associativity.
   + intros [a p].
-    serapply path_sigma_hprop.
+    srapply path_sigma_hprop.
     cbn; apply left_identity.
   + intros [a p].
-    serapply path_sigma_hprop.
+    srapply path_sigma_hprop.
     cbn; apply right_identity.
   + intros [a p].
-    serapply path_sigma_hprop.
+    srapply path_sigma_hprop.
     cbn; apply left_inverse.
   + intros [a p].
-    serapply path_sigma_hprop.
+    srapply path_sigma_hprop.
     cbn; apply right_inverse.
   + intros [a p] [b q].
-    serapply path_sigma_hprop.
+    srapply path_sigma_hprop.
     cbn; apply commutativity.
 Defined.
 
 Definition grp_homo_kernel_pr1 {A B : AbGroup} (f : GroupHomomorphism A B)
   : GroupHomomorphism (grp_kernel f) A.
 Proof.
-  serapply Build_GroupHomomorphism.
+  srapply Build_GroupHomomorphism.
   - apply pr1.
   - intros a b; reflexivity.
 Defined.
@@ -66,7 +66,7 @@ Defined.
 Global Instance issubgroup_grp_kernel {A B : AbGroup}
   (f : GroupHomomorphism A B) : IsSubgroup (grp_kernel f) A.
 Proof.
-  serapply Build_IsSubgroup.
+  srapply Build_IsSubgroup.
   + exact (grp_homo_kernel_pr1 f).
   + intros a b.
     apply path_sigma_hprop.

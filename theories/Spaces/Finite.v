@@ -11,7 +11,6 @@ Require Import EquivalenceVarieties.
 Require Import UnivalenceImpliesFunext.
 Require Import Truncations.
 Require Import Colimits.Quotient.
-Import TrM.
 
 Local Open Scope path_scope.
 Local Open Scope nat_scope.
@@ -704,7 +703,7 @@ Proof.
   apply finite_choice in g.
   strip_truncations.
   unfold finplus.
-  refine (fcard_equiv' (equiv_functor_sigma' (equiv_idmap X) g)).
+  refine (fcard_equiv' (equiv_functor_sigma_id g)).
 Defined.
 
 (** The sum of a finite constant family is the product by its cardinality. *)
@@ -798,7 +797,7 @@ Proof.
   refine (decidable_equiv _ (hfiber_fibration x P)^-1 _).
   refine (detachable_image_finite pr1 x).
   - assumption.                 (** Why doesn't Coq find this? *)
-  - apply mapinO_pr1; exact _.  (** Why doesn't Coq find this? *)
+  - apply (mapinO_pr1 (Tr (-1))).  (** Why doesn't Coq find this? *)
 Defined.
 
 (** ** Quotients *)
@@ -895,7 +894,7 @@ Section DecidableQuotients.
     apply ap, path_arrow; intros z; revert z.
     refine (Quotient_ind_hprop _ _ _); intros x; simpl.
     apply fcard_equiv'; unfold hfiber.
-    refine (equiv_functor_sigma' 1 _); intros y; simpl.
+    refine (equiv_functor_sigma_id _); intros y; simpl.
     symmetry.
     refine (path_quotient R y x oE _).
     apply equiv_iff_hprop; apply symmetry.
@@ -910,12 +909,12 @@ Definition leq_inj_finite `{Funext} {X Y} {fX : Finite X} {fY : Finite Y}
            (f : X -> Y) (i : IsEmbedding f)
 : fcard X <= fcard Y.
 Proof.
-  assert (MapIn (-1)%trunc f) by exact _. clear i.
+  assert (MapIn (Tr (-1)) f) by exact _. clear i.
   destruct fX as [n e]; simpl.
   destruct fY as [m e']; simpl.
   strip_truncations.
   pose (g := e' o f o e^-1).
-  assert (MapIn (-1)%trunc g) by (unfold g; exact _).
+  assert (MapIn (Tr (-1)) g) by (unfold g; exact _).
   clearbody g. clear e e'. generalize dependent m.
   induction n as [|n IHn].
   { intros; exact tt. }
@@ -924,7 +923,7 @@ Proof.
   destruct m as [|m].
   { elim (g (inr tt)). }
   pose (h := (fin_transpose_last_with m (g (inr tt)))^-1 o g).
-  assert (MapIn (-1)%trunc h) by (unfold h; exact _).
+  assert (MapIn (Tr (-1)) h) by (unfold h; exact _).
   assert (Ha : forall a:Fin n, is_inl (h (inl a))).
   { intros a.
     remember (g (inl a)) as b eqn:p.
@@ -951,7 +950,7 @@ Proof.
       apply fin_transpose_last_with_last. }
     rewrite q; exact tt. }
   exact (IHn m (unfunctor_sum_l h Ha)
-             (mapinO_unfunctor_sum_l (-1)%trunc h Ha Hb)).
+             (mapinO_unfunctor_sum_l (Tr (-1)) h Ha Hb)).
 Qed.
 
 (** ** Initial segments of [nat] *)

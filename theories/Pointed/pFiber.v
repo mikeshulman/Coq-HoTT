@@ -30,7 +30,7 @@ Proof.
                    (P := fun a => {_ : f a = point B & a = point A})
                    (Q := fun a => {_ : a = point A & f a = point B })
                    1 (fun a => equiv_sigma_symm0 _ _))).
-    refine (_ oE equiv_sigma_assoc _ (fun a => f a.1 = point B)).
+    refine (_ oE equiv_sigma_assoc' _ _).
     refine (_ oE equiv_contr_sigma _); simpl.
     apply equiv_concat_l.
     symmetry; apply point_eq.
@@ -58,11 +58,11 @@ Qed.
 Definition pfiber_loops_functor {A B : pType} (f : A ->* B)
   : pfiber (loops_functor f) <~>* loops (pfiber f).
 Proof.
-  serapply Build_pEquiv'.
+  srapply Build_pEquiv'.
   { etransitivity.
-    2: serapply equiv_path_sigma.
+    2: srapply equiv_path_sigma.
     simpl; unfold hfiber.
-    serapply equiv_functor_sigma_id.
+    srapply equiv_functor_sigma_id.
     intro p; cbn.
     refine (_ oE equiv_moveL_Mp _ _ _).
     refine (_ oE equiv_concat_r (concat_p1 _) _).
@@ -77,7 +77,7 @@ Definition pr1_pfiber_loops_functor {A B} (f : A ->* B)
   : loops_functor (pfib f) o* pfiber_loops_functor f
     ==* pfib (loops_functor f).
 Proof.
-  serapply Build_pHomotopy.
+  srapply Build_pHomotopy.
   - intros [u v].
     refine (concat_1p _ @ concat_p1 _ @ _).
     exact (@ap_pr1_path_sigma _ _ (point A; point_eq f) (point A;point_eq f) _ _).
@@ -100,7 +100,7 @@ Definition functor_hfiber2 {A B C D}
            (p : k o f == g o h) {b : B} {b' : D} (q : k b = b')
 : hfiber f b -> hfiber g b'.
 Proof.
-  serapply functor_sigma.
+  srapply functor_sigma.
   - exact h.
   - intros a e. exact ((p a)^ @ ap k e @ q).
 Defined.
@@ -110,9 +110,9 @@ Definition functor_pfiber {A B C D}
            (p : k o* f ==* g o* h)
   : pfiber f ->* pfiber g.
 Proof.
-  serapply Build_pMap.
+  srapply Build_pMap.
   + cbn. refine (functor_hfiber2 p (point_eq k)).
-  + serapply path_hfiber. 
+  + srapply path_hfiber. 
     - apply point_eq.
     - refine (concat_pp_p _ _ _ @ _). apply moveR_Vp. apply (point_htpy p)^.
 Defined.
@@ -128,7 +128,7 @@ Definition square_functor_pfiber {A B C D}
            (p : k o* f ==* g o* h)
   : h o* pfib f ==* pfib g o* functor_pfiber p.
 Proof.
-  serapply Build_pHomotopy.
+  srapply Build_pHomotopy.
   - intros x; reflexivity.
   - apply moveL_pV. cbn; unfold functor_sigma; cbn.
     abstract (rewrite ap_pr1_path_sigma, concat_p1; reflexivity).

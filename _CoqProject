@@ -145,6 +145,8 @@ theories/Spaces/Torus/TorusHomotopy.v
 theories/Modalities/ReflectiveSubuniverse.v
 theories/Modalities/Modality.v
 theories/Modalities/Accessible.v
+theories/Modalities/Descent.v
+theories/Modalities/Separated.v
 theories/Modalities/Lex.v
 theories/Modalities/Topological.v
 theories/Modalities/Notnot.v
@@ -343,10 +345,11 @@ theories/Algebra/SpectralSequence.v
 #
 
 theories/Tactics.v
-theories/Tactics/RewriteModuloAssociativity.v
+theories/Tactics/BinderApply.v
 theories/Tactics/EquivalenceInduction.v
 theories/Tactics/EvalIn.v
-theories/Tactics/BinderApply.v
+theories/Tactics/Nameless.v
+theories/Tactics/RewriteModuloAssociativity.v
 
 #
 #   PropResizing

@@ -241,14 +241,6 @@ Definition equiv_functor_forall_pb {A B : Type} {P : A -> Type}
   : (forall a, P a) <~> (forall b, P (f b))
   := equiv_functor_forall' (Q := P o f) f (fun b => equiv_idmap).
 
-Definition equiv_functor_forall_pf {A B : Type} {Q : B -> Type}
-  (f : B <~> A)
-  : (forall a, (Q (f^-1 a))) <~> (forall b, Q b).
-Proof.
-  srefine (equiv_functor_forall' (P := Q o f^-1) f _).
-  intros b; exact (equiv_transport Q _ _ (eissect f b)).
-Defined.
-
 (** There is another way to make forall functorial that acts on on equivalences only. *)
 
 Definition equiv_functor_forall_covariant
@@ -284,6 +276,18 @@ Proof.
   rewrite (transport_compose R g0 _ _).
   symmetry; apply transport_pp.
 Qed.
+
+(** ** Functoriality on logical equivalences *)
+
+(** At least over a fixed base *)
+Definition iff_functor_forall {A : Type} {P Q : A -> Type}
+           (f : forall a, P a <-> Q a)
+  : (forall a, P a) <-> (forall a, Q a).
+Proof.
+  split.
+  - intros g a; exact (fst (f a) (g a)).
+  - intros h a; exact (snd (f a) (h a)).
+Defined.
 
 (** ** Two variable versions for function extensionality. *)
 

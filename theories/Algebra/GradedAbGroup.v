@@ -24,7 +24,7 @@ Definition Build_GradedHomomorphism {G : AbGroup}
   (hom : forall x, GroupHomomorphism (M x) (M' (x + degree)))
   : @GradedHomomorphism G M M'.
 Proof.
-  serapply Build_GradedHomomorphism'.
+  srapply Build_GradedHomomorphism'.
   { apply right_mult_equiv.
     exact degree. }
   { intro x; cbn.
@@ -44,7 +44,7 @@ Definition gh_compose {G M M' M''}
   (f : @GradedHomomorphism G M M')
   : GradedHomomorphism M M''.
 Proof.
-  serapply Build_GradedHomomorphism'.
+  srapply Build_GradedHomomorphism'.
   + exact (deg g oE deg f).
   + intro x.
     simpl.
@@ -54,10 +54,10 @@ Proof.
     rewrite simple_associativity.
     reflexivity.
   + cbn; intros x y p.
-    serapply Build_GroupHomomorphism.
+    srapply Build_GroupHomomorphism.
     { intro z.
-      serapply (homo _ _ g).
-      3: serapply (homo _ _ f).
+      srapply (homo _ _ g).
+      3: srapply (homo _ _ f).
       5: apply z.
       2: apply p.
       reflexivity. }
@@ -68,10 +68,10 @@ Defined.
 Definition gh_zero {G M M'}
   : @GradedHomomorphism G M M'.
 Proof.
-  serapply Build_GradedHomomorphism.
+  srapply Build_GradedHomomorphism.
   1: exact mon_unit.
   intro x.
-  serapply Build_GroupHomomorphism.
+  srapply Build_GroupHomomorphism.
   { intro.
     apply mon_unit. }
   intros _ _.
@@ -97,9 +97,9 @@ Section WildCat.
 
   Global Instance is01cat_gradedgroups : Is01Cat (GradedGroup G).
   Proof.
-    serapply Build_Is01Cat.
+    srapply Build_Is01Cat.
     + intros x.
-      serapply Build_GradedHomomorphism'.
+      srapply Build_GradedHomomorphism'.
       1: reflexivity.
       { intro g.
         symmetry.

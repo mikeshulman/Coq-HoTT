@@ -14,14 +14,14 @@ Section Sigma.
 
 Global Instance isgraph_sigma : IsGraph (sig B).
 Proof.
-  serapply Build_IsGraph.
+  srapply Build_IsGraph.
   intros [x u] [y v].
   exact {p : x = y & p # u $-> v}.
 Defined.
 
 Global Instance is01cat_sigma : Is01Cat (sig B).
 Proof.
-  serapply Build_Is01Cat.
+  srapply Build_Is01Cat.
   + intros [x u].
     exists idpath. exact (Id u).
   + intros [x u] [y v] [z w] [q g] [p f].

@@ -1,10 +1,11 @@
 (* -*- mode: coq; mode: visual-line -*-  *)
 (** * Nullification *)
 
-Require Import HoTT.Basics HoTT.Types.
+Require Import HoTT.Basics HoTT.Types HoTT.Cubical.
 Require Import Extensions.
 Require Import Modality Accessible.
 Require Export Localization.    (** Nullification is a special case of localization *)
+Require Import Homotopy.Suspension.
 
 Local Open Scope path_scope.
 
@@ -41,74 +42,24 @@ Definition ooextendable_over_unit@{i j k l m}
 : ooExtendableAlong_Over (@const A Unit tt) C D ext
   := fun n => extendable_over_unit n A C D (ext n) (fun c => ext' c n).
 
-(** We define a wrapper, as before. *)
-Record Nullification_Modality := Nul { unNul : NullGenerators }.
-
-Module Nullification_Modalities <: Modalities.
-
-  Definition Modality : Type@{u} := Nullification_Modality@{a}.
-
+Definition Nul@{a i} (S : NullGenerators@{a}) : Modality@{i}.
+Proof.
   (** We use the localization reflective subuniverses for most of the necessary data. *)
-  Module LocRSU_Data <: ReflectiveSubuniverses_Restriction_Data Localization_ReflectiveSubuniverses.
-    Definition New_ReflectiveSubuniverse : let enforce := Type@{u'} : Type@{u} in Type@{u}
-      := Nullification_Modality@{u'}.
-    Definition ReflectiveSubuniverses_restriction
-    : New_ReflectiveSubuniverse@{u a}
-      -> Localization_ReflectiveSubuniverses.ReflectiveSubuniverse@{u a}
-      := fun O => Loc (null_to_local_generators (unNul O)).
-  End LocRSU_Data.
-
-  Module LocRSU := ReflectiveSubuniverses_Restriction Localization_ReflectiveSubuniverses LocRSU_Data.
-
-  Module LocRSUTh := ReflectiveSubuniverses_Theory LocRSU.
-
-  Definition O_reflector@{u a i} := LocRSU.O_reflector@{u a i}.
-  Definition In@{u a i} := LocRSU.In@{u a i}.
-  Definition O_inO@{u a i} := @LocRSU.O_inO@{u a i}.
-  Definition to@{u a i} := LocRSU.to@{u a i}.
-  Definition inO_equiv_inO := @LocRSU.inO_equiv_inO@{u a i j k}.
-  Definition hprop_inO@{u a i} := LocRSU.hprop_inO@{u a i}.
-
-  Definition O_ind_internal@{u a i j k} (O : Modality@{u a}) (A : Type@{i})
-             (B : O_reflector@{u a i} O A -> Type@{j})
-             (B_inO : forall oa : O_reflector@{u a i} O A, In@{u a j} O (B oa))
-             (g : forall a : A, B (to@{u a i} O A a))
-  : forall x, B x.
-  Proof.
-    refine (Localize_ind@{a i j k}
-             (null_to_local_generators@{a a} (unNul O)) A B g _); intros i.
-    apply (ooextendable_over_unit@{a i j a k}); intros c.
-    refine (ooextendable_postcompose
-              (fun (_:Unit) => B (c tt)) _ _
-              (fun u => transport@{i j} B (ap c (path_unit@{a} tt u))) _).
-    refine (ooextendable_islocal _ i).
-    apply B_inO.
+  simple refine (Build_Modality' (Loc (null_to_local_generators S)) _ _).
+  - exact _.
+  - intros A.
+    (** We take care with universes. *)
+    simple notypeclasses refine (reflectsD_from_OO_ind@{i} _ _ _).
+    + intros B B_inO g.
+      refine (Localize_ind@{a i i i} (null_to_local_generators S) A B g _); intros i.
+      apply ooextendable_over_unit; intros c.
+      refine (ooextendable_postcompose@{a a i i i i i i i i}
+                (fun (_:Unit) => B (c tt)) _ _
+                (fun u => transport B (ap c (path_unit@{a} tt u))) _).
+      refine (ooextendable_islocal _ i).
+    + reflexivity.
+    + apply inO_paths@{i i i}.
   Defined.
-
-  Definition O_ind_beta_internal (O : Modality@{u a}) (A : Type@{i})
-             (B : O_reflector@{u a i} O A -> Type@{j})
-             (B_inO : forall oa : O_reflector O A, In@{u a j} O (B oa))
-             (f : forall a : A, B (to O A a)) (a : A)
-  : O_ind_internal@{u a i j k} O A B B_inO f (to O A a) = f a
-    := 1.
-
-  Definition minO_paths (O : Modality@{u a}) (A : Type@{i})
-             (A_inO : In@{u a i} O A) (z z' : A)
-  : In@{u a i} O (z = z').
-  Proof.
-    apply (LocRSUTh.inO_paths@{u a i i}); assumption.
-  Defined.
-
-End Nullification_Modalities.
-
-(** If you import the following module [NulM], then you can call all the reflective subuniverse functions with a [NullGenerators] as the parameter. *)
-Module Import NulM := Modalities_Theory Nullification_Modalities.
-(** If you don't import it, then you'll need to write [NulM.function_name]. *)
-Export NulM.Coercions.
-Export NulM.RSU.Coercions.
-
-Coercion Nullification_Modality_to_Modality := idmap
-  : Nullification_Modality -> Modality.
 
 (** And here is the "real" definition of the notation [IsNull]. *)
 Notation IsNull f := (In (Nul f)).
@@ -116,37 +67,21 @@ Notation IsNull f := (In (Nul f)).
 (** ** Nullification and Accessibility *)
 
 (** Nullification modalities are accessible, essentially by definition. *)
-Module Accessible_Nullification
-  <: Accessible_Modalities Nullification_Modalities.
+Global Instance accmodality_nul (S : NullGenerators) : IsAccModality (Nul S).
+Proof.
+  unshelve econstructor.
+  - exact S.
+  - intros; reflexivity.
+Defined.
 
-  Module Import Os_Theory := Modalities_Theory Nullification_Modalities.
+(** And accessible modalities can be lifted to other universes. *)
 
-  Definition acc_gen : Modality -> NullGenerators
-    := unNul.
+Definition lift_accmodality@{a i j} (O : Subuniverse@{i}) `{IsAccModality@{a i} O}
+  : Modality@{j}
+  := Nul@{a j} (acc_ngen O).
 
-  Definition inO_iff_isnull (O : Modality@{u a}) (X : Type@{i})
-  : iff@{i i i} (In@{u a i} O X) (IsNull (acc_gen O) X)
-    := (idmap , idmap).
-
-End Accessible_Nullification.
-
-Module Import AccNulM := Accessible_Modalities_Theory Nullification_Modalities Accessible_Nullification.
-
-(** And accessible modalities can be nudged into nullifications. *)
-
-Module Nudge_Modalities
-       (Os : Modalities)
-       (Acc : Accessible_Modalities Os).
-
-  (** Application of modules is still "restricted to paths". *)
-  Module Data <: Modalities_Restriction_Data Nullification_Modalities.
-    Definition New_Modality := Os.Modality.
-    Definition Modalities_restriction
-    : New_Modality -> Nullification_Modalities.Modality
-      := Nul o Acc.acc_gen.
-  End Data.
-
-  Module Nudged <: Modalities
-    := Modalities_Restriction Nullification_Modalities Data.
-
-End Nudge_Modalities.
+Global Instance O_eq_lift_accmodality (O : Subuniverse@{i}) `{IsAccModality@{a i} O}
+  : O <=> lift_accmodality O.
+Proof.
+  split; intros A; apply inO_iff_isnull.
+Defined.

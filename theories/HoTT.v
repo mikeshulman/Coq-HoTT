@@ -79,12 +79,14 @@ Require Export HoTT.Colimits.Colimit_Sigma.
 Require Export HoTT.Modalities.ReflectiveSubuniverse.
 Require Export HoTT.Modalities.Modality.
 Require Export HoTT.Modalities.Accessible.
-Require Export HoTT.Modalities.Lex.
-Require Export HoTT.Modalities.Topological.
 Require Export HoTT.Modalities.Notnot.
 Require Export HoTT.Modalities.Identity.
 Require Export HoTT.Modalities.Localization.
 Require Export HoTT.Modalities.Nullification.
+Require Export HoTT.Modalities.Descent.
+Require Export HoTT.Modalities.Separated.
+Require Export HoTT.Modalities.Lex.
+Require Export HoTT.Modalities.Topological.
 Require Export HoTT.Modalities.Open.
 Require Export HoTT.Modalities.Closed.
 Require Export HoTT.Modalities.Fracture.
@@ -148,10 +150,11 @@ Require Export HoTT.Homotopy.HSpaceS1.
 Require Export HoTT.Spectra.
 
 Require Export HoTT.Tactics.
-Require Export HoTT.Tactics.EvalIn.
 Require Export HoTT.Tactics.BinderApply.
-Require Export HoTT.Tactics.RewriteModuloAssociativity.
 Require Export HoTT.Tactics.EquivalenceInduction.
+Require Export HoTT.Tactics.EvalIn.
+Require Export HoTT.Tactics.Nameless.
+Require Export HoTT.Tactics.RewriteModuloAssociativity.
 
 (** We do _not_ export [UnivalenceAxiom], [FunextAxiom], [UnivalenceImpliesFunext], [HIT.IntervalImpliesFunext], nor [HIT.TruncImpliesFunext] from this file; thus importing it does not prevent you from tracking usage of [Univalence] and [Funext] theorem-by-theorem in the same way that the library does.  If you want any of those files, you should import them separately. *)
 

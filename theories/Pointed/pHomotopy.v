@@ -10,7 +10,7 @@ Local Open Scope pointed_scope.
 Definition phomotopy_inverse_1 {A : pType} {P : pFam A} {f : pForall A P}
   : (phomotopy_refl f) ^* ==* phomotopy_refl f.
 Proof.
-  serapply Build_pHomotopy.
+  srapply Build_pHomotopy.
   + reflexivity.
   + pointed_reduce. reflexivity.
 Defined.

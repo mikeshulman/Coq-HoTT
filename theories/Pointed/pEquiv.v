@@ -38,6 +38,40 @@ Defined.
 
 Notation "g o*E f" := (pequiv_compose f g) : pointed_scope.
 
+Definition issig_pequiv (A B : pType)
+  : { f : A ->* B & IsEquiv f } <~> (A <~>* B).
+Proof.
+  issig.
+Defined.
+
+(* Two pointed equivalences are equal if their underlying pointed functions are pointed homotopic. *)
+Definition equiv_path_pequiv `{Funext} {A B : pType} (f g : A <~>* B)
+  : (f ==* g) <~> (f = g).
+Proof.
+  transitivity ((issig_pequiv A B)^-1 f = (issig_pequiv A B)^-1 g).
+  - refine (equiv_path_sigma_hprop _ _ oE _).
+    apply (equiv_path_pmap f g).
+  - symmetry; exact (equiv_ap' (issig_pequiv A B)^-1 f g).
+Defined.
+
+Definition path_pequiv `{Funext} {A B : pType} (f g : A <~>* B)
+  : (f ==* g) -> (f = g)
+  := fun p => equiv_path_pequiv f g p.
+
+(* The record for pointed equivalences is equivalently a different sigma type *)
+Definition issig_pequiv' (A B : pType)
+  : { f : A <~> B & f (point A) = point B } <~> (A <~>* B).
+Proof.
+  transitivity { f : A ->* B & IsEquiv f }.
+  2: issig.
+  refine (equiv_functor_sigma_pb (issig_pmap A B) oE _).
+  refine (_ oE (equiv_functor_sigma_pb (issig_equiv A B))^-1).
+  refine (_ oE (equiv_sigma_assoc _ _)^-1).
+  refine (equiv_sigma_assoc _ _ oE _).
+  apply equiv_functor_sigma_id.
+  intro; cbn; apply equiv_sigma_symm0.
+Defined.
+
 (* Sometimes we wish to construct a pEquiv from an equiv and a proof that it is pointed *)
 Definition Build_pEquiv' {A B : pType} (f : A <~> B)
   (p : f (point A) = point B)

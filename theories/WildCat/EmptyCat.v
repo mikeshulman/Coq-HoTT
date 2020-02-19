@@ -20,5 +20,5 @@ Defined.
 
 Global Instance is1cat_empty : Is1Cat Empty.
 Proof.
-  unshelve econstructor; intros [].
+  snrapply Build_Is1Cat; intros [].
 Defined.
