@@ -59,7 +59,7 @@ Defined.
 Global Instance hasmorext_ptype `{Funext} : HasMorExt pType.
 Proof.
   srapply Build_HasMorExt; intros A B f g.
-Defined.
+Abort.
 
 Global Instance hasequivs_ptype : HasEquivs pType.
 Proof.
