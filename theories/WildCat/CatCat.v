@@ -14,6 +14,18 @@ Require Import WildCat.Induced.
 
 (** ** The wild category of wild (0,1)-categories *)
 
+(** The category of wild graphs is even simpler than the category of wild (0,1)-categories. *)
+
+Record WildGraph :=
+  {
+    graph_carrier : Type;
+    graph_isgraph : IsGraph graph_carrier;
+  }.
+
+Coercion graph_carrier : WildGraph >-> Sortclass.
+
+Global Existing Instance graph_isgraph.
+
 (** The category of wild (0,1)-categories is simplest, but minimally coherent. *)
 Record WildCat01 :=
 {
@@ -22,6 +34,13 @@ Record WildCat01 :=
   cat01_is01cat : Is01Cat cat01_carrier;
 }.
 
+Global Instance isgraph_wildgraph : IsGraph WildGraph.
+Proof.
+  apply Build_IsGraph.
+  intros A B.
+  exact (Fun01 A B).
+Defined.
+  
 (* note for morgan: this allows us to consider WildCats as types. *)
 Coercion cat01_carrier : WildCat01 >-> Sortclass.
 
@@ -84,8 +103,19 @@ Defined.
 (** Now we show WildCat is a 2-category, with a 1-category structure on Fun02 given by natural transformations. *) 
 
 Global Instance is1cat_wildcat : Is1Cat WildCat.
-(** Proof.
-  srapply Build_Is1Coh1Cat.
+Proof.
+(* new start to a proof; unfinished 
+  srapply Build_Is1Cat.
+  - intros A B.
+    apply isgraph_fun11.
+  - intros A B.
+    apply is01cat_fun11.
+  - intros A B.
+    apply Build_Is0Gpd.
+    intros F G; cbn in *.
+    intro alpha; unfold NatTrans.
+*)    
+(* previously commented out proof
   + intros A B C D f g h.
   exact (Fun1 A B).
   + intros C. cbn in *.
