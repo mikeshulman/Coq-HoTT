@@ -35,7 +35,7 @@ Definition pfam_pr1 {A : pType} (P : pFam A) : A -> Type := pr1 P.
 Coercion pfam_pr1 : pFam >-> Funclass.
 Definition dpoint {A : pType} (P : pFam A) : P (point A) := pr2 P.
 
-Definition constant_pfam {A : pType} (B : pType) : pFam A := 
+Definition constant_pfam {A : pType} (B : pType) : pFam A :=
   (fun _ => pointed_type B; point B).
 
 (* IsTrunc for a pointed type family *)
@@ -81,7 +81,7 @@ Infix "o*" := pmap_compose : pointed_scope.
 
 (** ** Pointed homotopies *)
 
-Definition phomotopy_fam {A : pType} {P : pFam A} (f g : pForall A P) : pFam A 
+Definition phomotopy_fam {A : pType} {P : pFam A} (f g : pForall A P) : pFam A
   := (fun x => f x = g x; dpoint_eq f @ (dpoint_eq g)^).
 
 (* A pointed homotopy is a homotopy with a proof that the presevation
@@ -219,7 +219,7 @@ Definition phomotopy_refl {A : pType} {P : pFam A} (f : pForall A P) : f ==* f
   := Build_pHomotopy (fun x => 1) (concat_pV _)^.
 
 (* pointed homotopy is a reflexive relation *)
-Global Instance phomotopy_reflexive {A} {P : pFam A} 
+Global Instance phomotopy_reflexive {A} {P : pFam A}
   : Reflexive (@pHomotopy A P).
 Proof.
   exact phomotopy_refl.
@@ -271,7 +271,7 @@ Definition pmap_prewhisker {A B C : pType} (f : A ->* B)
 Proof.
   srefine (Build_pHomotopy _ _); cbn.
   - exact (fun x => p (f x)).
-  - apply moveL_pV. refine (concat_p_pp _ _ _ @ whiskerR (concat_Ap p (point_eq f))^ _ @ _). 
+  - apply moveL_pV. refine (concat_p_pp _ _ _ @ whiskerR (concat_Ap p (point_eq f))^ _ @ _).
     exact (concat_pp_p _ _ _ @ whiskerL _ (point_htpy p)).
 Defined.
 
@@ -288,20 +288,18 @@ Defined.
 Definition pmap_precompose_idmap {A B : pType} (f : A ->* B)
 : f o* pmap_idmap ==* f.
 Proof.
-  pointed_reduce.
   simple refine (Build_pHomotopy _ _); cbn.
   - intros ?; reflexivity.
-  - reflexivity.
-Qed.
+  - symmetry. apply concat_pp_V.
+Defined.
 
 Definition pmap_postcompose_idmap {A B : pType} (f : A ->* B)
 : pmap_idmap o* f ==* f.
 Proof.
-  pointed_reduce.
   simple refine (Build_pHomotopy _ _); cbn.
   - intros ?; reflexivity.
-  - reflexivity.
-Qed.
+  - symmetry. refine (whiskerR (concat_p1 _ @ ap_idmap _) _ @ concat_pV _).
+Defined.
 
 (** Function extensionality for pointed types and direct consequences. *)
 
@@ -328,14 +326,14 @@ Definition path_pforall `{Funext} {A : pType} {P : pFam A} {f g : pForall A P}
 Definition phomotopy_path `{Funext} {A : pType} {P : pFam A} {f g : pForall A P}
   : (f = g) -> (f ==* g) := (equiv_path_pforall f g)^-1 % equiv.
 
-Definition phomotopy_path_path_pforall `{Funext} {A : pType} {P : pFam A} 
+Definition phomotopy_path_path_pforall `{Funext} {A : pType} {P : pFam A}
   {f g : pForall A P} (p : f ==* g)
-  : phomotopy_path (path_pforall p) ==* p 
+  : phomotopy_path (path_pforall p) ==* p
   := phomotopy_path (eissect (equiv_path_pforall f g) p).
 
-Definition path_pforall_phomotopy_path `{Funext} {A : pType} {P : pFam A} 
+Definition path_pforall_phomotopy_path `{Funext} {A : pType} {P : pFam A}
   {f g : pForall A P} (p : f = g)
-  : path_pforall (phomotopy_path p) = p 
+  : path_pforall (phomotopy_path p) = p
   := eisretr (equiv_path_pforall f g) p.
 
 Definition equiv_path_pmap `{Funext} {A B : pType} (f g : A ->* B)
@@ -422,26 +420,22 @@ Definition pSect {A B : pType} (s : A ->* B) (r : B ->* A) : Type
 Arguments pSect _ _ / _ _.
 
 (* A pointed equivalence is a section of its inverse *)
-Definition peissect {A B : pType} (f : A <~>* B) : pSect f (pequiv_inverse f).
+Definition peissect {A B : pType} (f : A <~>* B) : pSect f (pequiv_inverse f). 
 Proof.
-  pointed_reduce.
   srefine (Build_pHomotopy _ _).
-  1: apply (eissect f).
-  pointed_reduce.
-  unfold moveR_equiv_V.
-  apply inverse, concat_1p.
-Qed.
+  1: apply (eissect f). 
+  simpl. unfold moveR_equiv_V. rewrite concat_p1, ap_V. symmetry.
+  apply concat_p_Vp.
+Defined.
 
 (* A pointed equivalence is a retraction of its inverse *)
 Definition peisretr {A B : pType} (f : A <~>* B) : pSect (pequiv_inverse f) f.
 Proof.
   srefine (Build_pHomotopy _ _).
   1: apply (eisretr f).
-  pointed_reduce.
-  unfold moveR_equiv_V.
-  hott_simpl.
+  pointed_reduce. unfold moveR_equiv_V. rewrite ap_1, concat_1p. 
   apply eisadj.
-Qed.
+Defined.
 
 (** Univalence for pointed types *)
 Definition equiv_path_ptype `{Univalence} (A B : pType) : A <~>* B <~> A = B.
@@ -478,10 +472,6 @@ Definition pointed_fam {A : pType} (B : A -> pType) : pFam A
 (** The section of a family of pointed types *)
 Definition point_pforall {A : pType} (B : A -> pType) : pForall A (pointed_fam B)
   := Build_pForall A (pointed_fam B) (fun x => point (B x)) 1.
-
-(** The constant (zero) map *)
-Definition pConst {A B : pType} : A ->* B
-  := point_pforall (fun _ => B).
 
 (** The pointed type of pointed maps. For dependent pointed maps we need
   a family of pointed types, not just a family of types with a point over the
@@ -523,7 +513,7 @@ Proof.
     pointed_reduce. reflexivity.
 Defined.
 
-Definition phomotopy_compose_assoc `{Funext} {A : pType} {P : pFam A} 
+Definition phomotopy_compose_assoc `{Funext} {A : pType} {P : pFam A}
   {f g h k : pForall A P}
   (p : f ==* g) (q : g ==* h) (r : h ==* k) : p @* (q @* r) ==* (p @* q) @* r.
 Proof.
@@ -564,7 +554,7 @@ Definition phomotopy_compose_pV `{Funext} {A : pType} {P : pFam A} {f g : pForal
 Proof.
   srapply Build_pHomotopy.
   + intro x. apply concat_pV.
-  + revert g p. srapply phomotopy_ind. 
+  + revert g p. srapply phomotopy_ind.
     pointed_reduce. reflexivity.
 Defined.
 
@@ -573,8 +563,29 @@ Definition phomotopy_compose_Vp `{Funext} {A : pType} {P : pFam A} {f g : pForal
 Proof.
   srapply Build_pHomotopy.
   + intro x. apply concat_Vp.
-  + revert g p. srapply phomotopy_ind. 
+  + revert g p. srapply phomotopy_ind.
     pointed_reduce. reflexivity.
+Defined.
+
+(** The pointed category structure of [pType] *)
+
+
+(** The constant (zero) map *)
+Definition pConst {A B : pType} : A ->* B
+  := point_pforall (fun _ => B).
+
+Lemma pmap_punit_pconst {A : pType} (f : A ->* pUnit) : f ==* pConst.
+Proof.
+  srapply Build_pHomotopy.
+  1: intro; apply path_unit.
+  apply path_contr.
+Defined.
+
+Lemma punit_pmap_pconst {A : pType} (f : pUnit ->* A) : f ==* pConst.
+Proof.
+  srapply Build_pHomotopy.
+  1: intros []; exact (point_eq f).
+  exact (concat_p1 _)^.
 Defined.
 
 (** * pType as a wild category *)
@@ -653,19 +664,10 @@ Proof.
   + exact pUnit.
   + intro A.
     exists pConst.
-    intro f.
-    srapply Build_pHomotopy.
-    - intros [].
-      exact (point_eq _).
-    - symmetry; cbn.
-      apply concat_p1.
+    exact punit_pmap_pconst.
   + intro B.
     exists pConst.
-    intro f.
-    srapply Build_pHomotopy.
-    - intros b.
-      apply path_unit.
-    - srapply path_contr.
+    exact pmap_punit_pconst.
 Defined.
 
 Definition path_zero_morphism_pconst (A B : pType)

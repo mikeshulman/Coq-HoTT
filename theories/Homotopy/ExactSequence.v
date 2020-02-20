@@ -85,6 +85,12 @@ Proof.
   exact (pmap_prewhisker i ff @* cx).
 Defined.
 
+Definition iscomplex_homotopic_cancelR {F X Y Y' : pType}
+           (i : F ->* X) (f : X ->* Y) (e : Y <~>* Y') (cx : IsComplex i (e o* f))
+  : IsComplex i f :=
+  (compose_V_hh e (f o* i))^$ $@ 
+    cat_postwhisker _ ((cat_assoc _ _ _)^$ $@ cx) $@ precompose_pconst _.
+
 (** And likewise passage across squares with equivalences *)
 Definition iscomplex_squaric_i {F F' X X' Y : pType}
            (i : F ->* X) (i' : F' ->* X')
@@ -125,6 +131,21 @@ Proof.
   exact (transport_paths_Fl _ _ @ ((inverse2 (ap_V _ _) @ inv_V _) @@ 1)).
 Defined.  
 
+Definition isexact_homotopic_f n  {F X Y : pType}
+           (i : F ->* X) {f f' : X ->* Y} (ff : f' ==* f) 
+           `{IsExact n F X Y i f}
+  : IsExact n i f'.
+Proof.
+  exists (iscomplex_homotopic_f i ff cx_isexact).
+  pose (e := equiv_hfiber_homotopic _ _ ff (point _)).
+  nrefine (cancelR_isequiv_conn_map n _ e).
+  1: apply equiv_isequiv.
+  refine (conn_map_homotopic n (cxfib (cx_isexact)) _ _ _).
+  intro u. simpl. srapply path_hfiber.
+  1: reflexivity.
+  refine (concat_1p _ @ concat_V_pp _ _)^.
+Defined.
+
 (** And also passage across squares with equivalences. *)
 Definition isexact_squaric_i n  {F F' X X' Y : pType}
            (i : F ->* X) (i' : F' ->* X')
@@ -148,6 +169,29 @@ Proof.
       ).
 Defined.
 
+(** An equivalence of short sequences preserves exactness. *)
+Definition isexact_square_if n  {F F' X X' Y Y' : pType}
+           {i : F ->* X} {i' : F' ->* X'}
+           {f : X ->* Y} {f' : X' ->* Y'}
+           (g : F' <~>* F) (h : X' <~>* X) (k : Y' <~>* Y) 
+           (p : Square i' i g h)
+           (q : Square f' f h k)
+           `{IsExact n F X Y i f}
+  : IsExact n i' f'.
+Proof.
+  pose (I := isexact_squaric_i n i i' g h p f).
+  pose (I2 := isexact_homotopic_f n i' q).
+  exists (iscomplex_homotopic_cancelR i' f' k cx_isexact).
+  pose (e := (pequiv_pfiber (id_cate _) k (cat_idr _)^$ : pfiber f' <~>* pfiber (k o* f'))).
+  nrefine (cancelR_isequiv_conn_map n _ e). 1: apply pointed_isequiv.
+  refine (conn_map_homotopic n (cxfib (cx_isexact)) _ _ _).
+  intro u. srapply path_hfiber.
+  { reflexivity. }
+  cbn. unfold moveR_equiv_V. rewrite !concat_1p, !concat_p1, ap_pp_p, ap_pp, (ap_pp k _ (eissect k (point Y'))), ap_V, <- !eisadj. 
+  rewrite <- !ap_compose, concat_pp_p. 
+  rewrite (concat_A1p (eisretr k)), concat_pV_p.
+  rewrite (concat_A1p (eisretr k)), concat_V_pp. reflexivity.
+Defined.
 
 (** When [n] is the identity modality [oo], so that [cxfib] is an equivalence, we get simply a fiber sequence.  In particular, the fiber of a given map yields an oo-exact sequence. *)
 

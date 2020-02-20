@@ -219,6 +219,16 @@ Definition emap {A B : Type} `{HasEquivs A} `{HasEquivs B}
   : F a $<~> F b
   := Build_CatEquiv (fmap F f).
 
+
+(** It is really annoying that this is not reflexivity *)
+Definition cate_fun_emap {A B : Type} `{HasEquivs A} `{HasEquivs B}
+           (F : A -> B) `{!Is0Functor F, !Is1Functor F}
+           {a b : A} (f : a $<~> b)
+  : cate_fun (emap F f) $== fmap F f.
+Proof.
+  apply cate_buildequiv_fun.
+Defined. 
+
 (** When we have equivalences, we can define what it means for a category to be univalent. *)
 Definition cat_equiv_path {A : Type} `{HasEquivs A} (a b : A)
   : (a = b) -> (a $<~> b).
