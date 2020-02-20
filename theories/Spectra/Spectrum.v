@@ -11,6 +11,7 @@ Require Import Pointed.
 Require Import SuccessorStructure.
 Require Import GeneralizedSpectrum.
 Require Import Spaces.Int Spaces.Pos.
+Require Import WildCat.
 
 (* Require Import . *)
 
@@ -39,9 +40,6 @@ Definition Build_Spectrum (X : Int -> pType)
   : Spectrum
   := Build_GenSpectrum IntSucc X f.
 
-
-(** END: move to pos *)
-
 Definition Build_Spectrum_nat (X : nat -> pType)
   (f : forall n, X n <~>* loops (X (S n)))
   : Spectrum.
@@ -57,6 +55,24 @@ Proof.
       * intros n _. rewrite nat_pos_succ, int_succ_pos_succ. reflexivity.
     - simpl. exact (f O).
     - rewrite int_succ_pos, nat_pos_succ. apply f.
+Defined.
+
+Definition Spectrum_pequiv_of_pequiv_succ {E F : Spectrum} (n : Int) 
+  (e : E (int_succ n) $<~> F (int_succ n))
+  : E n $<~> F n :=
+  (equiv_glue F n)^-1$ $oE pequiv_loops_functor e $oE equiv_glue E n.
+
+Definition Spectrum_pequiv_of_nat {E F : Spectrum} 
+  (e : forall (n : nat), E n $<~> F n) (n : Int) 
+  : E n $<~> F n.
+Proof.
+    induction n as [n| |p].
+    { revert n. refine (pos_peano_ind _ _ _). 
+      { apply Spectrum_pequiv_of_pequiv_succ. exact (e O). }
+      { intros n IH. apply Spectrum_pequiv_of_pequiv_succ.
+        rewrite int_succ_pos_succ. exact IH. } }
+    { exact (e O). }
+    { rewrite pos_int_nat. exact (e p). }
 Defined.
 
 (** ** Truncations of spectra *)

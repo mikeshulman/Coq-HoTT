@@ -379,3 +379,11 @@ Proof.
 Defined.
 
 Coercion int_nat : nat >-> Int.
+
+Definition pos_int_nat (p : Pos) : pos p = p.
+Proof.
+  revert p. refine (pos_peano_ind _ _ _).
+  { reflexivity. }
+  { intros p IH. rewrite <- int_succ_pos, IH, nat_pos_succ. reflexivity. } 
+Defined.
+

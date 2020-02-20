@@ -94,17 +94,6 @@ Proof.
   apply IHn.
 Defined.
 
-(* a version of functor_hfiber which is functorial in both the function and the point *)
-Definition functor_hfiber2 {A B C D}
-           {f : A -> B} {g : C -> D} {h : A -> C} {k : B -> D}
-           (p : k o f == g o h) {b : B} {b' : D} (q : k b = b')
-: hfiber f b -> hfiber g b'.
-Proof.
-  srapply functor_sigma.
-  - exact h.
-  - intros a e. exact ((p a)^ @ ap k e @ q).
-Defined.
-
 Definition functor_pfiber {A B C D}
            {f : A ->* B} {g : C ->* D} {h : A ->* C} {k : B ->* D}
            (p : k o* f ==* g o* h)

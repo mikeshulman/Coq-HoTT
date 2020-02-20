@@ -522,5 +522,3 @@ Defined.
 
 Definition QuotientAbGroup (G : AbGroup) (H : Subgroup G)
   : AbGroup := Build_AbGroup (QuotientGroup G H) _ _ _ _.
-
-

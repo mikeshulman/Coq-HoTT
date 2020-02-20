@@ -424,3 +424,19 @@ Proof.
   + intros G H f g p q.
     exact (isequiv_adjointify f g p q).
 Defined.
+
+Global Instance is0functor_ptype_group : Is0Functor ptype_group.
+Proof.
+  apply Build_Is0Functor. exact @pmap_grouphomomorphism.
+Defined.
+
+Global Instance is1functor_ptype_group : Is1Functor ptype_group.
+Proof.
+  apply Build_Is1Functor.
+  + intros. srapply Build_pHomotopy. 1: exact X. apply path_ishprop.
+  + intros. srapply Build_pHomotopy. 1: reflexivity. apply path_ishprop.
+  + intros. srapply Build_pHomotopy. 1: reflexivity. apply path_ishprop.
+Defined.
+
+Definition pequiv_groupisomorphism {G H : Group} (f : G $<~> H) : pEquiv G H
+  := emap ptype_group f.
