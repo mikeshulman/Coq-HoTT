@@ -1269,17 +1269,16 @@ Definition moncat_unit {A : Type} `{IsMonCat0 A}
 
 (** ** 2-coherent oo-functors *)
 
-(* For some strange reason calling this [IsFunctor2] doesn't work!  A parsing bug? *)
-CoInductive IsFunctorTwo {A B : Type} `{IsCat1 A} `{IsCat1 B}
-            (F : A -> B) `{!IsFunctor0 F, !IsFunctor1 F} : Type :=
+CoInductive IsFunctor2 {A B : Type} `{IsCat1 A} `{IsCat1 B}
+            (F : A -> B) `{h1 : !IsFunctor0 F, h2 : !IsFunctor1 F} : Type :=
 {
   (* fmap_comp is 1-natural -- in each variable separately, I suppose *)
   (* pseudofunctor axioms for fmap_id and fmap_comp, up to equivalences. *)
   isfunctor2_fmap : forall (a b : A),
-      (@IsFunctorTwo (a $-> b) (F a $-> F b) _ _ _ _ _ _ _ _ (@fmap _ _ _ _ F _ a b) _ _);
+      (@IsFunctor2 (a $-> b) (F a $-> F b) _ _ _ _ _ _ _ _ (@fmap _ _ _ _ F _ a b) _ _);
 }.
 
-Existing Class IsFunctorTwo.
+Existing Class IsFunctor2.
 Global Existing Instance isfunctor2_fmap.
 
 (* TODO: Examples *)
