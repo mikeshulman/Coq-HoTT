@@ -175,12 +175,12 @@ Class Is1DCat {A : Type} (B : A -> Type) `{Is01DCat A B} `{!Is1Cat A} :=
     @Is0DGpd (a $-> b) (fun f => dHom f x y) _ _ _ _ _;
   (** post composition is a 0dfunctor *)
   is0dfunctor_dcat_postcomp : forall {a b c : A} (x : B a) {y : B b} {z : B c}
-    (f : a $-> b) {g : b $-> c} (v : dHom g y z),
+    {g : b $-> c} (v : dHom g y z),
     @Is0DFunctor _ _ (fun ff => dHom ff x y) (fun h => dHom h x z) _ _ _ _ _ _ _ _
       (cat_postcomp a g) _ (fun fff => dcat_postcomp B x fff v) ;
   (** pre composition is a 0dfunctor *)
   is0dfunctor_dcat_precomp : forall {a b c : A} {x : B a} {y : B b} (z : B c)
-    {f : a $-> b} (g : b $-> c) (u : dHom f x y),
+    {f : a $-> b} (u : dHom f x y),
     @Is0DFunctor _ _ (fun gg => dHom gg y z) (fun h => dHom h x z) _ _ _ _ _ _ _ _
       (cat_precomp c f) _ (fun ggg => dcat_precomp B z ggg u) ;
   (** dassociativity *)
@@ -320,11 +320,11 @@ Class Is1DCat_Strong {A : Type}
     isdgpd_dHom_strong : forall {a b : A} {x : B a} {y : B b},
         @Is0DGpd (a $-> b) (fun f => dHom f x y) _ _ _ _ _;
     is0dfunctor_dcat_postcomp_strong : forall {a b c : A} (x : B a) {y : B b} {z : B c}
-                                  (f : a $-> b) {g : b $-> c}
+                                  {g : b $-> c}
                                   (v : dHom g y z),
         (@Is0DFunctor _ _ (fun ff => dHom ff x y) (fun h => dHom h x z) _ _ _ _ _ _ _ _ (cat_postcomp a g) _ (fun fff => dcat_postcomp B x fff v)) ;
     is0dfunctor_dcat_precomp_strong : forall {a b c : A} {x : B a} {y : B b} (z : B c)
-                                 {f : a $-> b} (g : b $-> c)
+                                 {f : a $-> b}
                                  (u : dHom f x y),
         (@Is0DFunctor _ _ (fun gg => dHom gg y z) (fun h => dHom h x z) _ _ _ _ _ _ _ _ (cat_precomp c f) _ (fun ggg => dcat_precomp B z ggg u)) ;
     dcat_assoc_strong : forall {a b c d : A}
@@ -512,11 +512,11 @@ Proof.
   - intros [x1 x2] [y1 y2]; refine (isDgraph_prod _ _).
   - intros [x1 x2] [y1 y2]; refine (is01Dcat_prod _ _).
   - intros [x1 x2] [y1 y2]; refine (is0Dgpd_prod _ _).
-  - intros [c1 c2] [x1 x2] [y1 y2] [z1 z2] [f1 f2] [g1 g2] [v1 v2]; cbn in *.
+  - intros [c1 c2] [x1 x2] [y1 y2] [z1 z2] [g1 g2] [v1 v2]; cbn in *.
     apply Build_Is0DFunctor.
     intros [h1 h2] [k1 k2] [p1 p2] [s1 s2] [t1 t2] [pp1 pp2]; cbn in *.
     exact (dcat_postwhisker v1 pp1, dcat_postwhisker v2 pp2).
-  - intros [c1 c2] [x1 x2] [y1 y2] [z1 z2] [f1 f2] [g1 g2] [v1 v2]; cbn in *.
+  - intros [c1 c2] [x1 x2] [y1 y2] [z1 z2] [f1 f2] [v1 v2]; cbn in *.
     apply Build_Is0DFunctor.
     intros [h1 h2] [k1 k2] [p1 p2] [s1 s2] [t1 t2] [pp1 pp2]; cbn in *.
     exact (dcat_prewhisker v1 pp1, dcat_prewhisker v2 pp2).
