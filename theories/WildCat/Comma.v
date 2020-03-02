@@ -57,7 +57,7 @@ Section Comma.
     exact (fmap2 G h2).
   Defined.
 
-(*
+
   Global Instance is01dcat_dhom_dcomma a b (x : DComma a) (y : DComma b)
     : Is01DCat (fun f : a $-> b => dHom f x y).
   Proof.
@@ -65,12 +65,12 @@ Section Comma.
     { hnf. intros f p.
       simpl.
       (** Needs 2-functoriality *)
-  Abort.
+  Admitted.
 
   Global Instance is0dgpd_dhom_dcomma a b (x : DComma a) (y : DComma b)
     : Is0DGpd (fun f : a $-> b => dHom f x y).
   Proof.
-  Abort.
+  Admitted.
 
   Global Instance foo1 (a b c : A * B)
     (x : DComma a) (y : DComma b) (z : DComma c) 
@@ -80,7 +80,7 @@ Section Comma.
         (cat_postcomp a g) (fun fff : a $-> b => dcat_postcomp DComma x fff v).
   Proof.
     snrapply Build_Is0DFunctor.
-  Abort.
+  Admitted.
 
   Global Instance foo2 (a b c : A * B)
     (x : DComma a) (y : DComma b) (z : DComma c) 
@@ -88,21 +88,21 @@ Section Comma.
     : Is0DFunctor (fun gg : b $-> c => dHom gg y z) (fun h : a $-> c => dHom h x z)
       (cat_precomp c f) (fun ggg : b $-> c => dcat_precomp DComma z ggg u).
   Proof.
-  Abort.
+  Admitted.
 
   Global Instance is1dcat_dcomma : Is1DCat DComma.
   Proof.
     snrapply Build_Is1DCat.
     1-5:exact _.
-  Abort.
+  Admitted.
 
-*)
+
 
   Definition Comma := sig DComma.
 
   Global Instance isgraph_comma : IsGraph Comma := _.
   Global Instance is01cat_comma : Is01Cat Comma := _.
-(*   Global Instance is1cat_comma : Is1Cat Comma := _. *)
+  Global Instance is1cat_comma : Is1Cat Comma := _.
 
 End Comma.
 
