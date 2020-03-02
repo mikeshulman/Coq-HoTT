@@ -220,21 +220,19 @@ End IdentityFunctor.
 
 Section ConstantFunctor.
 
-  Context {A B : Type}.
+  Context {A B : Type} `{Is1Cat A, Is1Cat B}.
 
-  Global Instance is01functor_const
-    `{IsGraph A} `{Is01Cat B} (x : B)
-    : Is0Functor (fun _ : A => x).
+  Global Instance is01functor_const (x : B)
+    : Is0Functor (@const A B x).
   Proof.
-    srapply Build_Is0Functor.
+    snrapply Build_Is0Functor.
     intros a b f; apply Id.
   Defined.
 
-  Global Instance is1functor_const
-   `{Is1Cat A} `{Is1Cat B} (x : B)
-    : Is1Functor (fun _ : A => x).
+  Global Instance is1functor_const (x : B)
+    : Is1Functor (@const A B x).
   Proof.
-    srapply Build_Is1Functor.
+    snrapply Build_Is1Functor.
     - intros a b f g p; apply Id.
     - intro; apply Id.
     - intros a b c f g. cbn.
