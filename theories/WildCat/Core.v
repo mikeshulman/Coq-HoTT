@@ -166,10 +166,22 @@ Definition IsInitial {A : Type} `{Is1Cat A} (x : A)
   := forall (y : A), {f : x $-> y & forall g, g $== f}.
 Existing Class IsInitial.
 
+(** Having initial objects *)
+Class HasInitial (A : Type) `{Is1Cat A} := {
+  cat_initial : A ;
+  isinitial_cat_initial : IsInitial cat_initial ;
+}.
+
 (** Terminal objects *)
 Definition IsTerminal {A : Type} `{Is1Cat A} (y : A)
   := forall (x : A), {f : x $-> y & forall g, g $== f}.
 Existing Class IsTerminal.
+
+(** Having terminal objects *)
+Class HasTerminal (A : Type) `{Is1Cat A} := {
+  cat_terminal : A ;
+  isterminal_cat_terminal : IsTerminal cat_terminal ;
+}.
 
 (** Generalizing function extensionality, "Morphism extensionality" states that homwise [GpdHom_path] is an equivalence. *)
 Class HasMorExt (A : Type) `{Is1Cat A} := {
