@@ -9,7 +9,9 @@ Section Comma.
 
   Context {A B C : Type}
     (F : A -> C) (G : B -> C)
-    `{Is1Functor A C F, Is1Functor B C G}.
+    `{Is1Cat A, Is1Cat B, Is21Cat C}
+    `{!Is0Functor F, !Is0Functor G,
+      !Is1Functor F, !Is1Functor G}.
 
   Definition DComma : A * B -> Type
     := fun x => F (fst x) $-> G (snd x).
@@ -17,117 +19,90 @@ Section Comma.
   Global Instance isdgraph_dcomma : IsDGraph DComma.
   Proof.
     srapply Build_IsDGraph.
-    intros [a1 b1] [a2 b2] fg.
-    cbv.
-    
-  Record Comma `{IsGraph C} := {
-    comma_domain : A;
-    comma_codomain : B;
-    comma_h : F comma_domain $-> G comma_codomain;
-  }.
+    intros [a1 b1] [a2 b2] [f g] h i.
+    exact (Square (fmap F f) (fmap G g) h i).
+  Defined.
 
-  Record CommaMor `{!IsGraph A, !IsGraph B, Is1Cat C, !Is0Functor F, !Is0Functor G}
-    (X Y : Comma) :=
-  {
-    comma_mor_domain : comma_domain X $-> comma_domain Y;
-    comma_mor_codomain : comma_codomain X $-> comma_codomain Y;
-    comma_mor_h : Square (fmap F comma_mor_domain) (fmap G comma_mor_codomain)
-      (comma_h X) (comma_h Y);
-  }.
-  
-  Arguments comma_mor_domain {_ _ _ _ _ _ _ _}.
-  Arguments comma_mor_codomain {_ _ _ _ _ _ _ _}.
-  Arguments comma_mor_h {_ _ _ _ _ _ _ _}.
+  Global Instance is01dcat_dcomma : Is01DCat DComma.
+  Proof.
+    snrapply Build_Is01DCat.
+    + intros [a1 b1] h.
+      simpl.
+      rapply vconcatL.
+      1: rapply fmap_id.
+      rapply vconcatR.
+      2: rapply fmap_id.
+      apply hrefl.
+    + intros [a1 b1] [a2 b2] [a3 b3] [f1 g1] [f2 g2].
+      intros i j k s t.
+      simpl in *.
+      rapply vconcatL.
+      1: rapply fmap_comp.
+      rapply vconcatR.
+      2: rapply fmap_comp.
+      apply (hconcat t s).
+  Defined.
 
-  Record Comma2Mor `{Is1Cat A, Is1Cat B, Is21Cat C, !Is0Functor F,
-    !Is1Functor F, !Is0Functor G, !Is1Functor G} {X Y : Comma}
-    (f g : CommaMor X Y) :=
-  {
-    comma_2mor_domain : comma_mor_domain f $== comma_mor_domain g;
-    
-    comma_2mor_codomain : comma_mor_codomain f $== comma_mor_codomain g;
-    
-    comma_2mor_h : Square ((comma_h Y) $@L (fmap2 F comma_2mor_domain))
-          ((fmap2 G comma_2mor_codomain) $@R (comma_h X))
-          (comma_mor_h f) (comma_mor_h g);
-  }.
+  Global Instance isdgraph_dhom_dcomma a b (x : DComma a) (y : DComma b)
+    : IsDGraph (fun f : a $-> b => dHom f x y).
+  Proof.
+    snrapply Build_IsDGraph.
+    intros f g [h1 h2] p q.
+    simpl. cbn in *.
+    unfold DComma in x, y.
+    refine (Square _ _ p q).
+    { apply cat_postwhisker.
+      exact (fmap2 F h1). }
+    apply cat_prewhisker.
+    exact (fmap2 G h2).
+  Defined.
 
-  Section Cat.
+(*
+  Global Instance is01dcat_dhom_dcomma a b (x : DComma a) (y : DComma b)
+    : Is01DCat (fun f : a $-> b => dHom f x y).
+  Proof.
+    snrapply Build_Is01DCat.
+    { hnf. intros f p.
+      simpl.
+      (** Needs 2-functoriality *)
+  Abort.
 
-    Context
-      `{Is1Cat A, Is1Cat B, Is21Cat C,
-        !Is0Functor F, !Is1Functor F,
-        !Is0Functor G, !Is1Functor G}.
+  Global Instance is0dgpd_dhom_dcomma a b (x : DComma a) (y : DComma b)
+    : Is0DGpd (fun f : a $-> b => dHom f x y).
+  Proof.
+  Abort.
 
-    Global Instance is01cat_comma : Is01Cat Comma.
-    Proof.
-      serapply Build_Is01Cat.
-      + exact CommaMor.
-      + intros abh.
-        serapply Build_CommaMor.
-        1,2: exact (Id _).
-        refine (vconcatL (fmap_id F _) _).
-        refine (vconcatR _ (fmap_id G _)).
-        apply hrefl.
-      + intros abh abh' abh''.
-        intros [fa fb fh] [ga gb gh].
-        serapply Build_CommaMor.
-        1: exact (fa $o ga).
-        1: exact (fb $o gb).
-        refine (vconcatL (fmap_comp F _ _) _).
-        refine (vconcatR _ (fmap_comp G _ _)).
-        exact (hconcat gh fh).
-    Defined.
+  Global Instance foo1 (a b c : A * B)
+    (x : DComma a) (y : DComma b) (z : DComma c) 
+    (g : b $-> c) (v : dHom g y z)
+    : Is0DFunctor
+        (fun ff : a $-> b => dHom ff x y) (fun h : a $-> c => dHom h x z)
+        (cat_postcomp a g) (fun fff : a $-> b => dcat_postcomp DComma x fff v).
+  Proof.
+    snrapply Build_Is0DFunctor.
+  Abort.
 
-    Axiom foo : Empty.
-    Ltac admit := apply Empty_ind, foo.
+  Global Instance foo2 (a b c : A * B)
+    (x : DComma a) (y : DComma b) (z : DComma c) 
+    (f : a $-> b) (u : dHom f x y)
+    : Is0DFunctor (fun gg : b $-> c => dHom gg y z) (fun h : a $-> c => dHom h x z)
+      (cat_precomp c f) (fun ggg : b $-> c => dcat_precomp DComma z ggg u).
+  Proof.
+  Abort.
 
-    Global Instance is01cat_commamor : forall a b : Comma, Is01Cat (a $-> b).
-    Proof.
-      intros x y.
-      serapply Build_Is01Cat.
-      + exact Comma2Mor.
-      + intro a.
-        serapply (Build_Comma2Mor _ _ _ _ _ _ _ _).
-        1,2: exact (Id _).
-    Admitted.
+  Global Instance is1dcat_dcomma : Is1DCat DComma.
+  Proof.
+    snrapply Build_Is1DCat.
+    1-5:exact _.
+  Abort.
 
-    Global Instance is0gpd_commamor : forall a b : Comma, Is0Gpd (a $-> b).
-    Proof.
-      intros x y.
-      serapply Build_Is0Gpd.
-      (* 
-      intros a b [p q h].
-      unshelve econstructor.
-      1: exact p^$.
-      1: exact q^$.
-      cat_prewhisker
-      
-      serapply Build_CommaMor. *)
-    Admitted.
+*)
 
-    Global Instance is0functor_commamor_postcomp
-      : forall (a b c : Comma) (g : b $-> c), Is0Functor (cat_postcomp a g).
-    Proof.
-    Admitted.
+  Definition Comma := sig DComma.
 
-    Global Instance is0functor_commamor_precomp
-      : forall (a b c : Comma) (f : a $-> b), Is0Functor (cat_precomp c f).
-    Proof.
-    Admitted.
-
-    Global Instance is1cat_comma : Is1Cat Comma.
-    Proof.
-      serapply Build_Is1Cat.
-      { intros a b c d f g h.
-    Admitted.
-
-    Global Instance is0coh21cat_comma : Is1Cat Comma.
-    Proof.
-      serapply Build_Is1Cat.
-    Admitted.
-
-  End Cat.
+  Global Instance isgraph_comma : IsGraph Comma := _.
+  Global Instance is01cat_comma : Is01Cat Comma := _.
+(*   Global Instance is1cat_comma : Is1Cat Comma := _. *)
 
 End Comma.
 
