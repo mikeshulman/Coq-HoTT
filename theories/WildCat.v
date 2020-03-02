@@ -23,3 +23,6 @@ Require Export WildCat.Sigma.
 Require Export WildCat.TwoOneCat.
 (* Pointed categories *)
 Require Export WildCat.PointedCat.
+
+Require Export WildCat.Comma.
+Require Export WildCat.Adjoint.

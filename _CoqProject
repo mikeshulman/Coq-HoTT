@@ -41,12 +41,13 @@ theories/Basics/Contractible.v
 theories/Basics/Equivalences.v
 theories/Basics/Trunc.v
 theories/Basics/Decidable.v
-#theories/Basics/WildCat.v
 
 #
 #   Wildcat
 #
+
 theories/WildCat.v
+theories/WildCat/Adjoint.v
 theories/WildCat/Core.v
 theories/WildCat/UnitCat.v
 theories/WildCat/EmptyCat.v
@@ -66,7 +67,7 @@ theories/WildCat/CatCat.v
 theories/WildCat/Square.v
 theories/WildCat/TwoOneCat.v
 theories/WildCat/NatTrans.v
-#theories/WildCat/Comma.v
+theories/WildCat/Comma.v
 theories/WildCat/PointedCat.v
 theories/WildCat/Displayed.v
 
