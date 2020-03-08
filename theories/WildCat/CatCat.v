@@ -139,7 +139,7 @@ Defined.
 
 (* But recall the hom-categories in a 1-category need to be a groupoid so we take the hom type between F G : Fun11 to by the type of NatEquiv rather than NatTrans. This however requires the 1-categories to have equivs, so below there is a new record WildCate which records this data. To see this, comment out the first part of the proof below.*)
 
-Global Instance is1cat_wildcat : Is1Cat WildCat.
+(*Global Instance is1cat_wildcat : Is1Cat WildCat.
 Proof.
 (* new attempted proof with NatEquiv fails for lack of HasEquivs B  
   srapply Build_Is1Cat.
@@ -171,8 +171,8 @@ Proof.
   intros u v h. cbn in *.  exact (fmap G ( fmap F h)).
   Defined. *)
 Admitted. 
+*)
 
-(*
 Record WildCate :=
 {
   cate_carrier : Type;
@@ -204,6 +204,7 @@ Proof.
     srapply (Build_Fun11 _ _ (F o G)).
 Defined.
 
+(* fails
 Global Instance is1cat_wildcate : Is1Cat WildCate.
 Proof.
   srapply Build_Is1Cat.
@@ -215,11 +216,11 @@ Proof.
     apply Build_Is01Cat; cbn.
     + intros [F ?].
       unfold NatEquiv.
-      Locate CatEquiv.
-      exists (id_transformation F).
+ (*  exists (id_transformation F). (* morally this is what I want*) *)
       exists (fun a => id_cate (F a)).
       apply Build_Is1Natural.
       intros a b f; cbn.
-      exact (vrefl (fmap F f)).
-           
-*)
+      exact (vrefl (fmap F f)). (* breaks here *)
+        
+
+*)   
