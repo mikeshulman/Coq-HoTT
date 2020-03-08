@@ -43,7 +43,7 @@ Defined.
 
 (** In fact, in this case it is automatically also a 0-coherent 2-category and a 1-coherent 1-category, with a totally incoherent notion of 2-cell between 1-coherent natural transformations. *)
 
-Global Instance is0coh2cat_fun01 (A B : Type) `{IsGraph A} `{Is1Cat B} : Is1Cat (Fun01 A B).
+Global Instance is1cat_fun01 (A B : Type) `{IsGraph A} `{Is1Cat B} : Is1Cat (Fun01 A B).
 Proof.
   srapply Build_Is1Cat.
   - intros [F ?] [G ?]; apply Build_IsGraph.
@@ -140,3 +140,4 @@ Global Instance is1cat_fun11 {A B :Type} `{Is1Cat A} `{Is1Cat B}
 Global Instance hasequivs_fun11 {A B : Type} `{Is1Cat A} `{HasEquivs B}
   : HasEquivs (Fun11 A B)
   := induced_hasequivs fun01_fun11.
+
