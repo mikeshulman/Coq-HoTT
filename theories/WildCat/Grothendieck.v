@@ -37,8 +37,17 @@ Proof.
   apply Build_Is01DCat.
   - intros a x; cbn in *.
 
-*)
+ *)
 
+Global Instance is0dgpd_grothendieck_gpd {A : Type} `{IsGraph A} (B : A -> WildGpd) `{! Is0Functor B} : IsDGraph B.
+Proof.
+  apply Build_IsDGraph.
+  intros a b f x y.
+  exact (@Hom (B b) _ (fmap B f x) y).
+Defined.
+
+
+  
 (** TODO: A sufficiently coherent functor A^op -> WildCat should induce by contravariant Grothendieck construction a displayed category over A. *)
 
 
