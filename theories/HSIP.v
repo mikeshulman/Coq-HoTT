@@ -12,6 +12,8 @@ Defined.
 Section AssumeFunext.
 Context `{Funext}.
 
+Unset Primitive Projections.
+
 Record SigOf {S : Type} `{Is1Cat_Strong S} :=
 {
   bot : Type@{i} ;
@@ -56,12 +58,25 @@ Proof.
     [ apply cat_assoc_strong | apply cat_idl_strong | apply cat_idr_strong ].
 Defined.
 
+Typeclasses Opaque cat1_carrier is01cat_cat1 is1cat_cat1 bot deriv is0functor_deriv Hom.
+
 Global Instance isgraph_sig n : IsGraph (cat1_carrier (Sig n))
   := isgraph_cat1 (Sig n).
 
-Goal forall x:cat1_carrier (Sig 0), IsGraph (cat1_carrier (Sig 0)).
-  intros x.
-  exact _. (* 4 seconds *)
+Goal forall (x y:cat1_carrier (Sig 0)) (f : x $-> y), Funext.
+  intros x y f.
+  (** I want to destruct f.  This should be easy: *)
+  change Unit in f; destruct f.
+  Undo.
+  (** But Coq can't manage to simplify [f] before destructing it: *)
+  destruct f. (* Hangs *)
+  Undo.
+  cbn in f. (* Hangs *)
+  Undo.
+  (** What seems to be sufficient to make it work is a couple of manual unfoldings: *)
+  unfold isgraph_sig in f.  
+  unfold Sig in f.
+  cbn in f.
 Qed.
 
 End AssumeFunext.
