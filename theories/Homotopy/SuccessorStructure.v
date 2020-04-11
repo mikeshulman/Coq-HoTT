@@ -37,7 +37,7 @@ Proof.
     - destruct (dec (snd x = inr tt)).
       * exact (succ (fst x)).
       * exact (fst x).
-  + exact (cyclic_succ (snd x)).
+  + exact (fsucc_mod (snd x)).
 Defined.
 
 Definition Stratified (N : SuccStr) (n : nat) : SuccStr := Build_SuccStr (StratifiedType N n) (stratified_succ N n).
