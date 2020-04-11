@@ -65,6 +65,34 @@ Proof.
   - intros a e; exact ((p a)^ @ ap k e).
 Defined.
 
+(** A version of functor_hfiber which is functorial in both the function and the point *)
+Definition functor_hfiber2 {A B C D}
+           {f : A -> B} {g : C -> D} {h : A -> C} {k : B -> D}
+           (p : k o f == g o h) {b : B} {b' : D} (q : k b = b')
+  : hfiber f b -> hfiber g b'.
+Proof.
+  srapply functor_sigma.
+  - exact h.
+  - intros a e. exact ((p a)^ @ ap k e @ q).
+Defined.
+
+Global Instance isequiv_functor_hfiber2 {A B C D}
+       {f : A -> B} {g : C -> D} {h : A -> C} {k : B -> D}
+       `{IsEquiv A C h} `{IsEquiv B D k}
+       (p : k o f == g o h) {b : B} {b' : D} (q : k b = b')
+  : IsEquiv (functor_hfiber2 p q).
+Proof.
+  refine (isequiv_functor_sigma (f := h)); intros a.
+  refine (isequiv_compose (f := fun e => (p a)^ @ ap k e) (g := fun e' => e' @ q)).
+Defined.
+
+Definition equiv_functor_hfiber2 {A B C D}
+           {f : A -> B} {g : C -> D} {h : A <~> C} {k : B <~> D}
+           (p : k o f == g o h) {b : B} {b' : D} (q : k b = b')
+  : hfiber f b <~> hfiber g b'
+  := Build_Equiv _ _ (functor_hfiber2 p q) _.
+
+
 (** ** The 3x3 lemma for fibrations *)
 Definition hfiber_functor_hfiber {A B C D}
   {f : A -> B} {g : C -> D} {h : A -> C} {k : B -> D}
