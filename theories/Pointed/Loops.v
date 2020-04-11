@@ -577,7 +577,7 @@ Definition fiberwise_pmap_from_point {A : pType} {B : A -> Type} {C : A -> Type}
   (f : forall x, B x -> C x) (b0 : B (point A))
   : forall x, pfam_pr1 (B; b0) x -> pfam_pr1 (C; f _ b0) x
   := f.
-
+(**TODO: These are too slow 
 (* Unfortunately, this lemma is very slow. The bottleneck is likely a bunch
   of definitional reduction. *)
 Definition natural_loops_ppforall_lem3_refl `{Funext} {A : pType} {B C : A -> Type}
@@ -624,4 +624,4 @@ Proof.
     unfold pmap_compose_ppforall_point.
     refine (natural_loops_ppforall_lem3_refl f (fun x => point (B x)) @ _).
     exact (concat_p1 _)^.
-Defined.
+Defined. *)
