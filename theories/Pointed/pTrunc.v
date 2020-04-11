@@ -67,7 +67,7 @@ Proof.
 Defined.
 
 Definition ptr_functor_pconst {X Y : pType} n
-  : ptr_functor n (@pConst X Y) ==* pConst.
+  : ptr_functor n (@pconst X Y) ==* pconst.
 Proof.
   srapply Build_pHomotopy.
   - intros x; strip_truncations; reflexivity.
