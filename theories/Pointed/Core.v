@@ -214,19 +214,8 @@ Definition issig_pequiv (A B : pType)
 
 (** The record for pointed equivalences is equivalently a different sigma type *)
 Definition issig_pequiv' (A B : pType)
-  : {f : A <~> B & f (point A) = point B} <~> (A <~>* B).
-Proof.
-  transitivity { f : A ->* B & IsEquiv f }.
-  2: issig.
-  refine ((equiv_functor_sigma' (P := fun f => IsEquiv f.1)
-    (issig_pmap A B) (fun f => equiv_idmap _)) oE _).
-  refine (_ oE (equiv_functor_sigma' (Q := fun f => f.1 (point A) = point B)
-    (issig_equiv A B)^-1 (fun f => equiv_idmap _))).
-  refine (_ oE (equiv_sigma_assoc _ _)^-1).
-  refine (equiv_sigma_assoc _ _ oE _).
-  refine (equiv_functor_sigma' 1 _).
-  intro; cbn; apply equiv_sigma_symm0.
-Defined.
+  : {f : A <~> B & f (point A) = point B} <~> (A <~>* B)
+  := ltac:(make_equiv).
 
 (** ** Various operations with pointed homotopies *)
 
@@ -480,6 +469,15 @@ Proof.
   refine (equiv_functor_sigma' (equiv_path_universe A B) _); intros f.
   apply equiv_concat_l.
   apply transport_path_universe.
+Defined.
+
+Definition path_ptype `{Univalence} {A B : pType} : (A <~>* B) -> A = B
+  := equiv_path_ptype A B.
+
+Definition pequiv_path {A B : pType} : (A = B) -> (A <~>* B).
+Proof.
+  intros p; apply (ap issig_ptype^-1) in p.
+  srefine (Build_pEquiv _ _ (Build_pMap _ _ (equiv_path A B p..1) p..2) _).
 Defined.
 
 (** Two pointed equivalences are equal if their underlying pointed functions are pointed homotopic. *)
