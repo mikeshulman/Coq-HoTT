@@ -24,7 +24,7 @@ Definition pforall_from_pointed {A : pType} {B : A -> Type} (f : forall x, B x)
 
 (* precomposing the zero map is the zero map *)
 Lemma precompose_pconst {A B C : pType} (f : B ->* C)
-  : f o* @pConst A B ==* pConst.
+  : f o* @pconst A B ==* pconst.
 Proof.
   srapply Build_pHomotopy.
   1: intro; apply point_eq.
@@ -33,7 +33,7 @@ Defined.
 
 (* postcomposing the zero map is the zero map *)
 Lemma postcompose_pconst {A B C : pType} (f : A ->* B)
-  : pConst o* f ==* @pConst A C.
+  : pconst o* f ==* @pconst A C.
 Proof.
   srapply Build_pHomotopy.
   1: reflexivity.
@@ -41,7 +41,7 @@ Proof.
 Defined.
 
 Lemma pconst_factor {A B : pType} {f : pUnit ->* B} {g : A ->* pUnit}
-  : f o* g ==* pConst.
+  : f o* g ==* pconst.
 Proof.
   refine (_ @* precompose_pconst f).
   apply pmap_postwhisker.
@@ -49,20 +49,18 @@ Proof.
 Defined.
 
 (* TODO: generalize to wild categories with 0 object. *)
-Definition hconst_square {A B C D : pType} {f : A $-> B} {g : C $-> D} :
-  Square pConst pConst f g :=
-  precompose_pconst g $@ (postcompose_pconst f)^$.
+Definition hconst_square {A B C D : pType} {f : A $-> B} {g : C $-> D}
+  : Square pconst pconst f g
+  := precompose_pconst g $@ (postcompose_pconst f)^$.
 
-<<<<<<< HEAD
 Definition vconst_square {A B C D : pType} {f : A $-> B} {g : C $-> D} :
-  Square f g pConst pConst :=
+  Square f g pconst pconst :=
   postcompose_pconst f $@ (precompose_pconst g)^$.
-=======
+
 (* We note that the inverse of [path_pmap] computes definitionally on reflexivity, and hence [path_pmap] itself computes typally so.  *)
 Definition equiv_inverse_path_pmap_1 `{Funext} {A B} {f : A ->* B}
   : (equiv_path_pmap f f)^-1%equiv 1%path = reflexivity f
   := 1.
->>>>>>> master
 
 (** If we have a fiberwise pointed map, with a variable as codomain, this is an
   induction principle that allows us to assume it respects all basepoints by
@@ -73,7 +71,6 @@ Definition fiberwise_pointed_map_rec `{H0 : Funext} {A : Type} {B : A -> pType}
      P _ (fun a => pmap_from_pointed (g a)))
   : forall (C : A -> pType) (g : forall a, B a ->* C a), P C g.
 Proof.
-<<<<<<< HEAD
   equiv_intros (equiv_functor_arrow' (equiv_idmap A) issig_ptype oE
     equiv_sigT_coind _ _) C.
   destruct C as [C c0].
@@ -89,10 +86,6 @@ Proof.
   induction p.
   apply moveR_equiv_V in X. induction X.
   apply H.
-=======
-  apply moveR_equiv_M'.
-  reflexivity.
->>>>>>> master
 Defined.
 
 (** A alternative constructor to build a pHomotopy between maps into pForall *)
@@ -129,16 +122,9 @@ Definition functor2_pforall_right {A : pType} {B C : pFam A}
   (r : p (point A) (dpoint B) @ g₀' = g₀)
   : functor_pforall_right g g₀ f ==* functor_pforall_right g' g₀' f'.
 Proof.
-<<<<<<< HEAD
   srapply Build_pHomotopy.
   1: { intro a. refine (p a (f a) @ ap (g' a) (q a)). }
   pointed_reduce. symmetry. apply concat_Ap.
-=======
-  pointed_reduce'.
-  simple refine (Build_pHomotopy _ _); cbn.
-  - intros ?; reflexivity.
-  - reflexivity.
->>>>>>> master
 Defined.
 
 Definition functor2_pforall_right_refl {A : pType} {B C : pFam A}
@@ -148,30 +134,16 @@ Definition functor2_pforall_right_refl {A : pType} {B C : pFam A}
       (concat_1p _)
     ==* phomotopy_refl (functor_pforall_right g g₀ f).
 Proof.
-<<<<<<< HEAD
   pointed_reduce. reflexivity.
-=======
-  pointed_reduce_pmap f.
-  simple refine (Build_pHomotopy _ _); cbn.
-  - intros ?; reflexivity.
-  - reflexivity.
->>>>>>> master
 Defined.
 
 (* functorial action of [pForall A (pointed_fam B)] in [B]. *)
 Definition pmap_compose_ppforall {A : pType} {B B' : A -> pType}
   (g : forall a, B a ->* B' a) (f : ppforall a, B a) : ppforall a, B' a.
 Proof.
-<<<<<<< HEAD
   simple refine (functor_pforall_right _ _ f).
   + exact g.
   + exact (point_eq (g (point A))).
-=======
-  pointed_reduce_pmap f.
-  simple refine (Build_pHomotopy _ _); cbn.
-  - intros ?; reflexivity.
-  - reflexivity.
->>>>>>> master
 Defined.
 
 Definition pmap_compose_ppforall_point {A : pType} {B B' : A -> pType}
@@ -183,7 +155,6 @@ Proof.
   + exact (concat_p1 _ @ concat_1p _)^.
 Defined.
 
-<<<<<<< HEAD
 Definition pmap_compose_ppforall_compose {A : pType} {P Q R : A -> pType}
   (h : forall (a : A), Q a ->* R a) (g : forall (a : A), P a ->* Q a)
   (f : ppforall a, P a)
@@ -327,18 +298,4 @@ Proof.
     refine (pmap_compose_ppforall2_left _ (fun a => peissect _) @* _).
     apply pmap_compose_ppforall_pid_left. }
 Defined.
-=======
-(** Not infrequently we have a map between two unpointed types and want to consider it as a pointed map that trivially respects some given point in the domain. *)
-Definition pmap_from_point {A B : Type} (f : A -> B) (a : A)
-  := Build_pMap (Build_pType A a) (Build_pType B (f a)) f 1%path.
 
-(** ** The type of pointed maps is itself pointed *)
-
-Definition constpmap {X Y : pType} : X ->* Y := Build_pMap _ _ (const (point Y)) idpath.
-
-Definition ispointed_pmap {X Y : pType} : IsPointed (X ->* Y) := constpmap.
-
-Definition ppMap (X Y : pType) : pType := Build_pType (X ->* Y) constpmap.
-
-Infix "->**" := ppMap : pointed_scope.
->>>>>>> master
