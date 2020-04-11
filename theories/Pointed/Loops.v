@@ -94,7 +94,7 @@ Proof.
   apply ap_pp.
 Defined.
 
-Lemma loops_functor_pconst {A B : pType} : loops_functor (@pConst A B) ==* pConst.
+Lemma loops_functor_pconst {A B : pType} : loops_functor (@pconst A B) ==* pconst.
 Proof.
   srapply Build_pHomotopy.
   + intro p. refine (concat_1p _ @ concat_p1 _ @ ap_const _ _).
@@ -110,7 +110,7 @@ Proof.
   { intro q.
     refine (_ @ (concat_p1 _)^ @ (concat_1p _)^).
     apply moveR_Vp, concat_Ap. }
-  simpl. generalize (p ispointed_type0). generalize (g ispointed_type0).
+  simpl. generalize (p point0). generalize (g point0).
   intros _ []. reflexivity.
 Defined.
 
