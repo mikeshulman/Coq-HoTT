@@ -10,53 +10,83 @@ Local Open Scope path_scope.
 Section AssumeFunext.
   Context `{Funext}.
 
+  Global Instance contr_map_isequiv {A B} (f : A -> B) `{IsEquiv _ _ f}
+    : IsTruncMap (-2) f.
+  Proof.
+    intros b; refine (contr_equiv' {a : A & a = f^-1 b} _).
+    apply equiv_functor_sigma_id; intros a.
+    apply equiv_moveR_equiv_M.
+  Defined.
+
+  Definition isequiv_contr_map {A B} (f : A -> B) `{IsTruncMap (-2) A B f}
+    : IsEquiv f.
+  Proof.
+    srapply Build_IsEquiv.
+    - intros b; exact (center {a : A & f a = b}).1.
+    - intros b. exact (center {a : A & f a = b}).2.
+    - intros a. exact (@contr {x : A & f x = f a} _ (a;1))..1.
+    - intros a; cbn. apply moveL_M1.
+      rewrite <- transport_paths_l, <- transport_compose.
+      exact ((@contr {x : A & f x = f a} _ (a;1))..2).
+  Defined.
+
+  (** As usual, we can't make both of these [Instances]. *)
+  Hint Immediate isequiv_contr_map : typeclass_instances.
+
+  (** It follows that when proving a map is an equivalence, we may assume its codomain is inhabited. *)
+  Definition isequiv_inhab_codomain {A B} (f : A -> B) (feq : B -> IsEquiv f)
+    : IsEquiv f.
+  Proof.
+    apply isequiv_contr_map.
+    intros b.
+    pose (feq b); exact _.
+  Defined.
+
+  Global Instance contr_sect_equiv {A B} (f : A -> B) `{IsEquiv A B f}
+    : Contr {g : B -> A & Sect g f}.
+  Proof.
+    refine (contr_change_center (f^-1 ; eisretr f)).
+    refine (contr_equiv' { g : B -> A & f o g = idmap } _).
+    (* Typeclass inference finds this contractible instance: it's the fiber over [idmap] of postcomposition with [f], and the latter is an equivalence since [f] is. *)
+    apply equiv_functor_sigma_id; intros g.
+    apply equiv_ap10.
+  Defined.
+
+  Global Instance contr_retr_equiv {A B} (f : A -> B) `{IsEquiv A B f}
+    : Contr {g : B -> A & Sect f g}.
+  Proof.
+    refine (contr_change_center (f^-1 ; eissect f)).
+    refine (contr_equiv' { g : B -> A & g o f = idmap } _).
+    apply equiv_functor_sigma_id; intros g.
+    apply equiv_ap10.
+  Defined.
+
   (** We begin by showing that, assuming function extensionality, [IsEquiv f] is an hprop. *)
-  Global Instance hprop_isequiv {A B} `(f : A -> B)
+  Global Instance hprop_isequiv {A B} (f : A -> B)
   : IsHProp (IsEquiv f).
   Proof.
+    (** We will show that assuming [f] is an equivalence, [IsEquiv f] decomposes into a sigma of two contractible types. *)
     apply hprop_inhabited_contr; intros feq.
-    (* We will show that if [IsEquiv] is inhabited, then it is contractible, because it is equivalent to a sigma of a pointed path-space over a pointed path-space, both of which are contractible. *)
-    refine (contr_equiv' { g : B -> A & g = f^-1 } _).
-    equiv_via ({ g:B->A & { r:g=f^-1 & { s:g=f^-1 & r=s }}}); apply equiv_inverse.
-    1:exact (equiv_functor_sigma_id (fun _ => equiv_sigma_contr _ )).
-    (* First we apply [issig], peel off the first component, and convert to pointwise paths. *)
-    refine (_ oE (issig_isequiv f)^-1).
-    refine (equiv_functor_sigma_id _); intros g; simpl.
-    equiv_via ({ r : g == f^-1 & { s : g == f^-1 & r == s }}).
-    (* Now the idea is that if [f] is an equivalence, then [g f == 1] and [f g == 1] are both equivalent to [g == f^-1]. *)
-    { refine (equiv_functor_sigma'
-                (equiv_functor_forall idmap (fun b p => (ap f)^-1 (p @ (eisretr f b)^)))
-                (fun r => equiv_functor_sigma'
-                            (equiv_functor_forall f (fun a p => p @ (eissect f a)))^-1 _));
-      intros s; simpl.
-      (* What remains is to show that under these equivalences, the remaining datum [eisadj] reduces simply to [r == s].  Pleasingly, Coq can compute for us exactly what this means. *)
-      apply equiv_inverse;
-        refine (equiv_functor_forall' (Build_Equiv _ _ f _) _);
-        intros a; simpl; unfold functor_forall.
-      rewrite transport_paths_FlFr.
-      (* At this point it's just naturality wrangling, potentially automatable.  It's a little unusual because what we have to prove is not just the existence of some path, but that one path-type is equivalent to another one, but we can mostly still use [rewrite]. *)
-      Open Scope long_path_scope.
-      rewrite ap_pp, !concat_p_pp, eisadj, <- !ap_V, <- !ap_compose.
-      rewrite (concat_pA1_p (eissect f) (eissect f a)^).
-      rewrite (concat_A1p s (eissect f a)^).
-      rewrite (concat_pp_A1 (fun x => (eissect f x)^) (eissect f a)).
-      (* Here instead of [whiskerR] we have to be a bit fancier. *)
-      refine (_ oE (equiv_ap (equiv_concat_r (eissect f a)^ _) _ _)^-1).
-      rewrite concat_pV_p.
-      refine (_ oE equiv_ap (ap f) _ _).
-      (* Now we can get rid of the [<~>] and reduce the question to constructing some path. *)
-      apply equiv_concat_l.
-      rewrite !ap_pp, !ap_V, <- !eisadj, <- ap_compose.
-      rewrite_moveL_Vp_p.
-      symmetry; exact (concat_A1p (eisretr f) (r (f a))).
-      Close Scope long_path_scope. }
-    (* The leftover goal is just nested applications of funext. *)
-    { refine (equiv_functor_sigma' (equiv_path_arrow g f^-1)
-                                   (fun r => equiv_functor_sigma' (equiv_path_arrow g f^-1) _));
-      intros s; simpl.
-      refine (_ oE equiv_path_forall r s).
-      exact (equiv_ap (path_forall g f^-1) r s). }
+    nrefine (contr_equiv' _ (issig_isequiv f oE (equiv_sigma_assoc' _ _)^-1)).
+    srefine (contr_equiv' _ (equiv_contr_sigma _)^-1).
+    (** Each of these types is equivalent to a based homotopy space.  The first is exactly [contr_sect_equiv]. *)
+    1: rapply contr_sect_equiv.
+    (** The second requires a bit more work. *)
+    cbn.
+    refine (contr_equiv' { s : f^-1 o f == idmap & eissect f == s } _).
+    apply equiv_functor_sigma_id; intros s; cbn.
+    apply equiv_functor_forall_id; intros a.
+    refine (equiv_concat_l (eisadj f a) _ oE _).
+    rapply equiv_ap.
   Qed.
+
+  (** Now since [IsEquiv f] and the assertion that its fibers are contractible are both HProps, logical equivalence implies equivalence. *)
+  Definition equiv_contr_map_isequiv {A B} (f : A -> B)
+    : IsTruncMap (-2) f <~> IsEquiv f.
+  Proof.
+    rapply equiv_iff_hprop.
+    (** Both directions are found by typeclass inference! *)
+  Defined.
 
   (** Thus, paths of equivalences are equivalent to paths of functions. *)
   Lemma equiv_path_equiv {A B : Type} (e1 e2 : A <~> B)
@@ -133,5 +163,26 @@ Section AssumeFunext.
   Definition equiv_equiv_inverse A B
   : (A <~> B) <~> (B <~> A)
     := Build_Equiv _ _ (@equiv_inverse A B) _.
+
+  (** If [functor_sigma idmap g] is an equivalence then so is g *)
+  Definition isequiv_from_functor_sigma {A} (P Q : A -> Type)
+    (g : forall a, P a -> Q a) `{!IsEquiv (functor_sigma idmap g)}
+    : forall (a : A), IsEquiv (g a).
+  Proof.
+    intros a; apply isequiv_contr_map.
+    apply istruncmap_from_functor_sigma.
+    exact _.
+  Defined.
+
+  (** Theorem 4.7.7 *)
+  (** [functor_sigma idmap g] is an equivalence if and only if g is *)
+  Definition equiv_total_iff_equiv_fiberwise {A} (P Q : A -> Type)
+           (g : forall a, P a -> Q a)
+    : IsEquiv (functor_sigma idmap g) <-> forall a, IsEquiv (g a).
+  Proof.
+    split.
+    - apply isequiv_from_functor_sigma.
+    - intro K. apply isequiv_functor_sigma.
+  Defined.
 
 End AssumeFunext.

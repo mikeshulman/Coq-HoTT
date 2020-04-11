@@ -3,7 +3,6 @@ Require Import Basics Types.
 Require Import Pointed.Core.
 Require Import WildCat.
 Require Import pHomotopy pMap pEquiv.
-Require Import UnivalenceImpliesFunext.
 
 Local Open Scope pointed_scope.
 Local Open Scope path_scope.
@@ -59,7 +58,9 @@ Defined.
 Global Instance hasmorext_ptype `{Funext} : HasMorExt pType.
 Proof.
   srapply Build_HasMorExt; intros A B f g.
-Abort.
+  refine (isequiv_homotopic (equiv_path_pmap f g)^-1%equiv _).
+  intros []; reflexivity.
+Defined.
 
 Global Instance hasequivs_ptype : HasEquivs pType.
 Proof.

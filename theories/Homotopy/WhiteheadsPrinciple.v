@@ -1,8 +1,7 @@
 Require Import Basics.
 Require Import Types.
 Require Import Pointed.
-Require Import Fibrations.
-Require Import EquivalenceVarieties UnivalenceImpliesFunext.
+Require Import HFiber.
 Require Import Algebra.Group.
 Require Import Homotopy.HomotopyGroup.
 Require Import Truncations.

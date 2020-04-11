@@ -2,10 +2,9 @@
 (** * Varieties of univalence *)
 
 Require Import HoTT.Basics HoTT.Types.
-Require Import Fibrations Idempotents EquivalenceVarieties UnivalenceImpliesFunext.
+Require Import Idempotents.
+Require Import Metatheory.Core.
 Local Open Scope path_scope.
-
-(** The standard univalence axiom type [Univalence_type] is defined in [UnivalenceImpliesFunext]. *)
 
 (** A weaker form that only asserts that we can make equivalences into paths with a computation rule (no uniqueness rule). *)
 Definition WeakUnivalence :=
@@ -71,7 +70,7 @@ Proof.
     - apply ap, path_arrow; intros a.
       symmetry; rapply (contract vwu).
     - apply ap, path_arrow; intros b.
-      apply (contract vwu), fcontr_isequiv; exact _. }
+      apply (contract vwu); exact _. }
   { intros A B f.
     apply path_equiv, path_arrow; intros a; cbn.
     rewrite !transport_pp.

@@ -499,68 +499,47 @@ Proof.
     apply transport_pV.
 Defined.
 
+
 (** ** Associativity *)
 
+(** All of the following lemmas are proven easily with the [make_equiv] tactic.  If you have a more complicated rearrangement of sigma-types to do, it is usually possible to do it by putting together these equivalences, but it is often simpler and faster to just use [make_equiv] directly. *)
+
 Definition equiv_sigma_assoc `(P : A -> Type) (Q : {a : A & P a} -> Type)
-: {a : A & {p : P a & Q (a;p)}} <~> sigT Q
-  := @Build_Equiv
-       _ _ _
-       (@Build_IsEquiv
-          {a : A & {p : P a & Q (a;p)}} (sigT Q)
-          (fun apq => ((apq.1; apq.2.1); apq.2.2))
-          (fun apq => (apq.1.1; (apq.1.2; apq.2)))
-          (fun _ => 1)
-          (fun _ => 1)
-          (fun _ => 1)).
+  : {a : A & {p : P a & Q (a;p)}} <~> sigT Q.
+Proof.
+  make_equiv.
+Defined.
 
 Definition equiv_sigma_assoc' `(P : A -> Type) (Q : forall a : A, P a -> Type)
-: {a : A & {p : P a & Q a p}} <~> {ap : sigT P & Q ap.1 ap.2}
-  := @Build_Equiv
-       _ _ _
-       (@Build_IsEquiv
-          {a : A & {p : P a & Q a p}} {ap : sigT P & Q ap.1 ap.2}
-          (fun apq => ((apq.1; apq.2.1); apq.2.2))
-          (fun apq => (apq.1.1; (apq.1.2; apq.2)))
-          (fun _ => 1)
-          (fun _ => 1)
-          (fun _ => 1)).
+  : {a : A & {p : P a & Q a p}} <~> {ap : sigT P & Q ap.1 ap.2}.
+Proof.
+  make_equiv.
+Defined.
 
 Definition equiv_sigma_prod `(Q : (A * B) -> Type)
-: {a : A & {b : B & Q (a,b)}} <~> sigT Q
-  := @Build_Equiv
-       _ _ _
-       (@Build_IsEquiv
-          {a : A & {b : B & Q (a,b)}} (sigT Q)
-          (fun apq => ((apq.1, apq.2.1); apq.2.2))
-          (fun apq => (fst apq.1; (snd apq.1; apq.2)))
-          (fun _ => 1)
-          (fun _ => 1)
-          (fun _ => 1)).
+  : {a : A & {b : B & Q (a,b)}} <~> sigT Q.
+Proof.
+  make_equiv.
+Defined.
 
-Definition equiv_sigma_prod0 A B
-: {a : A & B} <~> A * B
-  := Build_Equiv _ _ _
-       (Build_IsEquiv
-          {a : A & B} (A * B)
-          (fun (ab : {a:A & B}) => (ab.1 , ab.2))
-          (fun (ab : A*B) => (fst ab ; snd ab))
-          (fun _ => 1) (fun _ => 1) (fun _ => 1)).
+Definition equiv_sigma_prod0 (A B : Type)
+  : {a : A & B} <~> A * B.
+Proof.
+  make_equiv.
+Defined.
 
 (** ** Symmetry *)
 
 Definition equiv_sigma_symm `(P : A -> B -> Type)
-: {a : A & {b : B & P a b}} <~> {b : B & {a : A & P a b}}
-  := ((equiv_sigma_prod (fun x => P (snd x) (fst x)))^-1)
-       oE (equiv_functor_sigma' (equiv_prod_symm A B)
-                                (fun x => equiv_idmap (P (fst x) (snd x))))
-       oE (equiv_sigma_prod (fun x => P (fst x) (snd x))).
+  : {a : A & {b : B & P a b}} <~> {b : B & {a : A & P a b}}.
+Proof.
+  make_equiv.
+Defined.
 
 Definition equiv_sigma_symm0 (A B : Type)
 : {a : A & B} <~> {b : B & A}.
 Proof.
-  refine (Build_Equiv _ _ (fun (w:{a:A & B}) => (w.2 ; w.1)) _).
-  simple refine (Build_IsEquiv _ _ _ (fun (z:{b:B & A}) => (z.2 ; z.1))
-                       _ _ _); intros [x y]; reflexivity.
+  make_equiv.
 Defined.
 
 (** ** Universal mapping properties *)
@@ -739,3 +718,51 @@ Definition pr1_path_path_sigma_hprop {A : Type} {P : A -> Type}
            `{forall x, IsHProp (P x)} (u v : sigT P) (p : u.1 = v.1)
 : (path_sigma_hprop u v p)..1 = p
   := eissect (path_sigma_hprop u v) p.
+
+(** ** Fibers of [functor_sigma] *)
+Definition hfiber_functor_sigma {A B} (P : A -> Type) (Q : B -> Type)
+           (f : A -> B) (g : forall a, P a -> Q (f a))
+           (b : B) (v : Q b)
+: (hfiber (functor_sigma f g) (b; v)) <~>
+  {w : hfiber f b & hfiber (g w.1) ((w.2)^ # v)}.
+Proof.
+  unfold hfiber, functor_sigma.
+  refine (_ oE equiv_functor_sigma_id _).
+  2:intros; symmetry; apply equiv_path_sigma.
+  transitivity {w : {x : A & f x = b} & {x : P w.1 & (w.2) # (g w.1 x) = v}}.
+  1:make_equiv.
+  apply equiv_functor_sigma_id; intros [a p]; simpl.
+  apply equiv_functor_sigma_id; intros u; simpl.
+  apply equiv_moveL_transport_V.
+Defined.
+
+Global Instance istruncmap_functor_sigma n {A B P Q}
+       (f : A -> B) (g : forall a, P a -> Q (f a))
+       {Hf : IsTruncMap n f} {Hg : forall a, IsTruncMap n (g a)}
+  : IsTruncMap n (functor_sigma f g).
+Proof.
+  intros [a b].
+  exact (trunc_equiv _ (hfiber_functor_sigma _ _ _ _ _ _)^-1).
+Defined.
+
+(** Theorem 4.7.6 *)
+Definition hfiber_functor_sigma_idmap {A} (P Q : A -> Type)
+           (g : forall a, P a -> Q a)
+           (b : A) (v : Q b)
+: (hfiber (functor_sigma idmap g) (b; v)) <~>
+   hfiber (g b) v.
+Proof.
+  refine (_ oE hfiber_functor_sigma P Q idmap g b v).
+  exact (equiv_contr_sigma
+           (fun (w:hfiber idmap b) => hfiber (g w.1) (transport Q (w.2)^ v))).
+Defined.
+
+(** The converse and Theorem 4.7.7 can be found in Types/Equiv.v *)
+Definition istruncmap_from_functor_sigma n {A P Q}
+           (g : forall a : A, P a -> Q a)
+           `{!IsTruncMap n (functor_sigma idmap g)}
+  : forall a, IsTruncMap n (g a).
+Proof.
+  intros a v.
+  exact (trunc_equiv' _ (hfiber_functor_sigma_idmap _ _ _ _ _)).
+Defined.

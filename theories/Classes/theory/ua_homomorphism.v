@@ -8,11 +8,10 @@ Require Export HoTT.Classes.interfaces.ua_setalgebra.
 Require Import
   HoTT.Basics
   HoTT.Types
-  HoTT.Fibrations
+  HoTT.HFiber
   HoTT.HProp
   HoTT.HSet
-  HoTT.Tactics
-  UnivalenceImpliesFunext.
+  HoTT.Tactics.
 
 Import algebra_notations ne_list.notations.
 

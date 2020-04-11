@@ -150,6 +150,7 @@ Defined.
 Definition pproduct {A : Type} (F : A -> pType) : pType
   := Build_pType (forall (a : A), pointed_type (F a)) (ispointed_type o F).
 
+<<<<<<< HEAD
 (** The following tactic often allows us to "pretend" that pointed maps and homotopies preserve basepoints strictly.  We have carefully defined [pMap] and [pHomotopy] so that when destructed, their second components are paths with right endpoints free, to which we can apply Paulin-Morhing path-induction. *)
 Ltac pointed_reduce :=
   unfold pointed_fun, pointed_htpy; cbn in *;
@@ -160,13 +161,42 @@ Ltac pointed_reduce :=
            | [ phi : pForall ?X ?Y |- _ ] => destruct phi as [phi ?]
            | [ alpha : pHomotopy ?f ?g |- _ ] => let H := fresh in destruct alpha as [alpha H]; try (apply moveR_pM in H)
            | [ equiv : pEquiv ?X ?Y |- _ ] => destruct equiv as [equiv ?]
+=======
+(** The following tactics often allow us to "pretend" that pointed maps and homotopies preserve basepoints strictly.  We have carefully defined [pMap] and [pHomotopy] so that when destructed, their second components are paths with right endpoints free, to which we can apply Paulin-Morhing path-induction. *)
+
+(** First a version with no rewrites, which leaves some cleanup to be done but which can be used in transparent proofs. *)
+Ltac pointed_reduce' :=
+  unfold pointed_fun, pointed_htpy; cbn;
+  repeat match goal with
+           | [ X : pType |- _ ] => destruct X as [X ?point]
+           | [ phi : pMap ?X ?Y |- _ ] => destruct phi as [phi ?]
+           | [ alpha : pHomotopy ?f ?g |- _ ] => destruct alpha as [alpha ?]
+           | [ equiv : pEquiv ?X ?Y |- _ ] => destruct equiv as [equiv ?iseq]
+>>>>>>> master
          end;
   cbn in *; unfold point in *;
-  path_induction; cbn;
-  (** TODO: [pointed_reduce] uses [rewrite], and thus according to our current general rules, it should only be used in opaque proofs.  We don't yet need any of the proofs that use it to be transparent, but there's a good chance we will eventually.  At that point we can consider whether to allow it in transparent proofs, modify it to not use [rewrite], or exclude it from proofs that need to be transparent. *)
+  path_induction; cbn.
+
+(** Next a version that uses [rewrite], and should only be used in opaque proofs. *)
+Ltac pointed_reduce :=
+  pointed_reduce';
   rewrite ?concat_p1, ?concat_1p.
 
+<<<<<<< HEAD
 (** ** Equivalences to sigma-types. *)
+=======
+(** Finally, a version that just strictifies a single map or equivalence.  This has the advantage that it leaves the context more readable. *)
+Ltac pointed_reduce_pmap f
+  := try match type of f with
+    | pEquiv ?X ?Y => destruct f as [f ?iseq]
+    end;
+    match type of f with
+    | _ ->* ?Y => destruct Y as [Y ?], f as [f p]; cbn in *; destruct p; cbn
+    end.
+
+
+(** ** Equivalences *)
+>>>>>>> master
 
 Definition issig_ptype : { X : Type & X } <~> pType.
 Proof.
@@ -184,6 +214,7 @@ Definition issig_pmap (A B : pType)
 Proof.
   issig.
 Defined.
+<<<<<<< HEAD
 
 Definition issig_phomotopy {A : pType} {P : pFam A} (f g : pForall A P)
 : { p : f == g & p (point A) = dpoint_eq f @ (dpoint_eq g)^ } <~> (f ==* g).
@@ -712,3 +743,5 @@ Proof.
   + intros. reflexivity.
 Defined.
 
+=======
+>>>>>>> master

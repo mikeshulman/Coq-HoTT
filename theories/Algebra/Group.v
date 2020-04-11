@@ -1,4 +1,4 @@
-Require Import HoTT.Basics HoTT.Types UnivalenceImpliesFunext.
+Require Import HoTT.Basics HoTT.Types.
 Require Import PathAny.
 Require Export Classes.interfaces.abstract_algebra.
 Require Export Classes.theory.groups.
@@ -363,10 +363,10 @@ Proof.
 Defined.
 
 (** The wild cat of Groups *)
-Global Instance isgraph_Group : IsGraph Group
+Global Instance isgraph_group : IsGraph Group
   := Build_IsGraph Group GroupHomomorphism.
 
-Global Instance is01cat_Group : Is01Cat Group :=
+Global Instance is01cat_group : Is01Cat Group :=
   (Build_Is01Cat Group _ (@grp_homo_id) (@grp_homo_compose)).
 
 Global Instance isgraph_grouphomomorphism {A B : Group} : IsGraph (A $-> B)
@@ -404,7 +404,7 @@ Proof.
   srapply Build_HasMorExt.
   intros A B f g; cbn in *.
   snrapply @isequiv_homotopic.
-  1: exact equiv_path_grouphomomorphism^-1.
+  1: exact (equiv_path_grouphomomorphism^-1%equiv).
   1: exact _.
   intros []; reflexivity. 
 Defined.

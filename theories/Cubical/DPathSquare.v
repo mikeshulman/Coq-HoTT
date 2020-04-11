@@ -63,8 +63,10 @@ Proof.
   rewrite <- (eissect sq_path s : sq_path^-1 s' = s).
   clearbody s'; clear s.
   destruct s'; cbn.
-  apply equiv_sq_path.
+  apply sq_path.
 Defined.
+
+Notation ds_dpath := equiv_ds_dpath.
 
 (* We have an apD for DPathSquares *)
 Definition ds_apD {A} {B : A -> Type} (f : forall a, B a) {a00 a10 a01 a11 : A}
@@ -79,26 +81,17 @@ Definition ds_const {A P : Type} {a00 a10 a01 a11 : A}
   {px0 : a00 = a10} {px1 : a01 = a11} {p0x : a00 = a01} {p1x : a10 = a11}
   {s : PathSquare px0 px1 p0x p1x} {b00 b10 b01 b11 : P}
   {qx0 : b00 = b10} {qx1 : b01 = b11} {q0x : b00 = b01} {q1x : b10 = b11}
-  : PathSquare qx0 qx1 q0x q1x -> DPathSquare (fun _ => P) s (dp_const qx0)
+  : PathSquare qx0 qx1 q0x q1x <~> DPathSquare (fun _ => P) s (dp_const qx0)
       (dp_const qx1) (dp_const q0x) (dp_const q1x).
 Proof.
   by destruct s.
-Defined.
-
-Global Instance isequiv_ds_const {A P : Type} {a00 a10 a01 a11 : A}
-  {px0 : a00 = a10} {px1 : a01 = a11} {p0x : a00 = a01} {p1x : a10 = a11}
-  {s : PathSquare px0 px1 p0x p1x} {b00 b10 b01 b11 : P}
-  {qx0 : b00 = b10} {qx1 : b01 = b11} {q0x : b00 = b01} {q1x : b10 = b11}
-  : IsEquiv (ds_const (s:=s) (qx0:=qx0) (qx1:=qx1) (q0x:=q0x) (q1x:=q1x)).
-Proof.
-  destruct s; exact _.
 Defined.
 
 (* Sometimes we want the DPathSquare to be typed differently *)
 (* This could be achieved with some clever rewriting of squares and DPathSquares *)
 (* It seems that writing it like this might get in the way, Cube.v has
    some examples of this. *)
-Definition ds_const' {A P : Type} {a00 a10 a01 a11 : A}
+Definition equiv_ds_const' {A P : Type} {a00 a10 a01 a11 : A}
   {px0 : a00 = a10} {px1 : a01 = a11} {p0x : a00 = a01} {p1x : a10 = a11}
   {s : PathSquare px0 px1 p0x p1x} {b00 b10 b01 b11 : P}
   {qx0 : DPath (fun _ => P) px0 b00 b10}
@@ -107,22 +100,12 @@ Definition ds_const' {A P : Type} {a00 a10 a01 a11 : A}
   {q1x : DPath (fun _ => P) p1x b10 b11}
   : PathSquare (dp_const^-1 qx0) (dp_const^-1 qx1)
     (dp_const^-1 q0x) (dp_const^-1 q1x)
-    -> DPathSquare (fun _ => P) s qx0 qx1 q0x q1x.
+    <~> DPathSquare (fun _ => P) s qx0 qx1 q0x q1x.
 Proof.
   by destruct s.
 Defined.
 
-Global Instance isequiv_ds_const' {A P : Type} {a00 a10 a01 a11 : A}
-  {px0 : a00 = a10} {px1 : a01 = a11} {p0x : a00 = a01} {p1x : a10 = a11}
-  {s : PathSquare px0 px1 p0x p1x} {b00 b10 b01 b11 : P}
-  {qx0 : DPath (fun _ => P) px0 b00 b10}
-  {qx1 : DPath (fun _ => P) px1 b01 b11}
-  {q0x : DPath (fun _ => P) p0x b00 b01}
-  {q1x : DPath (fun _ => P) p1x b10 b11}
-  : IsEquiv (ds_const' (s:=s) (qx0:=qx0) (qx1:=qx1) (q0x:=q0x) (q1x:=q1x)).
-Proof.
-  destruct s; exact _.
-Defined.
+Notation ds_const' := equiv_ds_const'.
 
 (* dp_apD fits into a natural square *)
 Definition dp_apD_nat {A} {P : A -> Type} {f g : forall x, P x} {x y : A}
@@ -133,36 +116,30 @@ Proof.
   by apply sq_1G.
 Defined.
 
-Definition ds_G1 {A} (P : A -> Type) {a00 a10 }
+Definition equiv_ds_G1 {A} (P : A -> Type) {a00 a10 }
   {px0 px1 : a00 = a10} {p : px0 = px1} {b00 b10}
   (qx0 : DPath P px0 b00 b10) (qx1 : DPath P px1 b00 b10)
   : DPath (fun x => DPath P x b00 b10) p qx0 qx1
-      ->  DPathSquare P (sq_G1 p) qx0 qx1 1 1.
+      <~> DPathSquare P (sq_G1 p) qx0 qx1 1 1.
 Proof.
   destruct p, px0.
   apply sq_G1.
 Defined.
 
-Global Instance isequiv_ds_G1 {A} (P : A -> Type) {a00 a10 }
-  {px0 px1 : a00 = a10} {p : px0 = px1} {b00 b10}
-  (qx0 : DPath P px0 b00 b10) (qx1 : DPath P px1 b00 b10)
-  : IsEquiv (ds_G1 (p:=p) P qx0 qx1).
-Proof.
-  destruct p, px0.
-  cbn in *.
-  exact _.
-Defined.
+Notation ds_G1 := equiv_ds_G1.
 
 (** A DPath in a path-type is naturally a DPathSquare.  *)
 
-Definition equiv_sq_dp_D {A : Type} {B : A -> Type} (f g : forall a : A, B a)
+Definition equiv_ds_dp {A : Type} {B : A -> Type} (f g : forall a : A, B a)
   {x1 x2 : A} (p : x1 = x2) (q1 : f x1 = g x1) (q2 : f x2 = g x2)
-  : DPathSquare B (sq_refl_h p) (dp_apD f p) (dp_apD g p) q1 q2
-    <~> DPath (fun x : A => f x = g x) p q1 q2.
+  : DPath (fun x : A => f x = g x) p q1 q2
+    <~> DPathSquare B (sq_refl_h p) (dp_apD f p) (dp_apD g p) q1 q2.
 Proof.
-  destruct p. cbn.
-  exact (equiv_sq_1G^-1%equiv).
+  destruct p.
+  exact sq_1G.
 Defined.
+
+Notation ds_dp := equiv_ds_dp.
 
 (** Dependent Kan operations *)
 
@@ -180,11 +157,50 @@ Section Kan.
     destruct s; apply sq_fill_l.
   Defined.
 
+  Definition ds_fill_l_uniq {qx1 : DPath P px1 b01 b11}
+             {q0x : DPath P p0x b00 b01} {q1x : DPath P p1x b10 b11}
+             {qx0 : DPath P px0 b00 b10}
+             (t : DPathSquare P s qx0 qx1 q0x q1x)
+             {qx0' : DPath P px0 b00 b10}
+             (t' : DPathSquare P s qx0' qx1 q0x q1x)
+    : qx0 = qx0'.
+  Proof.
+    destruct s.
+    exact (sq_fill_l_uniq t t').
+  Defined.
+
   Definition ds_fill_r (qx0 : DPath P px0 b00 b10)
              (q0x : DPath P p0x b00 b01) (q1x : DPath P p1x b10 b11)
     : {qx1 : DPath P px1 b01 b11 & DPathSquare P s qx0 qx1 q0x q1x}.
   Proof.
     destruct s; apply sq_fill_r.
+  Defined.
+
+  Definition ds_fill_r_uniq {qx0 : DPath P px0 b00 b10}
+             {q0x : DPath P p0x b00 b01} {q1x : DPath P p1x b10 b11}
+             {qx1 : DPath P px1 b01 b11}
+             (t : DPathSquare P s qx0 qx1 q0x q1x)
+             {qx1' : DPath P px1 b01 b11}
+             (t' : DPathSquare P s qx0 qx1' q0x q1x)
+    : qx1 = qx1'.
+  Proof.
+    destruct s.
+    exact (sq_fill_r_uniq t t').
+  Defined.
+
+  Definition equiv_ds_fill_lr
+             {q0x : DPath P p0x b00 b01} {q1x : DPath P p1x b10 b11}
+    : (DPath P px0 b00 b10) <~> (DPath P px1 b01 b11).
+  Proof.
+    srapply equiv_adjointify.
+    - intros qx0; exact (ds_fill_r qx0 q0x q1x).1.
+    - intros qx1; exact (ds_fill_l qx1 q0x q1x).1.
+    - intros qx1.
+      exact (ds_fill_r_uniq (ds_fill_r _ q0x q1x).2
+                            (ds_fill_l qx1 q0x q1x).2).
+    - intros qx0.
+      exact (ds_fill_l_uniq (ds_fill_l _ q0x q1x).2
+                            (ds_fill_r qx0 q0x q1x).2).
   Defined.
 
   Definition ds_fill_t (qx0 : DPath P px0 b00 b10)
@@ -214,10 +230,12 @@ Definition equiv_ds_transport_dpath {A} {a0 a1 : A} {p : a0 = a1}
                      qx0) = qx1.
 Proof.
   destruct p; cbn.
-  refine (_ oE equiv_sq_path^-1).
+  refine (_ oE sq_path^-1).
   refine (equiv_concat_l _ _ oE _).
   { apply transport_paths_l. }
   refine (equiv_moveR_Vp _ _ _ oE _).
   refine (equiv_concat_l _ _).
   apply transport_paths_r.
 Defined.
+
+Notation ds_transport_dpath := equiv_ds_transport_dpath.

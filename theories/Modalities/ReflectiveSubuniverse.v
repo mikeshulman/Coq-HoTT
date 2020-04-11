@@ -1,9 +1,8 @@
 (* -*- mode: coq; mode: visual-line -*- *)
 Require Import HoTT.Basics HoTT.Types.
-Require Import UnivalenceImpliesFunext EquivalenceVarieties Extensions HProp Fibrations NullHomotopy Pullback.
-Require Import HoTT.Tactics PathAny.
+Require Import Equiv.BiInv Extensions HProp HFiber NullHomotopy Pullback.
+Require Import PathAny.
 Require Import HIT.Coeq Colimits.Pushout.
-Require Import Tactics.RewriteModuloAssociativity.
 
 Local Open Scope nat_scope.
 Local Open Scope path_scope.
@@ -448,10 +447,10 @@ Section Reflective_Subuniverse.
 
   End Replete.
 
-  Section OInverts.
+  (** The maps that are inverted by the reflector.  Note that this notation is not (yet) global (because notations in a section cannot be made global); it only exists in this section.  After the section is over, we will redefine it globally. *)
+  Local Notation O_inverts f := (IsEquiv (O_functor f)).
 
-    (** The maps that are inverted by the reflector.  Note that this notation is NOT (yet) GLOBAL; it only exists in this section. *)
-    Local Notation O_inverts f := (IsEquiv (O_functor f)).
+  Section OInverts.
 
     Global Instance O_inverts_O_unit (A : Type)
     : O_inverts (to O A).
@@ -694,49 +693,47 @@ Section Reflective_Subuniverse.
 
     (** We show that [OA*OB] has the same universal property as [O(A*B)] *)
 
-    Definition equiv_O_prod_unit_precompose
-               {fs : Funext} (A B C : Type) `{In O C}
-    : ((O A) * (O B) -> C) <~> (A * B -> C).
-    Proof.
-      refine (equiv_uncurry A B C oE _).
-      refine (_ oE (equiv_uncurry (O A) (O B) C)^-1).
-      refine (equiv_o_to_O O A (B -> C) oE _); simpl.
-      apply equiv_postcompose'.
-      exact (equiv_o_to_O _ B C).
-    Defined.
-
-    (** The preceding equivalence turns out to be actually (judgmentally!) precomposition with the following function. *)
+    (** Here is the map witnessing the universal property.  *)
     Definition O_prod_unit (A B : Type) : A * B -> O A * O B
       := functor_prod (to O A) (to O B).
 
-    (** From this, we can define the comparison map for products, and show that precomposing with it is also an equivalence. *)
+    (** We express the universal property without funext, using extensions. *)
+    Definition ooextendable_O_prod_unit (A B C : Type) `{In O C}
+      : ooExtendableAlong (O_prod_unit A B) (fun _ => C).
+    Proof.
+      apply ooextendable_functor_prod.
+      all:intros; rapply extendable_to_O.
+    Defined.
+
+    (** Here's the version with funext. *)
+    Definition isequiv_O_prod_unit_precompose
+               {fs : Funext} (A B C : Type) `{In O C}
+      : IsEquiv (fun (f : (O A) * (O B) -> C) => f o O_prod_unit A B).
+    Proof.
+      rapply isequiv_ooextendable.
+      rapply ooextendable_O_prod_unit.
+    Defined.
+
+    Definition equiv_O_prod_unit_precompose
+               {fs : Funext} (A B C : Type) `{In O C}
+      : ((O A) * (O B) -> C) <~> (A * B -> C)
+      := Build_Equiv _ _ _ (isequiv_O_prod_unit_precompose A B C).
+
+    (** The (funext-free) universal property implies that [O_prod_unit] is an [O]-equivalence, hence induces an equivalence between [O (A*B)] and [O A * O B]. *)
+    Global Instance O_inverts_O_prod_unit (A B : Type)
+      : O_inverts (O_prod_unit A B).
+    Proof.
+      rapply O_inverts_from_extendable.
+      intros; rapply ooextendable_O_prod_unit.
+    Defined.
+
     Definition O_prod_cmp (A B : Type) : O (A * B) -> O A * O B
       := O_rec (O_prod_unit A B).
 
     Global Instance isequiv_O_prod_cmp (A B : Type)
-    : IsEquiv (O_prod_cmp A B).
+      : IsEquiv (O_prod_cmp A B).
     Proof.
-      simple refine (isequiv_adjointify _ _ _ _).
-      { apply prod_ind; intro a.
-        apply O_rec; intro b; revert a.
-        apply O_rec; intro a.
-        apply (to O).
-        exact (a, b). }
-      { unfold prod_ind, O_prod_cmp, O_prod_unit.
-        intros [oa ob].
-        revert ob; refine (O_indpaths _ _ _); intros b.
-        revert oa; refine (O_indpaths _ _ _); intros a.
-        cbn. abstract (repeat rewrite O_rec_beta; reflexivity). }
-      { unfold prod_ind, O_prod_cmp, O_prod_unit.
-        refine (O_indpaths _ _ _); intros [a b]; cbn.
-        abstract (repeat (rewrite O_rec_beta; cbn); reflexivity). }
-    Defined.
-
-    Definition isequiv_O_prod_cmp_precompose
-      {fs : Funext} (A B C : Type) {C_inO : In O C}
-    : IsEquiv (fun h : O A * O B -> C => h o O_prod_cmp A B).
-    Proof.
-      apply isequiv_precompose; exact _.
+      rapply isequiv_O_rec_O_inverts.
     Defined.
 
     Definition equiv_O_prod_cmp (A B : Type)
@@ -811,22 +808,33 @@ Section Reflective_Subuniverse.
       apply ap, p.
     Defined.
 
-    (** Theorem 7.3.9: The reflector [O] can be discarded inside a reflected sum. *)
-    Definition equiv_O_sigma_O {A} (P : A -> Type)
-    : O {x:A & O (P x)} <~> O {x:A & P x}.
+    (** [functor_sigma] over [idmap] preserves [O]-equivalences. *)
+    Definition O_inverts_functor_sigma_id {A} {P Q : A -> Type}
+           (g : forall a, P a -> Q a) `{forall a, O_inverts (g a)}
+      : O_inverts (functor_sigma idmap g).
     Proof.
-      simple refine (equiv_adjointify _ _ _ _).
+      apply O_inverts_from_extendable; intros Z Z_inO.
+      apply ooextendable_functor_sigma_id; intros a.
+      nrapply ooextendable_O_inverts; exact _.
+    Defined.
+
+    (** Theorem 7.3.9: The reflector [O] can be discarded inside a reflected sum.  This can be obtained from [O_inverts_functor_sigma_id] applied to the family of units [to O (P x)], but unfortunately the definitional behavior of the inverse obtained thereby (which here we take as the "forwards" direction) is poor.  So instead we give an explicit proof, but note that the "backwards" direction here is precisely [functor_sigma]. *)
+    Definition equiv_O_sigma_O {A} (P : A -> Type)
+      : O {x:A & O (P x)} <~> O {x:A & P x}.
+      (** := (Build_Equiv _ _ _ (O_inverts_functor_sigma_id (fun x => to O (P x))))^-1. *)
+    Proof.
+      srapply equiv_adjointify.
       - apply O_rec; intros [a op]; revert op.
         apply O_rec; intros p.
         exact (to O _ (a;p)).
-      - apply O_rec; intros [a p].
-        exact (to O _ (a ; to O _ p)).
-      - unfold Sect; rapply O_indpaths.
+      - apply O_functor.
+        exact (functor_sigma idmap (fun x => to O (P x))).
+      - unfold Sect, O_functor; rapply O_indpaths.
         intros [a p]; simpl.
-        abstract (repeat (simpl rewrite @O_rec_beta); reflexivity).
-      - unfold Sect; rapply O_indpaths.
+        abstract (repeat (rewrite O_rec_beta); reflexivity).
+      - unfold Sect, O_functor; rapply O_indpaths.
         intros [a op]; revert op; rapply O_indpaths; intros p; simpl.
-        abstract (repeat (simpl rewrite @O_rec_beta); reflexivity).
+        abstract (repeat (rewrite O_rec_beta); reflexivity).
     Defined.
 
     (** ** Equivalences *)
@@ -838,7 +846,7 @@ Section Reflective_Subuniverse.
     Proof.
       refine (inO_equiv_inO _ (issig_equiv@{i j k} A B)).
       refine (inO_equiv_inO _ (equiv_functor_sigma equiv_idmap@{k}
-                                 (fun f => equiv_biinv_isequiv@{i j k l} f))).
+                                 (fun f => equiv_biinv_isequiv@{i j k} f))).
       transparent assert (c : (prod@{k k} (A->B) (prod@{k k} (B->A) (B->A)) -> prod@{k k} (A -> A) (B -> B))).
       { intros [f [g h]]; exact (h o f, f o g). }
       pose (U := hfiber@{k k} c (idmap, idmap)).
@@ -905,142 +913,62 @@ Section Reflective_Subuniverse.
 
     (** ** Coproducts *)
 
-    Definition equiv_O_sum {A B} :
-      O (A + B) <~> O (O A + O B).
+    Definition O_inverts_functor_sum {A B A' B'} (f : A -> A') (g : B -> B')
+               `{O_inverts f} `{O_inverts g}
+      : O_inverts (functor_sum f g).
     Proof.
-      simple refine (equiv_adjointify _ _ _ _).
-      - apply O_rec; intros x.
-        exact (to O _ (functor_sum (to O A) (to O B) x)).
-      - apply O_rec; intros [x|x].
-        + (* Work around https://coq.inria.fr/bugs/show_bug.cgi?id=4525, stack overflow in exact *)
-          let lem := constr:(fun A B => to O _ o @inl A B) in
-          exact (O_rec (lem _ _) x).
-        + let lem := constr:(fun A B => to O _ o @inr A B) in
-          exact (O_rec (lem _ _) x).
-      - apply O_indpaths; intros [x|x].
-        all:revert x; apply O_indpaths; intros x.
-        all:abstract (rewrite !O_rec_beta; reflexivity).
-      - apply O_indpaths; intros [x|x].
-        all:abstract (rewrite !O_rec_beta; cbn;
-                      rewrite !O_rec_beta; reflexivity).
+      apply O_inverts_from_extendable; intros.
+      apply extendable_functor_sum; apply ooextendable_O_inverts; assumption.
     Defined.
+
+    Definition equiv_O_functor_sum {A B A' B'} (f : A -> A') (g : B -> B')
+               `{O_inverts f} `{O_inverts g}
+      : O (A + B) <~> O (A' + B')
+      := Build_Equiv _ _ _ (O_inverts_functor_sum f g).
+
+    Definition equiv_O_sum {A B} :
+      O (A + B) <~> O (O A + O B)
+      := equiv_O_functor_sum (to O A) (to O B).
 
     (** ** Coequalizers *)
 
     Section OCoeq.
       Context {B A : Type} (f g : B -> A).
 
-      Definition O_coeq_cmp
-      : O (Coeq f g) -> O (Coeq (O_functor f) (O_functor g)).
+      Definition O_inverts_functor_coeq
+                 {B' A' : Type} {f' g' : B' -> A'}
+                 (h : B -> B') (k : A -> A')
+                 (p : k o f == f' o h) (q : k o g == g' o h)
+                 `{O_inverts k} `{O_inverts h}
+        : O_inverts (functor_coeq h k p q).
       Proof.
-        apply O_functor.
-        exact (functor_coeq (to O B) (to O A)
-                            (fun y => (to_O_natural f y)^)
-                            (fun y => (to_O_natural g y)^)).
+        apply O_inverts_from_extendable.
+        intros Z Z_inO.
+        apply extendable_functor_coeq'.
+        all:nrapply ooextendable_O_inverts; assumption.
       Defined.
 
-      Definition O_coeq_cmp_inverse
-      : O (Coeq (O_functor f) (O_functor g)) -> O (Coeq f g).
+      Definition equiv_O_functor_coeq
+                 {B' A' : Type} (f' g' : B' -> A')
+                 (h : B -> B') (k : A -> A')
+                 (p : k o f == f' o h) (q : k o g == g' o h)
+                 `{O_inverts k} `{O_inverts h}
+        : O (Coeq f g) <~> O (Coeq f' g')
+        := Build_Equiv _ _ _ (O_inverts_functor_coeq h k p q).
+
+      Definition coeq_cmp : Coeq f g -> Coeq (O_functor f) (O_functor g)
+        := functor_coeq (to O B) (to O A)
+                       (fun y => (to_O_natural f y)^)
+                       (fun y => (to_O_natural g y)^).
+
+      Global Instance isequiv_O_coeq_cmp : O_inverts coeq_cmp.
       Proof.
-        apply O_rec; simple refine (Coeq_rec _ _ _).
-        - apply O_functor, coeq.
-        - intros b.
-          refine ((O_functor_compose f coeq b)^ @ _).
-          refine (_ @ (O_functor_compose g coeq b)).
-          apply O_functor_homotopy.
-          intros z; apply cglue.
+        rapply O_inverts_functor_coeq.
       Defined.
-
-      Local Definition O_coeq_cmp_eisretr
-      : Sect O_coeq_cmp_inverse O_coeq_cmp.
-      Proof.
-        unfold O_coeq_cmp, O_coeq_cmp_inverse.
-        apply O_indpaths; intros z.
-        rewrite O_rec_beta.
-        revert z; simple refine (Coeq_ind _ _ _).
-        - cbn; intros a.
-          refine ((O_functor_compose _ _ _)^ @ _); cbn.
-          revert a; apply O_indpaths, to_O_natural.
-        - set (coeq_to :=
-                 functor_coeq (to O B) (to O A)
-                              (fun y : B => (to_O_natural f y)^)
-                              (fun y : B => (to_O_natural g y)^)).
-          apply O_ind2paths; intros b; unfold composeD; cbn.
-          rewrite transport_paths_FlFr, concat_pp_p; apply moveR_Vp.
-          rewrite <- (apD (O_indpaths _ _ _) (to_O_natural f b)^).
-          rewrite <- (apD (O_indpaths _ _ _) (to_O_natural g b)^).
-          rewrite !O_indpaths_beta, !transport_paths_FlFr.
-          Open Scope long_path_scope.
-          rewrite (ap_compose _ (O_functor coeq_to)).
-          rewrite Coeq_rec_beta_cglue.
-          unfold O_functor_homotopy; rewrite O_indpaths_beta.
-          rewrite !ap_pp.
-          pose (p := O_functor_compose_compose g coeq coeq_to (to O B b)).
-          apply moveL_pV in p; rewrite concat_pp_p in p; apply moveR_Vp in p.
-          rewrite@A <- p. clear p.
-          rewrite !ap_V, !inv_V.
-          rewrite@A (to_O_natural_compose g
-                       (fun x => @coeq _ _ (O_functor f) (O_functor g)
-                                       (to O A x)) b).
-          rewrite concat_pp_V.
-          rewrite@A (to_O_natural_compose f
-                     (fun x => @coeq _ _ (O_functor f) (O_functor g)
-                                     (to O A x)) b).
-          rewrite <- inv_pp.
-          rewrite (O_functor_compose_compose f coeq coeq_to (to O B b)).
-          rewrite inv_pp.
-          rewrite !concat_pp_p; apply whiskerL; rewrite concat_p_pp.
-          (** The trick here is to notice that [(fun x => coeq (to O A (f x)))] is definitionally equal to [(fun x => coeq_to (coeq (f x)))]. *)
-          rewrite <- (to_O_natural_compose
-                        (fun x => coeq (f x)) coeq_to b).
-          rewrite <- ap_compose.
-          rewrite concat_pp_p; apply whiskerL, moveR_Mp; rewrite concat_p_pp.
-          rewrite <- (concat_Ap (fun x => (to_O_natural coeq_to x)^) (cglue b)).
-          rewrite concat_pp_p; apply moveL_Mp; rewrite !concat_p_pp.
-          rewrite <- !inv_pp, @to_O_natural_compose.
-          rewrite concat_p_Vp, concat_Vp, concat_1p.
-          rewrite (ap_compose coeq_to (to O (Coeq (O_functor f) (O_functor g)))).
-          subst coeq_to; rewrite functor_coeq_beta_cglue.
-          rewrite !ap_pp, <- !ap_compose, !inv_pp, !concat_p_pp, !ap_V, !inv_V.
-          rewrite concat_pp_V. apply concat_pV_p.
-          Close Scope long_path_scope.
-      Qed.  (* This Qed is quite slow (~2s on one machine), and many of the rewrites above are slow too. *)
-
-      Local Definition O_coeq_cmp_eissect
-      : Sect O_coeq_cmp O_coeq_cmp_inverse.
-      Proof.
-        unfold O_coeq_cmp, O_coeq_cmp_inverse.
-        apply O_indpaths; intros z.
-        rewrite to_O_natural, O_rec_beta.
-        revert z; simple refine (Coeq_ind _ _ _).
-        - intros a. cbn.
-          apply to_O_natural.
-        - intros b; cbn.
-          rewrite transport_paths_FlFr, ap_compose.
-          rewrite functor_coeq_beta_cglue.
-          rewrite !ap_pp, <- !ap_compose; cbn.
-          rewrite Coeq_rec_beta_cglue.
-          Open Scope long_path_scope.
-          rewrite !inv_pp, !concat_p_pp, !ap_V, !inv_V.
-          apply moveR_pM; rewrite !concat_pp_p.
-          rewrite (to_O_natural_compose f (@coeq B A f g) b).
-          rewrite concat_p_Vp.
-          rewrite <- O_functor_homotopy_V.
-          rewrite O_functor_homotopy_beta.
-          rewrite concat_pV_p, !concat_p_pp, ap_V; apply whiskerR.
-          rewrite !concat_pp_p; apply moveR_Vp.
-          symmetry; apply to_O_natural_compose.
-          Close Scope long_path_scope.
-      Qed.
-
-      Global Instance isequiv_O_coeq_cmp
-      : IsEquiv O_coeq_cmp
-        := isequiv_adjointify _ O_coeq_cmp_inverse
-                              O_coeq_cmp_eisretr O_coeq_cmp_eissect.
 
       Definition equiv_O_coeq
       : O (Coeq f g) <~> O (Coeq (O_functor f) (O_functor g))
-        := Build_Equiv _ _ O_coeq_cmp _.
+        := Build_Equiv _ _ (O_functor coeq_cmp) _.
 
       Definition equiv_O_coeq_to_O (a : A)
         : equiv_O_coeq (to O (Coeq f g) (coeq a))
@@ -1063,54 +991,37 @@ Section Reflective_Subuniverse.
     Section OPushout.
       Context {A B C : Type} (f : A -> B) (g : A -> C).
 
-      Definition equiv_O_pushout
-        : O (Pushout f g) <~> O (Pushout (O_functor f) (O_functor g)).
+      Definition O_inverts_functor_pushout
+             {A' B' C'} {f' : A' -> B'} {g' : A' -> C'}
+             (h : A -> A') (k : B -> B') (l : C -> C')
+             (p : k o f == f' o h) (q : l o g == g' o h)
+             `{O_inverts h} `{O_inverts k} `{O_inverts l}
+        : O_inverts (functor_pushout h k l p q).
       Proof.
-        unfold Pushout.
-        refine (_ oE equiv_O_coeq (inl o f) (inr o g)).
-        refine ((equiv_O_coeq _ _)^-1 oE _).
-        apply equiv_O_functor.
-        srefine (@equiv_functor_coeq'
-                   _ _ (O_functor (inl o f)) (O_functor (inr o g))
-                   _ _ (O_functor (inl o O_functor f))
-                   (O_functor (inr o O_functor g)) _ _ _ _).
-        - apply equiv_to_O; exact _.
-        - apply equiv_O_sum.
-        - srefine (O_indpaths _ _ _); intros a; cbn.
-          abstract (rewrite !to_O_natural, O_rec_beta; reflexivity).
-        - srefine (O_indpaths _ _ _); intros a; cbn.
-          abstract (rewrite !to_O_natural, O_rec_beta; reflexivity).
+        rapply O_inverts_functor_coeq; rapply O_inverts_functor_sum.
       Defined.
+
+      Definition equiv_O_pushout
+        : O (Pushout f g) <~> O (Pushout (O_functor f) (O_functor g))
+        := Build_Equiv _ _ _ (O_inverts_functor_pushout (to O A) (to O B) (to O C)
+                                                        (fun x => (to_O_natural f x)^)
+                                                        (fun x => (to_O_natural g x)^)).
 
       Definition equiv_O_pushout_to_O_pushl (b : B)
         : equiv_O_pushout (to O (Pushout f g) (pushl b))
           = to O (Pushout (O_functor f) (O_functor g)) (pushl (to O B b)).
       Proof.
         cbn.
-        unfold O_coeq_cmp, O_coeq_cmp_inverse, Pushout, pushl, push.
-        rewrite to_O_natural.
-        rewrite to_O_natural.
-        rewrite O_rec_beta.
-        cbn.
-        rewrite O_rec_beta.
-        rewrite to_O_natural.
-        reflexivity.
-      Qed.
+        rapply to_O_natural.
+      Defined.
 
       Definition equiv_O_pushout_to_O_pushr (c : C)
         : equiv_O_pushout (to O (Pushout f g) (pushr c))
           = to O (Pushout (O_functor f) (O_functor g)) (pushr (to O C c)).
       Proof.
         cbn.
-        unfold O_coeq_cmp, O_coeq_cmp_inverse, Pushout, pushr, push.
-        rewrite to_O_natural.
-        rewrite to_O_natural.
-        rewrite O_rec_beta.
-        cbn.
-        rewrite O_rec_beta.
-        rewrite to_O_natural.
-        reflexivity.
-      Qed.
+        rapply to_O_natural.
+      Defined.
 
       Definition inverse_equiv_O_pushout_to_O_pushl (b : B)
         : equiv_O_pushout^-1 (to O (Pushout (O_functor f) (O_functor g)) (pushl (to O B b)))
@@ -1262,7 +1173,7 @@ Section Reflective_Subuniverse.
 
 End Reflective_Subuniverse.
 
-(** Make the [O_inverts] notation global. *)
+(** Now we make the [O_inverts] notation global. *)
 Notation O_inverts O f := (IsEquiv (O_functor O f)).
 
 (** ** Modally connected types *)
@@ -1347,7 +1258,7 @@ Section ConnectedTypes.
     apply contr_O_contr; exact _.
   Defined.    
 
-  (** A type which is both connected and truncated is contractible. *)
+  (** A type which is both connected and modal is contractible. *)
   Definition contr_trunc_conn {A : Type} `{In O A} `{IsConnected O A}
   : Contr A.
   Proof.
@@ -1413,9 +1324,7 @@ Section ModalMaps.
   Global Instance mapinO_isequiv {A B : Type} (f : A -> B) `{IsEquiv _ _ f}
   : MapIn O f.
   Proof.
-    intros b.
-    pose (fcontr_isequiv f _ b).
-    exact _.
+    intros b; exact _.
   Defined.
 
   (** Anything homotopic to a modal map is modal. *)
@@ -1527,7 +1436,7 @@ End ModalMaps.
 
 (** ** Modally connected maps *)
 
-(** Connectedness of a map can again be defined in two equivalent ways: by connectedness of its fibers (as types), or by the lifting property/elimination principle against truncated types.  We use the former; the equivalence with the latter is given below in [conn_map_elim], [conn_map_comp], and [conn_map_from_extension_elim]. *)
+(** Connectedness of a map can again be defined in two equivalent ways: by connectedness of its fibers (as types), or by the lifting property/elimination principle against modal types.  We use the former; the equivalence with the latter is given below in [conn_map_elim], [conn_map_comp], and [conn_map_from_extension_elim]. *)
 
 Class IsConnMap (O : ReflectiveSubuniverse@{i})
       {A : Type@{i}} {B : Type@{i}} (f : A -> B)
@@ -1545,9 +1454,7 @@ Section ConnectedMaps.
   Global Instance conn_map_isequiv {A B : Type} (f : A -> B) `{IsEquiv _ _ f}
   : IsConnMap O f.
   Proof.
-    intros b.
-    pose (fcontr_isequiv f _ b).
-    unfold IsConnected; exact _.
+    intros b; exact _.
   Defined.
 
   (** Anything homotopic to a connected map is connected. *)
@@ -1592,7 +1499,7 @@ Section ConnectedMaps.
     apply trunc_forall.
   Defined.
 
-  (** n-connected maps are orthogonal to n-truncated maps (i.e. familes of n-truncated types). *)
+  (** Connected maps are orthogonal to modal maps (i.e. familes of modal types). *)
   Definition conn_map_elim
              {A B : Type} (f : A -> B) `{IsConnMap O _ _ f}
              (P : B -> Type) `{forall b:B, In O (P b)}
@@ -1624,7 +1531,7 @@ Section ConnectedMaps.
              `{IsConnMap O _ _ f} `{MapIn O _ _ f}
   : IsEquiv f.
   Proof.
-    apply isequiv_fcontr. intros b.
+    apply isequiv_contr_map. intros b.
     apply (contr_trunc_conn O).
   Defined.
 
@@ -1673,7 +1580,7 @@ Section ConnectedMaps.
           (P : B -> Type) `{forall b:B, In O (P b)}
   : IsEquiv (fun (g : forall b:B, P b) => g oD f).
   Proof.
-    apply isequiv_fcontr; intros d.
+    apply isequiv_contr_map; intros d.
     apply contr_inhabited_hprop.
     - nrefine (@trunc_equiv' {g : forall b, P b & g oD f == d} _ _ _ _).
       { refine (equiv_functor_sigma_id _); intros g.
@@ -1683,6 +1590,12 @@ Section ConnectedMaps.
     - exists (conn_map_elim f P d).
       apply path_forall; intros x; apply conn_map_comp.
   Defined.
+
+  Definition equiv_o_conn_map
+          {A B : Type} (f : A -> B) `{IsConnMap O _ _ f}
+          (P : B -> Type) `{forall b:B, In O (P b)}
+  : (forall b, P b) <~> (forall a, P (f a))
+  := Build_Equiv _ _ _ (isequiv_o_conn_map f P).
 
   (** Conversely, if a map satisfies this elimination principle (expressed via extensions), then it is connected.  This completes the proof of Lemma 7.5.7 from the book. *)
   Lemma conn_map_from_extension_elim {A B : Type} (f : A -> B)
@@ -1818,24 +1731,10 @@ Section ConnectedMaps.
   (** Lemma 7.5.14: Connected maps are inverted by [O]. *)
   Global Instance O_inverts_conn_map {A B : Type} (f : A -> B)
          `{IsConnMap O _ _ f}
-  : IsEquiv (O_functor O f).
+    : O_inverts O f.
   Proof.
-    simple refine (isequiv_adjointify _ _ _ _).
-    - apply O_rec; intros y.
-      exact (O_functor O pr1 (center (O (hfiber f y)))).
-    - unfold Sect; rapply O_indpaths; intros b.
-      refine (ap (O_functor O f) (O_rec_beta _ b) @ _).
-      refine ((O_functor_compose _ _ _ _)^ @ _).
-      set (x := (center (O (hfiber f b)))).
-      clearbody x; revert x; rapply O_indpaths; intros [a p].
-      refine (O_rec_beta (to O B o (f o pr1)) (a;p) @ _).
-      exact (ap (to O B) p).
-    - unfold Sect; rapply O_indpaths; intros a.
-      refine (ap (O_rec _) (to_O_natural O f a) @ _).
-      refine (O_rec_beta _ _ @ _).
-      transitivity (O_functor O pr1 (to O (hfiber f (f a)) (a;1))).
-      + apply ap, contr.
-      + refine (to_O_natural _ _ _).
+    rapply O_inverts_from_extendable.
+    intros; rapply extendable_conn_map_inO.
   Defined.
 
   (** As a consequence, connected maps between modal types are equivalences. *)
@@ -1850,6 +1749,43 @@ Section ConnectedMaps.
   Proof.
     unfold O_functor.
     rapply conn_map_compose.
+  Defined.
+
+  (** Connected maps are preserved by coproducts *)
+  Definition conn_map_sum {A B A' B'} (f : A -> A') (g : B -> B')
+             `{IsConnMap O _ _ f} `{IsConnMap O _ _ g}
+    : IsConnMap O (functor_sum f g).
+  Proof.
+    apply conn_map_from_extension_elim; intros.
+    apply extension_functor_sum; rapply ooextendable_conn_map_inO.
+  Defined.
+
+  (** Connected maps are preserved by coequalizers *)
+  Definition conn_map_functor_coeq {B A B' A'}
+             {f g : B -> A} {f' g' : B' -> A'}
+             (h : B -> B') (k : A -> A')
+             (p : k o f == f' o h) (q : k o g == g' o h)
+             `{IsConnMap O _ _ k} `{IsConnMap O _ _ h}
+    : IsConnMap O (functor_coeq h k p q).
+  Proof.
+    apply conn_map_from_extension_elim; intros.
+    apply extension_functor_coeq.
+    - rapply ooextendable_conn_map_inO.
+    - intros; rapply ooextendable_conn_map_inO.
+  Defined.
+
+  (** And by pushouts *)
+  Definition conn_map_functor_pushout {A B C A' B' C'}
+             (f : A -> B) (g : A -> C) {f' : A' -> B'} {g' : A' -> C'}
+             (h : A -> A') (k : B -> B') (l : C -> C')
+             (p : k o f == f' o h) (q : l o g == g' o h)
+             `{IsConnMap O _ _ h} `{IsConnMap O _ _ k} `{IsConnMap O _ _ l}
+    : IsConnMap O (functor_pushout h k l p q).
+  Proof.
+    apply conn_map_from_extension_elim; intros.
+    apply extension_functor_coeq.
+    - apply extendable_functor_sum; rapply ooextendable_conn_map_inO.
+    - intros; rapply ooextendable_conn_map_inO.
   Defined.
 
 End ConnectedMaps.
@@ -2007,3 +1943,69 @@ Global Instance inO_paths_SepO (O : Subuniverse)
        {A : Type} {A_inO : In (Sep O) A} (x y : A)
   : In O (x = y)
   := A_inO x y.
+
+(** TODO: Where to put this?  Morally it goes with the study of [<<] in [Modality.v] and [<<<] in [Descent.v] and [Sep] in [Separated.v], but it doesn't actually need any of those relations, only [O' <= Sep O], and it would also be nice to have it next to  [O_inverts_functor_coeq].  It's a variation on the latter: if [O' <= Sep O], then for [O'] to invert [functor_coeq h k] it suffices that it invert [k] and that [h] be [O]-connected (by [conn_map_OO_inverts], which has different hypotheses but applies in many of the same examples, that is a weaker assumption). *)
+Definition OO_inverts_functor_coeq
+           (O O' : ReflectiveSubuniverse) `{O' <= Sep O}
+           {B A : Type} (f g : B -> A)
+           {B' A' : Type} (f' g' : B' -> A')
+           (h : B -> B') (k : A -> A')
+           (p : k o f == f' o h) (q : k o g == g' o h)
+           `{O_inverts O' k} `{IsConnMap O _ _ h}
+  : O_inverts O' (functor_coeq h k p q).
+Proof.
+  apply O_inverts_from_extendable.
+  intros Z Z_inO.
+  apply extendable_functor_coeq.
+  - nrapply (ooextendable_O_inverts O'); assumption.
+  - pose (inO_leq O' (Sep O)).
+    intros u v; rapply (extendable_conn_map_inO O).
+Defined.
+
+(** And a similar property for pushouts *)
+Definition OO_inverts_functor_pushout
+           (O O' : ReflectiveSubuniverse) `{O' <= Sep O}
+           {A B C A' B' C'}
+           (f : A -> B) (g : A -> C) {f' : A' -> B'} {g' : A' -> C'}
+           (h : A -> A') (k : B -> B') (l : C -> C')
+           (p : k o f == f' o h) (q : l o g == g' o h)
+           `{IsConnMap O _ _ h} `{O_inverts O' k} `{O_inverts O' l}
+  : O_inverts O' (functor_pushout h k l p q).
+Proof.
+  nrapply (OO_inverts_functor_coeq O O').
+  1,3:exact _.
+  rapply O_inverts_functor_sum.
+Defined.
+
+(** And similar properties for connected maps *)
+Definition OO_conn_map_functor_coeq
+           (O O' : ReflectiveSubuniverse) `{O' <= Sep O}
+           {B A B' A'}
+           {f g : B -> A} {f' g' : B' -> A'}
+           (h : B -> B') (k : A -> A')
+           (p : k o f == f' o h) (q : k o g == g' o h)
+           `{IsConnMap O' _ _ k} `{IsConnMap O _ _ h}
+  : IsConnMap O' (functor_coeq h k p q).
+Proof.
+  apply conn_map_from_extension_elim; intros.
+  apply extension_functor_coeq.
+  - rapply ooextendable_conn_map_inO.
+  - pose (inO_leq O' (Sep O));
+    intros; rapply (ooextendable_conn_map_inO O).
+Defined.
+
+Definition OO_conn_map_functor_pushout
+           (O O' : ReflectiveSubuniverse) `{O' <= Sep O}
+           {A B C A' B' C'}
+           (f : A -> B) (g : A -> C) {f' : A' -> B'} {g' : A' -> C'}
+           (h : A -> A') (k : B -> B') (l : C -> C')
+           (p : k o f == f' o h) (q : l o g == g' o h)
+           `{IsConnMap O _ _ h} `{IsConnMap O' _ _ k} `{IsConnMap O' _ _ l}
+  : IsConnMap O' (functor_pushout h k l p q).
+Proof.
+  apply conn_map_from_extension_elim; intros.
+  apply extension_functor_coeq.
+  - apply extendable_functor_sum; rapply ooextendable_conn_map_inO.
+  - pose (inO_leq O' (Sep O));
+    intros; rapply ooextendable_conn_map_inO.
+Defined.

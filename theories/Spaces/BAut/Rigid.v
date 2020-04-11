@@ -1,6 +1,6 @@
 (* -*- mode: coq; mode: visual-line -*-  *)
 Require Import HoTT.Basics HoTT.Types.
-Require Import HProp UnivalenceImpliesFunext Fibrations.
+Require Import HProp HFiber.
 Require Import Modalities.Modality Truncations.
 Require Import Spaces.BAut.
 
@@ -26,6 +26,7 @@ Defined.
 Global Instance contr_baut_rigid `{Univalence} {A : Type} `{IsRigid A}
   : Contr (BAut A).
 Proof.
+  refine (contr_change_center (point (BAut A))).
   refine (contr_trunc_conn (Tr 0)).
   intros Z W; baut_reduce.
   refine (trunc_equiv (n := -1) (A <~> A)

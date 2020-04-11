@@ -158,19 +158,17 @@ theories/Modalities/Open.v
 theories/Modalities/Closed.v
 theories/Modalities/Fracture.v
 
-theories/Comodalities/CoreflectiveSubuniverse.v
+theories/Modalities/CoreflectiveSubuniverse.v
 
 #
 #   HIT
 #
 
 theories/HIT/Circle.v
-theories/HIT/TruncImpliesFunext.v
 theories/HIT/Coeq.v
 theories/HIT/FreeIntQuotient.v
 theories/HIT/Flattening.v
 theories/HIT/Interval.v
-theories/HIT/IntervalImpliesFunext.v
 theories/HIT/Spheres.v
 theories/HIT/TwoSphere.v
 theories/HIT/epi.v
@@ -195,6 +193,7 @@ theories/Limits/Pullback.v
 
 theories/Colimits/Pushout.v
 theories/Colimits/SpanPushout.v
+theories/Colimits/MappingCylinder.v
 theories/Colimits/Quotient.v
 
 theories/Colimits/Colimit.v
@@ -204,6 +203,7 @@ theories/Colimits/Colimit_Pushout.v
 theories/Colimits/Colimit_Coequalizer.v
 theories/Colimits/Colimit_Flattening.v
 theories/Colimits/Colimit_Pushout_Flattening.v
+theories/Colimits/Sequential.v
 
 #
 #   Diagrams
@@ -231,20 +231,22 @@ theories/Truncations/Core.v
 theories/Truncations/Connectedness.v
 
 #
+#   Varieties of Equivalence
+#
+
+theories/Equiv/BiInv.v
+theories/Equiv/PathSplit.v
+theories/Equiv/Relational.v
+
+#
 #   Other
 #
 
 theories/BoundedSearch.v
-theories/EquivGroupoids.v
-theories/Fibrations.v
-theories/Conjugation.v
+theories/HFiber.v
 theories/HProp.v
-theories/EquivalenceVarieties.v
-theories/FunextVarieties.v
-theories/UnivalenceVarieties.v
 theories/Extensions.v
 theories/HSet.v
-theories/UnivalenceImpliesFunext.v
 theories/TruncType.v
 theories/DProp.v
 theories/Functorish.v
@@ -261,6 +263,17 @@ theories/PathAny.v
 theories/Utf8.v
 theories/HoTT.v
 theories/Tests.v
+
+#
+#   Metatheory
+#
+theories/Metatheory/Core.v
+theories/Metatheory/FunextVarieties.v
+theories/Metatheory/TruncImpliesFunext.v
+theories/Metatheory/IntervalImpliesFunext.v
+theories/Metatheory/UnivalenceImpliesFunext.v
+theories/Metatheory/UnivalenceVarieties.v
+
 
 #
 #   Contrib

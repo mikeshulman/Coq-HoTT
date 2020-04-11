@@ -172,17 +172,33 @@ Definition moveR_equiv_M `{IsEquiv A B f} (x : A) (y : B) (p : x = f^-1 y)
   : (f x = y)
   := ap f p @ eisretr f y.
 
+Definition moveR_equiv_M' `(f : A <~> B) (x : A) (y : B) (p : x = f^-1 y)
+  : (f x = y)
+  := moveR_equiv_M x y p.
+
 Definition moveL_equiv_M `{IsEquiv A B f} (x : A) (y : B) (p : f^-1 y = x)
   : (y = f x)
   := (eisretr f y)^ @ ap f p.
+
+Definition moveL_equiv_M' `(f : A <~> B) (x : A) (y : B) (p : f^-1 y = x)
+  : (y = f x)
+  := moveL_equiv_M x y p.
 
 Definition moveR_equiv_V `{IsEquiv A B f} (x : B) (y : A) (p : x = f y)
   : (f^-1 x = y)
   := ap (f^-1) p @ eissect f y.
 
+Definition moveR_equiv_V' `(f : A <~> B) (x : B) (y : A) (p : x = f y)
+  : (f^-1 x = y)
+  := moveR_equiv_V x y p.
+
 Definition moveL_equiv_V `{IsEquiv A B f} (x : B) (y : A) (p : f y = x)
   : (y = f^-1 x)
   := (eissect f y)^ @ ap (f^-1) p.
+
+Definition moveL_equiv_V' `(f : A <~> B) (x : B) (y : A) (p : f y = x)
+  : (y = f^-1 x)
+  := moveL_equiv_V x y p.
 
 (** Equivalence preserves contractibility (which of course is trivial under univalence). *)
 Lemma contr_equiv A {B} (f : A -> B) `{IsEquiv A B f} `{Contr A}
@@ -192,7 +208,7 @@ Proof.
   intro y.
   apply moveR_equiv_M.
   apply contr.
-Qed.
+Defined.
 
 Definition contr_equiv' A {B} `(f : A <~> B) `{Contr A}
   : Contr B
@@ -382,6 +398,23 @@ Notation "e ^-1" := (@equiv_inverse _ _ e) : equiv_scope.
 
 Global Instance symmetric_equiv : Symmetric Equiv | 0 := @equiv_inverse.
 
+(** Inversion respects composition *)
+Definition equiv_inverse_compose {A B C} (f : A <~> B) (g : B <~> C)
+  : (g oE f)^-1 == f^-1 oE g^-1.
+Proof.
+  intros x; reflexivity.
+Defined.
+
+(** Inversion respects homotopies *)
+Definition equiv_inverse_homotopy {A B} (f g : A <~> B) (p : f == g)
+  : g^-1 == f^-1.
+Proof.
+  intros x; refine (_ @ _ @ _).
+  1:symmetry; apply (eissect f).
+  1:apply ap, p.
+  apply ap, eisretr.
+Defined.
+
 (** If [g \o f] and [f] are equivalences, so is [g].  This is not an Instance because it would require Coq to guess [f]. *)
 Definition cancelR_isequiv {A B C} (f : A -> B) {g : B -> C}
   `{IsEquiv A B f} `{IsEquiv A C (g o f)}
@@ -426,6 +459,33 @@ Proof.
   refine (@cancelL_isequiv _ _ _ k f _ _).
   refine (isequiv_homotopic _ p).
 Defined.
+
+(** Based homotopy spaces *)
+
+Global Instance contr_basedhomotopy `{Funext}
+       {A:Type} {B : A -> Type} (f : forall x, B x)
+: Contr {g : forall x, B x & f == g }.
+Proof.
+  refine (contr_equiv' { g : forall x, B x & f = g } _).
+  srapply equiv_adjointify; intros [g h].
+  - exact (g; apD10 h).
+  - exact (g; path_forall _ _ h).
+  - apply ap, eisretr.
+  - apply ap, eissect.
+Defined.
+
+Global Instance contr_basedhomotopy' `{Funext}
+       {A:Type} {B : A -> Type} (f : forall x, B x)
+: Contr {g : forall x, B x & g == f }.
+Proof.
+  refine (contr_equiv' { g : forall x, B x & g = f } _).
+  srapply equiv_adjointify; intros [g h].
+  - exact (g; apD10 h).
+  - exact (g; path_forall _ _ h).
+  - apply ap, eisretr.
+  - apply ap, eissect.
+Defined.
+
 
 (** The function [equiv_ind] says that given an equivalence [f : A <~> B], and a hypothesis from [B], one may always assume that the hypothesis is in the image of [e].
 
@@ -482,3 +542,284 @@ Ltac ev_equiv :=
            | [ |- context[equiv_fun (equiv_inverse ?f) ?a] ] =>
              change ((equiv_inverse f) a) with (f^-1 a)
          end.
+
+(** ** Building equivalences between nested sigma and record types *)
+
+(** The following tactic [make_equiv] builds an equivalence between two types built out of arbitrarily nested sigma and record types, not necessarily right-associated, as long as they have all the same underyling components.  This is more general than [issig] in that it doesn't just prove equivalences between a single record type and a single right-nested tower of sigma types, but less powerful in that it can't deduce the latter nested tower of sigmas automatically: you have to have both sides of the equivalence known. *)
+
+(* Perform [intros] repeatedly, recursively destructing all possibly-nested record types. *)
+Ltac decomposing_intros :=
+  let x := fresh in
+  intros x; cbn in x;
+  try match type of x with
+  | ?a = ?b => fail 1           (** Don't destruct paths *)
+  | forall y:?A, ?B => fail 1   (** Don't apply functions *)
+  | _ => elim x; clear x
+  end;
+  try decomposing_intros.
+
+(* A multi-success version of [assumption].  That is, like [assumption], but if there are multiple hypotheses that match the type of the goal, then after choosing the first one, if a later tactic fails we can backtrack and choose another one. *)
+Ltac multi_assumption :=
+  multimatch goal with
+    (* If we wrote [ H : ?A |- ?A ] here instead, it would prevent Coq from choosing an assumption that would require instantiating evars, which it has to do in the contr_basedpaths case below. *)
+    [ H : ?A |- _ ] => exact H
+  end.
+
+(* Build an element of a possibly-nested record type out of hypotheses in the context. *)
+Ltac build_record :=
+  first [ cbn; multi_assumption
+        | cbn; unshelve econstructor; build_record ].
+
+(* Construct an equivalence between two possibly-nested record/sigma types that differ only by associativity and permutation of their components.  We could use [Build_Equiv] and directly construct [eisadj] by decomposing to reflexivity as well, but often with large nested types it seems to be faster to adjointify. *)
+Ltac make_equiv :=
+  simple notypeclasses refine (equiv_adjointify _ _ _ _);
+    [ decomposing_intros; build_record
+    | decomposing_intros; build_record
+    | decomposing_intros; exact idpath
+    | decomposing_intros; exact idpath ].
+
+(** In case anyone ever needs it, here's the version that doesn't adjointify. It's not the default, because it can be slow. *)
+Ltac make_equiv_without_adjointification :=
+  simple notypeclasses refine (Build_Equiv _ _ _ _);
+    [ decomposing_intros; build_record |
+      simple notypeclasses refine (Build_IsEquiv _ _ _ _ _ _ _);
+      [ decomposing_intros; build_record
+      | decomposing_intros; exact idpath
+      | decomposing_intros; exact idpath
+      | decomposing_intros; exact idpath ] ].
+
+(** Here are some examples of the use of this tactic that you can uncomment and explore. *)
+
+(**
+<<
+Goal forall (A : Type) (B : A -> Type) (C : forall a:A, B a -> Type) (D : forall (a:A) (b:B a), C a b -> Type),
+     { ab : {a : A & B a } & { c : C ab.1 ab.2 & D ab.1 ab.2 c } }
+     <~> { a : A & { bc : { b : B a & C a b } & D a bc.1 bc.2 } }.
+  intros A B C D.
+  make_equiv.
+  Undo.
+  (** Here's the eventually successful proof script produced by [make_equiv], extracted from [Info 0 make_equiv] and prettified, so you can step through it and see how the tactic works. *)
+  simple notypeclasses refine (equiv_adjointify _ _ _ _).
+  - (** Here begins [decomposing_intros] *)
+    intros x; cbn in x.
+    elim x; clear x.
+    intros x; cbn in x.
+    elim x; clear x.
+    intros a; cbn in a.
+    intros b; cbn in b.
+    intros x; cbn in x.
+    elim x; clear x.
+    intros c; cbn in c. 
+    intros d; cbn in d.
+    (** Here begins [build_record] *)
+    cbn; unshelve econstructor.
+    { cbn; exact a. }
+    { cbn; unshelve econstructor.
+      { cbn; unshelve econstructor.
+        { cbn; exact b. }
+        { cbn; exact c. } }
+      { cbn; exact d. } }
+  - intros x; cbn in x.
+    elim x; clear x.
+    intros a; cbn in a.
+    intros x; cbn in x.
+    elim x; clear x.
+    intros x; cbn in x.
+    elim x; clear x. 
+    intros b; cbn in b.
+    intros c; cbn in c.
+    intros d; cbn in d.
+    cbn; unshelve econstructor.
+    { cbn; unshelve econstructor.
+      { cbn; exact a. }
+      { cbn; exact b. } }
+    { cbn; unshelve econstructor.
+      { cbn; exact c. }
+      { cbn; exact d. } }
+  - intros x; cbn in x.
+    elim x; clear x.
+    intros a; cbn in a.
+    intros x; cbn in x.
+    elim x; clear x.
+    intros x; cbn in x.
+    elim x; clear x. 
+    intros b; cbn in b.
+    intros c; cbn in c.
+    intros d; cbn in d.
+    cbn; exact idpath.
+  - intros x; cbn in x.
+    elim x; clear x.
+    intros x; cbn in x.
+    elim x; clear x.
+    intros a; cbn in a.
+    intros b; cbn in b.
+    intros x; cbn in x.
+    elim x; clear x.
+    intros c; cbn in c. 
+    intros d; cbn in d.
+    cbn; exact idpath.
+Defined.
+>>
+*)
+
+(** Here is an example illustrating the need for [multi_assumption] instead of just [assumption]. *)
+(**
+<<
+Goal forall (A:Type) (R:A->A->Type),
+    { x : A & { y : A & R x y } } <~> { xy : A * A & R (fst xy) (snd xy) }.
+  intros A R.
+  make_equiv.
+  Undo.
+  simple notypeclasses refine (equiv_adjointify _ _ _ _).
+  - intros x; cbn in x.
+    elim x; clear x.
+    intros a1; cbn in a1.
+    intros x; cbn in x.
+    elim x; clear x.
+    intros a2; cbn in a2.
+    intros r; cbn in r.
+    cbn; unshelve econstructor.
+    { cbn; unshelve econstructor. 
+      { (** [build_record] can't guess at this point that it needs to use [a1] instead of [a2], and in fact it tries [a2] first; but later on, [exact r] fails in that case, causing backtracking to this point and a re-try with [a1].  *)
+        cbn; exact a1. }
+      { cbn; exact a2. } }
+    cbn; exact r.
+  - intros x; cbn in x.
+    elim x; clear x.
+    intros x; cbn in x.
+    elim x; clear x.
+    intros a1; cbn in a1.
+    intros a2; cbn in a2.
+    intros r; cbn in r.
+    cbn; unshelve econstructor.
+    { cbn; exact a1. }
+    { cbn; unshelve econstructor.
+      { cbn; exact a2. }
+      { cbn; exact r. } }
+  - intros x; cbn in x.
+    elim x; clear x.
+    intros x; cbn in x.
+    elim x; clear x.
+    intros a1; cbn in a1.
+    intros a2; cbn in a2.
+    intros r; cbn in r.
+    cbn; exact idpath.
+  - intros x; cbn in x.
+    elim x; clear x.
+    intros a1; cbn in a1.
+    intros x; cbn in x.
+    elim x; clear x.
+    intros a2; cbn in a2.
+    intros r; cbn in r.
+    cbn; exact idpath.
+Defined.
+>>
+*)
+
+(** Some "real-world" examples where [make_equiv] simplifies things a lot include the associativity/symmetry proofs in [Types/Sigma.v], [issig_pequiv'] in [Pointed/pEquiv.v], and [loop_susp_adjoint] in [Pointed/pSusp.v]. *)
+
+(** Now we give a version of [make_equiv] that can also prove equivalences of nested sigma- and record types that involve contracting based path-spaces on either or both sides.  The basepoint and the path don't have to appear together, but can be in arbitrarily separated parts of the nested structure.  It does this by selectively applying path-induction to based paths appearing on both sides, if needed. *)
+
+(** We start with a version of [decomposing_intros] that is willing to destruct paths, though as a second choice. *)
+Ltac decomposing_intros_with_paths :=
+  let x := fresh in
+  intros x; cbn in x;
+  multimatch type of x with
+  | _ =>
+    try match type of x with
+        | (** Don't destruct paths at first *)
+          ?a = ?b => fail 1
+        | (** Don't apply functions at first *)
+          forall y:?A, ?B => fail 1
+        | _ => elim x; clear x
+        end;
+    try decomposing_intros_with_paths
+  | ?a = ?b =>
+    (** Destruct paths as a second choice.  But sometimes [destruct] isn't smart enough to generalize the other hypotheses that use the free endpoint, so we manually apply [paths_ind], or its right-handed version, instead. *)
+    ((move x before b; (** Ensure that [b] and [x] come first in the [forall] goal resulting from [generalize dependent], so that [paths_ind] can apply to it. *)
+      revert dependent b;
+      assert_fails (move b at top); (** Check that [b] was actually reverted.  (If it's a section variable that the goal depends on, [generalize dependent b] will "succeed", but actually fail to generalize the goal over [b] (since that can't be done within the section) and not clear [b] from the context.)  *)
+      refine (paths_ind _ _ _)) +
+     (** Try the other endpoint too. *)
+     (move x before a;
+      revert dependent a;
+      assert_fails (move a at top);
+      refine (paths_ind_r _ _ _)));
+    try decomposing_intros_with_paths
+  end.
+
+(** Going the other direction, we have to be willing to insert identity paths to fill in the based path-spaces that got destructed.  In fact [econstructor] is already willing to do that, since [idpath] is the constructor of [paths].  However, our previous [build_record] won't manage to get to the point of being able to apply [econstructor] to the necessary paths, since it'll get stuck earlier on trying to find the basepoint.  Thus, we give a version of [build_record] that is willing to create existential variables ("evars") for goals that it can't solve, in hopes that a later [idpath] (produced by [econstructor]) will determine them by unification.  Note that if there are other fields that depend on the basepoint that occur before the [idpath], the evar will -- and, indeed, must -- get instantiated by them instead.  This is why [multi_assumption], above, must be willing to instantiate evars. *)
+Ltac build_record_with_evars :=
+  first [ cbn; multi_assumption
+        | cbn; unshelve econstructor; build_record_with_evars
+        (** Create a fresh evar to solve this goal *)
+        | match goal with
+            |- ?G => let x := fresh in evar (x : G); exact x
+          end; build_record_with_evars ].
+
+(** Now here's the improved version of [make_equiv]. *)
+Ltac make_equiv_contr_basedpaths :=
+  simple notypeclasses refine (equiv_adjointify _ _ _ _);
+    (** [solve [ unshelve TAC ]] ensures that [TAC] succeeds without leaving any leftover evars. *)
+    [ decomposing_intros_with_paths; solve [ unshelve build_record_with_evars ]
+    | decomposing_intros_with_paths; solve [ unshelve build_record_with_evars ]
+    | decomposing_intros_with_paths; exact idpath
+    | decomposing_intros_with_paths; exact idpath ].
+
+(** As before, we give some examples. *)
+
+(**
+<<
+Section Examples.
+  Context (A : Type) (B : A -> Type) (a0 : A).
+  Goal { a : A & { b : B a & a = a0 } } <~> B a0.
+  Proof.
+    make_equiv_contr_basedpaths.
+    Undo.
+    simple notypeclasses refine (equiv_adjointify _ _ _ _).
+    - (** Here begins [decomposing_intros_with_paths] *)
+      intros x; cbn in x.
+      elim x; clear x.
+      intros a; cbn in a.
+      intros x; cbn in x. 
+      elim x; clear x.
+      intros b; cbn in b.
+      intros p; cbn in p.
+      (** [decomposing_intros] wouldn't be willing to destruct [p] here, because it's a path.  But [decomposing_intros_with_paths] will try it when all else fails. *)
+      move p before a.
+      generalize dependent a.
+      not (move a at top).
+      refine (paths_ind_r _ _ _).
+      intros b; cbn in b.
+      (** Here begins [build_record_with_evars] *)
+      exact b.
+    - (** Here begins [decomposing_intros_with_paths] *)
+      intros b; cbn in b.
+      (** Here begins [build_record_with_evars] *)
+      cbn; unshelve econstructor.
+      { let x := fresh in evar (x : A); exact x. }
+      cbn; unshelve econstructor.
+      { (** This instantiates the evar. *)
+        exact b. }
+      { cbn; unshelve econstructor. }
+    - intros b; cbn in b.
+      exact idpath.
+    - intros x; cbn in x.
+      elim x; clear x.
+      intros a; cbn in a.
+      intros x; cbn in x. 
+      elim x; clear x.
+      intros b; cbn in b.
+      intros p; cbn in p.
+      move p before a.
+      generalize dependent a.
+      not (move a at top).
+      refine (paths_ind_r _ _ _).
+      intros b; cbn in b.
+      exact idpath.
+  Defined.
+End Examples.
+>>
+*)
+
+(** Some "real-world" examples where [make_equiv_contr_basedpaths] simplifies things a lot include [hfiber_compose] in [HFiber.v], [hfiber_pullback_along] in [Limits/Pullback.v], and [equiv_Ocodeleft2plus] in [BlakersMassey.v]. *)

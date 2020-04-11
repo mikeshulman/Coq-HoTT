@@ -9,16 +9,15 @@ Require Export HoTT.WildCat.
 Require Export HoTT.Cubical.
 Require Export HoTT.Pointed.
 Require Export HoTT.Truncations.
-Require Export HoTT.Fibrations.
 
-Require Export HoTT.Conjugation.
+Require Export HoTT.HFiber.
 Require Export HoTT.HProp.
 Require Export HoTT.HSet.
-Require Export HoTT.EquivGroupoids.
-Require Export HoTT.EquivalenceVarieties.
 
-Require Export HoTT.FunextVarieties.
-Require Export HoTT.UnivalenceVarieties.
+Require Export HoTT.Equiv.BiInv.
+Require Export HoTT.Equiv.PathSplit.
+Require Export HoTT.Equiv.Relational.
+
 Require Export HoTT.Extensions.
 Require Export HoTT.Misc.
 Require Export HoTT.PathAny.
@@ -68,6 +67,8 @@ Require Export HoTT.Limits.Limit.
 
 Require Export HoTT.Colimits.Pushout.
 Require Export HoTT.Colimits.SpanPushout.
+Require Export HoTT.Colimits.Quotient.
+Require Export HoTT.Colimits.MappingCylinder.
 Require Export HoTT.Colimits.Colimit.
 Require Export HoTT.Colimits.Colimit_Pushout.
 Require Export HoTT.Colimits.Colimit_Coequalizer.
@@ -91,7 +92,7 @@ Require Export HoTT.Modalities.Open.
 Require Export HoTT.Modalities.Closed.
 Require Export HoTT.Modalities.Fracture.
 
-Require Export HoTT.Comodalities.CoreflectiveSubuniverse.
+Require Export HoTT.Modalities.CoreflectiveSubuniverse.
 
 Require Export HoTT.Spaces.Nat.
 Require Export HoTT.Spaces.Int.
@@ -156,7 +157,7 @@ Require Export HoTT.Tactics.EvalIn.
 Require Export HoTT.Tactics.Nameless.
 Require Export HoTT.Tactics.RewriteModuloAssociativity.
 
-(** We do _not_ export [UnivalenceAxiom], [FunextAxiom], [UnivalenceImpliesFunext], [HIT.IntervalImpliesFunext], nor [HIT.TruncImpliesFunext] from this file; thus importing it does not prevent you from tracking usage of [Univalence] and [Funext] theorem-by-theorem in the same way that the library does.  If you want any of those files, you should import them separately. *)
+(** We do _not_ export [UnivalenceAxiom], [FunextAxiom], or any of the files in [Metatheory] from this file.  Thus, importing this file does not prevent you from tracking usage of [Univalence] and [Funext] theorem-by-theorem in the same way that the library does.  If you want any of those files, you should import them separately. *)
 
 (** We check that UnivalenceAxiom, FunextAxiom aren't being leaked. This is so that these can be imported seperately. *)
 Fail Check HoTT.UnivalenceAxiom.univalence_axiom.

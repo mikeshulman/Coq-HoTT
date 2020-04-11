@@ -1,7 +1,9 @@
 (* -*- mode: coq; mode: visual-line -*- *)
+
 (** * Varieties of function extensionality *)
 
-Require Import HoTT.Basics HoTT.Types EquivalenceVarieties.
+Require Import HoTT.Basics HoTT.Types.
+Require Import Metatheory.Core.
 Local Open Scope path_scope.
 
 (** In the Overture, we defined function extensionality to be the assertion that the map [apD10] is an equivalence.   We now prove that this follows from a couple of weaker-looking forms of function extensionality.  We do require eta conversion, which Coq 8.4+ has judgmentally.
@@ -28,11 +30,6 @@ Definition WeakFunext :=
   forall (A : Type) (P : A -> Type),
     (forall x, Contr (P x)) -> Contr (forall x, P x).
 Check WeakFunext@{i j max}.
-
-(** We define a variant of [Funext] which does not invoke an axiom. *)
-Definition Funext_type :=
-  forall (A : Type) (P : A -> Type) f g, IsEquiv (@apD10 A P f g).
-Check Funext_type@{i j max}.
 
 (** The obvious implications are
    Funext -> NaiveFunext -> WeakFunext and NaiveFunext -> NaiveNondepFunext.
@@ -147,8 +144,6 @@ Theorem NaiveNondepFunext_implies_WeakFunext
 Proof.
   intros nf X P H.
   pose (T := (hfiber (equiv_postcompose_from_NaiveNondepFunext nf (equiv_pr1 P)) idmap)).
-  assert (X1 : Contr T).
-  { apply fcontr_isequiv; exact _. }
   exact (@contr_retract T _ _
            (fun fp x => transport P (ap10 fp.2 x) (fp.1 x).2)
            (fun f => ((fun x => (x ; f x)) ; 1)) (fun f => 1)).
@@ -172,15 +167,4 @@ Proof.
   (** We want to just use [H] here.  But we need to adjust the universe level in four places: for [A], for [P], for the input path, and for the output path. *)
   case (H (Lift A) (fun x => Lift (P x)) f g (fun x => ap lift (H' x))).
   exact idpath.
-Defined.
-
-(** We re-declare this instance depending on the global [Funext] typeclass, since it is useful on its own. *)
-Global Instance contr_basedhomotopy `{Funext}
-       {A:Type} {B : A -> Type} (f : forall x, B x)
-: Contr {g : forall x, B x & f == g }.
-Proof.
-  apply contr_basedhtpy.
-  apply NaiveFunext_implies_WeakFunext.
-  apply Funext_implies_NaiveFunext.
-  unfold Funext_type; exact _.
 Defined.

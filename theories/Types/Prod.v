@@ -270,30 +270,18 @@ Definition iff_functor_prod {A A' B B' : Type} (f : A <-> A') (g : B <-> B')
 
 (** This is a special property of [prod], of course, not an instance of a general family of facts about types. *)
 
-Definition equiv_prod_symm (A B : Type) : A * B <~> B * A
-  := Build_Equiv
-       _ _ _
-       (Build_IsEquiv
-          (A*B) (B*A)
-          (fun ab => (snd ab, fst ab))
-          (fun ba => (snd ba, fst ba))
-          (fun _ => 1)
-          (fun _ => 1)
-          (fun _ => 1)).
+Definition equiv_prod_symm (A B : Type) : A * B <~> B * A.
+Proof.
+  make_equiv.
+Defined.
 
 (** ** Associativity *)
 
 (** This, too, is a special property of [prod], of course, not an instance of a general family of facts about types. *)
-Definition equiv_prod_assoc (A B C : Type) : A * (B * C) <~> (A * B) * C
-  := Build_Equiv
-       _ _ _
-       (Build_IsEquiv
-          (A * (B * C)) ((A * B) * C)
-          (fun abc => ((fst abc, fst (snd abc)), snd (snd abc)))
-          (fun abc => (fst (fst abc), (snd (fst abc), snd abc)))
-          (fun _ => 1)
-          (fun _ => 1)
-          (fun _ => 1)).
+Definition equiv_prod_assoc (A B C : Type) : A * (B * C) <~> (A * B) * C.
+Proof.
+  make_equiv.
+Defined.
 
 (** ** Unit and annihilation *)
 
@@ -405,3 +393,26 @@ Definition ap_uncurry {A B C} (f : A -> B -> C) {a a' : A} (p : a = a')
 Proof.
   by destruct q, p.
 Defined.
+
+(** Fibers *)
+
+(** ** Fibers of [functor_prod] *)
+Definition hfiber_functor_prod {A B C D : Type} (f : A -> B) (g : C -> D) y
+  : hfiber (functor_prod f g) y <~> (hfiber f (fst y) * hfiber g (snd y)).
+Proof.
+  unfold functor_prod.
+  snrefine (equiv_adjointify _ _ _ _).
+  - exact (fun x => ((fst x.1; ap fst x.2), (snd x.1; ap snd x.2))).
+  - refine (fun xs => (((fst xs).1, (snd xs).1); _)).
+    apply Prod.path_prod;simpl.
+    + exact (fst xs).2.
+    + exact (snd xs).2.
+  - destruct y as [y1 y2]; intros [[x1 p1] [x2 p2]].
+    simpl in *. destruct p1,p2. reflexivity.
+  - intros [[x1 x2] p]. destruct p;cbn. reflexivity.
+Defined.
+
+Global Instance istruncmap_functor_prod (n : trunc_index) {A B C D : Type}
+  (f : A -> B) (g : C -> D) `{!IsTruncMap n f} `{!IsTruncMap n g}
+  : IsTruncMap n (Prod.functor_prod f g)
+  := fun y =>  trunc_equiv _ (hfiber_functor_prod _ _ _)^-1.

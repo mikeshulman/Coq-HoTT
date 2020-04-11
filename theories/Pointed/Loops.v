@@ -1,6 +1,5 @@
 Require Import HoTT.Basics HoTT.Types.
-Require Import HSet Fibrations Factorization HoTT.Truncations HProp.
-Require Import UnivalenceImpliesFunext.
+Require Import HSet HFiber Factorization HoTT.Truncations HProp.
 Require Import Pointed.Core Pointed.pMap Pointed.pEquiv Pointed.pHomotopy.
 Require Import WildCat.
 

@@ -167,6 +167,7 @@ Defined.
 (** ** Functorial action *)
 
 (** The functoriality of [forall] is slightly subtle: it is contravariant in the domain type and covariant in the codomain, but the codomain is dependent on the domain. *)
+
 Definition functor_forall `{P : A -> Type} `{Q : B -> Type}
     (f0 : B -> A) (f1 : forall b:B, P (f0 b) -> Q b)
   : (forall a:A, P a) -> (forall b:B, Q b)
@@ -193,8 +194,47 @@ Definition functor_forall_compose
   : functor_forall g0 g1 (functor_forall f0 f1 k) == functor_forall (f0 o g0) (fun c => g1 c o f1 (g0 c)) k
   := fun a => 1.
 
+(** Some special cases appear when one or the other of the maps are equivalences. *)
+
+Definition functor_forall_id `{P : A -> Type} `{Q : A -> Type}
+    (f1 : forall a:A, P a -> Q a)
+  : (forall a:A, P a) -> (forall a:A, Q a)
+  := functor_forall idmap f1.
+
+Definition functor_forall_pb {A B : Type} `{P : A -> Type}
+    (f0 : B -> A)
+  : (forall a:A, P a) -> (forall b:B, P (f0 b))
+  := functor_forall f0 (fun _ => idmap).
+
+(** If [f0] is an equivalence, then we can simply apply [functor_forall] to its inverse.  However, in this case it is sometimes more convenient to place the substitution on the other side of [f1]. *)
+
+Definition functor_forall_equiv `{P : A -> Type} `{Q : B -> Type}
+    (f0 : A -> B) `{!IsEquiv f0} (f1 : forall a:A, P a -> Q (f0 a))
+  : (forall a:A, P a) -> (forall b:B, Q b).
+Proof.
+  nrapply (functor_forall f0^-1).
+  intros b u.
+  refine ((eisretr f0 b) # _).
+  exact (f1 _ u).
+Defined.
+
+Definition functor_forall_equiv_pb {A B : Type} `{Q : B -> Type}
+    (f0 : A -> B) `{!IsEquiv f0}
+  : (forall a:A, Q (f0 a)) -> (forall b:B, Q b)
+  := functor_forall_equiv f0 (fun _ => idmap).
+
+(** Since there's a nontrivial transport here, it's useful to have a computation lemma. *)
+Definition functor_forall_equiv_pb_beta {A B : Type} {P : B -> Type} (f : A -> B)
+  `{!IsEquiv f} (h : forall a, P (f a))
+  : forall a, functor_forall_equiv_pb f h (f a) = h a.
+Proof.
+  intro a; srapply (_ @ apD h (eissect f a)); srapply (_ @ (transport_compose _ _ _ _)^).
+  srapply ap10; apply ap; apply eisadj.
+Defined.
+
 (** ** Equivalences *)
 
+(** If *both* maps in [functor_forall] are equivalences, then so is the output. *)
 Global Instance isequiv_functor_forall `{P : A -> Type} `{Q : B -> Type}
   `{IsEquiv B A f} `{forall b, @IsEquiv (P (f b)) (Q b) (g b)}
   : IsEquiv (functor_forall f g) | 1000.
@@ -241,41 +281,31 @@ Definition equiv_functor_forall_pb {A B : Type} {P : A -> Type}
   : (forall a, P a) <~> (forall b, P (f b))
   := equiv_functor_forall' (Q := P o f) f (fun b => equiv_idmap).
 
-(** There is another way to make forall functorial that acts on on equivalences only. *)
+(** Similarly, we have a version of [functor_forall_equiv] that acts on on equivalences both upstairs and downstairs. *)
 
 Definition equiv_functor_forall_covariant
            `{P : A -> Type} `{Q : B -> Type}
            (f : A <~> B) (g : forall a, P a <~> Q (f a))
-  : (forall a, P a) <~> (forall b, Q b).
-Proof.
-  refine (equiv_adjointify
-           (fun (k:forall a, P a) b => eisretr f b # (g (f^-1 b) (k (f^-1 b))))
-           (fun h a => (g a)^-1 (h (f a)))
-           _ _).
-  - intros h; apply path_forall; intros b.
-    refine (_ @ apD h (eisretr f b)).
-    apply ap, eisretr.
-  - intros k; apply path_forall; intros a.
-    refine (_ @ apD k (eissect f a)).
-    apply moveR_equiv_V.
-    refine (_ @ (ap_transport (eissect f a) g (k (f^-1 (f a))))^).
-    refine (_ @ (transport_compose Q f (eissect f a) _)^).
-    refine (ap (fun p => transport Q p _) (eisadj f a)).
-Defined.
+  : (forall a, P a) <~> (forall b, Q b)
+  := (equiv_functor_forall' f (fun a => (g a)^-1%equiv))^-1.
 
 Definition equiv_functor_forall_covariant_compose
            `{P : A -> Type} `{Q : B -> Type} `{R : C -> Type}
            (f0 : A <~> B) (f1 : forall a, P a <~> Q (f0 a))
            (g0 : B <~> C) (g1 : forall b, Q b <~> R (g0 b))
-           (h : forall a, P a) (c : C)
-  : equiv_functor_forall_covariant g0 g1 (equiv_functor_forall_covariant f0 f1 h) c
-    = equiv_functor_forall_covariant (g0 oE f0) (fun a => g1 (f0 a) oE f1 a) h c.
+           (h : forall a, P a)
+  : equiv_functor_forall_covariant g0 g1 (equiv_functor_forall_covariant f0 f1 h)
+    == equiv_functor_forall_covariant (g0 oE f0) (fun a => g1 (f0 a) oE f1 a) h.
 Proof.
-  cbn.
-  rewrite (ap_transport _ g1 _).
-  rewrite (transport_compose R g0 _ _).
-  symmetry; apply transport_pp.
-Qed.
+  apply apD10.
+  refine ((equiv_inverse_compose
+             (equiv_functor_forall' g0 (fun a : B => (g1 a)^-1%equiv))
+             (equiv_functor_forall' f0 (fun a : A => (f1 a)^-1%equiv))
+             h)^ @ _).
+  revert h; apply equiv_inverse_homotopy; intros h.
+  apply path_forall; intros c.
+  symmetry; rapply functor_forall_compose.
+Defined.
 
 (** ** Functoriality on logical equivalences *)
 

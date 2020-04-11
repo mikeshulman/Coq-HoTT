@@ -3,8 +3,7 @@
 (** * Factorizations and factorization systems. *)
 
 Require Import HoTT.Basics HoTT.Types.
-Require Import HProp FunextVarieties UnivalenceImpliesFunext Extensions PathAny.
-Require Import HoTT.Tactics.
+Require Import HProp Extensions PathAny.
 Local Open Scope path_scope.
 
 

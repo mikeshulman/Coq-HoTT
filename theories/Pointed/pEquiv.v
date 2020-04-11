@@ -1,8 +1,12 @@
 Require Import Basics.
 Require Import Types.
+<<<<<<< HEAD
 Require Import Pointed.Core.
 Require Import UnivalenceImpliesFunext.
 Require Import WildCat.
+=======
+Require Import Pointed.Core Pointed.pMap Pointed.pHomotopy.
+>>>>>>> master
 
 Local Open Scope pointed_scope.
 
@@ -62,14 +66,7 @@ Definition path_pequiv `{Funext} {A B : pType} (f g : A <~>* B)
 Definition issig_pequiv' (A B : pType)
   : { f : A <~> B & f (point A) = point B } <~> (A <~>* B).
 Proof.
-  transitivity { f : A ->* B & IsEquiv f }.
-  2: issig.
-  refine (equiv_functor_sigma_pb (issig_pmap A B) oE _).
-  refine (_ oE (equiv_functor_sigma_pb (issig_equiv A B))^-1).
-  refine (_ oE (equiv_sigma_assoc _ _)^-1).
-  refine (equiv_sigma_assoc _ _ oE _).
-  apply equiv_functor_sigma_id.
-  intro; cbn; apply equiv_sigma_symm0.
+  make_equiv.
 Defined.
 
 (* Sometimes we wish to construct a pEquiv from an equiv and a proof that it is pointed *)
@@ -86,6 +83,37 @@ Proof.
   srefine (Build_pEquiv' (equiv_path A B p..1) p..2).
 Defined.
 
+<<<<<<< HEAD
+=======
+(* A pointed version of Sect (sometimes useful for proofs of some equivalences) *)
+Definition pSect {A B : pType} (s : A ->* B) (r : B ->* A)
+  := r o* s ==* pmap_idmap.
+
+Arguments pSect _ _ / _ _.
+
+(* A pointed equivalence is a section of its inverse *)
+Definition peissect {A B : pType} (f : A <~>* B) : pSect f f^-1*.
+Proof.
+  pointed_reduce_pmap f.
+  srefine (Build_pHomotopy _ _).
+  1: apply (eissect f).
+  unfold moveR_equiv_V; cbn.
+  refine (concat_p1 _ @ (concat_1p _)^ @ (concat_1p _)^).
+Defined.
+
+(* A pointed equivalence is a retraction of its inverse *)
+Definition peisretr {A B : pType} (f : A <~>* B) : pSect f^-1* f.
+Proof.
+  srefine (Build_pHomotopy _ _).
+  1: apply (eisretr f).
+  pointed_reduce_pmap f.
+  unfold moveR_equiv_V; cbn.
+  apply whiskerR.
+  refine (_ @ (ap _ (concat_1p _))^).
+  apply eisadj.
+Defined.
+
+>>>>>>> master
 (* A version of equiv_adjointify for pointed equivalences
   where all data is pointed. There is a lot of unecessery data here
   but sometimes it is easier to prove equivalences using this. *)

@@ -1,9 +1,10 @@
 (* -*- mode: coq; mode: visual-line -*- *)
 (** Representation of cardinals, see Chapter 10 of the HoTT book. *)
 Require Import HoTT.Basics HoTT.Types HoTT.HSet HoTT.TruncType.
-Require Import UnivalenceImpliesFunext.
 Require Import HoTT.Classes.interfaces.abstract_algebra.
 Require Import HoTT.Truncations.
+
+Opaque trunc_equiv. (** This speeds things up considerably *)
 
 (** ** Definitions and operations *)
 
