@@ -94,7 +94,7 @@ Section GenSpectrum.
 
   Definition sConst (X Y : GenPrespectrum N) : X $-> Y.
   Proof.
-    refine (Build_sMap X Y (fun n => pConst) _).
+    refine (Build_sMap X Y (fun n => pconst) _).
     intro n.
     refine (_ @* pmap_prewhisker _ (loops_functor_pconst)^* ).
     refine (precompose_pconst _ @* (postcompose_pconst _)^* ).
@@ -125,15 +125,16 @@ Section GenSpectrum.
     exact (equiv_ppforall_right (fun a => equiv_glue (Y a) n)).
   Defined.
 
-  Definition sforall_compose_left `{Funext} (A : pType) (Y Y' : A -> GenSpectrum N)
+(** TODO: fix *)
+(*   Definition sforall_compose_left `{Funext} (A : pType) (Y Y' : A -> GenSpectrum N)
     (f : forall x, sMap (Y x) (Y' x)) 
     : sMap (sForall A Y) (sForall A Y').
   Proof.
     srapply Build_sMap.
     + intro n. exact (functor_ppforall_right (fun a => f a n)).
     + intro n. refine (_ $@v _).
-    2: { srapply vinverse. exact (transpose (natural_loops_ppforall_right (fun a => spectrum_fun _ _ (f a) (n.+1)))). }
+    2: { snrapply vinverse. exact (transpose (natural_loops_ppforall_right (fun a => spectrum_fun _ _ (f a) (n.+1)))). }
     apply functor_ppforall_right_square. intro a. apply smap_square.
-  Defined.
+  Defined. *)
 
 End GenSpectrum.

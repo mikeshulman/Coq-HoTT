@@ -2,7 +2,7 @@ Require Import Basics.
 Require Import Types.
 Require Import Pointed.
 Require Import Homotopy.EMSpace.
-Require Import AbelianGroup.
+Require Import Algebra.AbelianGroup.
 Require Import Spectrum.
 
 Definition EMSpectrum `{Univalence} (A : AbGroup) : Spectrum.
