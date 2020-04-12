@@ -5,7 +5,7 @@ Require Import WildCat.
 Require Import Pointed.
 Require Import ReflectiveSubuniverse Modality Modalities.Identity Modalities.Descent.
 Require Import Truncations.
-Require Import Fibrations EquivalenceVarieties.
+Require Import HFiber.
 
 Local Open Scope succ_scope.
 Open Scope pointed_scope.
@@ -16,7 +16,7 @@ Open Scope pointed_scope.
 
 (** A (very short) complex is a pair of pointed maps whose composite is the zero map. *)
 Definition IsComplex {F X Y} (i : F ->* X) (f : X ->* Y)
-  := (f o* i ==* pConst).
+  := (f o* i ==* pconst).
 
 (** This induces a map from the domain of [i] to the fiber of [f]. *)
 Definition cxfib {F X Y : pType} {i : F ->* X} {f : X ->* Y}
@@ -230,7 +230,7 @@ Proof.
     refine (_ @ (transport_paths_Fl _ _)^).
     apply whiskerR, inverse2, ap, concat_p1.
   - intros [x p].
-    apply fcontr_isequiv.
+    apply contr_map_isequiv.
     change (IsEquiv fs.2); exact _.
 Defined.
 
@@ -239,7 +239,7 @@ Definition pequiv_cxfib {F X Y : pType} {i : F ->* X} {f : X ->* Y}
   : F <~>* pfiber f.
 Proof.
   refine (Build_pEquiv _ _ (cxfib cx_isexact) _).
-  apply isequiv_fcontr; intros u. 
+  apply isequiv_contr_map; intros u. 
   rapply conn_map_isexact.
 Defined.
 
