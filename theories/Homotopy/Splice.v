@@ -35,7 +35,7 @@ Require Import WildCat.
 Local Open Scope succ_scope.
 
 Definition Stratified_succ_max {N : SuccStr} {n : nat} (x : Stratified N (n.+1)) (p : snd x = inr tt)
-  : x .+1 = ((fst x) .+1, fin_zero _).
+  : x .+1 = ((fst x) .+1, fin_zero).
 Proof.
   simpl. unfold stratified_succ. simpl.
   rewrite p. reflexivity.
