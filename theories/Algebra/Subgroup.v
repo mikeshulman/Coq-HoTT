@@ -3,6 +3,7 @@ Require Import Types.
 Require Import Limits.Pullback.
 Require Import HSet.
 Require Import Algebra.Group.
+Require Import Cubical.
 
 Local Open Scope mc_mult_scope.
 Generalizable Variables G H A B C N f g.
@@ -305,19 +306,24 @@ Proof.
     rewrite 2 grp_homo_inv.
     apply ap, p. }
   { intros x y z.
-    apply path_pullback_hset.
+    apply equiv_path_pullback; srefine (_;_;_);
+    [ | | rapply equiv_sq_path; apply path_ishprop].
     1,2: cbn; apply associativity. }
   { intros x.
-    apply path_pullback_hset.
+    apply equiv_path_pullback; srefine (_;_;_);
+    [ | | rapply equiv_sq_path; apply path_ishprop].
     1,2: cbn; apply left_identity. }
   { intros x.
-    apply path_pullback_hset.
+    apply equiv_path_pullback; srefine (_;_;_);
+    [ | | rapply equiv_sq_path; apply path_ishprop].
      1,2: cbn; apply right_identity. }
   { intros x.
-    apply path_pullback_hset.
+    apply equiv_path_pullback; srefine (_;_;_);
+    [ | | rapply equiv_sq_path; apply path_ishprop].
     1,2: cbn; apply left_inverse. }
   { intros x.
-    apply path_pullback_hset.
+    apply equiv_path_pullback; srefine (_;_;_);
+    [ | | rapply equiv_sq_path; apply path_ishprop].
     1,2: cbn; apply right_inverse. }
 Defined.
 
@@ -335,7 +341,8 @@ Global Instance isinjective_grp_intersection_incl {G : Group} (A B : Subgroup G)
   : IsInjective (grp_intersection_incl A B).
 Proof.
   cbn; intros [a [b p]] [c [d q]] r.
-  apply path_pullback_hset.
+  apply equiv_path_pullback; srefine (_;_;_);
+  [ | | rapply equiv_sq_path; apply path_ishprop].
   + cbn in r.
     apply injective in r.
     2: exact _.
@@ -365,7 +372,8 @@ Global Instance isinjective_grp_intersection_incl_pr1 {G : Group}
   : IsInjective (grp_intersection_incl_pr1 A B).
 Proof.
   cbn; intros [a [b p]] [c [d q]] r.
-  apply path_pullback_hset.
+  apply equiv_path_pullback; srefine (_;_;_);
+  [ | | rapply equiv_sq_path; apply path_ishprop].
   + exact r.
   + cbn in *.
     pose (p^ @ ap _ r @ q) as s.
@@ -393,7 +401,8 @@ Global Instance isinjective_grp_intersection_incl_pr2 {G : Group}
   : IsInjective (grp_intersection_incl_pr2 A B).
 Proof.
   cbn; intros [a [b p]] [c [d q]] r.
-  apply path_pullback_hset.
+  apply equiv_path_pullback; srefine (_;_;_);
+  [ | | rapply equiv_sq_path; apply path_ishprop].
   + cbn in *.
     pose (p @ ap _ r @ q^) as s.
     apply injective in s.
