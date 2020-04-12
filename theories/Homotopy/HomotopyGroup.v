@@ -8,7 +8,7 @@ Require Import Spaces.Nat.
 Require Import Modalities.ReflectiveSubuniverse.
 Require Import WildCat.
 
-
+Local Open Scope nat_scope.
 Local Open Scope pointed_scope.
 Local Open Scope path_scope.
 
@@ -110,7 +110,7 @@ Definition pi_functor_type (n : nat) (X Y : pType) : Type
      end.
 
 (* Every such map is, in particular, a pointed map. *)
-Definition pi_functor_type_pmap {n X Y} : pi_functor_type n X Y -> (pForall (Pi n X) (constant_pfam (Pi n Y)))
+Definition pi_functor_type_pmap {n X Y} : pi_functor_type n X Y -> (pForall (Pi n X) (pfam_const (Pi n Y)))
   := match n return pi_functor_type n X Y -> (Pi n X ->* Pi n Y) with
      | 0    => fun f => f
      | n.+1 => fun f => f       (* This works because [pmap_GroupHomomorphism] is already a coercion. *)
