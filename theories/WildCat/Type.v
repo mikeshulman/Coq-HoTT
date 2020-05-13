@@ -1,6 +1,9 @@
 Require Export Basics.
 Require Export WildCat.Core.
 Require Export WildCat.Equiv.
+Require Export WildCat.Forall.
+Require Export WildCat.Paths.
+Require Export WildCat.TwoOneCat.
 
 (** ** The category of types *)
 
@@ -14,24 +17,29 @@ Proof.
   + exact (fun a b c g f => g o f).
 Defined.
 
-Global Instance isgraph_arrow {A B : Type} : IsGraph (A $-> B)
-  := Build_IsGraph _ (fun f g => f == g).
+Global Instance isgraph_arrow {A B : Type} : IsGraph (A $-> B).
+Proof.
+  snrapply isgraph_forall.
+  intro.
+  apply isgraph_paths.
+Defined.
 
 Global Instance is01cat_arrow {A B : Type} : Is01Cat (A $-> B).
 Proof.
-  econstructor.
-  - exact (fun f a => idpath).
-  - exact (fun f g h p q a => q a @ p a).
+  apply is01cat_forall.
+  intro.
+  apply is01cat_paths.
 Defined.
 
 Global Instance is0gpd_arrow {A B : Type}: Is0Gpd (A $-> B).
 Proof.
-  apply Build_Is0Gpd.
-  intros f g p a ; exact (p a)^.
+  apply is0gpd_forall.
+  intro.
+  apply is0gpd_paths.
 Defined.
 
-Global Instance is0functor_type_postcomp {A B C : Type} (h : B $-> C):
-  Is0Functor (cat_postcomp A h).
+Global Instance is0functor_type_postcomp {A B C : Type} (h : B $-> C)
+  : Is0Functor (cat_postcomp A h).
 Proof.
   apply Build_Is0Functor.
   intros f g p a; exact (ap h (p a)).
@@ -94,4 +102,68 @@ Proof.
   exists (fun _ => tt).
   intros f x.
   by destruct (f x).
+Defined.
+
+(** Type is a wild (2,1)-category *)
+
+Global Instance is1cat_arrow {A B : Type} : Is1Cat (A $-> B).
+Proof.
+  apply is1cat_forall.
+  intro.
+  apply is1cat_paths.
+Defined.
+
+Global Instance is1gpd_arrow {A B : Type} : Is1Gpd (A $-> B).
+Proof.
+  apply is1gpd_forall.
+  intro.
+  apply is1gpd_paths.
+Defined.
+
+Global Instance is21cat_type : Is21Cat Type.
+Proof.
+  snrapply Build_Is21Cat.
+  1-2: exact _.
+  { intros x y z g.
+    snrapply Build_Is1Functor.
+    { intros a b f h p w.
+      cbn; rapply ap.
+      rapply p. }
+    { intros a.
+      reflexivity. }
+    intros a b c f h w.
+    cbn; rapply ap_pp. }
+  { intros x y z g.
+    snrapply Build_Is1Functor.
+    { intros a b f h p w.
+      rapply p. }
+    { intros a.
+      reflexivity. }
+    intros a b c f h w.
+    reflexivity. }
+  + intros w x y z p q.
+    snrapply Build_Is1Natural.
+    intros l m t a.
+    cbn; hott_simpl.
+  + intros w x y z p q.
+    snrapply Build_Is1Natural.
+    intros l m t a.
+    cbn; hott_simpl.
+  + intros w x y z p q.
+    snrapply Build_Is1Natural.
+    intros l m t a.
+    cbn; hott_simpl.
+    apply ap_compose.
+  + intros x y.
+    snrapply Build_Is1Natural.
+    intros l m t a.
+    cbn; hott_simpl.
+  + intros x y.
+    snrapply Build_Is1Natural.
+    intros l m t a.
+    cbn; hott_simpl.
+  + intros v w x y z p q r s a.
+    cbn; hott_simpl.
+  + intros x y z p q a.
+    cbn; hott_simpl.
 Defined.
