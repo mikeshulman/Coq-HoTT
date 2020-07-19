@@ -86,3 +86,7 @@ Proof.
     apply path_sigma_hprop.
     apply grp_homo_op. }  
 Defined.
+
+Definition grp_image_pr1 {A B : Group} (f : GroupHomomorphism A B)
+  : GroupHomomorphism (grp_image f) B
+  := issubgroup_incl.

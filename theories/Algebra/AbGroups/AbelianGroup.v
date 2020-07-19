@@ -278,3 +278,12 @@ Proof.
     1: exact (fun a => -a).
     1-2: exact negate_involutive.
 Defined.
+
+(** Kernel *)
+Definition abgrp_kernel {A B : AbGroup} (f : GroupHomomorphism A B) : AbGroup
+  := Build_AbGroup' (grp_kernel f).
+
+(** Image *)
+Definition abgrp_image {A B : AbGroup} (f : GroupHomomorphism A B) : AbGroup
+  := Build_AbGroup' (grp_image f).
+

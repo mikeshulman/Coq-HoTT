@@ -6,7 +6,7 @@ Require Import WildCat.
 Require Import Homotopy.HomotopyGroup Homotopy.Splice Homotopy.ExactSequence.
 Require Import Spaces.Int.
 Require Import Spectra.Spectrum Spectra.GeneralizedSpectrum.
-Require Import Algebra.AbelianGroup Algebra.Group.
+Require Import Algebra.Groups Algebra.AbGroups.
 
 Local Open Scope int_scope.
 
@@ -14,7 +14,7 @@ Local Open Scope int_scope.
 (** Homotopy groups of spectra *)
 
 Definition sPi (n : Int) (Y : Spectrum) : AbGroup 
-  := Build_AbGroup' (H := isabgroup_pi _ _) (Pi 2 (Y (2 - n))).
+  := Build_AbGroup' (Pi 2 (Y (2 - n))).
 
 Definition spi_functor (n : Int) {E F : Spectrum} (f : E $-> F) 
   : sPi n E $-> sPi n F 

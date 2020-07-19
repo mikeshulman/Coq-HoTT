@@ -1,7 +1,5 @@
-Require Import Basics.
-Require Import Types.
-Require Import Algebra.Group.
-Require Import Algebra.AbelianGroup.
+Require Import Basics Types.
+Require Import Groups AbGroups.
 Require Import Algebra.GradedAbGroup.
 Require Import Algebra.Homology.
 

@@ -65,24 +65,12 @@ Proof.
   - intros a e; exact ((p a)^ @ ap k e).
 Defined.
 
-<<<<<<< HEAD
-(* This doesn't really need to be defined as an instance, since typeclass search can already find it, but we state it for the reader's benefit. *)
-Global Instance isequiv_functor_hfiber {A B C D}
-           {f : A -> B} {g : C -> D} {h : A -> C} {k : B -> D}
-           `{IsEquiv A C h} `{IsEquiv B D k}
-           (p : k o f == g o h) (b : B)
-: IsEquiv (functor_hfiber p b).
-Proof.
-  exact _.
-Defined.
-=======
 (** This doesn't need to be defined as an instance, since typeclass search can already find it, but we state it here for the reader's benefit. *)
 Definition isequiv_functor_hfiber {A B C D}
            {f : A -> B} {g : C -> D} {h : A -> C} {k : B -> D}
            `{IsEquiv A C h} `{IsEquiv B D k}
            (p : k o f == g o h) (b : B)
 : IsEquiv (functor_hfiber p b) := _.
->>>>>>> master
 
 Definition equiv_functor_hfiber {A B C D}
            {f : A -> B} {g : C -> D} {h : A <~> C} {k : B <~> D}
@@ -117,8 +105,6 @@ Definition equiv_functor_hfiber2 {A B C D}
   : hfiber f b <~> hfiber g b'
   := Build_Equiv _ _ (functor_hfiber2 p q) _.
 
-<<<<<<< HEAD
-=======
 Definition functor_hfiber_compose {A B C X Y Z : Type} {k : A -> B} {l : B -> C}
     {f : A -> X} {g : B -> Y} {h : C -> Z} {i : X -> Y} {j : Y -> Z}
     (H : i o f == g o k) (K : j o g == h o l)
@@ -133,7 +119,6 @@ Proof.
   refine ((ap_V _ _)^ @ ap _ _^).
   apply concat_p1.
 Defined.
->>>>>>> master
 
 (** ** The 3x3 lemma for fibrations *)
 Definition hfiber_functor_hfiber {A B C D}

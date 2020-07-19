@@ -1,12 +1,7 @@
-Require Import Basics.
-Require Import Types.
-Require Import Algebra.Group.
-Require Import Algebra.AbelianGroup.
-Require Import Algebra.Subgroup.
+Require Import Basics Types.
+Require Import Groups AbGroups.
 Require Import Algebra.GradedAbGroup.
 Require Import WildCat.
-Require Import Algebra.Kernel.
-Require Import Algebra.Image.
 Require Import Algebra.Homology.
 
 Section ExactCouple.
@@ -15,7 +10,9 @@ Section ExactCouple.
 
   Class IsGrExact {A B C : GradedGroup G} (f : A $-> B) (g : B $-> C) := {
     graded_isexact : forall x,
-      grp_kernel (gh_component g x) $<~> grp_image (gh_component_prev f x);
+      GroupIsomorphism
+        (grp_kernel (gh_component g x))
+        (grp_image (gh_component_prev f x))  ;
   }.
 
   Record ExactCouple := {
@@ -30,7 +27,7 @@ Section ExactCouple.
   }.
 
   Definition GrImage {A B : GradedGroup G} (f : A $-> B) : GradedGroup G
-    := fun x => grp_image (gh_component_prev f x).
+    := fun x => abgrp_image (gh_component_prev f x).
 
   Definition gh_image_pr1 {A B : GradedGroup G} (f : A $-> B) : GrImage f $-> B.
   Proof.

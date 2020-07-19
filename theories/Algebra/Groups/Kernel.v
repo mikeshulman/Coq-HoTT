@@ -68,3 +68,7 @@ Proof.
   rewrite (negate_l _).
   reflexivity.
 Defined.
+
+Definition grp_homo_kernel_incl {A B : Group} (f : GroupHomomorphism A B)
+  : GroupHomomorphism (grp_kernel f) A
+  := issubgroup_incl.

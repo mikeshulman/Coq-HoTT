@@ -1,7 +1,5 @@
-Require Import Basics.
-Require Import Types.
-Require Import Algebra.Group.
-Require Import Algebra.AbelianGroup.
+Require Import Basics Types.
+Require Import Groups AbGroups.
 
 Local Open Scope mc_add_scope.
 
@@ -54,7 +52,7 @@ Proof.
     rewrite simple_associativity.
     reflexivity.
   + cbn; intros x y p.
-    srapply Build_GroupHomomorphism.
+    snrapply Build_GroupHomomorphism.
     { intro z.
       srapply (homo _ _ g).
       3: srapply (homo _ _ f).
@@ -71,7 +69,7 @@ Proof.
   srapply Build_GradedHomomorphism.
   1: exact mon_unit.
   intro x.
-  srapply Build_GroupHomomorphism.
+  snrapply Build_GroupHomomorphism.
   { intro.
     apply mon_unit. }
   intros _ _.

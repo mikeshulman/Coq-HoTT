@@ -340,18 +340,6 @@ theories/Algebra/ooGroup.v
 theories/Algebra/Aut.v
 theories/Algebra/ooAction.v
 
-## TODO resolove these
-theories/Algebra/GradedAbGroup.v
-theories/Algebra/Group.v
-theories/Algebra/Subgroup.v
-theories/Algebra/AbelianGroup.v
-theories/Algebra/QuotientGroup.v
-theories/Algebra/Kernel.v
-theories/Algebra/Image.v
-theories/Algebra/Homology.v
-theories/Algebra/ExactCouple.v
-theories/Algebra/SpectralSequence.v
-
 theories/Algebra/Congruence.v
 
 theories/Algebra/AbGroups.v
@@ -368,6 +356,12 @@ theories/Algebra/Groups/QuotientGroup.v
 theories/Algebra/Groups/Image.v
 theories/Algebra/Groups/Kernel.v
 theories/Algebra/Groups/GrpPullback.v
+
+theories/Algebra/GradedAbGroup.v
+theories/Algebra/Homology.v
+theories/Algebra/ExactCouple.v
+theories/Algebra/SpectralSequence.v
+
 
 #
 #   Tactics
