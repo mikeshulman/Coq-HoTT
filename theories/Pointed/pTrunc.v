@@ -94,17 +94,6 @@ Proof.
   - exact (ap _ (dpoint_eq p) @ ap_pp (@tr n _) _ _ @ whiskerL _ (ap_V _ _)). 
 Defined.
 
-Definition ptr_functor_homotopy {X Y : pType} (n : trunc_index)
-           {f g : X ->* Y} (p : f ==* g)
-  : ptr_functor n f ==* ptr_functor n g.
-Proof.
-  srapply Build_pHomotopy.
-  - intros x; strip_truncations; cbn.
-    change (@tr n Y (f x) = tr (g x)).
-    apply ap, p.
-  - exact (ap _ (dpoint_eq p) @ ap_pp (@tr n _) _ _ @ whiskerL _ (ap_V _ _)). 
-Defined.
-
 Definition ptr_pequiv {X Y : pType} (n : trunc_index) (f : X <~>* Y)
   : pTr n X <~>* pTr n Y := Build_pEquiv _ _ (ptr_functor n f) _.
 
