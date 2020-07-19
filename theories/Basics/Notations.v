@@ -16,6 +16,7 @@ Reserved Notation "m +2+ n" (at level 50, left associativity).
 
 (** Pointed *)
 Reserved Infix "@*" (at level 30).
+Reserved Infix "@@*" (at level 30).
 Reserved Infix "<~>*" (at level 85).
 Reserved Infix "->*" (at level 99).
 Reserved Infix "->**" (at level 99).
@@ -90,7 +91,7 @@ Reserved Infix "@lr" (at level 30).
 Reserved Infix "oL" (at level 40, left associativity).
 Reserved Infix "oR" (at level 40, left associativity).
 
-Reserved Notation "~~ A" (at level 75, right associativity, only parsing).
+Reserved Notation "~~ A" (at level 35, right associativity, only parsing).
 Reserved Notation "a \ C" (at level 40, left associativity).
 Reserved Notation "a <=_{ x } b" (at level 70, no associativity).
 Reserved Notation "D1 ~d~ D2" (at level 65).
@@ -113,7 +114,7 @@ Reserved Notation "m <= n" (at level 70, no associativity).
 Reserved Notation "n -Type" (at level 1).
 Reserved Notation "p ..1" (at level 3).
 Reserved Notation "p ..2" (at level 3).
-Reserved Notation "!! P" (at level 75, right associativity).
+Reserved Notation "!! P" (at level 35, right associativity).
 Reserved Notation "[ u ]" (at level 9).
 Reserved Notation "u ~~ v" (at level 30).
 Reserved Notation " [ u , v ] " (at level 9).

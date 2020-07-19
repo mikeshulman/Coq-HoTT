@@ -249,6 +249,7 @@ theories/Extensions.v
 theories/HSet.v
 theories/TruncType.v
 theories/DProp.v
+theories/EquivGroupoids.v
 theories/Functorish.v
 theories/FunextAxiom.v
 theories/UnivalenceAxiom.v
@@ -301,10 +302,11 @@ theories/Homotopy/BlakersMassey.v
 theories/Homotopy/Freudenthal.v
 theories/Homotopy/ClassifyingSpace.v
 theories/Homotopy/EMSpace.v
-theories/Homotopy/SuccessorStructure.v
 theories/Homotopy/ExactSequence.v
 theories/Homotopy/Splice.v
 theories/Homotopy/CayleyDickson.v
+
+theories/Homotopy/SuccessorStructure.v
 
 #
 #   Pointed
@@ -320,7 +322,6 @@ theories/Pointed/pEquiv.v
 theories/Pointed/pTrunc.v
 theories/Pointed/pHomotopy.v
 theories/Pointed/pSusp.v
-theories/Pointed/pType.v
 
 #
 #   Spectra
@@ -339,12 +340,10 @@ theories/Algebra/ooGroup.v
 theories/Algebra/Aut.v
 theories/Algebra/ooAction.v
 
-theories/Algebra/Z.v
-
+<<<<<<< HEAD
 theories/Algebra/GradedAbGroup.v
 theories/Algebra/Group.v
 theories/Algebra/Subgroup.v
-theories/Algebra/Congruence.v
 theories/Algebra/AbelianGroup.v
 theories/Algebra/QuotientGroup.v
 theories/Algebra/Kernel.v
@@ -353,6 +352,24 @@ theories/Algebra/Homology.v
 theories/Algebra/ExactCouple.v
 theories/Algebra/SpectralSequence.v
 
+=======
+theories/Algebra/Congruence.v
+
+theories/Algebra/AbGroups.v
+theories/Algebra/AbGroups/AbelianGroup.v
+theories/Algebra/AbGroups/Abelianization.v
+theories/Algebra/AbGroups/AbPullback.v
+theories/Algebra/AbGroups/AbPushout.v
+theories/Algebra/AbGroups/Z.v
+
+theories/Algebra/Groups.v
+theories/Algebra/Groups/Group.v
+theories/Algebra/Groups/Subgroup.v
+theories/Algebra/Groups/QuotientGroup.v
+theories/Algebra/Groups/Image.v
+theories/Algebra/Groups/Kernel.v
+theories/Algebra/Groups/GrpPullback.v
+>>>>>>> master
 
 #
 #   Tactics
@@ -635,6 +652,8 @@ theories/Classes/orders/naturals.v
 theories/Classes/orders/orders.v
 theories/Classes/orders/nat_int.v
 theories/Classes/orders/integers.v
+theories/Classes/orders/archimedean.v
+theories/Classes/orders/fields.v
 
 theories/Classes/implementations/assume_rationals.v
 theories/Classes/implementations/peano_naturals.v
@@ -654,6 +673,9 @@ theories/Classes/interfaces/naturals.v
 theories/Classes/interfaces/rationals.v
 theories/Classes/interfaces/canonical_names.v
 theories/Classes/interfaces/orders.v
+theories/Classes/interfaces/archimedean.v
+theories/Classes/interfaces/cauchy.v
+theories/Classes/interfaces/round.v
 theories/Classes/interfaces/integers.v
 theories/Classes/interfaces/ua_algebra.v
 theories/Classes/interfaces/ua_setalgebra.v
@@ -684,3 +706,5 @@ theories/Classes/theory/ua_third_isomorphism.v
 theories/Classes/categories/ua_category.v
 
 theories/Classes/tests/ring_tac.v
+
+theories/Analysis/Locator.v

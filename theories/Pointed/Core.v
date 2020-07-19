@@ -27,10 +27,17 @@ Global Instance ispointed_sigma `{IsPointed A} `{IsPointed (B (point A))}
 Global Instance ispointed_prod `{IsPointed A, IsPointed B} : IsPointed (A * B)
   := (point A, point B).
 
+<<<<<<< HEAD
 (** We override the notion for products in pointed_scope *)
 Notation "X * Y" := (Build_pType (X * Y) ispointed_prod) : pointed_scope.
 
 (** A pointed type family consists of a type family over a pointed type and a section of that family at a point. *)
+=======
+(** We override the notation for products in pointed_scope *)
+Notation "X * Y" := (Build_pType (X * Y) ispointed_prod) : pointed_scope.
+
+(** A pointed type family consists of a type family over a pointed type and a section of that family at the basepoint. *)
+>>>>>>> master
 Definition pFam (A : pType) := {P : A -> Type & P (point A)}.
 
 (** We make the first projection of a [pFam] a coercion. *)
@@ -47,6 +54,7 @@ Definition pfam_const {A : pType} (B : pType) : pFam A :=
 (** [IsTrunc] for a pointed type family *)
 Class IsTrunc_pFam n {A} (X : pFam A)
   := trunc_pfam_is_trunc : forall x, IsTrunc n (X.1 x).
+<<<<<<< HEAD
 
 (** Pointed dependent functions *)
 Record pForall (A : pType) (P : pFam A) := {
@@ -63,9 +71,35 @@ Coercion pointed_fun : pForall >-> Funclass.
 
 (** A pointed map is a map with a proof that it preserves the point. We define it as a non-dependent version of [pForall]. *)
 Definition pMap (A B : pType) := pForall A (pfam_const B).
+=======
 
-Infix "->*" := pMap : pointed_scope.
+(** Pointed dependent functions *)
+Record pForall (A : pType) (P : pFam A) := {
+  pointed_fun : forall x, P x ;
+  dpoint_eq : pointed_fun (point A) = dpoint P ;
+}.
 
+Arguments dpoint_eq {A P} f : rename.
+Arguments pointed_fun {A P} f : rename.
+Coercion pointed_fun : pForall >-> Funclass.
+
+
+(** ** Pointed functions *)
+
+(** A pointed map is a map with a proof that it preserves the point. We define it as as a notion for a non-dependent version of [pForall]. *)
+Notation "A ->* B" := (pForall A (pfam_const B)) : pointed_scope.
+
+Definition Build_pMap (A B : pType) (f : A -> B) (p : f (point A) = point B)
+  : A ->* B
+  := Build_pForall A (pfam_const B) f p.
+>>>>>>> master
+
+(** Pointed maps perserve the base point *)
+Definition point_eq {A B : pType} (f : A ->* B)
+  : f (point A) = point B
+  := dpoint_eq f.
+
+<<<<<<< HEAD
 Definition Build_pMap (A B : pType) (f : A -> B) (p : f (point A) = point B)
   : A ->* B
   := Build_pForall A (pfam_const B) f p.
@@ -75,6 +109,8 @@ Definition point_eq {A B : pType} (f : A ->* B)
   : f (point A) = point B
   := dpoint_eq f.
 
+=======
+>>>>>>> master
 (** The identity pointed map *)
 Definition pmap_idmap {A : pType} : A ->* A
   := Build_pMap A A idmap 1.
@@ -102,7 +138,10 @@ Definition Build_pHomotopy {A : pType} {P : pFam A} {f g : pForall A P}
   : f ==* g
   := Build_pForall A (pfam_phomotopy f g) p q.
 
+<<<<<<< HEAD
 (** TODO: should we change the name? *)
+=======
+>>>>>>> master
 (** The underlying homotopy of a pointed homotopy *)
 Coercion pointed_htpy {A : pType} {P : pFam A} {f g : pForall A P} (h : f ==* g)
   : f == g
@@ -116,11 +155,14 @@ Proof.
   exact (dpoint_eq h).
 Defined.
 
+<<<<<<< HEAD
 (** The underlying homotopy of a pointed homotopy between non-dependent pointed maps. *)
 Definition pointed_htpy' {A B} (f g : A ->* B) (p : pHomotopy f g)
   : forall x:A, f x = g x
   := fun x => pointed_htpy p x.
 
+=======
+>>>>>>> master
 (** ** Pointed equivalences *)
 
 (* A pointed equivalence is a pointed map and a proof that it is
@@ -130,12 +172,16 @@ Record pEquiv (A B : pType) := {
   pointed_isequiv : IsEquiv pointed_equiv_fun ;
 }.
 
+<<<<<<< HEAD
 (* TODO:
   It might be better behaved to define pEquiv as an equivalence and a proof that
   this equivalence is pointed.
     In pEquiv.v we have another constructor Build_pEquiv' which coq can
   infer faster than Build_pEquiv.
   *)
+=======
+(* TODO: It might be better behaved to define pEquiv as an equivalence and a proof that this equivalence is pointed. In pEquiv.v we have another constructor Build_pEquiv' which coq can infer faster than Build_pEquiv. *)
+>>>>>>> master
 
 Infix "<~>*" := pEquiv : pointed_scope.
 
@@ -155,17 +201,27 @@ Definition psigma {A : pType} (P : pFam A) : pType
 Definition pproduct {A : Type} (F : A -> pType) : pType
   := Build_pType (forall (a : A), pointed_type (F a)) (ispointed_type o F).
 
+<<<<<<< HEAD
 (** The following tactic often allows us to "pretend" that pointed maps and homotopies preserve basepoints strictly.  We have carefully defined [pMap] and [pHomotopy] so that when destructed, their second components are paths with right endpoints free, to which we can apply Paulin-Morhing path-induction. *)
 
 (** First a version with no rewrites, which leaves some cleanup to be done but which can be used in transparent proofs. *)
 Ltac pointed_reduce' :=
+=======
+(** The following tactics often allow us to "pretend" that pointed maps and homotopies preserve basepoints strictly. *)
+
+(** First a version with no rewrites, which leaves some cleanup to be done but which can be used in transparent proofs. *)
+Ltac pointed_reduce :=
+>>>>>>> master
   (*TODO: are these correct? *)
   unfold pointed_fun, pointed_htpy;
   cbn in *;
   repeat match goal with
            | [ X : pType |- _ ] => destruct X as [X ?point]
            | [ P : pFam ?X |- _ ] => destruct P as [P ?]
+<<<<<<< HEAD
            | [ phi : pMap ?X ?Y |- _ ] => destruct phi as [phi ?]
+=======
+>>>>>>> master
            | [ phi : pForall ?X ?Y |- _ ] => destruct phi as [phi ?]
            | [ alpha : pHomotopy ?f ?g |- _ ] => let H := fresh in destruct alpha as [alpha H]; try (apply moveR_pM in H)
            | [ equiv : pEquiv ?X ?Y |- _ ] => destruct equiv as [equiv ?iseq]
@@ -174,8 +230,8 @@ Ltac pointed_reduce' :=
   path_induction; cbn.
 
 (** Next a version that uses [rewrite], and should only be used in opaque proofs. *)
-Ltac pointed_reduce :=
-  pointed_reduce';
+Ltac pointed_reduce_rewrite :=
+  pointed_reduce;
   rewrite ?concat_p1, ?concat_1p.
 
 (** Finally, a version that just strictifies a single map or equivalence.  This has the advantage that it leaves the context more readable. *)
@@ -188,6 +244,7 @@ Ltac pointed_reduce_pmap f
     end.
 
 (** ** Equivalences to sigma-types. *)
+<<<<<<< HEAD
 
 (** pType *)
 Definition issig_ptype : { X : Type & X } <~> pType := ltac:(issig).
@@ -197,6 +254,17 @@ Definition issig_pforall (A : pType) (P : pFam A)
   : {f : forall x, P x & f (point A) = dpoint P} <~> (pForall A P)
   := ltac:(issig).
 
+=======
+
+(** pType *)
+Definition issig_ptype : { X : Type & X } <~> pType := ltac:(issig).
+
+(** pForall *)
+Definition issig_pforall (A : pType) (P : pFam A)
+  : {f : forall x, P x & f (point A) = dpoint P} <~> (pForall A P)
+  := ltac:(issig).
+
+>>>>>>> master
 (** pMap *)
 Definition issig_pmap (A B : pType)
   : {f : A -> B & f (point A) = point B} <~> (A ->* B)
@@ -219,6 +287,7 @@ Definition issig_pequiv' (A B : pType)
 
 (** ** Various operations with pointed homotopies *)
 
+<<<<<<< HEAD
 Definition phomotopy_refl {A : pType} {P : pFam A} (f : pForall A P) : f ==* f
   := Build_pHomotopy (fun x => 1) (concat_pV _)^.
 
@@ -256,6 +325,34 @@ Global Instance phomotopy_symmetric {A B} : Symmetric (@pHomotopy A B)
   := @phomotopy_inverse A B.
 
 Notation "p ^*" := (phomotopy_inverse p) : pointed_scope.
+=======
+(** [pHomotopy] is a reflexive relation *)
+Global Instance phomotopy_reflexive {A : pType} {P : pFam A}
+  : Reflexive (@pHomotopy A P)
+  := fun X => Build_pHomotopy (fun x => 1) (concat_pV _)^.
+
+(** [pHomotopy] is a symmetric relation *)
+Global Instance phomotopy_symmetric {A B} : Symmetric (@pHomotopy A B).
+Proof.
+  intros f g p.
+  snrefine (Build_pHomotopy _ _); cbn.
+  - intros x; exact ((p x)^).
+  - refine (inverse2 (dpoint_eq p) @ inv_pV _ _).
+Defined.
+
+Notation "p ^*" := (phomotopy_symmetric _ _ p) : pointed_scope.
+
+(** [pHomotopy] is a transitive relation *)
+Global Instance phomotopy_transitive {A B} : Transitive (@pHomotopy A B).
+Proof.
+  intros x y z p q.
+  snrefine (Build_pHomotopy (fun x => p x @ q x) _).
+  nrefine (dpoint_eq p @@ dpoint_eq q @ concat_pp_p _ _ _ @ _).
+  nrapply whiskerL; nrapply concat_V_pp.
+Defined.
+
+Notation "p @* q" := (phomotopy_transitive _ _ _ p q) : pointed_scope.
+>>>>>>> master
 
 (** ** Whiskering of pointed homotopies by pointed functions *)
 
@@ -342,6 +439,7 @@ Defined.
 Definition path_pforall `{Funext} {A : pType} {P : pFam A} {f g : pForall A P}
   : (f ==* g) -> (f = g) := equiv_path_pforall f g.
 
+<<<<<<< HEAD
 Definition phomotopy_path `{Funext} {A : pType} {P : pFam A} {f g : pForall A P}
   : (f = g) -> (f ==* g) := (equiv_path_pforall f g)^-1 % equiv.
 
@@ -360,13 +458,28 @@ Definition equiv_path_pmap `{Funext} {A B : pType} (f g : A ->* B)
 
 Definition path_pmap `{Funext} {A B : pType} {f g : A ->* B}
   : (f ==* g) -> (f = g) := equiv_path_pmap f g.
+=======
+(** Here is the inverse map without assuming funext *)
+Definition phomotopy_path {A : pType} {P : pFam A} {f g : pForall A P}
+  : (f = g) -> (f ==* g) := ltac:(by intros []).
+
+(** And we prove that it agrees with the inverse of [equiv_path_pforall] *)
+Definition path_equiv_path_pforall_phomotopy_path `{Funext} {A : pType}
+  {P : pFam A} {f g : pForall A P}
+  : phomotopy_path (f:=f) (g:=g) = (equiv_path_pforall f g)^-1%equiv
+  := ltac:(by funext []).
+>>>>>>> master
 
 (* We note that the inverse of [path_pmap] computes definitionally on reflexivity, and hence [path_pmap] itself computes typally so. *)
 Definition equiv_inverse_path_pforall_1 `{Funext} {A : pType} {P : pFam A} (f : pForall A P)
   : (equiv_path_pforall f f)^-1%equiv 1%path = reflexivity f
   := 1.
 
+<<<<<<< HEAD
 Definition path_pforall_1 `{Funext} {A} {P : pFam A} {f : pForall A P}
+=======
+Definition path_pforall_1 `{Funext} {A : pType} {P : pFam A} {f : pForall A P}
+>>>>>>> master
   : equiv_path_pforall _ _ (reflexivity f) = 1%path
   := moveR_equiv_M _ _ (equiv_inverse_path_pforall_1 f)^.
 
@@ -442,7 +555,11 @@ Proof.
   srefine (Build_pHomotopy _ _).
   1: apply (eissect f). 
   simpl. unfold moveR_equiv_V.
+<<<<<<< HEAD
   pointed_reduce'.
+=======
+  pointed_reduce.
+>>>>>>> master
   symmetry.
   refine (concat_p1 _ @ concat_1p _ @ concat_1p _).
 Defined.
@@ -452,7 +569,11 @@ Definition peisretr {A B : pType} (f : A <~>* B) : pSect (pequiv_inverse f) f.
 Proof.
   srefine (Build_pHomotopy _ _).
   1: apply (eisretr f).
+<<<<<<< HEAD
   pointed_reduce'.
+=======
+  pointed_reduce.
+>>>>>>> master
   unfold moveR_equiv_V.
   refine (eisadj f _ @ _).
   symmetry.
@@ -486,7 +607,11 @@ Definition equiv_path_pequiv `{Funext} {A B : pType} (f g : A <~>* B)
 Proof.
   transitivity ((issig_pequiv A B)^-1 f = (issig_pequiv A B)^-1 g).
   - refine (equiv_path_sigma_hprop _ _ oE _).
+<<<<<<< HEAD
     apply (equiv_path_pmap f g).
+=======
+    apply (equiv_path_pforall f g).
+>>>>>>> master
   - symmetry; exact (equiv_ap' (issig_pequiv A B)^-1 f g).
 Defined.
 
@@ -512,8 +637,15 @@ Definition ppMap (A B : pType) : pType
   := ppForall A (fun _ => B).
 
 Infix "->**" := ppMap : pointed_scope.
+<<<<<<< HEAD
 Notation "'ppforall'  x .. y , P" := (ppForall _ (fun x => .. (ppForall _ (fun y => P)) ..))
   (at level 200, x binder, y binder, right associativity) : pointed_scope.
+=======
+Notation "'ppforall'  x .. y , P"
+  := (ppForall _ (fun x => .. (ppForall _ (fun y => P)) ..))
+     (at level 200, x binder, y binder, right associativity)
+     : pointed_scope.
+>>>>>>> master
 
 (** ** 1-categorical properties of [pForall]. *)
 (** TODO: remove funext *)
@@ -579,7 +711,11 @@ Proof.
 Defined.
 
 Definition phomotopy_compose_pV `{Funext} {A : pType} {P : pFam A} {f g : pForall A P}
+<<<<<<< HEAD
  (p : f ==* g) : p @* p ^* ==* phomotopy_refl f.
+=======
+ (p : f ==* g) : p @* p ^* ==* phomotopy_reflexive f.
+>>>>>>> master
 Proof.
   srapply Build_pHomotopy.
   + intro x. apply concat_pV.
@@ -588,7 +724,11 @@ Proof.
 Defined.
 
 Definition phomotopy_compose_Vp `{Funext} {A : pType} {P : pFam A} {f g : pForall A P}
+<<<<<<< HEAD
  (p : f ==* g) : p ^* @* p ==* phomotopy_refl g.
+=======
+ (p : f ==* g) : p ^* @* p ==* phomotopy_reflexive g.
+>>>>>>> master
 Proof.
   srapply Build_pHomotopy.
   + intro x. apply concat_Vp.
@@ -618,6 +758,7 @@ Defined.
 
 (** * pType as a wild category *)
 
+<<<<<<< HEAD
 Global Instance isgraph_ptype : IsGraph pType
   := Build_IsGraph pType pMap.
 
@@ -639,6 +780,35 @@ Proof.
   srapply Build_Is0Gpd. intros ? ? h. exact (phomotopy_inverse h).
 Defined.
 
+=======
+(** pType is a graph *)
+Global Instance isgraph_ptype : IsGraph pType
+  := Build_IsGraph pType (fun X Y => X ->* Y).
+
+(** pType is a 0-coherent 1-category *)
+Global Instance is01cat_ptype : Is01Cat pType
+  := Build_Is01Cat pType _ (@pmap_idmap) (@pmap_compose).
+
+(** pForall is a graph *)
+Global Instance isgraph_pforall (A : pType) (P : pFam A) : IsGraph (pForall A P)
+  := Build_IsGraph _ pHomotopy.
+
+(** pForall is a 0-coherent 1-category *)
+Global Instance is01cat_pforall (A : pType) (P : pFam A) : Is01Cat (pForall A P).
+Proof.
+  econstructor.
+  - exact phomotopy_reflexive.
+  - intros a b c f g. exact (phomotopy_transitive _ _ _ g f).
+Defined.
+
+(** pForall is a 0-coherent 1-groupoid *)
+Global Instance is0gpd_pforall (A : pType) (P : pFam A) : Is0Gpd (pForall A P).
+Proof.
+  srapply Build_Is0Gpd. intros ? ? h. exact (phomotopy_symmetric _ _ h).
+Defined.
+
+(** pType is a 1-coherent 1-category *)
+>>>>>>> master
 Global Instance is1cat_ptype : Is1Cat pType.
 Proof.
   econstructor.
@@ -653,6 +823,7 @@ Proof.
   - intros ? ? f; exact (pmap_precompose_idmap f).
 Defined.
 
+<<<<<<< HEAD
 Global Instance hasmorext_ptype `{Funext} : HasMorExt pType.
 Proof.
   srapply Build_HasMorExt; intros A B f g.
@@ -660,6 +831,17 @@ Proof.
   intros []; reflexivity.
 Defined.
 
+=======
+(** Under funext, pType has morphism extensionality *)
+Global Instance hasmorext_ptype `{Funext} : HasMorExt pType.
+Proof.
+  srapply Build_HasMorExt; intros A B f g.
+  refine (isequiv_homotopic (equiv_path_pforall f g)^-1%equiv _).
+  intros []; reflexivity.
+Defined.
+
+(** pType has equivalences *)
+>>>>>>> master
 Global Instance hasequivs_ptype : HasEquivs pType.
 Proof.
   srapply (Build_HasEquivs _ _ _ _ pEquiv (fun A B f => IsEquiv f));
@@ -676,6 +858,11 @@ Proof.
     + intros x; exact (s x).
 Defined.
 
+<<<<<<< HEAD
+=======
+(** TODO: finish *)
+(** pType is a univalent 1-coherent 1-category *)
+>>>>>>> master
 Global Instance isunivalent_ptype `{Univalence} : IsUnivalent1Cat pType.
 Proof.
   srapply Build_IsUnivalent1Cat; intros A B.
@@ -686,6 +873,10 @@ Proof.
   - (* Some messy path algebra here. *)
 Abort.
 
+<<<<<<< HEAD
+=======
+(** pType is a pointed category *)
+>>>>>>> master
 Global Instance ispointedcat_ptype : IsPointedCat pType.
 Proof.
   srapply Build_IsPointedCat.
@@ -698,9 +889,17 @@ Proof.
     exact pmap_punit_pconst.
 Defined.
 
+<<<<<<< HEAD
 Definition path_zero_morphism_pconst (A B : pType)
   : (@pconst A B) = zero_morphism := idpath.
 
+=======
+(** The constant map is definitionally equal to the zero_morphism of a pointed category *)
+Definition path_zero_morphism_pconst (A B : pType)
+  : (@pconst A B) = zero_morphism := idpath.
+
+(** pForall is a 1-category *)
+>>>>>>> master
 Global Instance is1cat_pforall `{Funext} (A : pType) (P : pFam A) : Is1Cat (pForall A P).
 Proof.
   econstructor.
@@ -713,6 +912,10 @@ Proof.
   - intros ? ? p; exact (phomotopy_compose_1p p).
 Defined.
 
+<<<<<<< HEAD
+=======
+(** pForall is a 1-groupoid *)
+>>>>>>> master
 Global Instance is1gpd_pforall `{Funext} (A : pType) (P : pFam A) : Is1Gpd (pForall A P).
 Proof.
   econstructor.
@@ -720,6 +923,7 @@ Proof.
   + intros ? ? p. exact (phomotopy_compose_Vp p).
 Defined.
 
+<<<<<<< HEAD
 (* Global Instance is21cat_pType `{Funext} : Is21Cat pType.
 Proof.
   econstructor.
@@ -727,11 +931,18 @@ Proof.
   - intros ? ? ? f. simpl.
 Defined. *)
 
+=======
+(** The forgetful map from pType to Type is a 0-functor *)
+>>>>>>> master
 Global Instance is0functor_pointed_type : Is0Functor pointed_type.
 Proof.
   apply Build_Is0Functor. intros. exact f.
 Defined.
 
+<<<<<<< HEAD
+=======
+(** The forgetful map from pType to Type is a 1-functor *)
+>>>>>>> master
 Global Instance is1functor_pointed_type : Is1Functor pointed_type.
 Proof.
   apply Build_Is1Functor.

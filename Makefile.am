@@ -70,6 +70,8 @@ STD_VFILES = \
 	$(SRCCOQLIB)/theories/Init/Tactics.v \
 	$(SRCCOQLIB)/theories/Init/Specif.v \
 	$(SRCCOQLIB)/theories/Init/Decimal.v \
+	$(SRCCOQLIB)/theories/Init/Hexadecimal.v \
+	$(SRCCOQLIB)/theories/Init/Numeral.v \
 	$(SRCCOQLIB)/theories/Init/Nat.v \
 	$(SRCCOQLIB)/theories/Init/Prelude.v \
 	$(SRCCOQLIB)/theories/Bool/Bool.v \
@@ -108,8 +110,8 @@ CONTRIB_HTMLFILES=$(patsubst $(subst /,.,$(srcdir)).contrib.%,$(srcdir)/html/%,$
 CONTRIB_TIMING_HTMLFILES=$(patsubst $(srcdir)/html/%,$(srcdir)/timing-html/%,$(CONTRIB_HTMLFILES))
 
 # I'm not sure why we needs = rather than :=, but we seem to
-ALL_BUILT_HOTT_VFILES = $(STD_VFILES) $(CORE_VFILES) $(CATEGORY_VFILES)
-ALL_HOTT_VFILES = $(shell find "$(srcdir)/theories" -name "*.v") $(shell find "$(SRCCOQLIB)/theories" -name "*.v")
+ALL_BUILT_HOTT_VFILES = $(STD_VFILES) $(CORE_VFILES) $(CATEGORY_VFILES) $(CONTRIB_VFILES)
+ALL_HOTT_VFILES = $(shell find -name "*.v" -not -path "./coq-HoTT/*" -not -path "./etc/*")
 UNBUILT_VFILES = $(filter-out $(ALL_BUILT_HOTT_VFILES),$(ALL_HOTT_VFILES))
 
 # The list of files that comprise the alternative standard library

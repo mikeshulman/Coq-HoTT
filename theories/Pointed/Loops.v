@@ -87,10 +87,10 @@ Proof.
 Defined.
 
 (* Loops functor distributes over concatenation *)
-Lemma loops_functor_pp {X Y : pType} (f : pMap X Y) (x y : loops X)
+Lemma loops_functor_pp {X Y : pType} (f : X ->* Y) (x y : loops X)
   : loops_functor f (x @ y) = loops_functor f x @ loops_functor f y.
 Proof.
-  pointed_reduce.
+  pointed_reduce_rewrite.
   apply ap_pp.
 Defined.
 
@@ -109,7 +109,12 @@ Proof.
   srapply Build_pHomotopy; cbn.
   { intro q.
     refine (_ @ (concat_p1 _)^ @ (concat_1p _)^).
+<<<<<<< HEAD
     apply moveR_Vp, concat_Ap. }
+=======
+    apply moveR_Vp.
+    apply (concat_Ap (fun x => p x @ 1)). }
+>>>>>>> master
   simpl. generalize (p point0). generalize (g point0).
   intros _ []. reflexivity.
 Defined.
@@ -135,7 +140,7 @@ Proof.
   apply loops_2functor, IHn.
 Defined.
 
-Lemma iterated_loops_functor_pp {X Y : pType} (f : pMap X Y) n
+Lemma iterated_loops_functor_pp {X Y : pType} (f : X ->* Y) n
   (x y : iterated_loops n.+1 X) : iterated_loops_functor n.+1 f (x @ y)
     = iterated_loops_functor n.+1 f x @ iterated_loops_functor n.+1 f y.
 Proof.
@@ -365,18 +370,31 @@ Defined.
 (* We declare this local notation to make it easier to write pointed types *)
 Local Notation "( X , x )" := (Build_pType X x).
 
+(** In the following lemmas we have used universe annotations explicitly as without them, coq cannot guess the universe levels correctly. Defining pointed maps as a special case of pForall has the side effect of raising the universe level since pForall requires a bigger universe for the type family. Hopefully in the future, coq's "universe guessing" will be smarter and we can drop the annotations here. *)
+
 (* We can convert between families of loops in a type and loops in Type at that type. *)
+<<<<<<< HEAD
 Definition loops_type@{u0 u1 u2} `{Univalence} (A : Type@{u0})
   : pEquiv@{u1 u1 u2} (loops (Type@{u0},A)) (A <~> A, equiv_idmap).
+=======
+Definition loops_type@{i j k} `{Univalence} (A : Type@{i})
+  : pEquiv@{j j k} (loops@{j} (Type@{i}, A)) (A <~> A, equiv_idmap).
+>>>>>>> master
 Proof.
   apply issig_pequiv'.
   exists (equiv_equiv_path A A).
   reflexivity.
 Defined.
 
+<<<<<<< HEAD
 Lemma local_global_looping `{Univalence} (A : Type@{u0}) (n : nat)
   : (iterated_loops@{u1} n.+2 (Type@{u0}, A))
     <~>* (pproduct@{u1 u1 u1} (fun a => iterated_loops@{u1} n.+1 (A, a))).
+=======
+Lemma local_global_looping `{Univalence} (A : Type@{i}) (n : nat)
+  : iterated_loops@{j} n.+2 (Type@{i}, A)
+    <~>* pproduct (fun a => iterated_loops@{j} n.+1 (A, a)).
+>>>>>>> master
 Proof.
   induction n.
   { refine (_ o*E pequiv_loops_functor (loops_type A)).
@@ -475,7 +493,11 @@ Proof.
   srapply Build_pHomotopy.
   + intros p. refine (inv_Vp _ _ @ whiskerR _ (point_eq f) @ concat_pp_p _ _ _).
     refine (inv_pp _ _ @ whiskerL (point_eq f)^ (ap_V f p)^).
+<<<<<<< HEAD
   + pointed_reduce. pointed_reduce. reflexivity.
+=======
+  + pointed_reduce. reflexivity.
+>>>>>>> master
 Defined.
 
 (** Loops on the pointed type of dependent pointed maps correspond to
@@ -489,6 +511,7 @@ Proof.
   1: symmetry; exact (equiv_path_pforall (point_pforall B) (point_pforall B)).
   reflexivity.
 Defined.
+<<<<<<< HEAD
 
 (** We need a bunch of lemmas to prove that [equiv_loops_ppforall] is natural. *)
 
@@ -625,3 +648,5 @@ Proof.
     refine (natural_loops_ppforall_lem3_refl f (fun x => point (B x)) @ _).
     exact (concat_p1 _)^.
 Defined. *)
+=======
+>>>>>>> master

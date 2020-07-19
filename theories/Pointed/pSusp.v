@@ -39,7 +39,7 @@ Definition psusp_functor {X Y : pType} (f : X ->* Y) : psusp X ->* psusp Y
 Definition psusp_functor_compose {X Y Z : pType} (g : Y ->* Z) (f : X ->* Y)
   : psusp_functor (g o* f) ==* psusp_functor g o* psusp_functor f.
 Proof.
-  pointed_reduce; srefine (Build_pHomotopy _ _); cbn.
+  pointed_reduce_rewrite; srefine (Build_pHomotopy _ _); cbn.
   { srapply Susp_ind; try reflexivity; cbn.
     intros x.
     refine (transport_paths_FlFr _ _ @ _).
@@ -122,7 +122,7 @@ Module Book_Loop_Susp_Adjunction.
   : loop_susp_adjoint A B' (g o* f)
     ==* loops_functor g o* loop_susp_adjoint A B f.
   Proof.
-    pointed_reduce.
+    pointed_reduce_rewrite.
     srefine (Build_pHomotopy _ _).
     - intros a. simpl.
       refine (_ @ (concat_1p _)^).
@@ -264,14 +264,14 @@ Proof.
   refine (equiv_adjointify
             (fun f => loops_functor f o* loop_susp_unit A)
             (fun g => loop_susp_counit B o* psusp_functor g) _ _).
-  - intros g. apply path_pmap.
+  - intros g. apply path_pforall.
     refine (pmap_prewhisker _ (loops_functor_compose _ _) @* _).
     refine (pmap_compose_assoc _ _ _ @* _).
     refine (pmap_postwhisker _ (loop_susp_unit_natural g)^* @* _).
     refine ((pmap_compose_assoc _ _ _)^* @* _).
     refine (pmap_prewhisker g (loop_susp_triangle1 B) @* _).
     apply pmap_postcompose_idmap.
-  - intros f. apply path_pmap.
+  - intros f. apply path_pforall.
     refine (pmap_postwhisker _ (psusp_functor_compose _ _) @* _).
     refine ((pmap_compose_assoc _ _ _)^* @* _).
     refine (pmap_prewhisker _ (loop_susp_counit_natural f)^* @* _).

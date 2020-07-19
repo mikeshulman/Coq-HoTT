@@ -56,3 +56,35 @@ Module Issue754_1.
     assumption.
   Qed.
 End Issue754_1.
+
+Module Issue_1358.
+
+  Axiom A@{i} : Type@{i}.
+
+  Axiom foo@{i} : A@{i} <~> A@{i}.
+
+  Definition bar@{i} : A@{i} <~> A@{i}.
+  Proof.
+    reflexivity.
+  Defined.
+
+  Definition bar'@{i} : A@{i} <~> A@{i}.
+  Proof.
+    exact equiv_idmap.
+  Defined.
+
+End Issue_1358.
+
+Module Issue_973.
+
+  Inductive vec (A : Type) : nat -> Type :=
+  | nil : vec A 0
+  | cons : forall n : nat, A -> vec A n -> vec A (S n).
+(*   Arguments nil [A]. *)
+
+  Definition hd (A : Type) (n : nat) (v : vec A (S n)) : A :=
+  match v in (vec _ (S n)) return A with
+  | cons _ h _ => h
+  end.
+
+End Issue_973.

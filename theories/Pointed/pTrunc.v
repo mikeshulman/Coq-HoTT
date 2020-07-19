@@ -45,7 +45,7 @@ Proof.
     apply (ap (Build_pMap _ _ f)).
     apply concat_1p. }
   intro f.
-  apply path_pmap.
+  apply path_pforall.
   srapply Build_pHomotopy.
   1: intro; by strip_truncations.
   cbn.
@@ -80,7 +80,18 @@ Proof.
   srapply Build_pHomotopy.
   { intro x.
     by strip_truncations. }
-  by pointed_reduce'.
+  by pointed_reduce.
+Defined.
+
+Definition ptr_functor_homotopy {X Y : pType} (n : trunc_index)
+           {f g : X ->* Y} (p : f ==* g)
+  : ptr_functor n f ==* ptr_functor n g.
+Proof.
+  srapply Build_pHomotopy.
+  - intros x; strip_truncations; cbn.
+    change (@tr n Y (f x) = tr (g x)).
+    apply ap, p.
+  - exact (ap _ (dpoint_eq p) @ ap_pp (@tr n _) _ _ @ whiskerL _ (ap_V _ _)). 
 Defined.
 
 Definition ptr_functor_homotopy {X Y : pType} (n : trunc_index)

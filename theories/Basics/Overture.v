@@ -37,12 +37,15 @@ Definition Relation (A : Type) := A -> A -> Type.
 
 Class Reflexive {A} (R : Relation A) :=
   reflexivity : forall x : A, R x x.
+Arguments reflexivity {A R} _.
 
 Class Symmetric {A} (R : Relation A) :=
   symmetry : forall x y, R x y -> R y x.
+Arguments symmetry {A R _ _}.
 
 Class Transitive {A} (R : Relation A) :=
   transitivity : forall x y z, R x y -> R y z -> R x z.
+Arguments transitivity {A R _ _ _}.
 
 (** A [PreOrder] is both Reflexive and Transitive. *)
 Class PreOrder {A} (R : Relation A) :=
@@ -67,7 +70,7 @@ Ltac reflexivity :=
       let R := match goal with |- ?R ?x ?y => constr:(R) end in
       let pre_proof_term_head := constr:(@reflexivity _ R _) in
       let proof_term_head := (eval cbn in pre_proof_term_head) in
-      apply (pre_proof_term_head : forall x, R x x)).
+      apply (proof_term_head : forall x, R x x)).
 
 (** Even if we weren't using [cbn], we would have to redefine symmetry, since the built-in Coq version is sometimes too smart for its own good, and will occasionally fail when it should not. *)
 Ltac symmetry :=
@@ -695,8 +698,7 @@ Class Asymmetric {A} (R : Relation A) :=
   asymmetry : forall {x y}, R x y -> (complement R y x : Type).
 
 (** Likewise, we put [Unit] here, instead of in [Unit.v], because [Trunc] uses it. *)
-Inductive Unit : Type0 :=
-    tt : Unit.
+Inductive Unit : Type0 := tt : Unit.
 
 Scheme Unit_ind := Induction for Unit Sort Type.
 Scheme Unit_rec := Minimality for Unit Sort Type.
@@ -704,6 +706,9 @@ Definition Unit_rect := Unit_ind.
 
 (** A [Unit] goal should be resolved by [auto] and [trivial]. *)
 Hint Resolve tt : core.
+
+Register Unit as core.IDProp.type.
+Register tt as core.IDProp.idProp.
 
 (** *** Pointed types *)
 

@@ -13,6 +13,7 @@ Require Export HoTT.Truncations.
 Require Export HoTT.HFiber.
 Require Export HoTT.HProp.
 Require Export HoTT.HSet.
+Require Export HoTT.EquivGroupoids.
 
 Require Export HoTT.Equiv.BiInv.
 Require Export HoTT.Equiv.PathSplit.
@@ -119,6 +120,7 @@ Require Export HoTT.Spaces.Torus.TorusHomotopy.
 Require Export HoTT.Algebra.ooGroup.
 Require Export HoTT.Algebra.Aut.
 Require Export HoTT.Algebra.ooAction.
+<<<<<<< HEAD
 Require Export HoTT.Algebra.Z.
 Require Export HoTT.Algebra.Group.
 Require Export HoTT.Algebra.Subgroup.
@@ -131,6 +133,10 @@ Require Export HoTT.Algebra.GradedAbGroup.
 Require Export HoTT.Algebra.Homology.
 Require Export HoTT.Algebra.ExactCouple.
 Require Export HoTT.Algebra.SpectralSequence.
+=======
+Require Export HoTT.Algebra.AbGroups.
+Require Export HoTT.Algebra.Groups.
+>>>>>>> master
 
 Require Export HoTT.Homotopy.HomotopyGroup.
 Require Export HoTT.Homotopy.Pi1S1.
