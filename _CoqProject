@@ -296,6 +296,7 @@ theories/Homotopy/BlakersMassey.v
 theories/Homotopy/Freudenthal.v
 theories/Homotopy/ClassifyingSpace.v
 theories/Homotopy/EMSpace.v
+theories/Homotopy/Splice.v
 theories/Homotopy/CayleyDickson.v
 
 theories/Homotopy/SuccessorStructure.v
@@ -319,9 +320,11 @@ theories/Pointed/pSusp.v
 #
 #   Spectra
 #
-
+theories/Spectra.v
 theories/Spectra/Spectrum.v
-theories/Spectra/Coinductive.v
+theories/Spectra/GeneralizedSpectrum.v
+theories/Spectra/EMSpectrum.v
+theories/Spectra/HomotopyGroup.v
 
 #
 #   Algebra
