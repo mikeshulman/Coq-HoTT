@@ -94,9 +94,9 @@ Coercion grp_homo_map : GroupHomomorphism >-> Funclass.
 Global Existing Instance grp_homo_ishomo.
 
 (* Group homomorphisms are pointed maps *)
-Definition pmap_GroupHomomorphism {G H : Group} (f : GroupHomomorphism G H) : G ->* H
+Definition pmap_grouphomomorphism {G H : Group} (f : GroupHomomorphism G H) : G ->* H
   := Build_pMap G H f (@monmor_unitmor _ _ _ _ _ _ _ (@grp_homo_ishomo G H f)).
-Coercion pmap_GroupHomomorphism : GroupHomomorphism >-> pForall.
+Coercion pmap_grouphomomorphism : GroupHomomorphism >-> pForall.
 
 Definition issig_GroupHomomorphism (G H : Group) : _ <~> GroupHomomorphism G H
   := ltac:(issig).
@@ -538,3 +538,20 @@ Proof.
   intros x.
   apply path_contr.
 Defined.
+
+Global Instance is0functor_ptype_group : Is0Functor ptype_group.
+Proof.
+  apply Build_Is0Functor. exact @pmap_grouphomomorphism.
+Defined.
+
+Global Instance is1functor_ptype_group : Is1Functor ptype_group.
+Proof.
+  apply Build_Is1Functor.
+  + intros. srapply Build_pHomotopy. 1: exact X. apply path_ishprop.
+  + intros. srapply Build_pHomotopy. 1: reflexivity. apply path_ishprop.
+  + intros. srapply Build_pHomotopy. 1: reflexivity. apply path_ishprop.
+Defined.
+
+Definition pequiv_groupisomorphism {G H : Group} (f : G $<~> H) : pEquiv G H
+  := emap ptype_group f.
+  
