@@ -62,7 +62,7 @@ Definition splice_map {k : Modality} {N M : SuccStr} (G : N -> LongExactSequence
 Definition splice {k : Modality} {N M : SuccStr} (G : N -> LongExactSequence k M) (m : M)
   (e0 : forall n, G n.+1 m <~>* G n (m + 3)) 
   (e1 : forall n, G n.+1 m.+1 <~>* G n (m + 4))
-  (p : forall n, Square (les_fn (G n.+1) m) (les_fn (G n) (m + 3)) (e1 n) (e0 n))
+  (p : forall n, Square (e1 n) (e0 n) (les_fn (G n.+1) m) (les_fn (G n) (m + 3)))
   : LongExactSequence k (Stratified N 3).
 Proof.
   srapply Build_LongExactSequence.
@@ -72,7 +72,7 @@ Proof.
   { exact (les_isexact _ _ (G n) m). }
   { srapply (isexact_square_if (H := les_isexact k _ (G n) (m + 1)) k _ _ _ _ _).
     2,3: apply pequiv_pmap_idmap.
-    3: exact vrfl.
+    3: exact (vrefl _).
     2: exact (cat_idl _). }
   { srapply (isexact_square_if (H := les_isexact k _ (G n) (m + 2)) k _ _ _ _ _). 
     3: apply pequiv_pmap_idmap.

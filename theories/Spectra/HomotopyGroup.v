@@ -53,15 +53,15 @@ Defined.
 Definition pequiv_path_natural {A : Type} {B C : A -> pType} 
   (f : forall a, B a $-> C a)
   {a1 a2 : A} (p : a1 = a2) 
-  : Square (f a1) (f a2) (pequiv_path (ap B p)) (pequiv_path (ap C p)).
+  : Square (A:=pType) (pequiv_path (ap B p)) (pequiv_path (ap C p)) (f a1) (f a2).
 Proof.
-  induction p. exact vrfl.
+  induction p. exact (vrefl _).
 Defined.
 
 Definition pi_glue_natural {X Y : Spectrum} (f : X $-> Y) (n : Int) :
     Square (A := Group) 
-           (pi_functor 2 (f (2 - int_succ n))) (pi_functor 3 (f (2 - n)))
-           (pi_glue X n) (pi_glue Y n).
+           (pi_glue X n) (pi_glue Y n)
+           (pi_functor 2 (f (2 - int_succ n))) (pi_functor 3 (f (2 - n))).
 Proof.
   refine (_ $@vR _).
   2: apply pi_functor_3.
