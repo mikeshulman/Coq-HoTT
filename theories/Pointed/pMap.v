@@ -205,3 +205,95 @@ Proof.
   refine (ap _ path_pforall_1 @ path_pforall_1^ @ ap _ _^).
   exact (path_pforall (pmap_compose_ppforall2_refl _ _)).
 Defined.
+
+Definition pmap_compose_ppforall_compose_point `{Funext} {A : pType} {P Q R : A -> pType}
+  (g : forall a, Q a ->* R a) (f : forall a, P a ->* Q a)
+  : Square (pmap_compose_ppforall_point (fun a => g a o* f a))
+           (pmap_compose_ppforall2_right _ (pmap_compose_ppforall_point f))
+           (pmap_compose_ppforall_compose g f (point_pforall P))
+           (pmap_compose_ppforall_point g)^*.
+Proof.
+  revert R g. refine (fiberwise_pointed_map_rec _ _).
+  revert Q f. refine (fiberwise_pointed_map_rec _ _).
+  intros Q f R g.
+  refine (_ $@hR pmap_compose_ppforall2_refl _ _).
+  unfold Square; reflexivity.
+Defined.
+
+(* functorial action of [ppForall A B] in [B]. *)
+Definition functor_ppforall_right `{Funext} {A : pType} {B B' : A -> pType}
+  (g : forall a, B a ->* B' a) :
+  (ppforall a, B a) ->* ppforall a, B' a.
+Proof.
+  srapply Build_pMap.
+  + srapply functor_pforall_right.
+    - exact g.
+    - exact (point_eq (g (point A))).
+  + apply path_pforall. apply pmap_compose_ppforall_point.
+Defined.
+
+(** TODO: move ? *)
+Definition phomotopy_path_path_pforall `{Funext} {A : pType} {P : pFam A}
+  {f g : pForall A P} (p : f ==* g)
+  : phomotopy_path (path_pforall p) ==* p.
+Proof.
+  rewrite path_equiv_path_pforall_phomotopy_path.
+  exact (phomotopy_path (eissect (equiv_path_pforall f g) p)).
+Defined.
+
+Definition functor_ppforall_right_compose `{Funext} {A : pType} {B1 B2 B3 : A -> pType}
+  (g : forall a, B2 a $-> B3 a) (f : forall a, B1 a $-> B2 a)
+  : functor_ppforall_right (fun a => g a o* f a) $==
+    functor_ppforall_right g o* functor_ppforall_right f.
+Proof.
+  srapply Build_pHomotopy_pForall.
+  + intro x. apply pmap_compose_ppforall_compose.
+  + refine (_ $@ (phomotopy_path_path_pforall _ @@* _)^$).
+    2: refine (gpd_rev2 (phomotopy_path_pp _ _ $@
+      ((phomotopy_path2 (pmap_compose_ppforall_path_pforall _ _) @* phomotopy_path_path_pforall _) @@*
+        (phomotopy_path_path_pforall _))) $@
+      gpd_rev_pp _ _).
+    refine (_ $@ (cat_assoc _ _ _)^$).
+    apply gpd_moveL_Vh.
+    apply pmap_compose_ppforall_compose_point.
+Defined.
+
+Definition functor2_ppforall_right `{Funext} {A : pType} {B B' : A -> pType}
+  {g g' : forall a, B a ->* B' a} (p : forall a, g a ==* g' a)
+  : functor_ppforall_right g ==* functor_ppforall_right g'.
+Proof.
+  apply phomotopy_path. apply ap. funext a. exact (path_pforall (p a)).
+Defined.
+
+(* We need more category instances to show that ppforall + functor_ppforall forms a functor,
+   so we currently declare this property in an ad-hoc way. *)
+Definition functor_ppforall_right_square `{Funext} {A : pType}
+  {B00 B02 B20 B22 : A -> pType} {f10 : forall a, B00 a $-> B20 a}
+  {f01 : forall a, B00 a $-> B02 a} {f21 : forall a, B20 a $-> B22 a}
+  {f12 : forall a, B02 a $-> B22 a}
+  (s : forall a, Square (f10 a) (f12 a) (f01 a) (f21 a))
+  : Square (A := pType) (functor_ppforall_right f10) (functor_ppforall_right f12)
+           (functor_ppforall_right f01) (functor_ppforall_right f21).
+Proof.
+  refine ((functor_ppforall_right_compose _ _)^$ $@ _).
+  refine (_ $@ functor_ppforall_right_compose _ _).
+  exact (functor2_ppforall_right s).
+Defined.
+
+Definition equiv_ppforall_right `{Funext} {A : pType} {B B' : A -> pType}
+  (g : forall a, B a $<~> B' a) :
+  (ppforall a, B a) $<~> ppforall a, B' a.
+Proof.
+  srapply Build_pEquiv.
+  1:exact (functor_ppforall_right g).
+  srapply isequiv_adjointify.
+  { exact (functor_ppforall_right (fun x => (g x) ^-1$)). }
+  { intro f. apply path_pforall.
+    refine ((pmap_compose_ppforall_compose _ _ _)^* @* _).
+    refine (pmap_compose_ppforall2_left _ (fun a => peisretr _) @* _).
+    apply pmap_compose_ppforall_pid_left. }
+  { intro f. apply path_pforall.
+    refine ((pmap_compose_ppforall_compose _ _ _)^* @* _).
+    refine (pmap_compose_ppforall2_left _ (fun a => peissect _) @* _).
+    apply pmap_compose_ppforall_pid_left. }
+Defined.
