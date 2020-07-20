@@ -1,24 +1,21 @@
 (* -*- mode: coq; mode: visual-line -*- *)
-
-(** * Spectra *)
-
-Require Import HoTT.Basics HoTT.Types.
-Require Import HoTT.Tactics.
+Require Import Basics Types.
+(* Require Import HoTT.Tactics. *)
 Require Import Pointed.
 (* Require Import HoTT.Truncations. *)
 Require Import SuccessorStructure.
 Require Import WildCat.
 
+(** * Spectra *)
 (* Import TrM. *)
 
 (* Local Open Scope nat_scope. *)
 (* Local Open Scope path_scope. *)
 (* Local Open Scope equiv_scope. *)
 Local Open Scope pointed_scope.
+Local Open Scope succ_scope.
 
 (** ** Basic Definitions of Spectra *)
-
-Local Open Scope succ_scope.
 
 Record GenPrespectrum (N : SuccStr) := {
   deloop :> N -> pType ;
@@ -102,14 +99,17 @@ Section GenSpectrum.
   Definition sfiber {X Y : GenSpectrum N} (f : X $-> Y) : GenSpectrum N.
   Proof.
     apply (Build_GenSpectrum N (fun n => pfiber (f n))).
-    intro n. exact (pfiber_loops_functor _ o*E pequiv_pfiber (equiv_glue X n) (equiv_glue Y n) (smap_square f n)).
+    intro n.
+    exact (pfiber_loops_functor _
+      o*E pequiv_pfiber (equiv_glue X n) (equiv_glue Y n) (smap_square f n)).
   Defined.
 
   Definition sfib {X Y : GenSpectrum N} (f : X $-> Y) : sfiber f $-> X.
   Proof.
     srapply Build_sMap; intro n.
-    + exact (pfib (f n)).
-    + refine (move_left_bottom _). refine (_ $@vR _).
+    1: exact (pfib (f n)).
+    refine (move_left_bottom _).
+    refine (_ $@vR _).
     1: apply square_functor_pfiber.
     apply pr1_pfiber_loops_functor.
   Defined.
