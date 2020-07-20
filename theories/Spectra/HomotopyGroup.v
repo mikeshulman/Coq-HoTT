@@ -80,13 +80,13 @@ Local Notation "'f1'" := (inl (inr tt)).
 Local Notation "'f2'" := (inr tt).
 
 Definition Pi_les_fn_eq_0 `{Univalence} {F X Y : pType} (i : F $-> X) (f : X $-> Y) 
-  `{IsExact oo _ _ _ i f} (n : nat) : les_fn (Pi_les i f) (S n, f0) $== pi_functor (S n) f.
+  `{!IsExact oo i f} (n : nat) : les_fn (Pi_les i f) (S n, f0) $== pi_functor (S n) f.
 Proof.
   symmetry. apply pmap_pi_functor.
 Defined.
 
 Definition Pi_les_fn_eq_1 `{Univalence} {F X Y : pType} (i : F $-> X) (f : X $-> Y) 
-  `{IsExact oo _ _ _ i f} (n : nat) : les_fn (Pi_les i f) (S n, f1) $== pi_functor (S n) i.
+  `{!IsExact oo i f} (n : nat) : les_fn (Pi_les i f) (S n, f1) $== pi_functor (S n) i.
 Proof.
   symmetry. apply pmap_pi_functor.
 Defined.
