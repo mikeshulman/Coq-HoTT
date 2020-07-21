@@ -1,4 +1,4 @@
-(* Basic theory *)
+(** Basic theory *)
 Require Export WildCat.Core.
 Require Export WildCat.Equiv.
 Require Export WildCat.Square.
@@ -8,12 +8,10 @@ Require Export WildCat.EquivGpd.
 Require Export WildCat.FunctorCat.
 Require Export WildCat.NatTrans.
 Require Export WildCat.Yoneda.
-<<<<<<< HEAD
-Require Export WildCat.Displayed.
-=======
-Require Export WildCat.Square.
->>>>>>> master
-(* Examples *)
+Require Export WildCat.PointedCat.
+Require Export WildCat.Adjoint.
+
+(** Examples *)
 Require Export WildCat.Type.
 Require Export WildCat.Paths.
 Require Export WildCat.UnitCat.
@@ -23,10 +21,8 @@ Require Export WildCat.Forall.
 Require Export WildCat.Sum.
 Require Export WildCat.Forall.
 Require Export WildCat.Sigma.
-(* Higher categories *)
-Require Export WildCat.TwoOneCat.
-(* Pointed categories *)
-Require Export WildCat.PointedCat.
-
 Require Export WildCat.Comma.
-Require Export WildCat.Adjoint.
+
+(** Higher categories *)
+Require Export WildCat.TwoOneCat.
+

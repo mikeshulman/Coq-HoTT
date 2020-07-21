@@ -20,7 +20,7 @@ Section Comma.
   Proof.
     srapply Build_IsDGraph.
     intros [a1 b1] [a2 b2] [f g] h i.
-    exact (Square (fmap F f) (fmap G g) h i).
+    exact (Square h i (fmap F f) (fmap G g)).
   Defined.
 
   Global Instance is01dcat_dcomma : Is01DCat DComma.

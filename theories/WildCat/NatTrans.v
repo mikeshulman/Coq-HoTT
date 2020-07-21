@@ -15,7 +15,7 @@ Class Is1Natural {A B : Type} `{IsGraph A} `{Is1Cat B}
       (alpha : F $=> G) :=
 {
   isnat : forall a a' (f : a $-> a'),
-    Square (fmap F f) (fmap G f) (alpha a) (alpha a');
+    Square (alpha a) (alpha a') (fmap F f) (fmap G f);
 }.
 
 Arguments isnat {_ _ _ _ _ _ _ _ _ _} alpha {alnat _ _} f : rename.
@@ -25,7 +25,7 @@ Definition isnat_tr {A B : Type} `{IsGraph A} `{Is1Cat B}
       {F : A -> B} `{!Is0Functor F} {G : A -> B} `{!Is0Functor G}
       (alpha : F $=> G) `{!Is1Natural F G alpha}
       {a a' : A} (f : a $-> a')
-  : Square (alpha a) (alpha a') (fmap F f) (fmap G f)
+  : Square (fmap F f) (fmap G f) (alpha a) (alpha a')
   := (isnat alpha f)^$.
 
 Definition id_transformation {A B : Type} `{Is01Cat B} (F : A -> B)
@@ -36,7 +36,7 @@ Global Instance is1natural_id {A B : Type} `{IsGraph A} `{Is1Cat B}
        (F : A -> B) `{!Is0Functor F}
   : Is1Natural F F (id_transformation F).
 Proof.
-  apply Build_Is1Natural; intros a b f; cbn. exact vrfl.
+  apply Build_Is1Natural; intros a b f; cbn. exact (vrefl _).
 Defined.
 
 Definition comp_transformation {A B : Type} `{Is01Cat B}

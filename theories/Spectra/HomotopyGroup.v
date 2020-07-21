@@ -53,15 +53,15 @@ Defined.
 Definition pequiv_path_natural {A : Type} {B C : A -> pType} 
   (f : forall a, B a $-> C a)
   {a1 a2 : A} (p : a1 = a2) 
-  : Square (f a1) (f a2) (pequiv_path (ap B p)) (pequiv_path (ap C p)).
+  : Square (A:=pType) (pequiv_path (ap B p)) (pequiv_path (ap C p)) (f a1) (f a2).
 Proof.
-  induction p. exact vrfl.
+  induction p. exact (vrefl _).
 Defined.
 
 Definition pi_glue_natural {X Y : Spectrum} (f : X $-> Y) (n : Int) :
     Square (A := Group) 
-           (pi_functor 2 (f (2 - int_succ n))) (pi_functor 3 (f (2 - n)))
-           (pi_glue X n) (pi_glue Y n).
+           (pi_glue X n) (pi_glue Y n)
+           (pi_functor 2 (f (2 - int_succ n))) (pi_functor 3 (f (2 - n))).
 Proof.
   refine (_ $@vR _).
   2: apply pi_functor_3.
@@ -80,13 +80,13 @@ Local Notation "'f1'" := (inl (inr tt)).
 Local Notation "'f2'" := (inr tt).
 
 Definition Pi_les_fn_eq_0 `{Univalence} {F X Y : pType} (i : F $-> X) (f : X $-> Y) 
-  `{IsExact oo _ _ _ i f} (n : nat) : les_fn (Pi_les i f) (S n, f0) $== pi_functor (S n) f.
+  `{!IsExact oo i f} (n : nat) : les_fn (Pi_les i f) (S n, f0) $== pi_functor (S n) f.
 Proof.
   symmetry. apply pmap_pi_functor.
 Defined.
 
 Definition Pi_les_fn_eq_1 `{Univalence} {F X Y : pType} (i : F $-> X) (f : X $-> Y) 
-  `{IsExact oo _ _ _ i f} (n : nat) : les_fn (Pi_les i f) (S n, f1) $== pi_functor (S n) i.
+  `{!IsExact oo i f} (n : nat) : les_fn (Pi_les i f) (S n, f1) $== pi_functor (S n) i.
 Proof.
   symmetry. apply pmap_pi_functor.
 Defined.

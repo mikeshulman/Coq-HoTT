@@ -50,11 +50,11 @@ Defined.
 
 (* TODO: generalize to wild categories with 0 object. *)
 Definition hconst_square {A B C D : pType} {f : A $-> B} {g : C $-> D}
-  : Square pconst pconst f g
+  : Square f g pconst pconst
   := precompose_pconst g $@ (postcompose_pconst f)^$.
 
 Definition vconst_square {A B C D : pType} {f : A $-> B} {g : C $-> D} :
-  Square f g pconst pconst :=
+  Square pconst pconst f g :=
   postcompose_pconst f $@ (precompose_pconst g)^$.
 
 (* We note that the inverse of [path_pmap] computes definitionally on reflexivity, and hence [path_pmap] itself computes typally so.  *)
@@ -217,10 +217,10 @@ Defined.
 
 Definition pmap_compose_ppforall_compose_point `{Funext} {A : pType} {P Q R : A -> pType}
   (g : forall a, Q a ->* R a) (f : forall a, P a ->* Q a)
-  : Square (pmap_compose_ppforall_compose g f (point_pforall P))
-           (pmap_compose_ppforall_point g)^*
-           (pmap_compose_ppforall_point (fun a => g a o* f a))
-           (pmap_compose_ppforall2_right _ (pmap_compose_ppforall_point f)).
+  : Square (pmap_compose_ppforall_point (fun a => g a o* f a))
+           (pmap_compose_ppforall2_right _ (pmap_compose_ppforall_point f))
+           (pmap_compose_ppforall_compose g f (point_pforall P))
+           (pmap_compose_ppforall_point g)^*.
 Proof.
   revert R g. refine (fiberwise_pointed_map_rec _ _).
   revert Q f. refine (fiberwise_pointed_map_rec _ _).

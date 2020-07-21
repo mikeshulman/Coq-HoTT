@@ -69,13 +69,9 @@ theories/WildCat/TwoOneCat.v
 theories/WildCat/NatTrans.v
 theories/WildCat/Comma.v
 theories/WildCat/PointedCat.v
-<<<<<<< HEAD
 theories/WildCat/Displayed.v
 
 theories/WildCat/ooCat.v
-=======
-theories/WildCat/Square.v
->>>>>>> master
 
 #
 #   Types
@@ -306,7 +302,7 @@ theories/Homotopy/BlakersMassey.v
 theories/Homotopy/Freudenthal.v
 theories/Homotopy/ClassifyingSpace.v
 theories/Homotopy/EMSpace.v
-theories/Homotopy/ExactSequence.v
+
 theories/Homotopy/Splice.v
 theories/Homotopy/CayleyDickson.v
 

@@ -554,4 +554,4 @@ Defined.
 
 Definition pequiv_groupisomorphism {G H : Group} (f : G $<~> H) : pEquiv G H
   := emap ptype_group f.
-
+  
