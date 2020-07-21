@@ -112,12 +112,17 @@ Definition pfiber2_loops_functor {A B : pType} (f : A ->* B)
 Proof.
   pointed_reduce.
   simple refine (Build_pHomotopy _ _).
- (*  - intros [[xp q] r]. simpl in *.
-    rewrite !transport_paths_Fl.
-    rewrite inv_pp, !ap_V, !inv_V, ap_compose, !ap_pp, inv_pp.
-    simpl; rewrite !concat_1p, !concat_p1.
-    rewrite ap_pr1_path_basedpaths', ap_pp.
-    rewrite <- (inv_V r); set (s := r^); clearbody s; clear r; destruct s.
-    reflexivity.
-  - reflexivity. *)
-Admitted.
+  - intros [[[x p] q] r]. simpl in *.
+    (** Apparently [destruct q] isn't smart enough to generalize over [p]. *)
+    move q before x; revert dependent x;
+      refine (paths_ind_r _ _ _); intros p r; cbn.
+    rewrite !concat_1p, concat_p1.
+    rewrite paths_ind_r_transport.
+    rewrite transport_arrow_toconst, transport_paths_Fl. 
+    rewrite concat_p1, inv_V, ap_V.
+    refine (((r^)..2)^ @ _).
+    rewrite transport_paths_Fl; cbn.
+    rewrite pr1_path_V, !ap_V, !inv_V.
+    apply concat_p1.
+  - reflexivity.
+Qed.

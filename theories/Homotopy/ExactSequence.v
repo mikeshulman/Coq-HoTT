@@ -85,16 +85,16 @@ Proof.
   exact (pmap_prewhisker i ff @* cx).
 Defined.
 
-Definition iscomplex_homotopic_cancelR {F X Y Y' : pType}
+Definition iscomplex_cancelR {F X Y Y' : pType}
            (i : F ->* X) (f : X ->* Y) (e : Y <~>* Y') (cx : IsComplex i (e o* f))
   : IsComplex i f :=
   (compose_V_hh e (f o* i))^$ $@ 
     cat_postwhisker _ ((cat_assoc _ _ _)^$ $@ cx) $@ precompose_pconst _.
 
 (** And likewise passage across squares with equivalences *)
-Definition iscomplex_squaric_i {F F' X X' Y : pType}
+Definition iscomplex_equiv_i {F F' X X' Y : pType}
            (i : F ->* X) (i' : F' ->* X')
-           (g : F' <~>* F) (h : X' <~>* X) (p : Square i' i g h)
+           (g : F' <~>* F) (h : X' <~>* X) (p : Square g h i' i)
            (f : X ->* Y)
            (cx: IsComplex i f)
   : IsComplex i' (f o* h).
@@ -147,15 +147,15 @@ Proof.
 Defined.
 
 (** And also passage across squares with equivalences. *)
-Definition isexact_squaric_i n  {F F' X X' Y : pType}
+Definition isexact_equiv_i n  {F F' X X' Y : pType}
            (i : F ->* X) (i' : F' ->* X')
-           (g : F' <~>* F) (h : X' <~>* X) (p : Square i' i g h)
+           (g : F' <~>* F) (h : X' <~>* X) (p : Square g h i' i)
            (f : X ->* Y)
            `{IsExact n F X Y i f}
   : IsExact n i' (f o* h).
 Proof.
-  exists (iscomplex_squaric_i i i' g h p f cx_isexact); cbn.
-  simple notypeclasses refine (cancelR_equiv_conn_map n (C := pfiber f) _ _).
+  exists (iscomplex_equiv_i i i' g h p f cx_isexact); cbn.
+  snrefine (cancelR_equiv_conn_map n (C := pfiber f) _ _).
   - exact (@equiv_functor_hfiber _ _ _ _ (f o h) f h equiv_idmap
              (fun x => 1%path) (point Y)).
   - cbn; unfold functor_hfiber, functor_sigma; cbn.
@@ -174,14 +174,14 @@ Definition isexact_square_if n  {F F' X X' Y Y' : pType}
            {i : F ->* X} {i' : F' ->* X'}
            {f : X ->* Y} {f' : X' ->* Y'}
            (g : F' <~>* F) (h : X' <~>* X) (k : Y' <~>* Y) 
-           (p : Square i' i g h)
-           (q : Square f' f h k)
+           (p : Square g h i' i)
+           (q : Square h k f' f)
            `{IsExact n F X Y i f}
   : IsExact n i' f'.
 Proof.
-  pose (I := isexact_squaric_i n i i' g h p f).
+  pose (I := isexact_equiv_i n i i' g h p f).
   pose (I2 := isexact_homotopic_f n i' q).
-  exists (iscomplex_homotopic_cancelR i' f' k cx_isexact).
+  exists (iscomplex_cancelR i' f' k cx_isexact).
   pose (e := (pequiv_pfiber (id_cate _) k (cat_idr _)^$ : pfiber f' <~>* pfiber (k o* f'))).
   nrefine (cancelR_isequiv_conn_map n _ e). 1: apply pointed_isequiv.
   refine (conn_map_homotopic n (cxfib (cx_isexact)) _ _ _).
@@ -321,7 +321,7 @@ Defined.
 Definition square_pfib_pequiv_cxfib
            {F X Y : pType} (i : F ->* X) (f : X ->* Y)
            `{IsExact oo F X Y i f}
-  : Square i (pfib f) (pequiv_cxfib) (pequiv_pmap_idmap).
+  : Square (pequiv_cxfib) (pequiv_pmap_idmap) i (pfib f).
 Proof.
   unfold Square.
   refine (pmap_postcompose_idmap _ @* _).
@@ -346,7 +346,7 @@ Global Instance isexact_connect_R {F X Y} (i : F ->* X) (f : X ->* Y)
        `{IsExact oo F X Y i f}
   : IsExact oo (loops_functor f) (connecting_map i f).
 Proof.
-  refine (isexact_squaric_i (Y := F) oo
+  refine (isexact_equiv_i (Y := F) oo
           (pfib (pfib i)) (loops_functor f)
           (((loops_inv X) o*E
             (pfiber2_loops (pfib f)) o*E
@@ -391,16 +391,12 @@ Definition trunc_les `{Univalence} (k : trunc_index) {N : SuccStr}
 
 (** ** LES of loop spaces and homotopy groups *)
 
-Local Notation "'0'" := (inl (inl (inr tt))).
-Local Notation "'1'" := (inl (inr tt)).
-Local Notation "'2'" := (inr tt).
-
 Definition loops_carrier (F X Y : pType) (n : N3) : pType :=
   match n with
   | (n, inl (inl (inl x))) => Empty_ind _ x
-  | (n, 0) => iterated_loops n Y
-  | (n, 1) => iterated_loops n X
-  | (n, 2) => iterated_loops n F
+  | (n, inl (inl (inr tt))) => iterated_loops n Y
+  | (n, inl (inr tt)) => iterated_loops n X
+  | (n, inr tt) => iterated_loops n F
   end.
 
 (** Starting from a fiber sequence, we can obtain a long oo-exact sequence of loop spaces. *)
