@@ -4,6 +4,9 @@
 (** Import the file of reserved notations so we maintain consistent level notations throughout the library *)
 Require Export Basics.Notations.
 
+(** Currently, Coq 8.12 complains when we use the numeral notations from the Decimal module. Since we only use a copy of the real standard library we will supress this warning. In the future, our copy of the standard library will be completely removed together with this warning. *)
+Global Set Warnings "-decimal-numeral-notation".
+
 (** ** Type classes *)
 
 (** This command prevents Coq from trying to guess the values of existential variables while doing typeclass resolution.  If you don't know what that means, ignore it. *)
@@ -660,11 +663,8 @@ Global Arguments path_forall {_ A%type_scope P} (f g)%function_scope _.
    The hints in [path_hints] are designed to push concatenation *outwards*, eliminate identities and inverses, and associate to the left as far as  possible. *)
 
 (** TODO: think more carefully about this.  Perhaps associating to the right would be more convenient? *)
-Hint Resolve
-  @idpath @inverse
- : path_hints.
-
-Hint Resolve @idpath : core.
+Hint Resolve idpath inverse : path_hints.
+Hint Resolve idpath : core.
 
 Ltac path_via mid :=
   apply @concat with (y := mid); auto with path_hints.

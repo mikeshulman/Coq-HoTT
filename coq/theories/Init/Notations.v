@@ -96,3 +96,4 @@ Open Scope type_scope.
 Declare ML Module "ltac_plugin".
 
 Global Set Default Proof Mode "Classic".
+
