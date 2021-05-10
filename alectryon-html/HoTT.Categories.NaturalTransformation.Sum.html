@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" class="alectryon-standalone" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+<title>Sum.v</title>
+<link rel="stylesheet" href="alectryon.css" type="text/css" />
+<link rel="stylesheet" href="docutils_basic.css" type="text/css" />
+<link rel="stylesheet" href="tango_subtle.css" type="text/css" />
+<link rel="stylesheet" href="tango_subtle.min.css" type="text/css" />
+<script type="text/javascript" src="alectryon.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/IBM-type/0.5.4/css/ibm-type.min.css" integrity="sha512-sky5cf9Ts6FY1kstGOBHSybfKqdHR41M0Ldb0BjNiv3ifltoQIsg0zIaQ+wwdwgQ0w9vKFW7Js50lxH9vqNSSw==" crossorigin="anonymous" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/firacode/5.2.0/fira_code.min.css" integrity="sha512-MbysAYimH1hH2xYzkkMHB6MqxBqfP0megxsCLknbYqHVwXTCg9IqHbk+ZP/vnhO8UEW6PaXAkKe2vQ+SWACxxA==" crossorigin="anonymous" />
+<meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+<body>
+<div class="alectryon-root alectryon-centered"><div class="alectryon-banner">Built with <a href="https://github.com/cpitclaudel/alectryon/">Alectryon</a>, running Coq+SerAPI v8.13.0+0.13.0. Bubbles (<span class="alectryon-bubble"></span>) indicate interactive fragments: hover for details, tap to reveal contents. Use <kbd>Ctrl+↑</kbd> <kbd>Ctrl+↓</kbd> to navigate, <kbd>Ctrl+🖱️</kbd> to focus. On Mac, use <kbd>⌘</kbd> instead of <kbd>Ctrl</kbd>.</div><div class="document">
+
+
+<pre class="alectryon-io"><!-- Generator: Alectryon --><span class="alectryon-wsp"><span class="highlight"><span class="sd">(** * Coproduct of natural transformations *)</span>
+</span></span><span class="alectryon-sentence"><span class="alectryon-input"><span class="highlight"><span class="kn">Require Import</span> Category.Core Functor.Core Category.Sum Functor.Sum NaturalTransformation.Core.</span></span><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp"><span class="highlight">
+</span></span><span class="alectryon-sentence"><span class="alectryon-input"><span class="highlight"><span class="kn">Set Universe Polymorphism</span>.</span></span><span class="alectryon-wsp">
+</span></span><span class="alectryon-sentence"><span class="alectryon-input"><span class="highlight"><span class="kn">Set Implicit Arguments</span>.</span></span><span class="alectryon-wsp">
+</span></span><span class="alectryon-sentence"><span class="alectryon-input"><span class="highlight"><span class="kn">Generalizable All Variables</span>.</span></span><span class="alectryon-wsp">
+</span></span><span class="alectryon-sentence"><span class="alectryon-input"><span class="highlight"><span class="kn">Set Asymmetric Patterns</span>.</span></span><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp"><span class="highlight">
+</span></span><span class="alectryon-sentence"><span class="alectryon-input"><span class="highlight"><span class="kn">Section</span> <span class="nf">sum</span>.</span></span><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">  </span><span class="alectryon-sentence"><input class="alectryon-toggle" id="sum-v-chk0" style="display: none" type="checkbox"><label class="alectryon-input" for="sum-v-chk0"><span class="highlight"><span class="kn">Definition</span> <span class="nf">sum</span>
+             <span class="nv">C</span> <span class="nv">C&#39;</span> <span class="nv">D</span> <span class="nv">F</span> <span class="nv">G</span> <span class="nv">F&#39;</span> <span class="nv">G&#39;</span>
+             (<span class="nv">T</span> : @NaturalTransformation C D F G)
+             (<span class="nv">T&#39;</span> : @NaturalTransformation C&#39; D F&#39; G&#39;)
+  : NaturalTransformation (F + F&#39;) (G + G&#39;).</span></label><small class="alectryon-output"><div class="alectryon-output-sticky-wrapper"><div class="alectryon-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><div class="goal-hyp"><span class="hyp-names">C, C', D</span><span><span class="hyp-type-block"><span class="hyp-punct">:</span><span class="hyp-type"><span class="highlight">PreCategory</span></span></span></span></div><div class="goal-hyp"><span class="hyp-names">F, G</span><span><span class="hyp-type-block"><span class="hyp-punct">:</span><span class="hyp-type"><span class="highlight">Functor C D</span></span></span></span></div><div class="goal-hyp"><span class="hyp-names">F', G'</span><span><span class="hyp-type-block"><span class="hyp-punct">:</span><span class="hyp-type"><span class="highlight">Functor C&#39; D</span></span></span></span></div><div class="goal-hyp"><span class="hyp-names">T</span><span><span class="hyp-type-block"><span class="hyp-punct">:</span><span class="hyp-type"><span class="highlight">NaturalTransformation F G</span></span></span></span></div><div class="goal-hyp"><span class="hyp-names">T'</span><span><span class="hyp-type-block"><span class="hyp-punct">:</span><span class="hyp-type"><span class="highlight">NaturalTransformation F&#39; G&#39;</span></span></span></span></div></div><span class="goal-separator"><hr></span><div class="goal-conclusion"><span class="highlight">NaturalTransformation (F + F&#39;) (G + G&#39;)</span></div></blockquote></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">  </span><span class="alectryon-sentence"><input class="alectryon-toggle" id="sum-v-chk1" style="display: none" type="checkbox"><label class="alectryon-input" for="sum-v-chk1"><span class="highlight"><span class="kn">Proof</span>.</span></label><small class="alectryon-output"><div class="alectryon-output-sticky-wrapper"><div class="alectryon-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><div class="goal-hyp"><span class="hyp-names">C, C', D</span><span><span class="hyp-type-block"><span class="hyp-punct">:</span><span class="hyp-type"><span class="highlight">PreCategory</span></span></span></span></div><div class="goal-hyp"><span class="hyp-names">F, G</span><span><span class="hyp-type-block"><span class="hyp-punct">:</span><span class="hyp-type"><span class="highlight">Functor C D</span></span></span></span></div><div class="goal-hyp"><span class="hyp-names">F', G'</span><span><span class="hyp-type-block"><span class="hyp-punct">:</span><span class="hyp-type"><span class="highlight">Functor C&#39; D</span></span></span></span></div><div class="goal-hyp"><span class="hyp-names">T</span><span><span class="hyp-type-block"><span class="hyp-punct">:</span><span class="hyp-type"><span class="highlight">NaturalTransformation F G</span></span></span></span></div><div class="goal-hyp"><span class="hyp-names">T'</span><span><span class="hyp-type-block"><span class="hyp-punct">:</span><span class="hyp-type"><span class="highlight">NaturalTransformation F&#39; G&#39;</span></span></span></span></div></div><span class="goal-separator"><hr></span><div class="goal-conclusion"><span class="highlight">NaturalTransformation (F + F&#39;) (G + G&#39;)</span></div></blockquote></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">    </span><span class="alectryon-sentence"><input class="alectryon-toggle" id="sum-v-chk2" style="display: none" type="checkbox"><label class="alectryon-input" for="sum-v-chk2"><span class="highlight"><span class="nb">refine</span> (Build_NaturalTransformation
+              (F + F&#39;) (G + G&#39;)
+              (<span class="kr">fun</span> <span class="nv">x</span> =&gt; <span class="kr">match</span> x <span class="kr">with</span>
+                          | Datatypes.inl c =&gt; T c
+                          | Datatypes.inr c&#39; =&gt; T&#39; c&#39;
+                        <span class="kr">end</span>)
+              _).</span></label><small class="alectryon-output"><div class="alectryon-output-sticky-wrapper"><div class="alectryon-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><div class="goal-hyp"><span class="hyp-names">C, C', D</span><span><span class="hyp-type-block"><span class="hyp-punct">:</span><span class="hyp-type"><span class="highlight">PreCategory</span></span></span></span></div><div class="goal-hyp"><span class="hyp-names">F, G</span><span><span class="hyp-type-block"><span class="hyp-punct">:</span><span class="hyp-type"><span class="highlight">Functor C D</span></span></span></span></div><div class="goal-hyp"><span class="hyp-names">F', G'</span><span><span class="hyp-type-block"><span class="hyp-punct">:</span><span class="hyp-type"><span class="highlight">Functor C&#39; D</span></span></span></span></div><div class="goal-hyp"><span class="hyp-names">T</span><span><span class="hyp-type-block"><span class="hyp-punct">:</span><span class="hyp-type"><span class="highlight">NaturalTransformation F G</span></span></span></span></div><div class="goal-hyp"><span class="hyp-names">T'</span><span><span class="hyp-type-block"><span class="hyp-punct">:</span><span class="hyp-type"><span class="highlight">NaturalTransformation F&#39; G&#39;</span></span></span></span></div></div><span class="goal-separator"><hr></span><div class="goal-conclusion"><span class="highlight"><span class="kr">forall</span> (<span class="nv">s</span> <span class="nv">d</span> : (C + C&#39;)%category)
+(<span class="nv">m</span> : morphism (C + C&#39;) s d),
+(<span class="kr">match</span>
+   d <span class="kr">as</span> x
+   <span class="kr">return</span>
+     (morphism D ((F + F&#39;) _0 x)%object
+        ((G + G&#39;) _0 x)%object)
+ <span class="kr">with</span>
+ | Datatypes.inl c =&gt; T c
+ | Datatypes.inr c&#39; =&gt; T&#39; c&#39;
+ <span class="kr">end</span> o (F + F&#39;) _1 m)%morphism =
+((G + G&#39;) _1 m
+ o <span class="kr">match</span>
+     s <span class="kr">as</span> x
+     <span class="kr">return</span>
+       (morphism D ((F + F&#39;) _0 x)%object
+          ((G + G&#39;) _0 x)%object)
+   <span class="kr">with</span>
+   | Datatypes.inl c =&gt; T c
+   | Datatypes.inr c&#39; =&gt; T&#39; c&#39;
+   <span class="kr">end</span>)%morphism</span></div></blockquote></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">    </span><span class="alectryon-sentence"><span class="alectryon-input"><span class="highlight"><span class="kp">abstract</span> (
+        <span class="kp">repeat</span> (<span class="nb">intros</span> [] || <span class="nb">intro</span>); <span class="nb">simpl</span>;
+        <span class="nb">auto with</span> natural_transformation
+      ).</span></span><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">  </span><span class="alectryon-sentence"><span class="alectryon-input"><span class="highlight"><span class="kn">Defined</span>.</span></span><span class="alectryon-wsp">
+</span></span><span class="alectryon-sentence"><span class="alectryon-input"><span class="highlight"><span class="kn">End</span> <span class="nf">sum</span>.</span></span><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp"><span class="highlight">
+</span></span><span class="alectryon-sentence"><span class="alectryon-input"><span class="highlight"><span class="kn">Module</span> <span class="nf">Export</span> NaturalTransformationSumNotations.</span></span><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">  </span><span class="alectryon-sentence"><span class="alectryon-input"><span class="highlight"><span class="kn">Notation</span> <span class="s2">&quot;T + U&quot;</span> := (sum T U) : natural_transformation_scope.</span></span><span class="alectryon-wsp">
+</span></span><span class="alectryon-sentence"><span class="alectryon-input"><span class="highlight"><span class="kn">End</span> <span class="nf">NaturalTransformationSumNotations</span>.</span></span></span></pre>
+</div>
+</div></body>
+</html>
