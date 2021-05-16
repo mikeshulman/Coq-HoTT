@@ -30,6 +30,7 @@
 </span></span><span class="alectryon-sentence"><span class="alectryon-input"><span class="highlight"><span class="kn">Require Import</span> HProp.</span></span><span class="alectryon-wsp">
 </span></span><span class="alectryon-sentence"><span class="alectryon-input"><span class="highlight"><span class="kn">Require Import</span> PathAny.</span></span><span class="alectryon-wsp">
 </span></span><span class="alectryon-wsp"><span class="highlight">
+</span></span><span class="alectryon-sentence"><span class="alectryon-input"><span class="highlight"><span class="kn">Local Open Scope</span> nat_scope.</span></span><span class="alectryon-wsp">
 </span></span><span class="alectryon-sentence"><span class="alectryon-input"><span class="highlight"><span class="kn">Local Open Scope</span> path_scope.</span></span><span class="alectryon-wsp">
 </span></span><span class="alectryon-wsp"><span class="highlight">
 </span></span><span class="alectryon-sentence"><span class="alectryon-input"><span class="highlight"><span class="kn">Notation</span> <span class="nf">coe</span> := (transport idmap).</span></span><span class="alectryon-wsp">
@@ -464,27 +465,27 @@ shift_seq A n i -&gt; Colimit A</span></div></blockquote></div></div></small><sp
 </span></span><span class="alectryon-wsp">  </span><span class="alectryon-sentence"><input class="alectryon-toggle" id="sequential-v-chk43" style="display: none" type="checkbox"><label class="alectryon-input" for="sequential-v-chk43"><span class="highlight">+</span></label><small class="alectryon-output"><div class="alectryon-output-sticky-wrapper"><div class="alectryon-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><div class="goal-hyp"><span class="hyp-names">A</span><span><span class="hyp-type-block"><span class="hyp-punct">:</span><span class="hyp-type"><span class="highlight">Sequence</span></span></span></span></div><div class="goal-hyp"><span class="hyp-names">n</span><span><span class="hyp-type-block"><span class="hyp-punct">:</span><span class="hyp-type"><span class="highlight">nat</span></span></span></span></div></div><span class="goal-separator"><hr></span><div class="goal-conclusion"><span class="highlight"><span class="kr">forall</span> (<span class="nv">i</span> <span class="nv">j</span> : Graph.graph0 sequence_graph)
 (<span class="nv">g</span> : Graph.graph1 sequence_graph i j),
 (<span class="kr">fun</span> (<span class="nv">k</span> : Graph.graph0 sequence_graph)
-   (<span class="nv">a</span> : shift_seq A n k) =&gt; inj A (k + n)%nat a) j
+   (<span class="nv">a</span> : shift_seq A n k) =&gt; inj A (k + n) a) j
 o (shift_seq A n) _f g ==
 (<span class="kr">fun</span> (<span class="nv">k</span> : Graph.graph0 sequence_graph)
-   (<span class="nv">a</span> : shift_seq A n k) =&gt; inj A (k + n)%nat a) i</span></div></blockquote></div></div></small><span class="alectryon-wsp"> </span></span><span class="alectryon-sentence"><span class="alectryon-input"><span class="highlight"><span class="nb">intros</span> k l p; <span class="nb">destruct</span> p; <span class="bp">exact</span> (glue A (k+n)%nat).</span></span><span class="alectryon-wsp">
+   (<span class="nv">a</span> : shift_seq A n k) =&gt; inj A (k + n) a) i</span></div></blockquote></div></div></small><span class="alectryon-wsp"> </span></span><span class="alectryon-sentence"><span class="alectryon-input"><span class="highlight"><span class="nb">intros</span> k l p; <span class="nb">destruct</span> p; <span class="bp">exact</span> (glue A (k+n)%nat).</span></span><span class="alectryon-wsp">
 </span></span><span class="alectryon-sentence"><span class="alectryon-input"><span class="highlight"><span class="kn">Defined</span>.</span></span><span class="alectryon-wsp">
 </span></span><span class="alectryon-wsp"><span class="highlight">
 </span></span><span class="alectryon-sentence"><input class="alectryon-toggle" id="sequential-v-chk44" style="display: none" type="checkbox"><label class="alectryon-input" for="sequential-v-chk44"><span class="highlight"><span class="kn">Definition</span> <span class="nf">colim_shift_seq_to_colim_seq_beta_glue</span> <span class="nv">A</span> <span class="nv">n</span> <span class="nv">k</span> <span class="nv">a</span>
   : ap (colim_shift_seq_to_colim_seq A n) (glue (shift_seq A n) k a) = glue A (k+n)%nat a.</span></label><small class="alectryon-output"><div class="alectryon-output-sticky-wrapper"><div class="alectryon-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><div class="goal-hyp"><span class="hyp-names">A</span><span><span class="hyp-type-block"><span class="hyp-punct">:</span><span class="hyp-type"><span class="highlight">Sequence</span></span></span></span></div><div class="goal-hyp"><span class="hyp-names">n</span><span><span class="hyp-type-block"><span class="hyp-punct">:</span><span class="hyp-type"><span class="highlight">nat</span></span></span></span></div><div class="goal-hyp"><span class="hyp-names">k</span><span><span class="hyp-type-block"><span class="hyp-punct">:</span><span class="hyp-type"><span class="highlight">Graph.graph0 sequence_graph</span></span></span></span></div><div class="goal-hyp"><span class="hyp-names">a</span><span><span class="hyp-type-block"><span class="hyp-punct">:</span><span class="hyp-type"><span class="highlight">shift_seq A n k</span></span></span></span></div></div><span class="goal-separator"><hr></span><div class="goal-conclusion"><span class="highlight">ap (colim_shift_seq_to_colim_seq A n)
-  (glue (shift_seq A n) k a) = glue A (k + n)%nat a</span></div></blockquote></div></div></small><span class="alectryon-wsp">
+  (glue (shift_seq A n) k a) = glue A (k + n) a</span></div></blockquote></div></div></small><span class="alectryon-wsp">
 </span></span><span class="alectryon-sentence"><input class="alectryon-toggle" id="sequential-v-chk45" style="display: none" type="checkbox"><label class="alectryon-input" for="sequential-v-chk45"><span class="highlight"><span class="kn">Proof</span>.</span></label><small class="alectryon-output"><div class="alectryon-output-sticky-wrapper"><div class="alectryon-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><div class="goal-hyp"><span class="hyp-names">A</span><span><span class="hyp-type-block"><span class="hyp-punct">:</span><span class="hyp-type"><span class="highlight">Sequence</span></span></span></span></div><div class="goal-hyp"><span class="hyp-names">n</span><span><span class="hyp-type-block"><span class="hyp-punct">:</span><span class="hyp-type"><span class="highlight">nat</span></span></span></span></div><div class="goal-hyp"><span class="hyp-names">k</span><span><span class="hyp-type-block"><span class="hyp-punct">:</span><span class="hyp-type"><span class="highlight">Graph.graph0 sequence_graph</span></span></span></span></div><div class="goal-hyp"><span class="hyp-names">a</span><span><span class="hyp-type-block"><span class="hyp-punct">:</span><span class="hyp-type"><span class="highlight">shift_seq A n k</span></span></span></span></div></div><span class="goal-separator"><hr></span><div class="goal-conclusion"><span class="highlight">ap (colim_shift_seq_to_colim_seq A n)
-  (glue (shift_seq A n) k a) = glue A (k + n)%nat a</span></div></blockquote></div></div></small><span class="alectryon-wsp">
+  (glue (shift_seq A n) k a) = glue A (k + n) a</span></div></blockquote></div></div></small><span class="alectryon-wsp">
 </span></span><span class="alectryon-wsp">  </span><span class="alectryon-sentence"><span class="alectryon-input"><span class="highlight">srapply Colimit_rec_beta_colimp.</span></span><span class="alectryon-wsp">
 </span></span><span class="alectryon-sentence"><span class="alectryon-input"><span class="highlight"><span class="kn">Defined</span>.</span></span><span class="alectryon-wsp">
 </span></span><span class="alectryon-wsp"><span class="highlight">
 </span></span><span class="alectryon-sentence"><input class="alectryon-toggle" id="sequential-v-chk46" style="display: none" type="checkbox"><label class="alectryon-input" for="sequential-v-chk46"><span class="highlight"><span class="kn">Definition</span> <span class="nf">colim_shift_seq_to_colim_seq_ap_inj</span> <span class="nv">A</span> <span class="nv">n</span> <span class="nv">k</span> (<span class="nv">a1</span> <span class="nv">a2</span> : shift_seq A n k) (<span class="nv">p</span> : a1 = a2)
   : ap (colim_shift_seq_to_colim_seq A n) (ap (inj _ k) p) = ap (inj _ (k+n)%nat) p.</span></label><small class="alectryon-output"><div class="alectryon-output-sticky-wrapper"><div class="alectryon-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><div class="goal-hyp"><span class="hyp-names">A</span><span><span class="hyp-type-block"><span class="hyp-punct">:</span><span class="hyp-type"><span class="highlight">Sequence</span></span></span></span></div><div class="goal-hyp"><span class="hyp-names">n</span><span><span class="hyp-type-block"><span class="hyp-punct">:</span><span class="hyp-type"><span class="highlight">nat</span></span></span></span></div><div class="goal-hyp"><span class="hyp-names">k</span><span><span class="hyp-type-block"><span class="hyp-punct">:</span><span class="hyp-type"><span class="highlight">Graph.graph0 sequence_graph</span></span></span></span></div><div class="goal-hyp"><span class="hyp-names">a1, a2</span><span><span class="hyp-type-block"><span class="hyp-punct">:</span><span class="hyp-type"><span class="highlight">shift_seq A n k</span></span></span></span></div><div class="goal-hyp"><span class="hyp-names">p</span><span><span class="hyp-type-block"><span class="hyp-punct">:</span><span class="hyp-type"><span class="highlight">a1 = a2</span></span></span></span></div></div><span class="goal-separator"><hr></span><div class="goal-conclusion"><span class="highlight">ap (colim_shift_seq_to_colim_seq A n)
   (ap (inj (shift_seq A n) k) p) =
-ap (inj A (k + n)%nat) p</span></div></blockquote></div></div></small><span class="alectryon-wsp">
+ap (inj A (k + n)) p</span></div></blockquote></div></div></small><span class="alectryon-wsp">
 </span></span><span class="alectryon-sentence"><input class="alectryon-toggle" id="sequential-v-chk47" style="display: none" type="checkbox"><label class="alectryon-input" for="sequential-v-chk47"><span class="highlight"><span class="kn">Proof</span>.</span></label><small class="alectryon-output"><div class="alectryon-output-sticky-wrapper"><div class="alectryon-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><div class="goal-hyp"><span class="hyp-names">A</span><span><span class="hyp-type-block"><span class="hyp-punct">:</span><span class="hyp-type"><span class="highlight">Sequence</span></span></span></span></div><div class="goal-hyp"><span class="hyp-names">n</span><span><span class="hyp-type-block"><span class="hyp-punct">:</span><span class="hyp-type"><span class="highlight">nat</span></span></span></span></div><div class="goal-hyp"><span class="hyp-names">k</span><span><span class="hyp-type-block"><span class="hyp-punct">:</span><span class="hyp-type"><span class="highlight">Graph.graph0 sequence_graph</span></span></span></span></div><div class="goal-hyp"><span class="hyp-names">a1, a2</span><span><span class="hyp-type-block"><span class="hyp-punct">:</span><span class="hyp-type"><span class="highlight">shift_seq A n k</span></span></span></span></div><div class="goal-hyp"><span class="hyp-names">p</span><span><span class="hyp-type-block"><span class="hyp-punct">:</span><span class="hyp-type"><span class="highlight">a1 = a2</span></span></span></span></div></div><span class="goal-separator"><hr></span><div class="goal-conclusion"><span class="highlight">ap (colim_shift_seq_to_colim_seq A n)
   (ap (inj (shift_seq A n) k) p) =
-ap (inj A (k + n)%nat) p</span></div></blockquote></div></div></small><span class="alectryon-wsp">
+ap (inj A (k + n)) p</span></div></blockquote></div></div></small><span class="alectryon-wsp">
 </span></span><span class="alectryon-wsp">  </span><span class="alectryon-sentence"><span class="alectryon-input"><span class="highlight"><span class="nb">destruct</span> p; <span class="bp">reflexivity</span>.</span></span><span class="alectryon-wsp">
 </span></span><span class="alectryon-sentence"><span class="alectryon-input"><span class="highlight"><span class="kn">Defined</span>.</span></span><span class="alectryon-wsp">
 </span></span><span class="alectryon-wsp"><span class="highlight">
@@ -531,25 +532,25 @@ shift_seq A <span class="mi">0</span> i -&gt; A i</span></div></blockquote><div 
 (A _f g) (<span class="nl">?DiagramMap_obj</span> i x) =
 <span class="nl">?DiagramMap_obj</span> j (((shift_seq A <span class="mi">0</span>) _f g) x)</span></div></blockquote></div></div></div></small><span class="alectryon-wsp">
 </span></span><span class="alectryon-wsp">      </span><span class="alectryon-sentence"><input class="alectryon-toggle" id="sequential-v-chk5a" style="display: none" type="checkbox"><label class="alectryon-input" for="sequential-v-chk5a"><span class="highlight">*</span></label><small class="alectryon-output"><div class="alectryon-output-sticky-wrapper"><div class="alectryon-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><div class="goal-hyp"><span class="hyp-names">H</span><span><span class="hyp-type-block"><span class="hyp-punct">:</span><span class="hyp-type"><span class="highlight">Funext</span></span></span></span></div><div class="goal-hyp"><span class="hyp-names">A</span><span><span class="hyp-type-block"><span class="hyp-punct">:</span><span class="hyp-type"><span class="highlight">Sequence</span></span></span></span></div></div><span class="goal-separator"><hr></span><div class="goal-conclusion"><span class="highlight"><span class="kr">forall</span> <span class="nv">i</span> : Graph.graph0 sequence_graph,
-shift_seq A <span class="mi">0</span> i -&gt; A i</span></div></blockquote></div></div></small><span class="alectryon-wsp"> </span></span><span class="alectryon-sentence"><span class="alectryon-input"><span class="highlight"><span class="bp">exact</span> (<span class="kr">fun</span> <span class="nv">k</span> =&gt; coe (ap A (nat_plus_n_O k)^)).</span></span><span class="alectryon-wsp">
+shift_seq A <span class="mi">0</span> i -&gt; A i</span></div></blockquote></div></div></small><span class="alectryon-wsp"> </span></span><span class="alectryon-sentence"><span class="alectryon-input"><span class="highlight"><span class="bp">exact</span> (<span class="kr">fun</span> <span class="nv">k</span> =&gt; coe (ap A (nat_add_n_O k)^)).</span></span><span class="alectryon-wsp">
 </span></span><span class="alectryon-wsp">      </span><span class="alectryon-sentence"><input class="alectryon-toggle" id="sequential-v-chk5b" style="display: none" type="checkbox"><label class="alectryon-input" for="sequential-v-chk5b"><span class="highlight">*</span></label><small class="alectryon-output"><div class="alectryon-output-sticky-wrapper"><div class="alectryon-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><div class="goal-hyp"><span class="hyp-names">H</span><span><span class="hyp-type-block"><span class="hyp-punct">:</span><span class="hyp-type"><span class="highlight">Funext</span></span></span></span></div><div class="goal-hyp"><span class="hyp-names">A</span><span><span class="hyp-type-block"><span class="hyp-punct">:</span><span class="hyp-type"><span class="highlight">Sequence</span></span></span></span></div></div><span class="goal-separator"><hr></span><div class="goal-conclusion"><span class="highlight"><span class="kr">forall</span> (<span class="nv">i</span> <span class="nv">j</span> : Graph.graph0 sequence_graph)
 (<span class="nv">g</span> : Graph.graph1 sequence_graph i j)
 (<span class="nv">x</span> : shift_seq A <span class="mi">0</span> i),
 (A _f g)
   ((<span class="kr">fun</span> <span class="nv">k</span> : Graph.graph0 sequence_graph =&gt;
-    coe (ap A (nat_plus_n_O k)^)) i x) =
+    coe (ap A (nat_add_n_O k)^)) i x) =
 (<span class="kr">fun</span> <span class="nv">k</span> : Graph.graph0 sequence_graph =&gt;
- coe (ap A (nat_plus_n_O k)^)) j
-  (((shift_seq A <span class="mi">0</span>) _f g) x)</span></div></blockquote></div></div></small><span class="alectryon-wsp"> </span></span><span class="alectryon-sentence"><input class="alectryon-toggle" id="sequential-v-chk5c" style="display: none" type="checkbox"><label class="alectryon-input" for="sequential-v-chk5c"><span class="highlight"><span class="nb">intros</span> k l p a; <span class="nb">destruct</span> p; srapply (K S (<span class="kr">fun</span> <span class="nv">n</span> <span class="nv">a</span> =&gt; a^+) (nat_plus_n_O k)^ @ _).</span></label><small class="alectryon-output"><div class="alectryon-output-sticky-wrapper"><div class="alectryon-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><div class="goal-hyp"><span class="hyp-names">H</span><span><span class="hyp-type-block"><span class="hyp-punct">:</span><span class="hyp-type"><span class="highlight">Funext</span></span></span></span></div><div class="goal-hyp"><span class="hyp-names">A</span><span><span class="hyp-type-block"><span class="hyp-punct">:</span><span class="hyp-type"><span class="highlight">Sequence</span></span></span></span></div><div class="goal-hyp"><span class="hyp-names">k</span><span><span class="hyp-type-block"><span class="hyp-punct">:</span><span class="hyp-type"><span class="highlight">Graph.graph0 sequence_graph</span></span></span></span></div><div class="goal-hyp"><span class="hyp-names">a</span><span><span class="hyp-type-block"><span class="hyp-punct">:</span><span class="hyp-type"><span class="highlight">shift_seq A <span class="mi">0</span> k</span></span></span></span></div></div><span class="goal-separator"><hr></span><div class="goal-conclusion"><span class="highlight">coe (ap A (ap S (nat_plus_n_O k)^))
-  ((<span class="kr">fun</span> (<span class="nv">n</span> : nat) (<span class="nv">a</span> : A n) =&gt; (a) ^+) (k + <span class="mi">0</span>)%nat a) =
-coe (ap A (nat_plus_n_O k.+<span class="mi">1</span>)^) (a) ^+</span></div></blockquote></div></div></small><span class="alectryon-wsp">
+ coe (ap A (nat_add_n_O k)^)) j
+  (((shift_seq A <span class="mi">0</span>) _f g) x)</span></div></blockquote></div></div></small><span class="alectryon-wsp"> </span></span><span class="alectryon-sentence"><input class="alectryon-toggle" id="sequential-v-chk5c" style="display: none" type="checkbox"><label class="alectryon-input" for="sequential-v-chk5c"><span class="highlight"><span class="nb">intros</span> k l p a; <span class="nb">destruct</span> p; srapply (K S (<span class="kr">fun</span> <span class="nv">n</span> <span class="nv">a</span> =&gt; a^+) (nat_add_n_O k)^ @ _).</span></label><small class="alectryon-output"><div class="alectryon-output-sticky-wrapper"><div class="alectryon-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><div class="goal-hyp"><span class="hyp-names">H</span><span><span class="hyp-type-block"><span class="hyp-punct">:</span><span class="hyp-type"><span class="highlight">Funext</span></span></span></span></div><div class="goal-hyp"><span class="hyp-names">A</span><span><span class="hyp-type-block"><span class="hyp-punct">:</span><span class="hyp-type"><span class="highlight">Sequence</span></span></span></span></div><div class="goal-hyp"><span class="hyp-names">k</span><span><span class="hyp-type-block"><span class="hyp-punct">:</span><span class="hyp-type"><span class="highlight">Graph.graph0 sequence_graph</span></span></span></span></div><div class="goal-hyp"><span class="hyp-names">a</span><span><span class="hyp-type-block"><span class="hyp-punct">:</span><span class="hyp-type"><span class="highlight">shift_seq A <span class="mi">0</span> k</span></span></span></span></div></div><span class="goal-separator"><hr></span><div class="goal-conclusion"><span class="highlight">coe (ap A (ap S (nat_add_n_O k)^))
+  ((<span class="kr">fun</span> (<span class="nv">n</span> : nat) (<span class="nv">a</span> : A n) =&gt; (a) ^+) (k + <span class="mi">0</span>) a) =
+coe (ap A (nat_add_n_O k.+<span class="mi">1</span>)^) (a) ^+</span></div></blockquote></div></div></small><span class="alectryon-wsp">
 </span></span><span class="alectryon-wsp">        </span><span class="alectryon-sentence"><span class="alectryon-input"><span class="highlight">srapply (ap10 (ap coe (ap (ap _) (ap_V _ _)))).</span></span><span class="alectryon-wsp">
 </span></span><span class="alectryon-wsp">    </span><span class="alectryon-sentence"><input class="alectryon-toggle" id="sequential-v-chk5d" style="display: none" type="checkbox"><label class="alectryon-input" for="sequential-v-chk5d"><span class="highlight">+</span></label><small class="alectryon-output"><div class="alectryon-output-sticky-wrapper"><div class="alectryon-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><div class="goal-hyp"><span class="hyp-names">H</span><span><span class="hyp-type-block"><span class="hyp-punct">:</span><span class="hyp-type"><span class="highlight">Funext</span></span></span></span></div><div class="goal-hyp"><span class="hyp-names">A</span><span><span class="hyp-type-block"><span class="hyp-punct">:</span><span class="hyp-type"><span class="highlight">Sequence</span></span></span></span></div></div><span class="goal-separator"><hr></span><div class="goal-conclusion"><span class="highlight"><span class="kr">forall</span> <span class="nv">i</span> : Graph.graph0 sequence_graph,
 IsEquiv
   ({|
      DiagramMap_obj :=
        <span class="kr">fun</span> <span class="nv">k</span> : Graph.graph0 sequence_graph =&gt;
-       coe (ap A (nat_plus_n_O k)^);
+       coe (ap A (nat_add_n_O k)^);
      DiagramMap_comm :=
        <span class="kr">fun</span> (<span class="nv">k</span> <span class="nv">l</span> : Graph.graph0 sequence_graph)
          (<span class="nv">p</span> : Graph.graph1 sequence_graph k l)
@@ -557,16 +558,16 @@ IsEquiv
        <span class="kr">match</span>
          p <span class="kr">as</span> p0 <span class="kr">in</span> (_ = y)
          <span class="kr">return</span>
-           ((A _f p0) (coe (ap A (nat_plus_n_O k)^) a) =
-            coe (ap A (nat_plus_n_O y)^)
+           ((A _f p0) (coe (ap A (nat_add_n_O k)^) a) =
+            coe (ap A (nat_add_n_O y)^)
               (((shift_seq A <span class="mi">0</span>) _f p0) a))
        <span class="kr">with</span>
        | <span class="mi">1</span> =&gt;
            K S (<span class="kr">fun</span> (<span class="nv">n</span> : nat) (<span class="nv">a0</span> : A n) =&gt; (a0) ^+)
-             (nat_plus_n_O k)^ @
+             (nat_add_n_O k)^ @
            ap10
              (ap coe
-                (ap (ap A) (ap_V S (nat_plus_n_O k))))
+                (ap (ap A) (ap_V S (nat_add_n_O k))))
              (a) ^+
        <span class="kr">end</span>
    |} i)</span></div></blockquote></div></div></small><span class="alectryon-wsp"> </span></span><span class="alectryon-sentence"><span class="alectryon-input"><span class="highlight"><span class="nb">intro</span> k; srapply isequiv_path.</span></span><span class="alectryon-wsp">
@@ -576,7 +577,7 @@ IsEquiv
       {|
         DiagramMap_obj :=
           <span class="kr">fun</span> <span class="nv">k</span> : Graph.graph0 sequence_graph =&gt;
-          coe (ap A (nat_plus_n_O k)^);
+          coe (ap A (nat_add_n_O k)^);
         DiagramMap_comm :=
           <span class="kr">fun</span> (<span class="nv">k</span> <span class="nv">l</span> : Graph.graph0 sequence_graph)
             (<span class="nv">p</span> : Graph.graph1 sequence_graph k l)
@@ -585,24 +586,23 @@ IsEquiv
             p <span class="kr">as</span> p0 <span class="kr">in</span> (_ = y)
             <span class="kr">return</span>
               ((A _f p0)
-                 (coe (ap A (nat_plus_n_O k)^) a) =
-               coe (ap A (nat_plus_n_O y)^)
+                 (coe (ap A (nat_add_n_O k)^) a) =
+               coe (ap A (nat_add_n_O y)^)
                  (((shift_seq A <span class="mi">0</span>) _f p0) a))
           <span class="kr">with</span>
           | <span class="mi">1</span> =&gt;
               K S
                 (<span class="kr">fun</span> (<span class="nv">n</span> : nat) (<span class="nv">a0</span> : A n) =&gt; (a0) ^+)
-                (nat_plus_n_O k)^ @
+                (nat_add_n_O k)^ @
               ap10
                 (ap coe
-                   (ap (ap A)
-                      (ap_V S (nat_plus_n_O k))))
+                   (ap (ap A) (ap_V S (nat_add_n_O k))))
                 (a) ^+
           <span class="kr">end</span>
       |};
     diag_equiv_isequiv :=
       <span class="kr">fun</span> <span class="nv">k</span> : Graph.graph0 sequence_graph =&gt;
-      isequiv_path (ap A (nat_plus_n_O k)^)
+      isequiv_path (ap A (nat_add_n_O k)^)
   |} (iscolimit_colimit (shift_seq A <span class="mi">0</span>))
   (iscolimit_colimit A) ==
 colim_shift_seq_to_colim_seq A <span class="mi">0</span></span></div></blockquote></div></div></small><span class="alectryon-wsp"> </span></span><span class="alectryon-sentence"><input class="alectryon-toggle" id="sequential-v-chk5f" style="display: none" type="checkbox"><label class="alectryon-input" for="sequential-v-chk5f"><span class="highlight"><span class="nb">symmetry</span>; srapply seq_colimit_uniq.</span></label><small class="alectryon-output"><div class="alectryon-output-sticky-wrapper"><div class="alectryon-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><div class="goal-hyp"><span class="hyp-names">H</span><span><span class="hyp-type-block"><span class="hyp-punct">:</span><span class="hyp-type"><span class="highlight">Funext</span></span></span></span></div><div class="goal-hyp"><span class="hyp-names">A</span><span><span class="hyp-type-block"><span class="hyp-punct">:</span><span class="hyp-type"><span class="highlight">Sequence</span></span></span></span></div></div><span class="goal-separator"><hr></span><div class="goal-conclusion"><span class="highlight"><span class="kr">forall</span> <span class="nv">n</span> : Graph.graph0 sequence_graph,
@@ -614,7 +614,7 @@ equiv_functor_colimit
       {|
         DiagramMap_obj :=
           <span class="kr">fun</span> <span class="nv">k</span> : Graph.graph0 sequence_graph =&gt;
-          coe (ap A (nat_plus_n_O k)^);
+          coe (ap A (nat_add_n_O k)^);
         DiagramMap_comm :=
           <span class="kr">fun</span> (<span class="nv">k</span> <span class="nv">l</span> : Graph.graph0 sequence_graph)
             (<span class="nv">p</span> : Graph.graph1 sequence_graph k l)
@@ -623,24 +623,23 @@ equiv_functor_colimit
             p <span class="kr">as</span> p0 <span class="kr">in</span> (_ = y)
             <span class="kr">return</span>
               ((A _f p0)
-                 (coe (ap A (nat_plus_n_O k)^) a) =
-               coe (ap A (nat_plus_n_O y)^)
+                 (coe (ap A (nat_add_n_O k)^) a) =
+               coe (ap A (nat_add_n_O y)^)
                  (((shift_seq A <span class="mi">0</span>) _f p0) a))
           <span class="kr">with</span>
           | <span class="mi">1</span> =&gt;
               K S
                 (<span class="kr">fun</span> (<span class="nv">n0</span> : nat) (<span class="nv">a0</span> : A n0) =&gt; (a0) ^+)
-                (nat_plus_n_O k)^ @
+                (nat_add_n_O k)^ @
               ap10
                 (ap coe
-                   (ap (ap A)
-                      (ap_V S (nat_plus_n_O k))))
+                   (ap (ap A) (ap_V S (nat_add_n_O k))))
                 (a) ^+
           <span class="kr">end</span>
       |};
     diag_equiv_isequiv :=
       <span class="kr">fun</span> <span class="nv">k</span> : Graph.graph0 sequence_graph =&gt;
-      isequiv_path (ap A (nat_plus_n_O k)^)
+      isequiv_path (ap A (nat_add_n_O k)^)
   |} (iscolimit_colimit (shift_seq A <span class="mi">0</span>))
   (iscolimit_colimit A) o inj (shift_seq A <span class="mi">0</span>) n</span></div></blockquote><div class="alectryon-extra-goals"><input class="alectryon-extra-goal-toggle" id="sequential-v-chk60" style="display: none" type="checkbox"><blockquote class="alectryon-goal"><div class="goal-hyps"><div class="goal-hyp"><span class="hyp-names">H</span><span><span class="hyp-type-block"><span class="hyp-punct">:</span><span class="hyp-type"><span class="highlight">Funext</span></span></span></span></div><div class="goal-hyp"><span class="hyp-names">A</span><span><span class="hyp-type-block"><span class="hyp-punct">:</span><span class="hyp-type"><span class="highlight">Sequence</span></span></span></span></div></div><label class="goal-separator alectryon-extra-goal-label" for="sequential-v-chk60"><hr></label><div class="goal-conclusion"><span class="highlight"><span class="kr">forall</span> (<span class="nv">n</span> : Graph.graph0 sequence_graph)
 (<span class="nv">a</span> : shift_seq A <span class="mi">0</span> n),
@@ -654,7 +653,7 @@ ap
          {|
            DiagramMap_obj :=
              <span class="kr">fun</span> <span class="nv">k</span> : Graph.graph0 sequence_graph =&gt;
-             coe (ap A (nat_plus_n_O k)^);
+             coe (ap A (nat_add_n_O k)^);
            DiagramMap_comm :=
              <span class="kr">fun</span> (<span class="nv">k</span> <span class="nv">l</span> : Graph.graph0 sequence_graph)
                (<span class="nv">p</span> : Graph.graph1 sequence_graph k l)
@@ -663,24 +662,24 @@ ap
                p <span class="kr">as</span> p0 <span class="kr">in</span> (_ = y)
                <span class="kr">return</span>
                  ((A _f p0)
-                    (coe (ap A (nat_plus_n_O k)^) a0) =
-                  coe (ap A (nat_plus_n_O y)^)
+                    (coe (ap A (nat_add_n_O k)^) a0) =
+                  coe (ap A (nat_add_n_O y)^)
                     (((shift_seq A <span class="mi">0</span>) _f p0) a0))
              <span class="kr">with</span>
              | <span class="mi">1</span> =&gt;
                  K S
                    (<span class="kr">fun</span> (<span class="nv">n0</span> : nat) (<span class="nv">a1</span> : A n0) =&gt;
-                    (a1) ^+) (nat_plus_n_O k)^ @
+                    (a1) ^+) (nat_add_n_O k)^ @
                  ap10
                    (ap coe
                       (ap (ap A)
-                         (ap_V S (nat_plus_n_O k))))
+                         (ap_V S (nat_add_n_O k))))
                    (a0) ^+
              <span class="kr">end</span>
          |};
        diag_equiv_isequiv :=
          <span class="kr">fun</span> <span class="nv">k</span> : Graph.graph0 sequence_graph =&gt;
-         isequiv_path (ap A (nat_plus_n_O k)^)
+         isequiv_path (ap A (nat_add_n_O k)^)
      |} (iscolimit_colimit (shift_seq A <span class="mi">0</span>))
      (iscolimit_colimit A)) (glue (shift_seq A <span class="mi">0</span>) n a)</span></div></blockquote></div></div></div></small><span class="alectryon-wsp">
 </span></span><span class="alectryon-wsp">    </span><span class="alectryon-sentence"><input class="alectryon-toggle" id="sequential-v-chk61" style="display: none" type="checkbox"><label class="alectryon-input" for="sequential-v-chk61"><span class="highlight">+</span></label><small class="alectryon-output"><div class="alectryon-output-sticky-wrapper"><div class="alectryon-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><div class="goal-hyp"><span class="hyp-names">H</span><span><span class="hyp-type-block"><span class="hyp-punct">:</span><span class="hyp-type"><span class="highlight">Funext</span></span></span></span></div><div class="goal-hyp"><span class="hyp-names">A</span><span><span class="hyp-type-block"><span class="hyp-punct">:</span><span class="hyp-type"><span class="highlight">Sequence</span></span></span></span></div></div><span class="goal-separator"><hr></span><div class="goal-conclusion"><span class="highlight"><span class="kr">forall</span> <span class="nv">n</span> : Graph.graph0 sequence_graph,
@@ -692,7 +691,7 @@ equiv_functor_colimit
       {|
         DiagramMap_obj :=
           <span class="kr">fun</span> <span class="nv">k</span> : Graph.graph0 sequence_graph =&gt;
-          coe (ap A (nat_plus_n_O k)^);
+          coe (ap A (nat_add_n_O k)^);
         DiagramMap_comm :=
           <span class="kr">fun</span> (<span class="nv">k</span> <span class="nv">l</span> : Graph.graph0 sequence_graph)
             (<span class="nv">p</span> : Graph.graph1 sequence_graph k l)
@@ -701,34 +700,33 @@ equiv_functor_colimit
             p <span class="kr">as</span> p0 <span class="kr">in</span> (_ = y)
             <span class="kr">return</span>
               ((A _f p0)
-                 (coe (ap A (nat_plus_n_O k)^) a) =
-               coe (ap A (nat_plus_n_O y)^)
+                 (coe (ap A (nat_add_n_O k)^) a) =
+               coe (ap A (nat_add_n_O y)^)
                  (((shift_seq A <span class="mi">0</span>) _f p0) a))
           <span class="kr">with</span>
           | <span class="mi">1</span> =&gt;
               K S
                 (<span class="kr">fun</span> (<span class="nv">n0</span> : nat) (<span class="nv">a0</span> : A n0) =&gt; (a0) ^+)
-                (nat_plus_n_O k)^ @
+                (nat_add_n_O k)^ @
               ap10
                 (ap coe
-                   (ap (ap A)
-                      (ap_V S (nat_plus_n_O k))))
+                   (ap (ap A) (ap_V S (nat_add_n_O k))))
                 (a) ^+
           <span class="kr">end</span>
       |};
     diag_equiv_isequiv :=
       <span class="kr">fun</span> <span class="nv">k</span> : Graph.graph0 sequence_graph =&gt;
-      isequiv_path (ap A (nat_plus_n_O k)^)
+      isequiv_path (ap A (nat_add_n_O k)^)
   |} (iscolimit_colimit (shift_seq A <span class="mi">0</span>))
-  (iscolimit_colimit A) o inj (shift_seq A <span class="mi">0</span>) n</span></div></blockquote></div></div></small><span class="alectryon-wsp"> </span></span><span class="alectryon-sentence"><span class="alectryon-input"><span class="highlight"><span class="nb">intros</span> k a; <span class="bp">exact</span> (J (nat_plus_n_O k)).</span></span><span class="alectryon-wsp">
+  (iscolimit_colimit A) o inj (shift_seq A <span class="mi">0</span>) n</span></div></blockquote></div></div></small><span class="alectryon-wsp"> </span></span><span class="alectryon-sentence"><span class="alectryon-input"><span class="highlight"><span class="nb">intros</span> k a; <span class="bp">exact</span> (J (nat_add_n_O k)).</span></span><span class="alectryon-wsp">
 </span></span><span class="alectryon-wsp">    </span><span class="alectryon-sentence"><input class="alectryon-toggle" id="sequential-v-chk62" style="display: none" type="checkbox"><label class="alectryon-input" for="sequential-v-chk62"><span class="highlight">+</span></label><small class="alectryon-output"><div class="alectryon-output-sticky-wrapper"><div class="alectryon-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><div class="goal-hyp"><span class="hyp-names">H</span><span><span class="hyp-type-block"><span class="hyp-punct">:</span><span class="hyp-type"><span class="highlight">Funext</span></span></span></span></div><div class="goal-hyp"><span class="hyp-names">A</span><span><span class="hyp-type-block"><span class="hyp-punct">:</span><span class="hyp-type"><span class="highlight">Sequence</span></span></span></span></div></div><span class="goal-separator"><hr></span><div class="goal-conclusion"><span class="highlight"><span class="kr">forall</span> (<span class="nv">n</span> : Graph.graph0 sequence_graph)
 (<span class="nv">a</span> : shift_seq A <span class="mi">0</span> n),
 ap (colim_shift_seq_to_colim_seq A <span class="mi">0</span>)
   (glue (shift_seq A <span class="mi">0</span>) n a) @
 (<span class="kr">fun</span> (<span class="nv">k</span> : Graph.graph0 sequence_graph)
-   (<span class="nv">a0</span> : shift_seq A <span class="mi">0</span> k) =&gt; J (nat_plus_n_O k)) n a =
+   (<span class="nv">a0</span> : shift_seq A <span class="mi">0</span> k) =&gt; J (nat_add_n_O k)) n a =
 (<span class="kr">fun</span> (<span class="nv">k</span> : Graph.graph0 sequence_graph)
-   (<span class="nv">a0</span> : shift_seq A <span class="mi">0</span> k) =&gt; J (nat_plus_n_O k)) n.+<span class="mi">1</span>
+   (<span class="nv">a0</span> : shift_seq A <span class="mi">0</span> k) =&gt; J (nat_add_n_O k)) n.+<span class="mi">1</span>
   (a) ^+ @
 ap
   (equiv_functor_colimit
@@ -737,7 +735,7 @@ ap
          {|
            DiagramMap_obj :=
              <span class="kr">fun</span> <span class="nv">k</span> : Graph.graph0 sequence_graph =&gt;
-             coe (ap A (nat_plus_n_O k)^);
+             coe (ap A (nat_add_n_O k)^);
            DiagramMap_comm :=
              <span class="kr">fun</span> (<span class="nv">k</span> <span class="nv">l</span> : Graph.graph0 sequence_graph)
                (<span class="nv">p</span> : Graph.graph1 sequence_graph k l)
@@ -746,24 +744,24 @@ ap
                p <span class="kr">as</span> p0 <span class="kr">in</span> (_ = y)
                <span class="kr">return</span>
                  ((A _f p0)
-                    (coe (ap A (nat_plus_n_O k)^) a0) =
-                  coe (ap A (nat_plus_n_O y)^)
+                    (coe (ap A (nat_add_n_O k)^) a0) =
+                  coe (ap A (nat_add_n_O y)^)
                     (((shift_seq A <span class="mi">0</span>) _f p0) a0))
              <span class="kr">with</span>
              | <span class="mi">1</span> =&gt;
                  K S
                    (<span class="kr">fun</span> (<span class="nv">n0</span> : nat) (<span class="nv">a1</span> : A n0) =&gt;
-                    (a1) ^+) (nat_plus_n_O k)^ @
+                    (a1) ^+) (nat_add_n_O k)^ @
                  ap10
                    (ap coe
                       (ap (ap A)
-                         (ap_V S (nat_plus_n_O k))))
+                         (ap_V S (nat_add_n_O k))))
                    (a0) ^+
              <span class="kr">end</span>
          |};
        diag_equiv_isequiv :=
          <span class="kr">fun</span> <span class="nv">k</span> : Graph.graph0 sequence_graph =&gt;
-         isequiv_path (ap A (nat_plus_n_O k)^)
+         isequiv_path (ap A (nat_add_n_O k)^)
      |} (iscolimit_colimit (shift_seq A <span class="mi">0</span>))
      (iscolimit_colimit A)) (glue (shift_seq A <span class="mi">0</span>) n a)</span></div></blockquote></div></div></small><span class="alectryon-wsp"> </span></span><span class="alectryon-sentence"><span class="alectryon-input"><span class="highlight"><span class="nb">intros</span> k a; <span class="nb">rewrite</span> !Colimit_rec_beta_colimp; srapply (L (glue A)).</span></span><span class="alectryon-wsp">
 </span></span><span class="alectryon-wsp">  </span><span class="alectryon-sentence"><input class="alectryon-toggle" id="sequential-v-chk63" style="display: none" type="checkbox"><label class="alectryon-input" for="sequential-v-chk63"><span class="highlight">-</span></label><small class="alectryon-output"><div class="alectryon-output-sticky-wrapper"><div class="alectryon-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><div class="goal-hyp"><span class="hyp-names">H</span><span><span class="hyp-type-block"><span class="hyp-punct">:</span><span class="hyp-type"><span class="highlight">Funext</span></span></span></span></div><div class="goal-hyp"><span class="hyp-names">A</span><span><span class="hyp-type-block"><span class="hyp-punct">:</span><span class="hyp-type"><span class="highlight">Sequence</span></span></span></span></div><div class="goal-hyp"><span class="hyp-names">n</span><span><span class="hyp-type-block"><span class="hyp-punct">:</span><span class="hyp-type"><span class="highlight">nat</span></span></span></span></div><div class="goal-hyp"><span class="hyp-names">e</span><span><span class="hyp-type-block"><span class="hyp-punct">:</span><span class="hyp-type"><span class="highlight">IsEquiv (colim_shift_seq_to_colim_seq A n)</span></span></span></span></div></div><span class="goal-separator"><hr></span><div class="goal-conclusion"><span class="highlight">Colimit (shift_seq A n.+<span class="mi">1</span>) &lt;~&gt; Colimit A</span></div></blockquote></div></div></small><span class="alectryon-wsp"> </span></span><span class="alectryon-sentence"><input class="alectryon-toggle" id="sequential-v-chk64" style="display: none" type="checkbox"><label class="alectryon-input" for="sequential-v-chk64"><span class="highlight"><span class="nb">transitivity</span> (Colimit (succ_seq (shift_seq A n))).</span></label><small class="alectryon-output"><div class="alectryon-output-sticky-wrapper"><div class="alectryon-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><div class="goal-hyp"><span class="hyp-names">H</span><span><span class="hyp-type-block"><span class="hyp-punct">:</span><span class="hyp-type"><span class="highlight">Funext</span></span></span></span></div><div class="goal-hyp"><span class="hyp-names">A</span><span><span class="hyp-type-block"><span class="hyp-punct">:</span><span class="hyp-type"><span class="highlight">Sequence</span></span></span></span></div><div class="goal-hyp"><span class="hyp-names">n</span><span><span class="hyp-type-block"><span class="hyp-punct">:</span><span class="hyp-type"><span class="highlight">nat</span></span></span></span></div><div class="goal-hyp"><span class="hyp-names">e</span><span><span class="hyp-type-block"><span class="hyp-punct">:</span><span class="hyp-type"><span class="highlight">IsEquiv (colim_shift_seq_to_colim_seq A n)</span></span></span></span></div></div><span class="goal-separator"><hr></span><div class="goal-conclusion"><span class="highlight">Colimit (shift_seq A n.+<span class="mi">1</span>) &lt;~&gt;
@@ -780,32 +778,32 @@ shift_seq A n.+<span class="mi">1</span> i -&gt; succ_seq (shift_seq A n) i</spa
   (<span class="nl">?DiagramMap_obj</span> i x) =
 <span class="nl">?DiagramMap_obj</span> j (((shift_seq A n.+<span class="mi">1</span>) _f g) x)</span></div></blockquote></div></div></div></small><span class="alectryon-wsp">
 </span></span><span class="alectryon-wsp">        </span><span class="alectryon-sentence"><input class="alectryon-toggle" id="sequential-v-chk6c" style="display: none" type="checkbox"><label class="alectryon-input" for="sequential-v-chk6c"><span class="highlight">{</span></label><small class="alectryon-output"><div class="alectryon-output-sticky-wrapper"><div class="alectryon-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><div class="goal-hyp"><span class="hyp-names">H</span><span><span class="hyp-type-block"><span class="hyp-punct">:</span><span class="hyp-type"><span class="highlight">Funext</span></span></span></span></div><div class="goal-hyp"><span class="hyp-names">A</span><span><span class="hyp-type-block"><span class="hyp-punct">:</span><span class="hyp-type"><span class="highlight">Sequence</span></span></span></span></div><div class="goal-hyp"><span class="hyp-names">n</span><span><span class="hyp-type-block"><span class="hyp-punct">:</span><span class="hyp-type"><span class="highlight">nat</span></span></span></span></div><div class="goal-hyp"><span class="hyp-names">e</span><span><span class="hyp-type-block"><span class="hyp-punct">:</span><span class="hyp-type"><span class="highlight">IsEquiv (colim_shift_seq_to_colim_seq A n)</span></span></span></span></div></div><span class="goal-separator"><hr></span><div class="goal-conclusion"><span class="highlight"><span class="kr">forall</span> <span class="nv">i</span> : Graph.graph0 sequence_graph,
-shift_seq A n.+<span class="mi">1</span> i -&gt; succ_seq (shift_seq A n) i</span></div></blockquote></div></div></small><span class="alectryon-wsp"> </span></span><span class="alectryon-sentence"><span class="alectryon-input"><span class="highlight"><span class="bp">exact</span> (<span class="kr">fun</span> <span class="nv">k</span> =&gt; coe (ap A (nat_plus_n_Sm k n)^)).</span></span><span class="alectryon-wsp"> </span></span><span class="alectryon-sentence"><input class="alectryon-toggle" id="sequential-v-chk6d" style="display: none" type="checkbox"><label class="alectryon-input" for="sequential-v-chk6d"><span class="highlight">}</span></label><small class="alectryon-output"><div class="alectryon-output-sticky-wrapper"><div class="alectryon-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><div class="goal-hyp"><span class="hyp-names">H</span><span><span class="hyp-type-block"><span class="hyp-punct">:</span><span class="hyp-type"><span class="highlight">Funext</span></span></span></span></div><div class="goal-hyp"><span class="hyp-names">A</span><span><span class="hyp-type-block"><span class="hyp-punct">:</span><span class="hyp-type"><span class="highlight">Sequence</span></span></span></span></div><div class="goal-hyp"><span class="hyp-names">n</span><span><span class="hyp-type-block"><span class="hyp-punct">:</span><span class="hyp-type"><span class="highlight">nat</span></span></span></span></div><div class="goal-hyp"><span class="hyp-names">e</span><span><span class="hyp-type-block"><span class="hyp-punct">:</span><span class="hyp-type"><span class="highlight">IsEquiv (colim_shift_seq_to_colim_seq A n)</span></span></span></span></div></div><span class="goal-separator"><hr></span><div class="goal-conclusion"><span class="highlight"><span class="kr">forall</span> (<span class="nv">i</span> <span class="nv">j</span> : Graph.graph0 sequence_graph)
+shift_seq A n.+<span class="mi">1</span> i -&gt; succ_seq (shift_seq A n) i</span></div></blockquote></div></div></small><span class="alectryon-wsp"> </span></span><span class="alectryon-sentence"><span class="alectryon-input"><span class="highlight"><span class="bp">exact</span> (<span class="kr">fun</span> <span class="nv">k</span> =&gt; coe (ap A (nat_add_n_Sm k n)^)).</span></span><span class="alectryon-wsp"> </span></span><span class="alectryon-sentence"><input class="alectryon-toggle" id="sequential-v-chk6d" style="display: none" type="checkbox"><label class="alectryon-input" for="sequential-v-chk6d"><span class="highlight">}</span></label><small class="alectryon-output"><div class="alectryon-output-sticky-wrapper"><div class="alectryon-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><div class="goal-hyp"><span class="hyp-names">H</span><span><span class="hyp-type-block"><span class="hyp-punct">:</span><span class="hyp-type"><span class="highlight">Funext</span></span></span></span></div><div class="goal-hyp"><span class="hyp-names">A</span><span><span class="hyp-type-block"><span class="hyp-punct">:</span><span class="hyp-type"><span class="highlight">Sequence</span></span></span></span></div><div class="goal-hyp"><span class="hyp-names">n</span><span><span class="hyp-type-block"><span class="hyp-punct">:</span><span class="hyp-type"><span class="highlight">nat</span></span></span></span></div><div class="goal-hyp"><span class="hyp-names">e</span><span><span class="hyp-type-block"><span class="hyp-punct">:</span><span class="hyp-type"><span class="highlight">IsEquiv (colim_shift_seq_to_colim_seq A n)</span></span></span></span></div></div><span class="goal-separator"><hr></span><div class="goal-conclusion"><span class="highlight"><span class="kr">forall</span> (<span class="nv">i</span> <span class="nv">j</span> : Graph.graph0 sequence_graph)
 (<span class="nv">g</span> : Graph.graph1 sequence_graph i j)
 (<span class="nv">x</span> : shift_seq A n.+<span class="mi">1</span> i),
 ((succ_seq (shift_seq A n)) _f g)
   ((<span class="kr">fun</span> <span class="nv">k</span> : Graph.graph0 sequence_graph =&gt;
-    coe (ap A (nat_plus_n_Sm k n)^)) i x) =
+    coe (ap A (nat_add_n_Sm k n)^)) i x) =
 (<span class="kr">fun</span> <span class="nv">k</span> : Graph.graph0 sequence_graph =&gt;
- coe (ap A (nat_plus_n_Sm k n)^)) j
+ coe (ap A (nat_add_n_Sm k n)^)) j
   (((shift_seq A n.+<span class="mi">1</span>) _f g) x)</span></div></blockquote></div></div></small><span class="alectryon-wsp">
 </span></span><span class="alectryon-wsp">        </span><span class="alectryon-sentence"><input class="alectryon-toggle" id="sequential-v-chk6e" style="display: none" type="checkbox"><label class="alectryon-input" for="sequential-v-chk6e"><span class="highlight">{</span></label><small class="alectryon-output"><div class="alectryon-output-sticky-wrapper"><div class="alectryon-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><div class="goal-hyp"><span class="hyp-names">H</span><span><span class="hyp-type-block"><span class="hyp-punct">:</span><span class="hyp-type"><span class="highlight">Funext</span></span></span></span></div><div class="goal-hyp"><span class="hyp-names">A</span><span><span class="hyp-type-block"><span class="hyp-punct">:</span><span class="hyp-type"><span class="highlight">Sequence</span></span></span></span></div><div class="goal-hyp"><span class="hyp-names">n</span><span><span class="hyp-type-block"><span class="hyp-punct">:</span><span class="hyp-type"><span class="highlight">nat</span></span></span></span></div><div class="goal-hyp"><span class="hyp-names">e</span><span><span class="hyp-type-block"><span class="hyp-punct">:</span><span class="hyp-type"><span class="highlight">IsEquiv (colim_shift_seq_to_colim_seq A n)</span></span></span></span></div></div><span class="goal-separator"><hr></span><div class="goal-conclusion"><span class="highlight"><span class="kr">forall</span> (<span class="nv">i</span> <span class="nv">j</span> : Graph.graph0 sequence_graph)
 (<span class="nv">g</span> : Graph.graph1 sequence_graph i j)
 (<span class="nv">x</span> : shift_seq A n.+<span class="mi">1</span> i),
 ((succ_seq (shift_seq A n)) _f g)
   ((<span class="kr">fun</span> <span class="nv">k</span> : Graph.graph0 sequence_graph =&gt;
-    coe (ap A (nat_plus_n_Sm k n)^)) i x) =
+    coe (ap A (nat_add_n_Sm k n)^)) i x) =
 (<span class="kr">fun</span> <span class="nv">k</span> : Graph.graph0 sequence_graph =&gt;
- coe (ap A (nat_plus_n_Sm k n)^)) j
-  (((shift_seq A n.+<span class="mi">1</span>) _f g) x)</span></div></blockquote></div></div></small><span class="alectryon-wsp"> </span></span><span class="alectryon-sentence"><input class="alectryon-toggle" id="sequential-v-chk6f" style="display: none" type="checkbox"><label class="alectryon-input" for="sequential-v-chk6f"><span class="highlight"><span class="nb">intros</span> k l p a; <span class="nb">destruct</span> p; rapply (K S (<span class="kr">fun</span> <span class="nv">n</span> <span class="nv">a</span> =&gt; a^+) (nat_plus_n_Sm k n)^ @ _).</span></label><small class="alectryon-output"><div class="alectryon-output-sticky-wrapper"><div class="alectryon-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><div class="goal-hyp"><span class="hyp-names">H</span><span><span class="hyp-type-block"><span class="hyp-punct">:</span><span class="hyp-type"><span class="highlight">Funext</span></span></span></span></div><div class="goal-hyp"><span class="hyp-names">A</span><span><span class="hyp-type-block"><span class="hyp-punct">:</span><span class="hyp-type"><span class="highlight">Sequence</span></span></span></span></div><div class="goal-hyp"><span class="hyp-names">n</span><span><span class="hyp-type-block"><span class="hyp-punct">:</span><span class="hyp-type"><span class="highlight">nat</span></span></span></span></div><div class="goal-hyp"><span class="hyp-names">e</span><span><span class="hyp-type-block"><span class="hyp-punct">:</span><span class="hyp-type"><span class="highlight">IsEquiv (colim_shift_seq_to_colim_seq A n)</span></span></span></span></div><div class="goal-hyp"><span class="hyp-names">k</span><span><span class="hyp-type-block"><span class="hyp-punct">:</span><span class="hyp-type"><span class="highlight">Graph.graph0 sequence_graph</span></span></span></span></div><div class="goal-hyp"><span class="hyp-names">a</span><span><span class="hyp-type-block"><span class="hyp-punct">:</span><span class="hyp-type"><span class="highlight">shift_seq A n.+<span class="mi">1</span> k</span></span></span></span></div></div><span class="goal-separator"><hr></span><div class="goal-conclusion"><span class="highlight">coe (ap A (ap S (nat_plus_n_Sm k n)^)) (a) ^+ =
-coe (ap A (nat_plus_n_Sm k.+<span class="mi">1</span> n)^) (a) ^+</span></div></blockquote></div></div></small><span class="alectryon-wsp">
+ coe (ap A (nat_add_n_Sm k n)^)) j
+  (((shift_seq A n.+<span class="mi">1</span>) _f g) x)</span></div></blockquote></div></div></small><span class="alectryon-wsp"> </span></span><span class="alectryon-sentence"><input class="alectryon-toggle" id="sequential-v-chk6f" style="display: none" type="checkbox"><label class="alectryon-input" for="sequential-v-chk6f"><span class="highlight"><span class="nb">intros</span> k l p a; <span class="nb">destruct</span> p; rapply (K S (<span class="kr">fun</span> <span class="nv">n</span> <span class="nv">a</span> =&gt; a^+) (nat_add_n_Sm k n)^ @ _).</span></label><small class="alectryon-output"><div class="alectryon-output-sticky-wrapper"><div class="alectryon-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><div class="goal-hyp"><span class="hyp-names">H</span><span><span class="hyp-type-block"><span class="hyp-punct">:</span><span class="hyp-type"><span class="highlight">Funext</span></span></span></span></div><div class="goal-hyp"><span class="hyp-names">A</span><span><span class="hyp-type-block"><span class="hyp-punct">:</span><span class="hyp-type"><span class="highlight">Sequence</span></span></span></span></div><div class="goal-hyp"><span class="hyp-names">n</span><span><span class="hyp-type-block"><span class="hyp-punct">:</span><span class="hyp-type"><span class="highlight">nat</span></span></span></span></div><div class="goal-hyp"><span class="hyp-names">e</span><span><span class="hyp-type-block"><span class="hyp-punct">:</span><span class="hyp-type"><span class="highlight">IsEquiv (colim_shift_seq_to_colim_seq A n)</span></span></span></span></div><div class="goal-hyp"><span class="hyp-names">k</span><span><span class="hyp-type-block"><span class="hyp-punct">:</span><span class="hyp-type"><span class="highlight">Graph.graph0 sequence_graph</span></span></span></span></div><div class="goal-hyp"><span class="hyp-names">a</span><span><span class="hyp-type-block"><span class="hyp-punct">:</span><span class="hyp-type"><span class="highlight">shift_seq A n.+<span class="mi">1</span> k</span></span></span></span></div></div><span class="goal-separator"><hr></span><div class="goal-conclusion"><span class="highlight">coe (ap A (ap S (nat_add_n_Sm k n)^)) (a) ^+ =
+coe (ap A (nat_add_n_Sm k.+<span class="mi">1</span> n)^) (a) ^+</span></div></blockquote></div></div></small><span class="alectryon-wsp">
 </span></span><span class="alectryon-wsp">          </span><span class="alectryon-sentence"><span class="alectryon-input"><span class="highlight">srapply (ap10 (ap coe (ap (ap _) (ap_V _ _)))).</span></span><span class="alectryon-wsp"> </span></span><span class="alectryon-sentence"><span class="alectryon-input"><span class="highlight">}</span></span><span class="alectryon-wsp">
 </span></span><span class="alectryon-wsp">      </span><span class="alectryon-sentence"><input class="alectryon-toggle" id="sequential-v-chk70" style="display: none" type="checkbox"><label class="alectryon-input" for="sequential-v-chk70"><span class="highlight">*</span></label><small class="alectryon-output"><div class="alectryon-output-sticky-wrapper"><div class="alectryon-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><div class="goal-hyp"><span class="hyp-names">H</span><span><span class="hyp-type-block"><span class="hyp-punct">:</span><span class="hyp-type"><span class="highlight">Funext</span></span></span></span></div><div class="goal-hyp"><span class="hyp-names">A</span><span><span class="hyp-type-block"><span class="hyp-punct">:</span><span class="hyp-type"><span class="highlight">Sequence</span></span></span></span></div><div class="goal-hyp"><span class="hyp-names">n</span><span><span class="hyp-type-block"><span class="hyp-punct">:</span><span class="hyp-type"><span class="highlight">nat</span></span></span></span></div><div class="goal-hyp"><span class="hyp-names">e</span><span><span class="hyp-type-block"><span class="hyp-punct">:</span><span class="hyp-type"><span class="highlight">IsEquiv (colim_shift_seq_to_colim_seq A n)</span></span></span></span></div></div><span class="goal-separator"><hr></span><div class="goal-conclusion"><span class="highlight"><span class="kr">forall</span> <span class="nv">i</span> : Graph.graph0 sequence_graph,
 IsEquiv
   ({|
      DiagramMap_obj :=
        <span class="kr">fun</span> <span class="nv">k</span> : Graph.graph0 sequence_graph =&gt;
-       coe (ap A (nat_plus_n_Sm k n)^);
+       coe (ap A (nat_add_n_Sm k n)^);
      DiagramMap_comm :=
        <span class="kr">fun</span> (<span class="nv">k</span> <span class="nv">l</span> : Graph.graph0 sequence_graph)
          (<span class="nv">p</span> : Graph.graph1 sequence_graph k l)
@@ -814,17 +812,16 @@ IsEquiv
          p <span class="kr">as</span> p0 <span class="kr">in</span> (_ = y)
          <span class="kr">return</span>
            (((succ_seq (shift_seq A n)) _f p0)
-              (coe (ap A (nat_plus_n_Sm k n)^) a) =
-            coe (ap A (nat_plus_n_Sm y n)^)
+              (coe (ap A (nat_add_n_Sm k n)^) a) =
+            coe (ap A (nat_add_n_Sm y n)^)
               (((shift_seq A n.+<span class="mi">1</span>) _f p0) a))
        <span class="kr">with</span>
        | <span class="mi">1</span> =&gt;
            K S (<span class="kr">fun</span> (<span class="nv">n</span> : nat) (<span class="nv">a0</span> : A n) =&gt; (a0) ^+)
-             (nat_plus_n_Sm k n)^ @
+             (nat_add_n_Sm k n)^ @
            ap10
              (ap coe
-                (ap (ap A)
-                   (ap_V S (nat_plus_n_Sm k n))))
+                (ap (ap A) (ap_V S (nat_add_n_Sm k n))))
              (a) ^+
        <span class="kr">end</span>
    |} i)</span></div></blockquote></div></div></small><span class="alectryon-wsp"> </span></span><span class="alectryon-sentence"><span class="alectryon-input"><span class="highlight"><span class="nb">intro</span> k; srapply isequiv_path.</span></span><span class="alectryon-wsp">
@@ -837,7 +834,7 @@ IsEquiv
          {|
            DiagramMap_obj :=
              <span class="kr">fun</span> <span class="nv">k</span> : Graph.graph0 sequence_graph =&gt;
-             coe (ap A (nat_plus_n_Sm k n)^);
+             coe (ap A (nat_add_n_Sm k n)^);
            DiagramMap_comm :=
              <span class="kr">fun</span> (<span class="nv">k</span> <span class="nv">l</span> : Graph.graph0 sequence_graph)
                (<span class="nv">p</span> : Graph.graph1 sequence_graph k l)
@@ -846,24 +843,24 @@ IsEquiv
                p <span class="kr">as</span> p0 <span class="kr">in</span> (_ = y)
                <span class="kr">return</span>
                  (((succ_seq (shift_seq A n)) _f p0)
-                    (coe (ap A (nat_plus_n_Sm k n)^) a) =
-                  coe (ap A (nat_plus_n_Sm y n)^)
+                    (coe (ap A (nat_add_n_Sm k n)^) a) =
+                  coe (ap A (nat_add_n_Sm y n)^)
                     (((shift_seq A n.+<span class="mi">1</span>) _f p0) a))
              <span class="kr">with</span>
              | <span class="mi">1</span> =&gt;
                  K S
                    (<span class="kr">fun</span> (<span class="nv">n</span> : nat) (<span class="nv">a0</span> : A n) =&gt;
-                    (a0) ^+) (nat_plus_n_Sm k n)^ @
+                    (a0) ^+) (nat_add_n_Sm k n)^ @
                  ap10
                    (ap coe
                       (ap (ap A)
-                         (ap_V S (nat_plus_n_Sm k n))))
+                         (ap_V S (nat_add_n_Sm k n))))
                    (a) ^+
              <span class="kr">end</span>
          |};
        diag_equiv_isequiv :=
          <span class="kr">fun</span> <span class="nv">k</span> : Graph.graph0 sequence_graph =&gt;
-         isequiv_path (ap A (nat_plus_n_Sm k n)^)
+         isequiv_path (ap A (nat_add_n_Sm k n)^)
      |} (iscolimit_colimit (shift_seq A n.+<span class="mi">1</span>))
      (iscolimit_colimit (succ_seq (shift_seq A n))))
   (<span class="nb">transitivity</span>
@@ -883,7 +880,7 @@ transitive_equiv (Colimit (shift_seq A n.+<span class="mi">1</span>))
          {|
            DiagramMap_obj :=
              <span class="kr">fun</span> <span class="nv">k</span> : Graph.graph0 sequence_graph =&gt;
-             coe (ap A (nat_plus_n_Sm k n)^);
+             coe (ap A (nat_add_n_Sm k n)^);
            DiagramMap_comm :=
              <span class="kr">fun</span> (<span class="nv">k</span> <span class="nv">l</span> : Graph.graph0 sequence_graph)
                (<span class="nv">p</span> : Graph.graph1 sequence_graph k l)
@@ -892,24 +889,24 @@ transitive_equiv (Colimit (shift_seq A n.+<span class="mi">1</span>))
                p <span class="kr">as</span> p0 <span class="kr">in</span> (_ = y)
                <span class="kr">return</span>
                  (((succ_seq (shift_seq A n)) _f p0)
-                    (coe (ap A (nat_plus_n_Sm k n)^) a) =
-                  coe (ap A (nat_plus_n_Sm y n)^)
+                    (coe (ap A (nat_add_n_Sm k n)^) a) =
+                  coe (ap A (nat_add_n_Sm y n)^)
                     (((shift_seq A n.+<span class="mi">1</span>) _f p0) a))
              <span class="kr">with</span>
              | <span class="mi">1</span> =&gt;
                  K S
                    (<span class="kr">fun</span> (<span class="nv">n</span> : nat) (<span class="nv">a0</span> : A n) =&gt;
-                    (a0) ^+) (nat_plus_n_Sm k n)^ @
+                    (a0) ^+) (nat_add_n_Sm k n)^ @
                  ap10
                    (ap coe
                       (ap (ap A)
-                         (ap_V S (nat_plus_n_Sm k n))))
+                         (ap_V S (nat_add_n_Sm k n))))
                    (a) ^+
              <span class="kr">end</span>
          |};
        diag_equiv_isequiv :=
          <span class="kr">fun</span> <span class="nv">k</span> : Graph.graph0 sequence_graph =&gt;
-         isequiv_path (ap A (nat_plus_n_Sm k n)^)
+         isequiv_path (ap A (nat_add_n_Sm k n)^)
      |} (iscolimit_colimit (shift_seq A n.+<span class="mi">1</span>))
      (iscolimit_colimit (succ_seq (shift_seq A n))))
   (<span class="nb">transitivity</span>
@@ -932,7 +929,7 @@ ap
             {|
               DiagramMap_obj :=
                 <span class="kr">fun</span> <span class="nv">k</span> : Graph.graph0 sequence_graph =&gt;
-                coe (ap A (nat_plus_n_Sm k n)^);
+                coe (ap A (nat_add_n_Sm k n)^);
               DiagramMap_comm :=
                 <span class="kr">fun</span>
                   (<span class="nv">k</span> <span class="nv">l</span> : Graph.graph0 sequence_graph)
@@ -943,24 +940,23 @@ ap
                   <span class="kr">return</span>
                     (((succ_seq (...)) _f p0)
                        (coe (ap A (...)^) a0) =
-                     coe (ap A (nat_plus_n_Sm y n)^)
+                     coe (ap A (nat_add_n_Sm y n)^)
                        (((...) _f p0) a0))
                 <span class="kr">with</span>
                 | <span class="mi">1</span> =&gt;
                     K S
                       (<span class="kr">fun</span> (<span class="nv">n</span> : nat) (<span class="nv">a1</span> : A n) =&gt;
-                       (a1) ^+) (nat_plus_n_Sm k n)^ @
+                       (a1) ^+) (nat_add_n_Sm k n)^ @
                     ap10
                       (ap coe
                          (ap (ap A)
-                            (ap_V S
-                               (nat_plus_n_Sm k n))))
+                            (ap_V S (nat_add_n_Sm k n))))
                       (a0) ^+
                 <span class="kr">end</span>
             |};
           diag_equiv_isequiv :=
             <span class="kr">fun</span> <span class="nv">k</span> : Graph.graph0 sequence_graph =&gt;
-            isequiv_path (ap A (nat_plus_n_Sm k n)^)
+            isequiv_path (ap A (nat_add_n_Sm k n)^)
         |} (iscolimit_colimit (shift_seq A n.+<span class="mi">1</span>))
         (iscolimit_colimit (succ_seq (shift_seq A n))))
      (<span class="nb">transitivity</span>
@@ -982,7 +978,7 @@ transitive_equiv (Colimit (shift_seq A n.+<span class="mi">1</span>))
          {|
            DiagramMap_obj :=
              <span class="kr">fun</span> <span class="nv">k</span> : Graph.graph0 sequence_graph =&gt;
-             coe (ap A (nat_plus_n_Sm k n)^);
+             coe (ap A (nat_add_n_Sm k n)^);
            DiagramMap_comm :=
              <span class="kr">fun</span> (<span class="nv">k</span> <span class="nv">l</span> : Graph.graph0 sequence_graph)
                (<span class="nv">p</span> : Graph.graph1 sequence_graph k l)
@@ -991,24 +987,24 @@ transitive_equiv (Colimit (shift_seq A n.+<span class="mi">1</span>))
                p <span class="kr">as</span> p0 <span class="kr">in</span> (_ = y)
                <span class="kr">return</span>
                  (((succ_seq (shift_seq A n)) _f p0)
-                    (coe (ap A (nat_plus_n_Sm k n)^) a) =
-                  coe (ap A (nat_plus_n_Sm y n)^)
+                    (coe (ap A (nat_add_n_Sm k n)^) a) =
+                  coe (ap A (nat_add_n_Sm y n)^)
                     (((shift_seq A n.+<span class="mi">1</span>) _f p0) a))
              <span class="kr">with</span>
              | <span class="mi">1</span> =&gt;
                  K S
                    (<span class="kr">fun</span> (<span class="nv">n</span> : nat) (<span class="nv">a0</span> : A n) =&gt;
-                    (a0) ^+) (nat_plus_n_Sm k n)^ @
+                    (a0) ^+) (nat_add_n_Sm k n)^ @
                  ap10
                    (ap coe
                       (ap (ap A)
-                         (ap_V S (nat_plus_n_Sm k n))))
+                         (ap_V S (nat_add_n_Sm k n))))
                    (a) ^+
              <span class="kr">end</span>
          |};
        diag_equiv_isequiv :=
          <span class="kr">fun</span> <span class="nv">k</span> : Graph.graph0 sequence_graph =&gt;
-         isequiv_path (ap A (nat_plus_n_Sm k n)^)
+         isequiv_path (ap A (nat_add_n_Sm k n)^)
      |} (iscolimit_colimit (shift_seq A n.+<span class="mi">1</span>))
      (iscolimit_colimit (succ_seq (shift_seq A n))))
   (<span class="nb">transitivity</span>
@@ -1017,16 +1013,16 @@ transitive_equiv (Colimit (shift_seq A n.+<span class="mi">1</span>))
      {|
        equiv_fun := colim_shift_seq_to_colim_seq A n;
        equiv_isequiv := e
-     |}) o inj (shift_seq A n.+<span class="mi">1</span>) n0</span></div></blockquote></div></div></small><span class="alectryon-wsp"> </span></span><span class="alectryon-sentence"><span class="alectryon-input"><span class="highlight"><span class="nb">intros</span> k a; <span class="bp">exact</span> (J (nat_plus_n_Sm k n)).</span></span><span class="alectryon-wsp">
+     |}) o inj (shift_seq A n.+<span class="mi">1</span>) n0</span></div></blockquote></div></div></small><span class="alectryon-wsp"> </span></span><span class="alectryon-sentence"><span class="alectryon-input"><span class="highlight"><span class="nb">intros</span> k a; <span class="bp">exact</span> (J (nat_add_n_Sm k n)).</span></span><span class="alectryon-wsp">
 </span></span><span class="alectryon-wsp">    </span><span class="alectryon-sentence"><input class="alectryon-toggle" id="sequential-v-chk76" style="display: none" type="checkbox"><label class="alectryon-input" for="sequential-v-chk76"><span class="highlight">+</span></label><small class="alectryon-output"><div class="alectryon-output-sticky-wrapper"><div class="alectryon-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><div class="goal-hyp"><span class="hyp-names">H</span><span><span class="hyp-type-block"><span class="hyp-punct">:</span><span class="hyp-type"><span class="highlight">Funext</span></span></span></span></div><div class="goal-hyp"><span class="hyp-names">A</span><span><span class="hyp-type-block"><span class="hyp-punct">:</span><span class="hyp-type"><span class="highlight">Sequence</span></span></span></span></div><div class="goal-hyp"><span class="hyp-names">n</span><span><span class="hyp-type-block"><span class="hyp-punct">:</span><span class="hyp-type"><span class="highlight">nat</span></span></span></span></div><div class="goal-hyp"><span class="hyp-names">e</span><span><span class="hyp-type-block"><span class="hyp-punct">:</span><span class="hyp-type"><span class="highlight">IsEquiv (colim_shift_seq_to_colim_seq A n)</span></span></span></span></div></div><span class="goal-separator"><hr></span><div class="goal-conclusion"><span class="highlight"><span class="kr">forall</span> (<span class="nv">n0</span> : Graph.graph0 sequence_graph)
 (<span class="nv">a</span> : shift_seq A n.+<span class="mi">1</span> n0),
 ap (colim_shift_seq_to_colim_seq A n.+<span class="mi">1</span>)
   (glue (shift_seq A n.+<span class="mi">1</span>) n0 a) @
 (<span class="kr">fun</span> (<span class="nv">k</span> : Graph.graph0 sequence_graph)
-   (<span class="nv">a0</span> : shift_seq A n.+<span class="mi">1</span> k) =&gt; J (nat_plus_n_Sm k n))
+   (<span class="nv">a0</span> : shift_seq A n.+<span class="mi">1</span> k) =&gt; J (nat_add_n_Sm k n))
   n0 a =
 (<span class="kr">fun</span> (<span class="nv">k</span> : Graph.graph0 sequence_graph)
-   (<span class="nv">a0</span> : shift_seq A n.+<span class="mi">1</span> k) =&gt; J (nat_plus_n_Sm k n))
+   (<span class="nv">a0</span> : shift_seq A n.+<span class="mi">1</span> k) =&gt; J (nat_add_n_Sm k n))
   n0.+<span class="mi">1</span> (a) ^+ @
 ap
   (transitive_equiv (Colimit (shift_seq A n.+<span class="mi">1</span>))
@@ -1037,7 +1033,7 @@ ap
             {|
               DiagramMap_obj :=
                 <span class="kr">fun</span> <span class="nv">k</span> : Graph.graph0 sequence_graph =&gt;
-                coe (ap A (nat_plus_n_Sm k n)^);
+                coe (ap A (nat_add_n_Sm k n)^);
               DiagramMap_comm :=
                 <span class="kr">fun</span>
                   (<span class="nv">k</span> <span class="nv">l</span> : Graph.graph0 sequence_graph)
@@ -1048,24 +1044,23 @@ ap
                   <span class="kr">return</span>
                     (((succ_seq (...)) _f p0)
                        (coe (ap A (...)^) a0) =
-                     coe (ap A (nat_plus_n_Sm y n)^)
+                     coe (ap A (nat_add_n_Sm y n)^)
                        (((...) _f p0) a0))
                 <span class="kr">with</span>
                 | <span class="mi">1</span> =&gt;
                     K S
                       (<span class="kr">fun</span> (<span class="nv">n</span> : nat) (<span class="nv">a1</span> : A n) =&gt;
-                       (a1) ^+) (nat_plus_n_Sm k n)^ @
+                       (a1) ^+) (nat_add_n_Sm k n)^ @
                     ap10
                       (ap coe
                          (ap (ap A)
-                            (ap_V S
-                               (nat_plus_n_Sm k n))))
+                            (ap_V S (nat_add_n_Sm k n))))
                       (a0) ^+
                 <span class="kr">end</span>
             |};
           diag_equiv_isequiv :=
             <span class="kr">fun</span> <span class="nv">k</span> : Graph.graph0 sequence_graph =&gt;
-            isequiv_path (ap A (nat_plus_n_Sm k n)^)
+            isequiv_path (ap A (nat_add_n_Sm k n)^)
         |} (iscolimit_colimit (shift_seq A n.+<span class="mi">1</span>))
         (iscolimit_colimit (succ_seq (shift_seq A n))))
      (<span class="nb">transitivity</span>
@@ -1075,9 +1070,9 @@ ap
           equiv_fun :=
             colim_shift_seq_to_colim_seq A n;
           equiv_isequiv := e
-        |})) (glue (shift_seq A n.+<span class="mi">1</span>) n0 a)</span></div></blockquote></div></div></small><span class="alectryon-wsp"> </span></span><span class="alectryon-sentence"><input class="alectryon-toggle" id="sequential-v-chk77" style="display: none" type="checkbox"><label class="alectryon-input" for="sequential-v-chk77"><span class="highlight"><span class="nb">intros</span> k a; <span class="nb">rewrite</span> Colimit_rec_beta_colimp; <span class="nb">simpl</span>.</span></label><small class="alectryon-output"><div class="alectryon-output-sticky-wrapper"><div class="alectryon-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><div class="goal-hyp"><span class="hyp-names">H</span><span><span class="hyp-type-block"><span class="hyp-punct">:</span><span class="hyp-type"><span class="highlight">Funext</span></span></span></span></div><div class="goal-hyp"><span class="hyp-names">A</span><span><span class="hyp-type-block"><span class="hyp-punct">:</span><span class="hyp-type"><span class="highlight">Sequence</span></span></span></span></div><div class="goal-hyp"><span class="hyp-names">n</span><span><span class="hyp-type-block"><span class="hyp-punct">:</span><span class="hyp-type"><span class="highlight">nat</span></span></span></span></div><div class="goal-hyp"><span class="hyp-names">e</span><span><span class="hyp-type-block"><span class="hyp-punct">:</span><span class="hyp-type"><span class="highlight">IsEquiv (colim_shift_seq_to_colim_seq A n)</span></span></span></span></div><div class="goal-hyp"><span class="hyp-names">k</span><span><span class="hyp-type-block"><span class="hyp-punct">:</span><span class="hyp-type"><span class="highlight">Graph.graph0 sequence_graph</span></span></span></span></div><div class="goal-hyp"><span class="hyp-names">a</span><span><span class="hyp-type-block"><span class="hyp-punct">:</span><span class="hyp-type"><span class="highlight">shift_seq A n.+<span class="mi">1</span> k</span></span></span></span></div></div><span class="goal-separator"><hr></span><div class="goal-conclusion"><span class="highlight">colimp (k + n.+<span class="mi">1</span>)%nat (k + n.+<span class="mi">1</span>).+<span class="mi">1</span> <span class="mi">1</span> a @
-J (nat_plus_n_Sm k n) =
-J (ap S (nat_plus_n_Sm k n)) @
+        |})) (glue (shift_seq A n.+<span class="mi">1</span>) n0 a)</span></div></blockquote></div></div></small><span class="alectryon-wsp"> </span></span><span class="alectryon-sentence"><input class="alectryon-toggle" id="sequential-v-chk77" style="display: none" type="checkbox"><label class="alectryon-input" for="sequential-v-chk77"><span class="highlight"><span class="nb">intros</span> k a; <span class="nb">rewrite</span> Colimit_rec_beta_colimp; <span class="nb">simpl</span>.</span></label><small class="alectryon-output"><div class="alectryon-output-sticky-wrapper"><div class="alectryon-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><div class="goal-hyp"><span class="hyp-names">H</span><span><span class="hyp-type-block"><span class="hyp-punct">:</span><span class="hyp-type"><span class="highlight">Funext</span></span></span></span></div><div class="goal-hyp"><span class="hyp-names">A</span><span><span class="hyp-type-block"><span class="hyp-punct">:</span><span class="hyp-type"><span class="highlight">Sequence</span></span></span></span></div><div class="goal-hyp"><span class="hyp-names">n</span><span><span class="hyp-type-block"><span class="hyp-punct">:</span><span class="hyp-type"><span class="highlight">nat</span></span></span></span></div><div class="goal-hyp"><span class="hyp-names">e</span><span><span class="hyp-type-block"><span class="hyp-punct">:</span><span class="hyp-type"><span class="highlight">IsEquiv (colim_shift_seq_to_colim_seq A n)</span></span></span></span></div><div class="goal-hyp"><span class="hyp-names">k</span><span><span class="hyp-type-block"><span class="hyp-punct">:</span><span class="hyp-type"><span class="highlight">Graph.graph0 sequence_graph</span></span></span></span></div><div class="goal-hyp"><span class="hyp-names">a</span><span><span class="hyp-type-block"><span class="hyp-punct">:</span><span class="hyp-type"><span class="highlight">shift_seq A n.+<span class="mi">1</span> k</span></span></span></span></div></div><span class="goal-separator"><hr></span><div class="goal-conclusion"><span class="highlight">colimp (k + n.+<span class="mi">1</span>) (k + n.+<span class="mi">1</span>).+<span class="mi">1</span> <span class="mi">1</span> a @
+J (nat_add_n_Sm k n) =
+J (ap S (nat_add_n_Sm k n)) @
 ap
   (<span class="kr">fun</span> <span class="nv">x</span> : Colimit (shift_seq A n.+<span class="mi">1</span>) =&gt;
    colim_shift_seq_to_colim_seq A n
@@ -1086,10 +1081,10 @@ ap
            {|
              DiagramMap_obj :=
                <span class="kr">fun</span> <span class="nv">k</span> : nat =&gt;
-               coe (ap A (nat_plus_n_Sm k n)^);
+               coe (ap A (nat_add_n_Sm k n)^);
              DiagramMap_comm :=
                <span class="kr">fun</span> (<span class="nv">k</span> <span class="nv">l</span> : nat) (<span class="nv">p</span> : k.+<span class="mi">1</span> = l)
-                 (<span class="nv">a</span> : A (k + n.+<span class="mi">1</span>)%nat) =&gt;
+                 (<span class="nv">a</span> : A (k + n.+<span class="mi">1</span>)) =&gt;
                <span class="kr">match</span>
                  p <span class="kr">as</span> p0 <span class="kr">in</span> (_ = y)
                  <span class="kr">return</span>
@@ -1100,9 +1095,9 @@ ap
                     | <span class="mi">1</span> =&gt;
                         <span class="kr">fun</span> <span class="nv">a0</span> : A ....+<span class="mi">1</span> =&gt; (a0) ^+
                     <span class="kr">end</span>
-                      (coe (ap A (nat_plus_n_Sm k n)^)
+                      (coe (ap A (nat_add_n_Sm k n)^)
                          a) =
-                    coe (ap A (nat_plus_n_Sm y n)^)
+                    coe (ap A (nat_add_n_Sm y n)^)
                       (<span class="kr">match</span> p0 <span class="kr">in</span> ... <span class="kr">return</span> ... <span class="kr">with</span>
                        | <span class="mi">1</span> =&gt; <span class="kr">fun</span> ... =&gt; ... ^+
                        <span class="kr">end</span> a))
@@ -1110,20 +1105,20 @@ ap
                | <span class="mi">1</span> =&gt;
                    K S
                      (<span class="kr">fun</span> (<span class="nv">n</span> : nat) (<span class="nv">a0</span> : A n) =&gt;
-                      (a0) ^+) (nat_plus_n_Sm k n)^ @
+                      (a0) ^+) (nat_add_n_Sm k n)^ @
                    ap10
                      (ap coe
                         (ap (ap A)
-                           (ap_V S (nat_plus_n_Sm k n))))
+                           (ap_V S (nat_add_n_Sm k n))))
                      (a) ^+
                <span class="kr">end</span>
            |} (iscolimit_colimit (shift_seq A n.+<span class="mi">1</span>))
            (iscolimit_colimit
               (succ_seq (shift_seq A n))) x)))
   (colimp k k.+<span class="mi">1</span> <span class="mi">1</span> a)</span></div></blockquote></div></div></small><span class="alectryon-wsp">
-</span></span><span class="alectryon-wsp">      </span><span class="alectryon-sentence"><input class="alectryon-toggle" id="sequential-v-chk78" style="display: none" type="checkbox"><label class="alectryon-input" for="sequential-v-chk78"><span class="highlight"><span class="nb">rewrite</span> <span class="mi">2</span>(ap_compose&#39; _ _ (glue _ k a)), Colimit_rec_beta_colimp, <span class="mi">2</span>ap_pp.</span></label><small class="alectryon-output"><div class="alectryon-output-sticky-wrapper"><div class="alectryon-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><div class="goal-hyp"><span class="hyp-names">H</span><span><span class="hyp-type-block"><span class="hyp-punct">:</span><span class="hyp-type"><span class="highlight">Funext</span></span></span></span></div><div class="goal-hyp"><span class="hyp-names">A</span><span><span class="hyp-type-block"><span class="hyp-punct">:</span><span class="hyp-type"><span class="highlight">Sequence</span></span></span></span></div><div class="goal-hyp"><span class="hyp-names">n</span><span><span class="hyp-type-block"><span class="hyp-punct">:</span><span class="hyp-type"><span class="highlight">nat</span></span></span></span></div><div class="goal-hyp"><span class="hyp-names">e</span><span><span class="hyp-type-block"><span class="hyp-punct">:</span><span class="hyp-type"><span class="highlight">IsEquiv (colim_shift_seq_to_colim_seq A n)</span></span></span></span></div><div class="goal-hyp"><span class="hyp-names">k</span><span><span class="hyp-type-block"><span class="hyp-punct">:</span><span class="hyp-type"><span class="highlight">Graph.graph0 sequence_graph</span></span></span></span></div><div class="goal-hyp"><span class="hyp-names">a</span><span><span class="hyp-type-block"><span class="hyp-punct">:</span><span class="hyp-type"><span class="highlight">shift_seq A n.+<span class="mi">1</span> k</span></span></span></span></div></div><span class="goal-separator"><hr></span><div class="goal-conclusion"><span class="highlight">colimp (k + n.+<span class="mi">1</span>)%nat (k + n.+<span class="mi">1</span>).+<span class="mi">1</span> <span class="mi">1</span> a @
-J (nat_plus_n_Sm k n) =
-J (ap S (nat_plus_n_Sm k n)) @
+</span></span><span class="alectryon-wsp">      </span><span class="alectryon-sentence"><input class="alectryon-toggle" id="sequential-v-chk78" style="display: none" type="checkbox"><label class="alectryon-input" for="sequential-v-chk78"><span class="highlight"><span class="nb">rewrite</span> <span class="mi">2</span>(ap_compose&#39; _ _ (glue _ k a)), Colimit_rec_beta_colimp, <span class="mi">2</span>ap_pp.</span></label><small class="alectryon-output"><div class="alectryon-output-sticky-wrapper"><div class="alectryon-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><div class="goal-hyp"><span class="hyp-names">H</span><span><span class="hyp-type-block"><span class="hyp-punct">:</span><span class="hyp-type"><span class="highlight">Funext</span></span></span></span></div><div class="goal-hyp"><span class="hyp-names">A</span><span><span class="hyp-type-block"><span class="hyp-punct">:</span><span class="hyp-type"><span class="highlight">Sequence</span></span></span></span></div><div class="goal-hyp"><span class="hyp-names">n</span><span><span class="hyp-type-block"><span class="hyp-punct">:</span><span class="hyp-type"><span class="highlight">nat</span></span></span></span></div><div class="goal-hyp"><span class="hyp-names">e</span><span><span class="hyp-type-block"><span class="hyp-punct">:</span><span class="hyp-type"><span class="highlight">IsEquiv (colim_shift_seq_to_colim_seq A n)</span></span></span></span></div><div class="goal-hyp"><span class="hyp-names">k</span><span><span class="hyp-type-block"><span class="hyp-punct">:</span><span class="hyp-type"><span class="highlight">Graph.graph0 sequence_graph</span></span></span></span></div><div class="goal-hyp"><span class="hyp-names">a</span><span><span class="hyp-type-block"><span class="hyp-punct">:</span><span class="hyp-type"><span class="highlight">shift_seq A n.+<span class="mi">1</span> k</span></span></span></span></div></div><span class="goal-separator"><hr></span><div class="goal-conclusion"><span class="highlight">colimp (k + n.+<span class="mi">1</span>) (k + n.+<span class="mi">1</span>).+<span class="mi">1</span> <span class="mi">1</span> a @
+J (nat_add_n_Sm k n) =
+J (ap S (nat_add_n_Sm k n)) @
 (ap (colim_shift_seq_to_colim_seq A n)
    (ap (colim_succ_seq_to_colim_seq (shift_seq A n))
       (ap
@@ -1133,10 +1128,10 @@ J (ap S (nat_plus_n_Sm k n)) @
             {|
               DiagramMap_obj :=
                 <span class="kr">fun</span> <span class="nv">k</span> : nat =&gt;
-                coe (ap A (nat_plus_n_Sm k n)^);
+                coe (ap A (nat_add_n_Sm k n)^);
               DiagramMap_comm :=
                 <span class="kr">fun</span> (<span class="nv">k</span> <span class="nv">l</span> : nat) (<span class="nv">p</span> : k.+<span class="mi">1</span> = l)
-                  (<span class="nv">a</span> : A (k + n.+<span class="mi">1</span>)%nat) =&gt;
+                  (<span class="nv">a</span> : A (k + n.+<span class="mi">1</span>)) =&gt;
                 <span class="kr">match</span>
                   p <span class="kr">as</span> p0 <span class="kr">in</span> (_ = y)
                   <span class="kr">return</span>
@@ -1145,7 +1140,7 @@ J (ap S (nat_plus_n_Sm k n)) @
                      <span class="kr">with</span>
                      | <span class="mi">1</span> =&gt; <span class="kr">fun</span> <span class="nv">a0</span> : ... =&gt; (a0) ^+
                      <span class="kr">end</span> (coe (ap A (...)^) a) =
-                     coe (ap A (nat_plus_n_Sm y n)^)
+                     coe (ap A (nat_add_n_Sm y n)^)
                        (<span class="kr">match</span> ... ... <span class="kr">with</span>
                         | ... =&gt; ... =&gt; ...
                         <span class="kr">end</span> a))
@@ -1153,12 +1148,11 @@ J (ap S (nat_plus_n_Sm k n)) @
                 | <span class="mi">1</span> =&gt;
                     K S
                       (<span class="kr">fun</span> (<span class="nv">n</span> : nat) (<span class="nv">a0</span> : A n) =&gt;
-                       (a0) ^+) (nat_plus_n_Sm k n)^ @
+                       (a0) ^+) (nat_add_n_Sm k n)^ @
                     ap10
                       (ap coe
                          (ap (ap A)
-                            (ap_V S
-                               (nat_plus_n_Sm k n))))
+                            (ap_V S (nat_add_n_Sm k n))))
                       (a) ^+
                 <span class="kr">end</span>
             |} <span class="mi">1</span> a)^)) @
@@ -1170,17 +1164,17 @@ J (ap S (nat_plus_n_Sm k n)) @
          ({|
             DiagramMap_obj :=
               <span class="kr">fun</span> <span class="nv">k</span> : nat =&gt;
-              coe (ap A (nat_plus_n_Sm k n)^);
+              coe (ap A (nat_add_n_Sm k n)^);
             DiagramMap_comm :=
               <span class="kr">fun</span> (<span class="nv">k</span> <span class="nv">l</span> : nat) (<span class="nv">p</span> : k.+<span class="mi">1</span> = l)
-                (<span class="nv">a</span> : A (k + n.+<span class="mi">1</span>)%nat) =&gt;
+                (<span class="nv">a</span> : A (k + n.+<span class="mi">1</span>)) =&gt;
               <span class="kr">match</span>
                 p <span class="kr">as</span> p0 <span class="kr">in</span> (_ = y)
                 <span class="kr">return</span>
                   (<span class="kr">match</span> p0 <span class="kr">in</span> (...) <span class="kr">return</span> (...) <span class="kr">with</span>
                    | <span class="mi">1</span> =&gt; <span class="kr">fun</span> <span class="nv">a0</span> : ... =&gt; (a0) ^+
                    <span class="kr">end</span> (coe (ap A (...)^) a) =
-                   coe (ap A (nat_plus_n_Sm y n)^)
+                   coe (ap A (nat_add_n_Sm y n)^)
                      (<span class="kr">match</span> ... ... <span class="kr">with</span>
                       | ... =&gt; ... =&gt; ...
                       <span class="kr">end</span> a))
@@ -1188,26 +1182,26 @@ J (ap S (nat_plus_n_Sm k n)) @
               | <span class="mi">1</span> =&gt;
                   K S
                     (<span class="kr">fun</span> (<span class="nv">n</span> : nat) (<span class="nv">a0</span> : A n) =&gt;
-                     (a0) ^+) (nat_plus_n_Sm k n)^ @
+                     (a0) ^+) (nat_add_n_Sm k n)^ @
                   ap10
                     (ap coe
                        (ap (ap A)
-                          (ap_V S (nat_plus_n_Sm k n))))
+                          (ap_V S (nat_add_n_Sm k n))))
                     (a) ^+
               <span class="kr">end</span>
           |} k a))))</span></div></blockquote></div></div></small><span class="alectryon-wsp">
-</span></span><span class="alectryon-wsp">      </span><span class="alectryon-sentence"><input class="alectryon-toggle" id="sequential-v-chk79" style="display: none" type="checkbox"><label class="alectryon-input" for="sequential-v-chk79"><span class="highlight"><span class="nb">rewrite</span> colim_succ_seq_to_colim_seq_ap_inj, colim_shift_seq_to_colim_seq_ap_inj.</span></label><small class="alectryon-output"><div class="alectryon-output-sticky-wrapper"><div class="alectryon-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><div class="goal-hyp"><span class="hyp-names">H</span><span><span class="hyp-type-block"><span class="hyp-punct">:</span><span class="hyp-type"><span class="highlight">Funext</span></span></span></span></div><div class="goal-hyp"><span class="hyp-names">A</span><span><span class="hyp-type-block"><span class="hyp-punct">:</span><span class="hyp-type"><span class="highlight">Sequence</span></span></span></span></div><div class="goal-hyp"><span class="hyp-names">n</span><span><span class="hyp-type-block"><span class="hyp-punct">:</span><span class="hyp-type"><span class="highlight">nat</span></span></span></span></div><div class="goal-hyp"><span class="hyp-names">e</span><span><span class="hyp-type-block"><span class="hyp-punct">:</span><span class="hyp-type"><span class="highlight">IsEquiv (colim_shift_seq_to_colim_seq A n)</span></span></span></span></div><div class="goal-hyp"><span class="hyp-names">k</span><span><span class="hyp-type-block"><span class="hyp-punct">:</span><span class="hyp-type"><span class="highlight">Graph.graph0 sequence_graph</span></span></span></span></div><div class="goal-hyp"><span class="hyp-names">a</span><span><span class="hyp-type-block"><span class="hyp-punct">:</span><span class="hyp-type"><span class="highlight">shift_seq A n.+<span class="mi">1</span> k</span></span></span></span></div></div><span class="goal-separator"><hr></span><div class="goal-conclusion"><span class="highlight">colimp (k + n.+<span class="mi">1</span>)%nat (k + n.+<span class="mi">1</span>).+<span class="mi">1</span> <span class="mi">1</span> a @
-J (nat_plus_n_Sm k n) =
-J (ap S (nat_plus_n_Sm k n)) @
-(ap (inj A (k.+<span class="mi">2</span> + n)%nat)
+</span></span><span class="alectryon-wsp">      </span><span class="alectryon-sentence"><input class="alectryon-toggle" id="sequential-v-chk79" style="display: none" type="checkbox"><label class="alectryon-input" for="sequential-v-chk79"><span class="highlight"><span class="nb">rewrite</span> colim_succ_seq_to_colim_seq_ap_inj, colim_shift_seq_to_colim_seq_ap_inj.</span></label><small class="alectryon-output"><div class="alectryon-output-sticky-wrapper"><div class="alectryon-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><div class="goal-hyp"><span class="hyp-names">H</span><span><span class="hyp-type-block"><span class="hyp-punct">:</span><span class="hyp-type"><span class="highlight">Funext</span></span></span></span></div><div class="goal-hyp"><span class="hyp-names">A</span><span><span class="hyp-type-block"><span class="hyp-punct">:</span><span class="hyp-type"><span class="highlight">Sequence</span></span></span></span></div><div class="goal-hyp"><span class="hyp-names">n</span><span><span class="hyp-type-block"><span class="hyp-punct">:</span><span class="hyp-type"><span class="highlight">nat</span></span></span></span></div><div class="goal-hyp"><span class="hyp-names">e</span><span><span class="hyp-type-block"><span class="hyp-punct">:</span><span class="hyp-type"><span class="highlight">IsEquiv (colim_shift_seq_to_colim_seq A n)</span></span></span></span></div><div class="goal-hyp"><span class="hyp-names">k</span><span><span class="hyp-type-block"><span class="hyp-punct">:</span><span class="hyp-type"><span class="highlight">Graph.graph0 sequence_graph</span></span></span></span></div><div class="goal-hyp"><span class="hyp-names">a</span><span><span class="hyp-type-block"><span class="hyp-punct">:</span><span class="hyp-type"><span class="highlight">shift_seq A n.+<span class="mi">1</span> k</span></span></span></span></div></div><span class="goal-separator"><hr></span><div class="goal-conclusion"><span class="highlight">colimp (k + n.+<span class="mi">1</span>) (k + n.+<span class="mi">1</span>).+<span class="mi">1</span> <span class="mi">1</span> a @
+J (nat_add_n_Sm k n) =
+J (ap S (nat_add_n_Sm k n)) @
+(ap (inj A (k.+<span class="mi">2</span> + n))
    (DiagramMap_comm
       {|
         DiagramMap_obj :=
           <span class="kr">fun</span> <span class="nv">k</span> : nat =&gt;
-          coe (ap A (nat_plus_n_Sm k n)^);
+          coe (ap A (nat_add_n_Sm k n)^);
         DiagramMap_comm :=
           <span class="kr">fun</span> (<span class="nv">k</span> <span class="nv">l</span> : nat) (<span class="nv">p</span> : k.+<span class="mi">1</span> = l)
-            (<span class="nv">a</span> : A (k + n.+<span class="mi">1</span>)%nat) =&gt;
+            (<span class="nv">a</span> : A (k + n.+<span class="mi">1</span>)) =&gt;
           <span class="kr">match</span>
             p <span class="kr">as</span> p0 <span class="kr">in</span> (_ = y)
             <span class="kr">return</span>
@@ -1217,24 +1211,23 @@ J (ap S (nat_plus_n_Sm k n)) @
                    (A (k + n).+<span class="mi">1</span> -&gt; A (y0 + n).+<span class="mi">1</span>)
                <span class="kr">with</span>
                | <span class="mi">1</span> =&gt; <span class="kr">fun</span> <span class="nv">a0</span> : A (k + n).+<span class="mi">1</span> =&gt; (a0) ^+
-               <span class="kr">end</span> (coe (ap A (nat_plus_n_Sm k n)^) a) =
-               coe (ap A (nat_plus_n_Sm y n)^)
+               <span class="kr">end</span> (coe (ap A (nat_add_n_Sm k n)^) a) =
+               coe (ap A (nat_add_n_Sm y n)^)
                  (<span class="kr">match</span>
                     p0 <span class="kr">in</span> (_ = y0)
-                    <span class="kr">return</span> (A ...%nat -&gt; A ...%nat)
+                    <span class="kr">return</span> (A ... -&gt; A ...)
                   <span class="kr">with</span>
-                  | <span class="mi">1</span> =&gt;
-                      <span class="kr">fun</span> <span class="nv">a0</span> : A (...)%nat =&gt; (a0) ^+
+                  | <span class="mi">1</span> =&gt; <span class="kr">fun</span> <span class="nv">a0</span> : A (...) =&gt; (a0) ^+
                   <span class="kr">end</span> a))
           <span class="kr">with</span>
           | <span class="mi">1</span> =&gt;
               K S
                 (<span class="kr">fun</span> (<span class="nv">n</span> : nat) (<span class="nv">a0</span> : A n) =&gt; (a0) ^+)
-                (nat_plus_n_Sm k n)^ @
+                (nat_add_n_Sm k n)^ @
               ap10
                 (ap coe
                    (ap (ap A)
-                      (ap_V S (nat_plus_n_Sm k n))))
+                      (ap_V S (nat_add_n_Sm k n))))
                 (a) ^+
           <span class="kr">end</span>
       |} <span class="mi">1</span> a)^ @
@@ -1246,17 +1239,17 @@ J (ap S (nat_plus_n_Sm k n)) @
          ({|
             DiagramMap_obj :=
               <span class="kr">fun</span> <span class="nv">k</span> : nat =&gt;
-              coe (ap A (nat_plus_n_Sm k n)^);
+              coe (ap A (nat_add_n_Sm k n)^);
             DiagramMap_comm :=
               <span class="kr">fun</span> (<span class="nv">k</span> <span class="nv">l</span> : nat) (<span class="nv">p</span> : k.+<span class="mi">1</span> = l)
-                (<span class="nv">a</span> : A (k + n.+<span class="mi">1</span>)%nat) =&gt;
+                (<span class="nv">a</span> : A (k + n.+<span class="mi">1</span>)) =&gt;
               <span class="kr">match</span>
                 p <span class="kr">as</span> p0 <span class="kr">in</span> (_ = y)
                 <span class="kr">return</span>
                   (<span class="kr">match</span> p0 <span class="kr">in</span> (...) <span class="kr">return</span> (...) <span class="kr">with</span>
                    | <span class="mi">1</span> =&gt; <span class="kr">fun</span> <span class="nv">a0</span> : ... =&gt; (a0) ^+
                    <span class="kr">end</span> (coe (ap A (...)^) a) =
-                   coe (ap A (nat_plus_n_Sm y n)^)
+                   coe (ap A (nat_add_n_Sm y n)^)
                      (<span class="kr">match</span> ... ... <span class="kr">with</span>
                       | ... =&gt; ... =&gt; ...
                       <span class="kr">end</span> a))
@@ -1264,26 +1257,26 @@ J (ap S (nat_plus_n_Sm k n)) @
               | <span class="mi">1</span> =&gt;
                   K S
                     (<span class="kr">fun</span> (<span class="nv">n</span> : nat) (<span class="nv">a0</span> : A n) =&gt;
-                     (a0) ^+) (nat_plus_n_Sm k n)^ @
+                     (a0) ^+) (nat_add_n_Sm k n)^ @
                   ap10
                     (ap coe
                        (ap (ap A)
-                          (ap_V S (nat_plus_n_Sm k n))))
+                          (ap_V S (nat_add_n_Sm k n))))
                     (a) ^+
               <span class="kr">end</span>
           |} k a))))</span></div></blockquote></div></div></small><span class="alectryon-wsp">
-</span></span><span class="alectryon-wsp">      </span><span class="alectryon-sentence"><input class="alectryon-toggle" id="sequential-v-chk7a" style="display: none" type="checkbox"><label class="alectryon-input" for="sequential-v-chk7a"><span class="highlight"><span class="nb">rewrite</span> (colim_succ_seq_to_colim_seq_beta_glue (shift_seq A n)).</span></label><small class="alectryon-output"><div class="alectryon-output-sticky-wrapper"><div class="alectryon-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><div class="goal-hyp"><span class="hyp-names">H</span><span><span class="hyp-type-block"><span class="hyp-punct">:</span><span class="hyp-type"><span class="highlight">Funext</span></span></span></span></div><div class="goal-hyp"><span class="hyp-names">A</span><span><span class="hyp-type-block"><span class="hyp-punct">:</span><span class="hyp-type"><span class="highlight">Sequence</span></span></span></span></div><div class="goal-hyp"><span class="hyp-names">n</span><span><span class="hyp-type-block"><span class="hyp-punct">:</span><span class="hyp-type"><span class="highlight">nat</span></span></span></span></div><div class="goal-hyp"><span class="hyp-names">e</span><span><span class="hyp-type-block"><span class="hyp-punct">:</span><span class="hyp-type"><span class="highlight">IsEquiv (colim_shift_seq_to_colim_seq A n)</span></span></span></span></div><div class="goal-hyp"><span class="hyp-names">k</span><span><span class="hyp-type-block"><span class="hyp-punct">:</span><span class="hyp-type"><span class="highlight">Graph.graph0 sequence_graph</span></span></span></span></div><div class="goal-hyp"><span class="hyp-names">a</span><span><span class="hyp-type-block"><span class="hyp-punct">:</span><span class="hyp-type"><span class="highlight">shift_seq A n.+<span class="mi">1</span> k</span></span></span></span></div></div><span class="goal-separator"><hr></span><div class="goal-conclusion"><span class="highlight">colimp (k + n.+<span class="mi">1</span>)%nat (k + n.+<span class="mi">1</span>).+<span class="mi">1</span> <span class="mi">1</span> a @
-J (nat_plus_n_Sm k n) =
-J (ap S (nat_plus_n_Sm k n)) @
-(ap (inj A (k.+<span class="mi">2</span> + n)%nat)
+</span></span><span class="alectryon-wsp">      </span><span class="alectryon-sentence"><input class="alectryon-toggle" id="sequential-v-chk7a" style="display: none" type="checkbox"><label class="alectryon-input" for="sequential-v-chk7a"><span class="highlight"><span class="nb">rewrite</span> (colim_succ_seq_to_colim_seq_beta_glue (shift_seq A n)).</span></label><small class="alectryon-output"><div class="alectryon-output-sticky-wrapper"><div class="alectryon-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><div class="goal-hyp"><span class="hyp-names">H</span><span><span class="hyp-type-block"><span class="hyp-punct">:</span><span class="hyp-type"><span class="highlight">Funext</span></span></span></span></div><div class="goal-hyp"><span class="hyp-names">A</span><span><span class="hyp-type-block"><span class="hyp-punct">:</span><span class="hyp-type"><span class="highlight">Sequence</span></span></span></span></div><div class="goal-hyp"><span class="hyp-names">n</span><span><span class="hyp-type-block"><span class="hyp-punct">:</span><span class="hyp-type"><span class="highlight">nat</span></span></span></span></div><div class="goal-hyp"><span class="hyp-names">e</span><span><span class="hyp-type-block"><span class="hyp-punct">:</span><span class="hyp-type"><span class="highlight">IsEquiv (colim_shift_seq_to_colim_seq A n)</span></span></span></span></div><div class="goal-hyp"><span class="hyp-names">k</span><span><span class="hyp-type-block"><span class="hyp-punct">:</span><span class="hyp-type"><span class="highlight">Graph.graph0 sequence_graph</span></span></span></span></div><div class="goal-hyp"><span class="hyp-names">a</span><span><span class="hyp-type-block"><span class="hyp-punct">:</span><span class="hyp-type"><span class="highlight">shift_seq A n.+<span class="mi">1</span> k</span></span></span></span></div></div><span class="goal-separator"><hr></span><div class="goal-conclusion"><span class="highlight">colimp (k + n.+<span class="mi">1</span>) (k + n.+<span class="mi">1</span>).+<span class="mi">1</span> <span class="mi">1</span> a @
+J (nat_add_n_Sm k n) =
+J (ap S (nat_add_n_Sm k n)) @
+(ap (inj A (k.+<span class="mi">2</span> + n))
    (DiagramMap_comm
       {|
         DiagramMap_obj :=
           <span class="kr">fun</span> <span class="nv">k</span> : nat =&gt;
-          coe (ap A (nat_plus_n_Sm k n)^);
+          coe (ap A (nat_add_n_Sm k n)^);
         DiagramMap_comm :=
           <span class="kr">fun</span> (<span class="nv">k</span> <span class="nv">l</span> : nat) (<span class="nv">p</span> : k.+<span class="mi">1</span> = l)
-            (<span class="nv">a</span> : A (k + n.+<span class="mi">1</span>)%nat) =&gt;
+            (<span class="nv">a</span> : A (k + n.+<span class="mi">1</span>)) =&gt;
           <span class="kr">match</span>
             p <span class="kr">as</span> p0 <span class="kr">in</span> (_ = y)
             <span class="kr">return</span>
@@ -1293,24 +1286,23 @@ J (ap S (nat_plus_n_Sm k n)) @
                    (A (k + n).+<span class="mi">1</span> -&gt; A (y0 + n).+<span class="mi">1</span>)
                <span class="kr">with</span>
                | <span class="mi">1</span> =&gt; <span class="kr">fun</span> <span class="nv">a0</span> : A (k + n).+<span class="mi">1</span> =&gt; (a0) ^+
-               <span class="kr">end</span> (coe (ap A (nat_plus_n_Sm k n)^) a) =
-               coe (ap A (nat_plus_n_Sm y n)^)
+               <span class="kr">end</span> (coe (ap A (nat_add_n_Sm k n)^) a) =
+               coe (ap A (nat_add_n_Sm y n)^)
                  (<span class="kr">match</span>
                     p0 <span class="kr">in</span> (_ = y0)
-                    <span class="kr">return</span> (A ...%nat -&gt; A ...%nat)
+                    <span class="kr">return</span> (A ... -&gt; A ...)
                   <span class="kr">with</span>
-                  | <span class="mi">1</span> =&gt;
-                      <span class="kr">fun</span> <span class="nv">a0</span> : A (...)%nat =&gt; (a0) ^+
+                  | <span class="mi">1</span> =&gt; <span class="kr">fun</span> <span class="nv">a0</span> : A (...) =&gt; (a0) ^+
                   <span class="kr">end</span> a))
           <span class="kr">with</span>
           | <span class="mi">1</span> =&gt;
               K S
                 (<span class="kr">fun</span> (<span class="nv">n</span> : nat) (<span class="nv">a0</span> : A n) =&gt; (a0) ^+)
-                (nat_plus_n_Sm k n)^ @
+                (nat_add_n_Sm k n)^ @
               ap10
                 (ap coe
                    (ap (ap A)
-                      (ap_V S (nat_plus_n_Sm k n))))
+                      (ap_V S (nat_add_n_Sm k n))))
                 (a) ^+
           <span class="kr">end</span>
       |} <span class="mi">1</span> a)^ @
@@ -1319,10 +1311,10 @@ J (ap S (nat_plus_n_Sm k n)) @
       ({|
          DiagramMap_obj :=
            <span class="kr">fun</span> <span class="nv">k</span> : nat =&gt;
-           coe (ap A (nat_plus_n_Sm k n)^);
+           coe (ap A (nat_add_n_Sm k n)^);
          DiagramMap_comm :=
            <span class="kr">fun</span> (<span class="nv">k</span> <span class="nv">l</span> : nat) (<span class="nv">p</span> : k.+<span class="mi">1</span> = l)
-             (<span class="nv">a</span> : A (k + n.+<span class="mi">1</span>)%nat) =&gt;
+             (<span class="nv">a</span> : A (k + n.+<span class="mi">1</span>)) =&gt;
            <span class="kr">match</span>
              p <span class="kr">as</span> p0 <span class="kr">in</span> (_ = y)
              <span class="kr">return</span>
@@ -1331,9 +1323,8 @@ J (ap S (nat_plus_n_Sm k n)) @
                   <span class="kr">return</span> (A ....+<span class="mi">1</span> -&gt; A ....+<span class="mi">1</span>)
                 <span class="kr">with</span>
                 | <span class="mi">1</span> =&gt; <span class="kr">fun</span> <span class="nv">a0</span> : A (...).+<span class="mi">1</span> =&gt; (a0) ^+
-                <span class="kr">end</span>
-                  (coe (ap A (nat_plus_n_Sm k n)^) a) =
-                coe (ap A (nat_plus_n_Sm y n)^)
+                <span class="kr">end</span> (coe (ap A (nat_add_n_Sm k n)^) a) =
+                coe (ap A (nat_add_n_Sm y n)^)
                   (<span class="kr">match</span> p0 <span class="kr">in</span> (...) <span class="kr">return</span> (...) <span class="kr">with</span>
                    | <span class="mi">1</span> =&gt; <span class="kr">fun</span> <span class="nv">a0</span> : ... =&gt; (a0) ^+
                    <span class="kr">end</span> a))
@@ -1341,11 +1332,11 @@ J (ap S (nat_plus_n_Sm k n)) @
            | <span class="mi">1</span> =&gt;
                K S
                  (<span class="kr">fun</span> (<span class="nv">n</span> : nat) (<span class="nv">a0</span> : A n) =&gt; (a0) ^+)
-                 (nat_plus_n_Sm k n)^ @
+                 (nat_add_n_Sm k n)^ @
                ap10
                  (ap coe
                     (ap (ap A)
-                       (ap_V S (nat_plus_n_Sm k n))))
+                       (ap_V S (nat_add_n_Sm k n))))
                  (a) ^+
            <span class="kr">end</span>
        |} k a)))</span></div></blockquote></div></div></small><span class="alectryon-wsp">
@@ -1463,7 +1454,7 @@ ap idmap (glue unit_seq n a) @
    <span class="kr">return</span> (inj unit_seq n0 u = inj unit_seq <span class="mi">0</span> tt)
  <span class="kr">with</span>
  | tt =&gt;
-     nat_rect
+     Overture.nat_rect
        (<span class="kr">fun</span> <span class="nv">n1</span> : nat =&gt;
         inj unit_seq n1 tt = inj unit_seq <span class="mi">0</span> tt) <span class="mi">1</span>
        (<span class="kr">fun</span> (<span class="nv">n1</span> : nat)
@@ -1477,7 +1468,7 @@ ap idmap (glue unit_seq n a) @
    <span class="kr">return</span> (inj unit_seq n0 u = inj unit_seq <span class="mi">0</span> tt)
  <span class="kr">with</span>
  | tt =&gt;
-     nat_rect
+     Overture.nat_rect
        (<span class="kr">fun</span> <span class="nv">n1</span> : nat =&gt;
         inj unit_seq n1 tt = inj unit_seq <span class="mi">0</span> tt) <span class="mi">1</span>
        (<span class="kr">fun</span> (<span class="nv">n1</span> : nat)
@@ -1537,51 +1528,61 @@ sig_seq B i -&gt; Colimit A</span></div></blockquote></div></div></small><span c
 </span></span><span class="alectryon-sentence"><input class="alectryon-toggle" id="sequential-v-chk9c" style="display: none" type="checkbox"><label class="alectryon-input" for="sequential-v-chk9c"><span class="highlight"><span class="kn">Definition</span> <span class="nf">fib_seq_to_seq</span> {<span class="nv">A</span>} (<span class="nv">B</span> : FibSequence A) (<span class="nv">x</span> : sig A) : Sequence.</span></label><small class="alectryon-output"><div class="alectryon-output-sticky-wrapper"><div class="alectryon-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><div class="goal-hyp"><span class="hyp-names">A</span><span><span class="hyp-type-block"><span class="hyp-punct">:</span><span class="hyp-type"><span class="highlight">Sequence</span></span></span></span></div><div class="goal-hyp"><span class="hyp-names">B</span><span><span class="hyp-type-block"><span class="hyp-punct">:</span><span class="hyp-type"><span class="highlight">FibSequence A</span></span></span></span></div><div class="goal-hyp"><span class="hyp-names">x</span><span><span class="hyp-type-block"><span class="hyp-punct">:</span><span class="hyp-type"><span class="highlight">{x : _ &amp; A x}</span></span></span></span></div></div><span class="goal-separator"><hr></span><div class="goal-conclusion"><span class="highlight">Sequence</span></div></blockquote></div></div></small><span class="alectryon-wsp">
 </span></span><span class="alectryon-sentence"><input class="alectryon-toggle" id="sequential-v-chk9d" style="display: none" type="checkbox"><label class="alectryon-input" for="sequential-v-chk9d"><span class="highlight"><span class="kn">Proof</span>.</span></label><small class="alectryon-output"><div class="alectryon-output-sticky-wrapper"><div class="alectryon-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><div class="goal-hyp"><span class="hyp-names">A</span><span><span class="hyp-type-block"><span class="hyp-punct">:</span><span class="hyp-type"><span class="highlight">Sequence</span></span></span></span></div><div class="goal-hyp"><span class="hyp-names">B</span><span><span class="hyp-type-block"><span class="hyp-punct">:</span><span class="hyp-type"><span class="highlight">FibSequence A</span></span></span></span></div><div class="goal-hyp"><span class="hyp-names">x</span><span><span class="hyp-type-block"><span class="hyp-punct">:</span><span class="hyp-type"><span class="highlight">{x : _ &amp; A x}</span></span></span></span></div></div><span class="goal-separator"><hr></span><div class="goal-conclusion"><span class="highlight">Sequence</span></div></blockquote></div></div></small><span class="alectryon-wsp">
 </span></span><span class="alectryon-wsp">  </span><span class="alectryon-sentence"><input class="alectryon-toggle" id="sequential-v-chk9e" style="display: none" type="checkbox"><label class="alectryon-input" for="sequential-v-chk9e"><span class="highlight">srapply Build_Sequence; <span class="nb">intro</span> k; <span class="nb">revert</span> x; <span class="nb">induction</span> k <span class="kr">as</span> [ | k h].</span></label><small class="alectryon-output"><div class="alectryon-output-sticky-wrapper"><div class="alectryon-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><div class="goal-hyp"><span class="hyp-names">A</span><span><span class="hyp-type-block"><span class="hyp-punct">:</span><span class="hyp-type"><span class="highlight">Sequence</span></span></span></span></div><div class="goal-hyp"><span class="hyp-names">B</span><span><span class="hyp-type-block"><span class="hyp-punct">:</span><span class="hyp-type"><span class="highlight">FibSequence A</span></span></span></span></div></div><span class="goal-separator"><hr></span><div class="goal-conclusion"><span class="highlight">{x : _ &amp; A x} -&gt; <span class="kt">Type</span></span></div></blockquote><div class="alectryon-extra-goals"><input class="alectryon-extra-goal-toggle" id="sequential-v-chk9f" style="display: none" type="checkbox"><blockquote class="alectryon-goal"><div class="goal-hyps"><div class="goal-hyp"><span class="hyp-names">A</span><span><span class="hyp-type-block"><span class="hyp-punct">:</span><span class="hyp-type"><span class="highlight">Sequence</span></span></span></span></div><div class="goal-hyp"><span class="hyp-names">B</span><span><span class="hyp-type-block"><span class="hyp-punct">:</span><span class="hyp-type"><span class="highlight">FibSequence A</span></span></span></span></div><div class="goal-hyp"><span class="hyp-names">k</span><span><span class="hyp-type-block"><span class="hyp-punct">:</span><span class="hyp-type"><span class="highlight">nat</span></span></span></span></div><div class="goal-hyp"><span class="hyp-names">h</span><span><span class="hyp-type-block"><span class="hyp-punct">:</span><span class="hyp-type"><span class="highlight">{x : _ &amp; A x} -&gt; <span class="kt">Type</span></span></span></span></span></div></div><label class="goal-separator alectryon-extra-goal-label" for="sequential-v-chk9f"><hr></label><div class="goal-conclusion"><span class="highlight">{x : _ &amp; A x} -&gt; <span class="kt">Type</span></span></div></blockquote><input class="alectryon-extra-goal-toggle" id="sequential-v-chka0" style="display: none" type="checkbox"><blockquote class="alectryon-goal"><div class="goal-hyps"><div class="goal-hyp"><span class="hyp-names">A</span><span><span class="hyp-type-block"><span class="hyp-punct">:</span><span class="hyp-type"><span class="highlight">Sequence</span></span></span></span></div><div class="goal-hyp"><span class="hyp-names">B</span><span><span class="hyp-type-block"><span class="hyp-punct">:</span><span class="hyp-type"><span class="highlight">FibSequence A</span></span></span></span></div></div><label class="goal-separator alectryon-extra-goal-label" for="sequential-v-chka0"><hr></label><div class="goal-conclusion"><span class="highlight"><span class="kr">forall</span> <span class="nv">x</span> : {x : _ &amp; A x},
-nat_rect (<span class="kr">fun</span> <span class="nv">_</span> : nat =&gt; {x : _ &amp; A x} -&gt; <span class="kt">Type</span>) <span class="nl">?Goal</span>
+Overture.nat_rect
+  (<span class="kr">fun</span> <span class="nv">_</span> : nat =&gt; {x : _ &amp; A x} -&gt; <span class="kt">Type</span>) <span class="nl">?Goal</span>
   (<span class="kr">fun</span> (<span class="nv">k</span> : nat) (<span class="nv">h</span> : {x : _ &amp; A x} -&gt; <span class="kt">Type</span>) =&gt; <span class="nl">?Goal0</span>)
   <span class="mi">0</span> x -&gt;
-nat_rect (<span class="kr">fun</span> <span class="nv">_</span> : nat =&gt; {x : _ &amp; A x} -&gt; <span class="kt">Type</span>) <span class="nl">?Goal</span>
+Overture.nat_rect
+  (<span class="kr">fun</span> <span class="nv">_</span> : nat =&gt; {x : _ &amp; A x} -&gt; <span class="kt">Type</span>) <span class="nl">?Goal</span>
   (<span class="kr">fun</span> (<span class="nv">k</span> : nat) (<span class="nv">h</span> : {x : _ &amp; A x} -&gt; <span class="kt">Type</span>) =&gt; <span class="nl">?Goal0</span>)
   <span class="mi">1</span> x</span></div></blockquote><input class="alectryon-extra-goal-toggle" id="sequential-v-chka1" style="display: none" type="checkbox"><blockquote class="alectryon-goal"><div class="goal-hyps"><div class="goal-hyp"><span class="hyp-names">A</span><span><span class="hyp-type-block"><span class="hyp-punct">:</span><span class="hyp-type"><span class="highlight">Sequence</span></span></span></span></div><div class="goal-hyp"><span class="hyp-names">B</span><span><span class="hyp-type-block"><span class="hyp-punct">:</span><span class="hyp-type"><span class="highlight">FibSequence A</span></span></span></span></div><div class="goal-hyp"><span class="hyp-names">k</span><span><span class="hyp-type-block"><span class="hyp-punct">:</span><span class="hyp-type"><span class="highlight">nat</span></span></span></span></div><div class="goal-hyp"><span class="hyp-names">h</span><span><span class="hyp-type-block"><span class="hyp-punct">:</span><span class="hyp-type"><span class="highlight"><span class="kr">forall</span> <span class="nv">x</span> : {x : _ &amp; A x},
-nat_rect (<span class="kr">fun</span> <span class="nv">_</span> : nat =&gt; {x : _ &amp; A x} -&gt; <span class="kt">Type</span>)
-  <span class="nl">?Goal</span>
+Overture.nat_rect
+  (<span class="kr">fun</span> <span class="nv">_</span> : nat =&gt; {x : _ &amp; A x} -&gt; <span class="kt">Type</span>) <span class="nl">?Goal</span>
   (<span class="kr">fun</span> (<span class="nv">k</span> : nat) (<span class="nv">h</span> : {x : _ &amp; A x} -&gt; <span class="kt">Type</span>) =&gt;
    <span class="nl">?Goal0</span>) k x -&gt;
-nat_rect (<span class="kr">fun</span> <span class="nv">_</span> : nat =&gt; {x : _ &amp; A x} -&gt; <span class="kt">Type</span>)
-  <span class="nl">?Goal</span>
+Overture.nat_rect
+  (<span class="kr">fun</span> <span class="nv">_</span> : nat =&gt; {x : _ &amp; A x} -&gt; <span class="kt">Type</span>) <span class="nl">?Goal</span>
   (<span class="kr">fun</span> (<span class="nv">k</span> : nat) (<span class="nv">h</span> : {x : _ &amp; A x} -&gt; <span class="kt">Type</span>) =&gt;
    <span class="nl">?Goal0</span>) k.+<span class="mi">1</span> x</span></span></span></span></div></div><label class="goal-separator alectryon-extra-goal-label" for="sequential-v-chka1"><hr></label><div class="goal-conclusion"><span class="highlight"><span class="kr">forall</span> <span class="nv">x</span> : {x : _ &amp; A x},
-nat_rect (<span class="kr">fun</span> <span class="nv">_</span> : nat =&gt; {x : _ &amp; A x} -&gt; <span class="kt">Type</span>) <span class="nl">?Goal</span>
+Overture.nat_rect
+  (<span class="kr">fun</span> <span class="nv">_</span> : nat =&gt; {x : _ &amp; A x} -&gt; <span class="kt">Type</span>) <span class="nl">?Goal</span>
   (<span class="kr">fun</span> (<span class="nv">k</span> : nat) (<span class="nv">h</span> : {x : _ &amp; A x} -&gt; <span class="kt">Type</span>) =&gt; <span class="nl">?Goal0</span>)
   k.+<span class="mi">1</span> x -&gt;
-nat_rect (<span class="kr">fun</span> <span class="nv">_</span> : nat =&gt; {x : _ &amp; A x} -&gt; <span class="kt">Type</span>) <span class="nl">?Goal</span>
+Overture.nat_rect
+  (<span class="kr">fun</span> <span class="nv">_</span> : nat =&gt; {x : _ &amp; A x} -&gt; <span class="kt">Type</span>) <span class="nl">?Goal</span>
   (<span class="kr">fun</span> (<span class="nv">k</span> : nat) (<span class="nv">h</span> : {x : _ &amp; A x} -&gt; <span class="kt">Type</span>) =&gt; <span class="nl">?Goal0</span>)
   k.+<span class="mi">2</span> x</span></div></blockquote></div></div></div></small><span class="alectryon-wsp">
 </span></span><span class="alectryon-wsp">  </span><span class="alectryon-sentence"><input class="alectryon-toggle" id="sequential-v-chka2" style="display: none" type="checkbox"><label class="alectryon-input" for="sequential-v-chka2"><span class="highlight">*</span></label><small class="alectryon-output"><div class="alectryon-output-sticky-wrapper"><div class="alectryon-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><div class="goal-hyp"><span class="hyp-names">A</span><span><span class="hyp-type-block"><span class="hyp-punct">:</span><span class="hyp-type"><span class="highlight">Sequence</span></span></span></span></div><div class="goal-hyp"><span class="hyp-names">B</span><span><span class="hyp-type-block"><span class="hyp-punct">:</span><span class="hyp-type"><span class="highlight">FibSequence A</span></span></span></span></div></div><span class="goal-separator"><hr></span><div class="goal-conclusion"><span class="highlight">{x : _ &amp; A x} -&gt; <span class="kt">Type</span></span></div></blockquote></div></div></small><span class="alectryon-wsp"> </span></span><span class="alectryon-sentence"><span class="alectryon-input"><span class="highlight"><span class="bp">exact</span> (<span class="kr">fun</span> <span class="nv">x</span> =&gt; B x).</span></span><span class="alectryon-wsp">
 </span></span><span class="alectryon-wsp">  </span><span class="alectryon-sentence"><input class="alectryon-toggle" id="sequential-v-chka3" style="display: none" type="checkbox"><label class="alectryon-input" for="sequential-v-chka3"><span class="highlight">*</span></label><small class="alectryon-output"><div class="alectryon-output-sticky-wrapper"><div class="alectryon-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><div class="goal-hyp"><span class="hyp-names">A</span><span><span class="hyp-type-block"><span class="hyp-punct">:</span><span class="hyp-type"><span class="highlight">Sequence</span></span></span></span></div><div class="goal-hyp"><span class="hyp-names">B</span><span><span class="hyp-type-block"><span class="hyp-punct">:</span><span class="hyp-type"><span class="highlight">FibSequence A</span></span></span></span></div><div class="goal-hyp"><span class="hyp-names">k</span><span><span class="hyp-type-block"><span class="hyp-punct">:</span><span class="hyp-type"><span class="highlight">nat</span></span></span></span></div><div class="goal-hyp"><span class="hyp-names">h</span><span><span class="hyp-type-block"><span class="hyp-punct">:</span><span class="hyp-type"><span class="highlight">{x : _ &amp; A x} -&gt; <span class="kt">Type</span></span></span></span></span></div></div><span class="goal-separator"><hr></span><div class="goal-conclusion"><span class="highlight">{x : _ &amp; A x} -&gt; <span class="kt">Type</span></span></div></blockquote></div></div></small><span class="alectryon-wsp"> </span></span><span class="alectryon-sentence"><span class="alectryon-input"><span class="highlight"><span class="bp">exact</span> (<span class="kr">fun</span> <span class="nv">x</span> =&gt; h x^++).</span></span><span class="alectryon-wsp">
 </span></span><span class="alectryon-wsp">  </span><span class="alectryon-sentence"><input class="alectryon-toggle" id="sequential-v-chka4" style="display: none" type="checkbox"><label class="alectryon-input" for="sequential-v-chka4"><span class="highlight">*</span></label><small class="alectryon-output"><div class="alectryon-output-sticky-wrapper"><div class="alectryon-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><div class="goal-hyp"><span class="hyp-names">A</span><span><span class="hyp-type-block"><span class="hyp-punct">:</span><span class="hyp-type"><span class="highlight">Sequence</span></span></span></span></div><div class="goal-hyp"><span class="hyp-names">B</span><span><span class="hyp-type-block"><span class="hyp-punct">:</span><span class="hyp-type"><span class="highlight">FibSequence A</span></span></span></span></div></div><span class="goal-separator"><hr></span><div class="goal-conclusion"><span class="highlight"><span class="kr">forall</span> <span class="nv">x</span> : {x : _ &amp; A x},
-nat_rect (<span class="kr">fun</span> <span class="nv">_</span> : nat =&gt; {x : _ &amp; A x} -&gt; <span class="kt">Type</span>)
+Overture.nat_rect
+  (<span class="kr">fun</span> <span class="nv">_</span> : nat =&gt; {x : _ &amp; A x} -&gt; <span class="kt">Type</span>)
   (<span class="kr">fun</span> <span class="nv">x0</span> : {x : _ &amp; A x} =&gt; B x0)
   (<span class="kr">fun</span> (<span class="nv">_</span> : nat) (<span class="nv">h</span> : {x : _ &amp; A x} -&gt; <span class="kt">Type</span>)
      (<span class="nv">x0</span> : {x : _ &amp; A x}) =&gt; h (x0) ^++) <span class="mi">0</span> x -&gt;
-nat_rect (<span class="kr">fun</span> <span class="nv">_</span> : nat =&gt; {x : _ &amp; A x} -&gt; <span class="kt">Type</span>)
+Overture.nat_rect
+  (<span class="kr">fun</span> <span class="nv">_</span> : nat =&gt; {x : _ &amp; A x} -&gt; <span class="kt">Type</span>)
   (<span class="kr">fun</span> <span class="nv">x0</span> : {x : _ &amp; A x} =&gt; B x0)
   (<span class="kr">fun</span> (<span class="nv">_</span> : nat) (<span class="nv">h</span> : {x : _ &amp; A x} -&gt; <span class="kt">Type</span>)
      (<span class="nv">x0</span> : {x : _ &amp; A x}) =&gt; h (x0) ^++) <span class="mi">1</span> x</span></div></blockquote></div></div></small><span class="alectryon-wsp"> </span></span><span class="alectryon-sentence"><span class="alectryon-input"><span class="highlight"><span class="bp">exact</span> (<span class="kr">fun</span> <span class="nv">x</span> <span class="nv">b</span> =&gt; b^+f).</span></span><span class="alectryon-wsp">
 </span></span><span class="alectryon-wsp">  </span><span class="alectryon-sentence"><input class="alectryon-toggle" id="sequential-v-chka5" style="display: none" type="checkbox"><label class="alectryon-input" for="sequential-v-chka5"><span class="highlight">*</span></label><small class="alectryon-output"><div class="alectryon-output-sticky-wrapper"><div class="alectryon-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><div class="goal-hyp"><span class="hyp-names">A</span><span><span class="hyp-type-block"><span class="hyp-punct">:</span><span class="hyp-type"><span class="highlight">Sequence</span></span></span></span></div><div class="goal-hyp"><span class="hyp-names">B</span><span><span class="hyp-type-block"><span class="hyp-punct">:</span><span class="hyp-type"><span class="highlight">FibSequence A</span></span></span></span></div><div class="goal-hyp"><span class="hyp-names">k</span><span><span class="hyp-type-block"><span class="hyp-punct">:</span><span class="hyp-type"><span class="highlight">nat</span></span></span></span></div><div class="goal-hyp"><span class="hyp-names">h</span><span><span class="hyp-type-block"><span class="hyp-punct">:</span><span class="hyp-type"><span class="highlight"><span class="kr">forall</span> <span class="nv">x</span> : {x : _ &amp; A x},
-nat_rect (<span class="kr">fun</span> <span class="nv">_</span> : nat =&gt; {x : _ &amp; A x} -&gt; <span class="kt">Type</span>)
+Overture.nat_rect
+  (<span class="kr">fun</span> <span class="nv">_</span> : nat =&gt; {x : _ &amp; A x} -&gt; <span class="kt">Type</span>)
   (<span class="kr">fun</span> <span class="nv">x0</span> : {x : _ &amp; A x} =&gt; B x0)
   (<span class="kr">fun</span> (<span class="nv">_</span> : nat) (<span class="nv">h</span> : {x : _ &amp; A x} -&gt; <span class="kt">Type</span>)
      (<span class="nv">x0</span> : {x : _ &amp; A x}) =&gt; h (x0) ^++) k x -&gt;
-nat_rect (<span class="kr">fun</span> <span class="nv">_</span> : nat =&gt; {x : _ &amp; A x} -&gt; <span class="kt">Type</span>)
+Overture.nat_rect
+  (<span class="kr">fun</span> <span class="nv">_</span> : nat =&gt; {x : _ &amp; A x} -&gt; <span class="kt">Type</span>)
   (<span class="kr">fun</span> <span class="nv">x0</span> : {x : _ &amp; A x} =&gt; B x0)
   (<span class="kr">fun</span> (<span class="nv">_</span> : nat) (<span class="nv">h</span> : {x : _ &amp; A x} -&gt; <span class="kt">Type</span>)
      (<span class="nv">x0</span> : {x : _ &amp; A x}) =&gt; h (x0) ^++) k.+<span class="mi">1</span> x</span></span></span></span></div></div><span class="goal-separator"><hr></span><div class="goal-conclusion"><span class="highlight"><span class="kr">forall</span> <span class="nv">x</span> : {x : _ &amp; A x},
-nat_rect (<span class="kr">fun</span> <span class="nv">_</span> : nat =&gt; {x : _ &amp; A x} -&gt; <span class="kt">Type</span>)
+Overture.nat_rect
+  (<span class="kr">fun</span> <span class="nv">_</span> : nat =&gt; {x : _ &amp; A x} -&gt; <span class="kt">Type</span>)
   (<span class="kr">fun</span> <span class="nv">x0</span> : {x : _ &amp; A x} =&gt; B x0)
   (<span class="kr">fun</span> (<span class="nv">_</span> : nat) (<span class="nv">h</span> : {x : _ &amp; A x} -&gt; <span class="kt">Type</span>)
      (<span class="nv">x0</span> : {x : _ &amp; A x}) =&gt; h (x0) ^++) k.+<span class="mi">1</span> x -&gt;
-nat_rect (<span class="kr">fun</span> <span class="nv">_</span> : nat =&gt; {x : _ &amp; A x} -&gt; <span class="kt">Type</span>)
+Overture.nat_rect
+  (<span class="kr">fun</span> <span class="nv">_</span> : nat =&gt; {x : _ &amp; A x} -&gt; <span class="kt">Type</span>)
   (<span class="kr">fun</span> <span class="nv">x0</span> : {x : _ &amp; A x} =&gt; B x0)
   (<span class="kr">fun</span> (<span class="nv">_</span> : nat) (<span class="nv">h</span> : {x : _ &amp; A x} -&gt; <span class="kt">Type</span>)
      (<span class="nv">x0</span> : {x : _ &amp; A x}) =&gt; h (x0) ^++) k.+<span class="mi">2</span> x</span></div></blockquote></div></div></small><span class="alectryon-wsp"> </span></span><span class="alectryon-sentence"><span class="alectryon-input"><span class="highlight"><span class="bp">exact</span> (<span class="kr">fun</span> <span class="nv">x</span> =&gt; h x^++).</span></span><span class="alectryon-wsp">
@@ -1616,7 +1617,7 @@ fib_seq_to_seq B x n.+<span class="mi">1</span> -&gt; fib_seq_to_seq&#39; B x n.
 (<span class="nv">x0</span> : fib_seq_to_seq B x i),
 ((fib_seq_to_seq&#39; B x) _f g)
   ((<span class="kr">fun</span> <span class="nv">n</span> : Graph.graph0 sequence_graph =&gt;
-    nat_rect
+    Overture.nat_rect
       (<span class="kr">fun</span> <span class="nv">n0</span> : nat =&gt;
        <span class="kr">forall</span> <span class="nv">x</span> : {x : _ &amp; A x},
        fib_seq_to_seq B x n0 -&gt; fib_seq_to_seq&#39; B x n0)
@@ -1629,7 +1630,7 @@ fib_seq_to_seq B x n.+<span class="mi">1</span> -&gt; fib_seq_to_seq&#39; B x n.
        coe (ap B (seq_pair_shift_assoc x n0))
        o e (x) ^++) n x) i x0) =
 (<span class="kr">fun</span> <span class="nv">n</span> : Graph.graph0 sequence_graph =&gt;
- nat_rect
+ Overture.nat_rect
    (<span class="kr">fun</span> <span class="nv">n0</span> : nat =&gt;
     <span class="kr">forall</span> <span class="nv">x</span> : {x : _ &amp; A x},
     fib_seq_to_seq B x n0 -&gt; fib_seq_to_seq&#39; B x n0)
@@ -1642,7 +1643,7 @@ fib_seq_to_seq B x n.+<span class="mi">1</span> -&gt; fib_seq_to_seq&#39; B x n.
     coe (ap B (seq_pair_shift_assoc x n0)) o e (x) ^++)
    n x) j (((fib_seq_to_seq B x) _f g) x0)</span></div></blockquote></div></div></small><span class="alectryon-wsp"> </span></span><span class="alectryon-sentence"><input class="alectryon-toggle" id="sequential-v-chkb3" style="display: none" type="checkbox"><label class="alectryon-input" for="sequential-v-chkb3"><span class="highlight"><span class="nb">intros</span> n m p; <span class="nb">destruct</span> p; <span class="nb">revert</span> x; <span class="nb">induction</span> n <span class="kr">as</span> [ | n p].</span></label><small class="alectryon-output"><div class="alectryon-output-sticky-wrapper"><div class="alectryon-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><div class="goal-hyp"><span class="hyp-names">A</span><span><span class="hyp-type-block"><span class="hyp-punct">:</span><span class="hyp-type"><span class="highlight">Sequence</span></span></span></span></div><div class="goal-hyp"><span class="hyp-names">B</span><span><span class="hyp-type-block"><span class="hyp-punct">:</span><span class="hyp-type"><span class="highlight">FibSequence A</span></span></span></span></div></div><span class="goal-separator"><hr></span><div class="goal-conclusion"><span class="highlight"><span class="kr">forall</span> (<span class="nv">x</span> : {x : _ &amp; A x})
 (<span class="nv">x0</span> : fib_seq_to_seq B x <span class="mi">0</span>),
-(nat_rect
+(Overture.nat_rect
    (<span class="kr">fun</span> <span class="nv">n</span> : nat =&gt;
     <span class="kr">forall</span> <span class="nv">x1</span> : {x : _ &amp; A x},
     fib_seq_to_seq B x1 n -&gt; fib_seq_to_seq&#39; B x1 n)
@@ -1655,7 +1656,7 @@ fib_seq_to_seq B x n.+<span class="mi">1</span> -&gt; fib_seq_to_seq&#39; B x n.
       (<span class="nv">x2</span> : fib_seq_to_seq B (x1) ^++ n) =&gt;
     coe (ap B (seq_pair_shift_assoc x1 n))
       (e (x1) ^++ x2)) <span class="mi">0</span> x x0) ^+ =
-nat_rect
+Overture.nat_rect
   (<span class="kr">fun</span> <span class="nv">n</span> : nat =&gt;
    <span class="kr">forall</span> <span class="nv">x1</span> : {x : _ &amp; A x},
    fib_seq_to_seq B x1 n -&gt; fib_seq_to_seq&#39; B x1 n)
@@ -1668,7 +1669,7 @@ nat_rect
    coe (ap B (seq_pair_shift_assoc x1 n))
      (e (x1) ^++ x2)) <span class="mi">1</span> x (x0) ^+</span></div></blockquote><div class="alectryon-extra-goals"><input class="alectryon-extra-goal-toggle" id="sequential-v-chkb4" style="display: none" type="checkbox"><blockquote class="alectryon-goal"><div class="goal-hyps"><div class="goal-hyp"><span class="hyp-names">A</span><span><span class="hyp-type-block"><span class="hyp-punct">:</span><span class="hyp-type"><span class="highlight">Sequence</span></span></span></span></div><div class="goal-hyp"><span class="hyp-names">B</span><span><span class="hyp-type-block"><span class="hyp-punct">:</span><span class="hyp-type"><span class="highlight">FibSequence A</span></span></span></span></div><div class="goal-hyp"><span class="hyp-names">n</span><span><span class="hyp-type-block"><span class="hyp-punct">:</span><span class="hyp-type"><span class="highlight">nat</span></span></span></span></div><div class="goal-hyp"><span class="hyp-names">p</span><span><span class="hyp-type-block"><span class="hyp-punct">:</span><span class="hyp-type"><span class="highlight"><span class="kr">forall</span> (<span class="nv">x</span> : {x : _ &amp; A x})
 (<span class="nv">x0</span> : fib_seq_to_seq B x n),
-(nat_rect
+(Overture.nat_rect
    (<span class="kr">fun</span> <span class="nv">n</span> : nat =&gt;
     <span class="kr">forall</span> <span class="nv">x1</span> : {x : _ &amp; A x},
     fib_seq_to_seq B x1 n -&gt;
@@ -1682,7 +1683,7 @@ nat_rect
       (<span class="nv">x2</span> : fib_seq_to_seq B (x1) ^++ n) =&gt;
     coe (ap B (seq_pair_shift_assoc x1 n))
       (e (x1) ^++ x2)) n x x0) ^+ =
-nat_rect
+Overture.nat_rect
   (<span class="kr">fun</span> <span class="nv">n</span> : nat =&gt;
    <span class="kr">forall</span> <span class="nv">x1</span> : {x : _ &amp; A x},
    fib_seq_to_seq B x1 n -&gt; fib_seq_to_seq&#39; B x1 n)
@@ -1696,7 +1697,7 @@ nat_rect
    coe (ap B (seq_pair_shift_assoc x1 n))
      (e (x1) ^++ x2)) n.+<span class="mi">1</span> x (x0) ^+</span></span></span></span></div></div><label class="goal-separator alectryon-extra-goal-label" for="sequential-v-chkb4"><hr></label><div class="goal-conclusion"><span class="highlight"><span class="kr">forall</span> (<span class="nv">x</span> : {x : _ &amp; A x})
 (<span class="nv">x0</span> : fib_seq_to_seq B x n.+<span class="mi">1</span>),
-(nat_rect
+(Overture.nat_rect
    (<span class="kr">fun</span> <span class="nv">n</span> : nat =&gt;
     <span class="kr">forall</span> <span class="nv">x1</span> : {x : _ &amp; A x},
     fib_seq_to_seq B x1 n -&gt; fib_seq_to_seq&#39; B x1 n)
@@ -1709,7 +1710,7 @@ nat_rect
       (<span class="nv">x2</span> : fib_seq_to_seq B (x1) ^++ n) =&gt;
     coe (ap B (seq_pair_shift_assoc x1 n))
       (e (x1) ^++ x2)) n.+<span class="mi">1</span> x x0) ^+ =
-nat_rect
+Overture.nat_rect
   (<span class="kr">fun</span> <span class="nv">n</span> : nat =&gt;
    <span class="kr">forall</span> <span class="nv">x1</span> : {x : _ &amp; A x},
    fib_seq_to_seq B x1 n -&gt; fib_seq_to_seq&#39; B x1 n)
@@ -1723,7 +1724,7 @@ nat_rect
      (e (x1) ^++ x2)) n.+<span class="mi">2</span> x (x0) ^+</span></div></blockquote></div></div></div></small><span class="alectryon-wsp">
 </span></span><span class="alectryon-wsp">      </span><span class="alectryon-sentence"><input class="alectryon-toggle" id="sequential-v-chkb5" style="display: none" type="checkbox"><label class="alectryon-input" for="sequential-v-chkb5"><span class="highlight">-</span></label><small class="alectryon-output"><div class="alectryon-output-sticky-wrapper"><div class="alectryon-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><div class="goal-hyp"><span class="hyp-names">A</span><span><span class="hyp-type-block"><span class="hyp-punct">:</span><span class="hyp-type"><span class="highlight">Sequence</span></span></span></span></div><div class="goal-hyp"><span class="hyp-names">B</span><span><span class="hyp-type-block"><span class="hyp-punct">:</span><span class="hyp-type"><span class="highlight">FibSequence A</span></span></span></span></div></div><span class="goal-separator"><hr></span><div class="goal-conclusion"><span class="highlight"><span class="kr">forall</span> (<span class="nv">x</span> : {x : _ &amp; A x})
 (<span class="nv">x0</span> : fib_seq_to_seq B x <span class="mi">0</span>),
-(nat_rect
+(Overture.nat_rect
    (<span class="kr">fun</span> <span class="nv">n</span> : nat =&gt;
     <span class="kr">forall</span> <span class="nv">x1</span> : {x : _ &amp; A x},
     fib_seq_to_seq B x1 n -&gt; fib_seq_to_seq&#39; B x1 n)
@@ -1736,7 +1737,7 @@ nat_rect
       (<span class="nv">x2</span> : fib_seq_to_seq B (x1) ^++ n) =&gt;
     coe (ap B (seq_pair_shift_assoc x1 n))
       (e (x1) ^++ x2)) <span class="mi">0</span> x x0) ^+ =
-nat_rect
+Overture.nat_rect
   (<span class="kr">fun</span> <span class="nv">n</span> : nat =&gt;
    <span class="kr">forall</span> <span class="nv">x1</span> : {x : _ &amp; A x},
    fib_seq_to_seq B x1 n -&gt; fib_seq_to_seq&#39; B x1 n)
@@ -1750,7 +1751,7 @@ nat_rect
      (e (x1) ^++ x2)) <span class="mi">1</span> x (x0) ^+</span></div></blockquote></div></div></small><span class="alectryon-wsp"> </span></span><span class="alectryon-sentence"><span class="alectryon-input"><span class="highlight"><span class="bp">exact</span> (<span class="kr">fun</span> <span class="nv">_</span> <span class="nv">_</span> =&gt; idpath).</span></span><span class="alectryon-wsp">
 </span></span><span class="alectryon-wsp">      </span><span class="alectryon-sentence"><input class="alectryon-toggle" id="sequential-v-chkb6" style="display: none" type="checkbox"><label class="alectryon-input" for="sequential-v-chkb6"><span class="highlight">-</span></label><small class="alectryon-output"><div class="alectryon-output-sticky-wrapper"><div class="alectryon-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><div class="goal-hyp"><span class="hyp-names">A</span><span><span class="hyp-type-block"><span class="hyp-punct">:</span><span class="hyp-type"><span class="highlight">Sequence</span></span></span></span></div><div class="goal-hyp"><span class="hyp-names">B</span><span><span class="hyp-type-block"><span class="hyp-punct">:</span><span class="hyp-type"><span class="highlight">FibSequence A</span></span></span></span></div><div class="goal-hyp"><span class="hyp-names">n</span><span><span class="hyp-type-block"><span class="hyp-punct">:</span><span class="hyp-type"><span class="highlight">nat</span></span></span></span></div><div class="goal-hyp"><span class="hyp-names">p</span><span><span class="hyp-type-block"><span class="hyp-punct">:</span><span class="hyp-type"><span class="highlight"><span class="kr">forall</span> (<span class="nv">x</span> : {x : _ &amp; A x})
 (<span class="nv">x0</span> : fib_seq_to_seq B x n),
-(nat_rect
+(Overture.nat_rect
    (<span class="kr">fun</span> <span class="nv">n</span> : nat =&gt;
     <span class="kr">forall</span> <span class="nv">x1</span> : {x : _ &amp; A x},
     fib_seq_to_seq B x1 n -&gt;
@@ -1764,7 +1765,7 @@ nat_rect
       (<span class="nv">x2</span> : fib_seq_to_seq B (x1) ^++ n) =&gt;
     coe (ap B (seq_pair_shift_assoc x1 n))
       (e (x1) ^++ x2)) n x x0) ^+ =
-nat_rect
+Overture.nat_rect
   (<span class="kr">fun</span> <span class="nv">n</span> : nat =&gt;
    <span class="kr">forall</span> <span class="nv">x1</span> : {x : _ &amp; A x},
    fib_seq_to_seq B x1 n -&gt; fib_seq_to_seq&#39; B x1 n)
@@ -1778,7 +1779,7 @@ nat_rect
    coe (ap B (seq_pair_shift_assoc x1 n))
      (e (x1) ^++ x2)) n.+<span class="mi">1</span> x (x0) ^+</span></span></span></span></div></div><span class="goal-separator"><hr></span><div class="goal-conclusion"><span class="highlight"><span class="kr">forall</span> (<span class="nv">x</span> : {x : _ &amp; A x})
 (<span class="nv">x0</span> : fib_seq_to_seq B x n.+<span class="mi">1</span>),
-(nat_rect
+(Overture.nat_rect
    (<span class="kr">fun</span> <span class="nv">n</span> : nat =&gt;
     <span class="kr">forall</span> <span class="nv">x1</span> : {x : _ &amp; A x},
     fib_seq_to_seq B x1 n -&gt; fib_seq_to_seq&#39; B x1 n)
@@ -1791,7 +1792,7 @@ nat_rect
       (<span class="nv">x2</span> : fib_seq_to_seq B (x1) ^++ n) =&gt;
     coe (ap B (seq_pair_shift_assoc x1 n))
       (e (x1) ^++ x2)) n.+<span class="mi">1</span> x x0) ^+ =
-nat_rect
+Overture.nat_rect
   (<span class="kr">fun</span> <span class="nv">n</span> : nat =&gt;
    <span class="kr">forall</span> <span class="nv">x1</span> : {x : _ &amp; A x},
    fib_seq_to_seq B x1 n -&gt; fib_seq_to_seq&#39; B x1 n)
@@ -1808,7 +1809,7 @@ IsEquiv
   ({|
      DiagramMap_obj :=
        <span class="kr">fun</span> <span class="nv">n</span> : Graph.graph0 sequence_graph =&gt;
-       nat_rect
+       Overture.nat_rect
          (<span class="kr">fun</span> <span class="nv">n0</span> : nat =&gt;
           <span class="kr">forall</span> <span class="nv">x</span> : {x : _ &amp; A x},
           fib_seq_to_seq B x n0 -&gt;
@@ -1829,7 +1830,7 @@ IsEquiv
          <span class="kr">return</span>
            (<span class="kr">forall</span> <span class="nv">x0</span> : fib_seq_to_seq B x n,
             ((fib_seq_to_seq&#39; B x) _f p0)
-              (nat_rect
+              (Overture.nat_rect
                  (<span class="kr">fun</span> <span class="nv">n0</span> : nat =&gt;
                   <span class="kr">forall</span> <span class="nv">x</span> : {x : _ &amp; A x},
                   fib_seq_to_seq B x n0 -&gt;
@@ -1845,7 +1846,7 @@ IsEquiv
                   coe
                     (ap B (seq_pair_shift_assoc x n0))
                     (e (x) ^++ x1)) n x x0) =
-            nat_rect
+            Overture.nat_rect
               (<span class="kr">fun</span> <span class="nv">n0</span> : nat =&gt;
                <span class="kr">forall</span> <span class="nv">x</span> : {x : _ &amp; A x},
                fib_seq_to_seq B x n0 -&gt;
@@ -1862,11 +1863,11 @@ IsEquiv
               (((fib_seq_to_seq B x) _f p0) x0))
        <span class="kr">with</span>
        | <span class="mi">1</span> =&gt;
-           nat_rect
+           Overture.nat_rect
              (<span class="kr">fun</span> <span class="nv">n0</span> : nat =&gt;
               <span class="kr">forall</span> (<span class="nv">x</span> : {x : _ &amp; A x})
               (<span class="nv">x0</span> : fib_seq_to_seq B x n0),
-              (nat_rect
+              (Overture.nat_rect
                  (<span class="kr">fun</span> <span class="nv">n1</span> : nat =&gt;
                   <span class="kr">forall</span> <span class="nv">x1</span> : {x : _ &amp; A x},
                   fib_seq_to_seq B x1 n1 -&gt;
@@ -1882,7 +1883,7 @@ IsEquiv
                   coe
                     (ap B (seq_pair_shift_assoc x1 n1))
                     (e (x1) ^++ x2)) n0 x x0) ^+ =
-              nat_rect
+              Overture.nat_rect
                 (<span class="kr">fun</span> <span class="nv">n1</span> : nat =&gt;
                  <span class="kr">forall</span> <span class="nv">x1</span> : {x : _ &amp; A x},
                  fib_seq_to_seq B x1 n1 -&gt;
@@ -1903,7 +1904,7 @@ IsEquiv
              (<span class="kr">fun</span> (<span class="nv">n0</span> : nat)
                 (<span class="nv">p0</span> : <span class="kr">forall</span> (<span class="nv">x</span> : {x : _ &amp; A x})
                       (<span class="nv">x0</span> : fib_seq_to_seq B x n0),
-                      (nat_rect
+                      (Overture.nat_rect
                          (<span class="kr">fun</span> <span class="nv">n1</span> : nat =&gt;
                           <span class="kr">forall</span> <span class="nv">x1</span> : {x : _ &amp; A x},
                           fib_seq_to_seq B x1 n1 -&gt;
@@ -1926,7 +1927,7 @@ IsEquiv
                                   x1 n1))
                             (e (x1) ^++ x2)) n0 x x0)
                       ^+ =
-                      nat_rect
+                      Overture.nat_rect
                         (<span class="kr">fun</span> <span class="nv">n1</span> : nat =&gt;
                          <span class="kr">forall</span> <span class="nv">x1</span> : {x : _ &amp; A x},
                          fib_seq_to_seq B x1 n1 -&gt;
@@ -1963,7 +1964,7 @@ IsEquiv
   ({|
      DiagramMap_obj :=
        <span class="kr">fun</span> <span class="nv">n</span> : Graph.graph0 sequence_graph =&gt;
-       nat_rect
+       Overture.nat_rect
          (<span class="kr">fun</span> <span class="nv">n0</span> : nat =&gt;
           <span class="kr">forall</span> <span class="nv">x0</span> : {x : _ &amp; A x},
           fib_seq_to_seq B x0 n0 -&gt;
@@ -1985,7 +1986,7 @@ IsEquiv
          <span class="kr">return</span>
            (<span class="kr">forall</span> <span class="nv">x0</span> : fib_seq_to_seq B x n,
             ((fib_seq_to_seq&#39; B x) _f p0)
-              (nat_rect
+              (Overture.nat_rect
                  (<span class="kr">fun</span> <span class="nv">n0</span> : nat =&gt;
                   <span class="kr">forall</span> <span class="nv">x1</span> : {x : _ &amp; A x},
                   fib_seq_to_seq B x1 n0 -&gt;
@@ -2001,7 +2002,7 @@ IsEquiv
                   coe
                     (ap B (seq_pair_shift_assoc x1 n0))
                     (e (x1) ^++ x2)) n x x0) =
-            nat_rect
+            Overture.nat_rect
               (<span class="kr">fun</span> <span class="nv">n0</span> : nat =&gt;
                <span class="kr">forall</span> <span class="nv">x1</span> : {x : _ &amp; A x},
                fib_seq_to_seq B x1 n0 -&gt;
@@ -2019,11 +2020,11 @@ IsEquiv
               (((fib_seq_to_seq B x) _f p0) x0))
        <span class="kr">with</span>
        | <span class="mi">1</span> =&gt;
-           nat_rect
+           Overture.nat_rect
              (<span class="kr">fun</span> <span class="nv">n0</span> : nat =&gt;
               <span class="kr">forall</span> (<span class="nv">x0</span> : {x : _ &amp; A x})
               (<span class="nv">x1</span> : fib_seq_to_seq B x0 n0),
-              (nat_rect
+              (Overture.nat_rect
                  (<span class="kr">fun</span> <span class="nv">n1</span> : nat =&gt;
                   <span class="kr">forall</span> <span class="nv">x2</span> : {x : _ &amp; A x},
                   fib_seq_to_seq B x2 n1 -&gt;
@@ -2039,7 +2040,7 @@ IsEquiv
                   coe
                     (ap B (seq_pair_shift_assoc x2 n1))
                     (e (x2) ^++ x3)) n0 x0 x1) ^+ =
-              nat_rect
+              Overture.nat_rect
                 (<span class="kr">fun</span> <span class="nv">n1</span> : nat =&gt;
                  <span class="kr">forall</span> <span class="nv">x2</span> : {x : _ &amp; A x},
                  fib_seq_to_seq B x2 n1 -&gt;
@@ -2060,7 +2061,7 @@ IsEquiv
              (<span class="kr">fun</span> (<span class="nv">n0</span> : nat)
                 (<span class="nv">p0</span> : <span class="kr">forall</span> (<span class="nv">x0</span> : {x : _ &amp; A x})
                       (<span class="nv">x1</span> : fib_seq_to_seq B x0 n0),
-                      (nat_rect
+                      (Overture.nat_rect
                          (<span class="kr">fun</span> <span class="nv">n1</span> : nat =&gt;
                           <span class="kr">forall</span> <span class="nv">x2</span> : {x : _ &amp; A x},
                           fib_seq_to_seq B x2 n1 -&gt;
@@ -2083,7 +2084,7 @@ IsEquiv
                                   x2 n1))
                             (e (x2) ^++ x3)) n0 x0 x1)
                       ^+ =
-                      nat_rect
+                      Overture.nat_rect
                         (<span class="kr">fun</span> <span class="nv">n1</span> : nat =&gt;
                          <span class="kr">forall</span> <span class="nv">x2</span> : {x : _ &amp; A x},
                          fib_seq_to_seq B x2 n1 -&gt;
@@ -2120,7 +2121,7 @@ IsEquiv
   ({|
      DiagramMap_obj :=
        <span class="kr">fun</span> <span class="nv">n</span> : Graph.graph0 sequence_graph =&gt;
-       nat_rect
+       Overture.nat_rect
          (<span class="kr">fun</span> <span class="nv">n0</span> : nat =&gt;
           <span class="kr">forall</span> <span class="nv">x0</span> : {x : _ &amp; A x},
           fib_seq_to_seq B x0 n0 -&gt;
@@ -2142,7 +2143,7 @@ IsEquiv
          <span class="kr">return</span>
            (<span class="kr">forall</span> <span class="nv">x0</span> : fib_seq_to_seq B x n,
             ((fib_seq_to_seq&#39; B x) _f p0)
-              (nat_rect
+              (Overture.nat_rect
                  (<span class="kr">fun</span> <span class="nv">n0</span> : nat =&gt;
                   <span class="kr">forall</span> <span class="nv">x1</span> : {x : _ &amp; A x},
                   fib_seq_to_seq B x1 n0 -&gt;
@@ -2160,7 +2161,7 @@ IsEquiv
                     (ap B
                        (seq_pair_shift_assoc x1 n0))
                     (e (x1) ^++ x2)) n x x0) =
-            nat_rect
+            Overture.nat_rect
               (<span class="kr">fun</span> <span class="nv">n0</span> : nat =&gt;
                <span class="kr">forall</span> <span class="nv">x1</span> : {x : _ &amp; A x},
                fib_seq_to_seq B x1 n0 -&gt;
@@ -2180,11 +2181,11 @@ IsEquiv
               (((fib_seq_to_seq B x) _f p0) x0))
        <span class="kr">with</span>
        | <span class="mi">1</span> =&gt;
-           nat_rect
+           Overture.nat_rect
              (<span class="kr">fun</span> <span class="nv">n0</span> : nat =&gt;
               <span class="kr">forall</span> (<span class="nv">x0</span> : {x : _ &amp; A x})
               (<span class="nv">x1</span> : fib_seq_to_seq B x0 n0),
-              (nat_rect
+              (Overture.nat_rect
                  (<span class="kr">fun</span> <span class="nv">n1</span> : nat =&gt;
                   <span class="kr">forall</span> <span class="nv">x2</span> : {x : _ &amp; A x},
                   fib_seq_to_seq B x2 n1 -&gt;
@@ -2202,7 +2203,7 @@ IsEquiv
                     (ap B
                        (seq_pair_shift_assoc x2 n1))
                     (e (x2) ^++ x3)) n0 x0 x1) ^+ =
-              nat_rect
+              Overture.nat_rect
                 (<span class="kr">fun</span> <span class="nv">n1</span> : nat =&gt;
                  <span class="kr">forall</span> <span class="nv">x2</span> : {x : _ &amp; A x},
                  fib_seq_to_seq B x2 n1 -&gt;
@@ -2225,7 +2226,7 @@ IsEquiv
              (<span class="kr">fun</span> (<span class="nv">n0</span> : nat)
                 (<span class="nv">p0</span> : <span class="kr">forall</span> (<span class="nv">x0</span> : {x : _ &amp; A x})
                       (<span class="nv">x1</span> : fib_seq_to_seq B x0 n0),
-                      (nat_rect
+                      (Overture.nat_rect
                          (<span class="kr">fun</span> <span class="nv">n1</span> : nat =&gt;
                           <span class="kr">forall</span>
                           <span class="nv">x2</span> : {x : _ &amp; A x},
@@ -2251,7 +2252,7 @@ IsEquiv
                                   x2 n1))
                             (e (x2) ^++ x3)) n0 x0
                          x1) ^+ =
-                      nat_rect
+                      Overture.nat_rect
                         (<span class="kr">fun</span> <span class="nv">n1</span> : nat =&gt;
                          <span class="kr">forall</span>
                          <span class="nv">x2</span> : {x : _ &amp; A x},
@@ -2292,7 +2293,7 @@ IsEquiv
   ({|
      DiagramMap_obj :=
        <span class="kr">fun</span> <span class="nv">n</span> : Graph.graph0 sequence_graph =&gt;
-       nat_rect
+       Overture.nat_rect
          (<span class="kr">fun</span> <span class="nv">n0</span> : nat =&gt;
           <span class="kr">forall</span> <span class="nv">x0</span> : {x : _ &amp; A x},
           fib_seq_to_seq B x0 n0 -&gt;
@@ -2314,7 +2315,7 @@ IsEquiv
          <span class="kr">return</span>
            (<span class="kr">forall</span> <span class="nv">x0</span> : fib_seq_to_seq B x n,
             ((fib_seq_to_seq&#39; B x) _f p0)
-              (nat_rect
+              (Overture.nat_rect
                  (<span class="kr">fun</span> <span class="nv">n0</span> : nat =&gt;
                   <span class="kr">forall</span> <span class="nv">x1</span> : {x : _ &amp; A x},
                   fib_seq_to_seq B x1 n0 -&gt;
@@ -2330,7 +2331,7 @@ IsEquiv
                   coe
                     (ap B (seq_pair_shift_assoc x1 n0))
                     (e (x1) ^++ x2)) n x x0) =
-            nat_rect
+            Overture.nat_rect
               (<span class="kr">fun</span> <span class="nv">n0</span> : nat =&gt;
                <span class="kr">forall</span> <span class="nv">x1</span> : {x : _ &amp; A x},
                fib_seq_to_seq B x1 n0 -&gt;
@@ -2348,11 +2349,11 @@ IsEquiv
               (((fib_seq_to_seq B x) _f p0) x0))
        <span class="kr">with</span>
        | <span class="mi">1</span> =&gt;
-           nat_rect
+           Overture.nat_rect
              (<span class="kr">fun</span> <span class="nv">n0</span> : nat =&gt;
               <span class="kr">forall</span> (<span class="nv">x0</span> : {x : _ &amp; A x})
               (<span class="nv">x1</span> : fib_seq_to_seq B x0 n0),
-              (nat_rect
+              (Overture.nat_rect
                  (<span class="kr">fun</span> <span class="nv">n1</span> : nat =&gt;
                   <span class="kr">forall</span> <span class="nv">x2</span> : {x : _ &amp; A x},
                   fib_seq_to_seq B x2 n1 -&gt;
@@ -2368,7 +2369,7 @@ IsEquiv
                   coe
                     (ap B (seq_pair_shift_assoc x2 n1))
                     (e (x2) ^++ x3)) n0 x0 x1) ^+ =
-              nat_rect
+              Overture.nat_rect
                 (<span class="kr">fun</span> <span class="nv">n1</span> : nat =&gt;
                  <span class="kr">forall</span> <span class="nv">x2</span> : {x : _ &amp; A x},
                  fib_seq_to_seq B x2 n1 -&gt;
@@ -2389,7 +2390,7 @@ IsEquiv
              (<span class="kr">fun</span> (<span class="nv">n0</span> : nat)
                 (<span class="nv">p0</span> : <span class="kr">forall</span> (<span class="nv">x0</span> : {x : _ &amp; A x})
                       (<span class="nv">x1</span> : fib_seq_to_seq B x0 n0),
-                      (nat_rect
+                      (Overture.nat_rect
                          (<span class="kr">fun</span> <span class="nv">n1</span> : nat =&gt;
                           <span class="kr">forall</span> <span class="nv">x2</span> : {x : _ &amp; A x},
                           fib_seq_to_seq B x2 n1 -&gt;
@@ -2412,7 +2413,7 @@ IsEquiv
                                   x2 n1))
                             (e (x2) ^++ x3)) n0 x0 x1)
                       ^+ =
-                      nat_rect
+                      Overture.nat_rect
                         (<span class="kr">fun</span> <span class="nv">n1</span> : nat =&gt;
                          <span class="kr">forall</span> <span class="nv">x2</span> : {x : _ &amp; A x},
                          fib_seq_to_seq B x2 n1 -&gt;
@@ -2450,7 +2451,7 @@ IsEquiv
   ({|
      DiagramMap_obj :=
        <span class="kr">fun</span> <span class="nv">n</span> : Graph.graph0 sequence_graph =&gt;
-       nat_rect
+       Overture.nat_rect
          (<span class="kr">fun</span> <span class="nv">n0</span> : nat =&gt;
           <span class="kr">forall</span> <span class="nv">x0</span> : {x : _ &amp; A x},
           fib_seq_to_seq B x0 n0 -&gt;
@@ -2472,7 +2473,7 @@ IsEquiv
          <span class="kr">return</span>
            (<span class="kr">forall</span> <span class="nv">x0</span> : fib_seq_to_seq B x n,
             ((fib_seq_to_seq&#39; B x) _f p0)
-              (nat_rect
+              (Overture.nat_rect
                  (<span class="kr">fun</span> <span class="nv">n0</span> : nat =&gt;
                   <span class="kr">forall</span> <span class="nv">x1</span> : {x : _ &amp; A x},
                   fib_seq_to_seq B x1 n0 -&gt;
@@ -2488,7 +2489,7 @@ IsEquiv
                   coe
                     (ap B (seq_pair_shift_assoc x1 n0))
                     (e (x1) ^++ x2)) n x x0) =
-            nat_rect
+            Overture.nat_rect
               (<span class="kr">fun</span> <span class="nv">n0</span> : nat =&gt;
                <span class="kr">forall</span> <span class="nv">x1</span> : {x : _ &amp; A x},
                fib_seq_to_seq B x1 n0 -&gt;
@@ -2506,11 +2507,11 @@ IsEquiv
               (((fib_seq_to_seq B x) _f p0) x0))
        <span class="kr">with</span>
        | <span class="mi">1</span> =&gt;
-           nat_rect
+           Overture.nat_rect
              (<span class="kr">fun</span> <span class="nv">n0</span> : nat =&gt;
               <span class="kr">forall</span> (<span class="nv">x0</span> : {x : _ &amp; A x})
               (<span class="nv">x1</span> : fib_seq_to_seq B x0 n0),
-              (nat_rect
+              (Overture.nat_rect
                  (<span class="kr">fun</span> <span class="nv">n1</span> : nat =&gt;
                   <span class="kr">forall</span> <span class="nv">x2</span> : {x : _ &amp; A x},
                   fib_seq_to_seq B x2 n1 -&gt;
@@ -2526,7 +2527,7 @@ IsEquiv
                   coe
                     (ap B (seq_pair_shift_assoc x2 n1))
                     (e (x2) ^++ x3)) n0 x0 x1) ^+ =
-              nat_rect
+              Overture.nat_rect
                 (<span class="kr">fun</span> <span class="nv">n1</span> : nat =&gt;
                  <span class="kr">forall</span> <span class="nv">x2</span> : {x : _ &amp; A x},
                  fib_seq_to_seq B x2 n1 -&gt;
@@ -2547,7 +2548,7 @@ IsEquiv
              (<span class="kr">fun</span> (<span class="nv">n0</span> : nat)
                 (<span class="nv">p0</span> : <span class="kr">forall</span> (<span class="nv">x0</span> : {x : _ &amp; A x})
                       (<span class="nv">x1</span> : fib_seq_to_seq B x0 n0),
-                      (nat_rect
+                      (Overture.nat_rect
                          (<span class="kr">fun</span> <span class="nv">n1</span> : nat =&gt;
                           <span class="kr">forall</span> <span class="nv">x2</span> : {x : _ &amp; A x},
                           fib_seq_to_seq B x2 n1 -&gt;
@@ -2570,7 +2571,7 @@ IsEquiv
                                   x2 n1))
                             (e (x2) ^++ x3)) n0 x0 x1)
                       ^+ =
-                      nat_rect
+                      Overture.nat_rect
                         (<span class="kr">fun</span> <span class="nv">n1</span> : nat =&gt;
                          <span class="kr">forall</span> <span class="nv">x2</span> : {x : _ &amp; A x},
                          fib_seq_to_seq B x2 n1 -&gt;
@@ -2608,7 +2609,7 @@ IsEquiv
   ({|
      DiagramMap_obj :=
        <span class="kr">fun</span> <span class="nv">n</span> : Graph.graph0 sequence_graph =&gt;
-       nat_rect
+       Overture.nat_rect
          (<span class="kr">fun</span> <span class="nv">n0</span> : nat =&gt;
           <span class="kr">forall</span> <span class="nv">x0</span> : {x : _ &amp; A x},
           fib_seq_to_seq B x0 n0 -&gt;
@@ -2630,7 +2631,7 @@ IsEquiv
          <span class="kr">return</span>
            (<span class="kr">forall</span> <span class="nv">x0</span> : fib_seq_to_seq B x n,
             ((fib_seq_to_seq&#39; B x) _f p0)
-              (nat_rect
+              (Overture.nat_rect
                  (<span class="kr">fun</span> <span class="nv">n0</span> : nat =&gt;
                   <span class="kr">forall</span> <span class="nv">x1</span> : {x : _ &amp; A x},
                   fib_seq_to_seq B x1 n0 -&gt;
@@ -2648,7 +2649,7 @@ IsEquiv
                     (ap B
                        (seq_pair_shift_assoc x1 n0))
                     (e (x1) ^++ x2)) n x x0) =
-            nat_rect
+            Overture.nat_rect
               (<span class="kr">fun</span> <span class="nv">n0</span> : nat =&gt;
                <span class="kr">forall</span> <span class="nv">x1</span> : {x : _ &amp; A x},
                fib_seq_to_seq B x1 n0 -&gt;
@@ -2668,11 +2669,11 @@ IsEquiv
               (((fib_seq_to_seq B x) _f p0) x0))
        <span class="kr">with</span>
        | <span class="mi">1</span> =&gt;
-           nat_rect
+           Overture.nat_rect
              (<span class="kr">fun</span> <span class="nv">n0</span> : nat =&gt;
               <span class="kr">forall</span> (<span class="nv">x0</span> : {x : _ &amp; A x})
               (<span class="nv">x1</span> : fib_seq_to_seq B x0 n0),
-              (nat_rect
+              (Overture.nat_rect
                  (<span class="kr">fun</span> <span class="nv">n1</span> : nat =&gt;
                   <span class="kr">forall</span> <span class="nv">x2</span> : {x : _ &amp; A x},
                   fib_seq_to_seq B x2 n1 -&gt;
@@ -2690,7 +2691,7 @@ IsEquiv
                     (ap B
                        (seq_pair_shift_assoc x2 n1))
                     (e (x2) ^++ x3)) n0 x0 x1) ^+ =
-              nat_rect
+              Overture.nat_rect
                 (<span class="kr">fun</span> <span class="nv">n1</span> : nat =&gt;
                  <span class="kr">forall</span> <span class="nv">x2</span> : {x : _ &amp; A x},
                  fib_seq_to_seq B x2 n1 -&gt;
@@ -2713,7 +2714,7 @@ IsEquiv
              (<span class="kr">fun</span> (<span class="nv">n0</span> : nat)
                 (<span class="nv">p0</span> : <span class="kr">forall</span> (<span class="nv">x0</span> : {x : _ &amp; A x})
                       (<span class="nv">x1</span> : fib_seq_to_seq B x0 n0),
-                      (nat_rect
+                      (Overture.nat_rect
                          (<span class="kr">fun</span> <span class="nv">n1</span> : nat =&gt;
                           <span class="kr">forall</span>
                           <span class="nv">x2</span> : {x : _ &amp; A x},
@@ -2739,7 +2740,7 @@ IsEquiv
                                   x2 n1))
                             (e (x2) ^++ x3)) n0 x0
                          x1) ^+ =
-                      nat_rect
+                      Overture.nat_rect
                         (<span class="kr">fun</span> <span class="nv">n1</span> : nat =&gt;
                          <span class="kr">forall</span>
                          <span class="nv">x2</span> : {x : _ &amp; A x},
@@ -2780,7 +2781,7 @@ IsEquiv
   ({|
      DiagramMap_obj :=
        <span class="kr">fun</span> <span class="nv">n</span> : Graph.graph0 sequence_graph =&gt;
-       nat_rect
+       Overture.nat_rect
          (<span class="kr">fun</span> <span class="nv">n0</span> : nat =&gt;
           <span class="kr">forall</span> <span class="nv">x0</span> : {x : _ &amp; A x},
           fib_seq_to_seq B x0 n0 -&gt;
@@ -2802,7 +2803,7 @@ IsEquiv
          <span class="kr">return</span>
            (<span class="kr">forall</span> <span class="nv">x0</span> : fib_seq_to_seq B x n,
             ((fib_seq_to_seq&#39; B x) _f p0)
-              (nat_rect
+              (Overture.nat_rect
                  (<span class="kr">fun</span> <span class="nv">n0</span> : nat =&gt;
                   <span class="kr">forall</span> <span class="nv">x1</span> : {x : _ &amp; A x},
                   fib_seq_to_seq B x1 n0 -&gt;
@@ -2818,7 +2819,7 @@ IsEquiv
                   coe
                     (ap B (seq_pair_shift_assoc x1 n0))
                     (e (x1) ^++ x2)) n x x0) =
-            nat_rect
+            Overture.nat_rect
               (<span class="kr">fun</span> <span class="nv">n0</span> : nat =&gt;
                <span class="kr">forall</span> <span class="nv">x1</span> : {x : _ &amp; A x},
                fib_seq_to_seq B x1 n0 -&gt;
@@ -2836,11 +2837,11 @@ IsEquiv
               (((fib_seq_to_seq B x) _f p0) x0))
        <span class="kr">with</span>
        | <span class="mi">1</span> =&gt;
-           nat_rect
+           Overture.nat_rect
              (<span class="kr">fun</span> <span class="nv">n0</span> : nat =&gt;
               <span class="kr">forall</span> (<span class="nv">x0</span> : {x : _ &amp; A x})
               (<span class="nv">x1</span> : fib_seq_to_seq B x0 n0),
-              (nat_rect
+              (Overture.nat_rect
                  (<span class="kr">fun</span> <span class="nv">n1</span> : nat =&gt;
                   <span class="kr">forall</span> <span class="nv">x2</span> : {x : _ &amp; A x},
                   fib_seq_to_seq B x2 n1 -&gt;
@@ -2856,7 +2857,7 @@ IsEquiv
                   coe
                     (ap B (seq_pair_shift_assoc x2 n1))
                     (e (x2) ^++ x3)) n0 x0 x1) ^+ =
-              nat_rect
+              Overture.nat_rect
                 (<span class="kr">fun</span> <span class="nv">n1</span> : nat =&gt;
                  <span class="kr">forall</span> <span class="nv">x2</span> : {x : _ &amp; A x},
                  fib_seq_to_seq B x2 n1 -&gt;
@@ -2877,7 +2878,7 @@ IsEquiv
              (<span class="kr">fun</span> (<span class="nv">n0</span> : nat)
                 (<span class="nv">p0</span> : <span class="kr">forall</span> (<span class="nv">x0</span> : {x : _ &amp; A x})
                       (<span class="nv">x1</span> : fib_seq_to_seq B x0 n0),
-                      (nat_rect
+                      (Overture.nat_rect
                          (<span class="kr">fun</span> <span class="nv">n1</span> : nat =&gt;
                           <span class="kr">forall</span> <span class="nv">x2</span> : {x : _ &amp; A x},
                           fib_seq_to_seq B x2 n1 -&gt;
@@ -2900,7 +2901,7 @@ IsEquiv
                                   x2 n1))
                             (e (x2) ^++ x3)) n0 x0 x1)
                       ^+ =
-                      nat_rect
+                      Overture.nat_rect
                         (<span class="kr">fun</span> <span class="nv">n1</span> : nat =&gt;
                          <span class="kr">forall</span> <span class="nv">x2</span> : {x : _ &amp; A x},
                          fib_seq_to_seq B x2 n1 -&gt;
@@ -4923,7 +4924,7 @@ transport
           IsTrunc_internal n&#39; (x0 = y)
       <span class="kr">end</span>) k (inj A <span class="mi">0</span>%nat a = w)) (colimp i j g x)
   ((<span class="kr">fun</span> (<span class="nv">m</span> : Graph.graph0 sequence_graph) (<span class="nv">b</span> : A m) =&gt;
-    nat_rect
+    Overture.nat_rect
       (<span class="kr">fun</span> <span class="nv">m0</span> : nat =&gt;
        <span class="kr">forall</span> <span class="nv">A</span> : Sequence,
        (<span class="kr">forall</span> <span class="nv">n</span> : Graph.graph0 sequence_graph,
@@ -4973,7 +4974,7 @@ transport
             (inj A (m0.+<span class="mi">1</span>)%nat b0))^-<span class="mi">1</span>) m A trH a b) j
      ((A _f g) x)) =
 (<span class="kr">fun</span> (<span class="nv">m</span> : Graph.graph0 sequence_graph) (<span class="nv">b</span> : A m) =&gt;
- nat_rect
+ Overture.nat_rect
    (<span class="kr">fun</span> <span class="nv">m0</span> : nat =&gt;
     <span class="kr">forall</span> <span class="nv">A</span> : Sequence,
     (<span class="kr">forall</span> <span class="nv">n</span> : Graph.graph0 sequence_graph,
@@ -5032,7 +5033,7 @@ transport
           IsTrunc_internal n&#39; (x0 = y)
       <span class="kr">end</span>) k (inj A <span class="mi">0</span>%nat a = w)) (colimp i j g x)
   ((<span class="kr">fun</span> (<span class="nv">m</span> : Graph.graph0 sequence_graph) (<span class="nv">b</span> : A m) =&gt;
-    nat_rect
+    Overture.nat_rect
       (<span class="kr">fun</span> <span class="nv">m0</span> : nat =&gt;
        <span class="kr">forall</span> <span class="nv">A</span> : Sequence,
        (<span class="kr">forall</span> <span class="nv">n</span> : Graph.graph0 sequence_graph,
@@ -5082,7 +5083,7 @@ transport
             (inj A (m0.+<span class="mi">1</span>)%nat b0))^-<span class="mi">1</span>) m A trH a b) j
      ((A _f g) x)) =
 (<span class="kr">fun</span> (<span class="nv">m</span> : Graph.graph0 sequence_graph) (<span class="nv">b</span> : A m) =&gt;
- nat_rect
+ Overture.nat_rect
    (<span class="kr">fun</span> <span class="nv">m0</span> : nat =&gt;
     <span class="kr">forall</span> <span class="nv">A</span> : Sequence,
     (<span class="kr">forall</span> <span class="nv">n</span> : Graph.graph0 sequence_graph,
@@ -5182,7 +5183,7 @@ transport
           IsTrunc_internal n&#39; (x0 = y0)
       <span class="kr">end</span>) k (w = y)) (colimp i j g x)
   ((<span class="kr">fun</span> <span class="nv">n</span> : Graph.graph0 sequence_graph =&gt;
-    nat_rect
+    Overture.nat_rect
       (<span class="kr">fun</span> <span class="nv">n0</span> : nat =&gt;
        <span class="kr">forall</span> <span class="nv">A</span> : Sequence,
        (<span class="kr">forall</span> <span class="nv">n1</span> : Graph.graph0 sequence_graph,
@@ -5214,7 +5215,7 @@ transport
              <span class="kr">end</span>) k (inj A <span class="mi">0</span>%nat a = w))
          (<span class="kr">fun</span> (<span class="nv">m</span> : Graph.graph0 sequence_graph)
             (<span class="nv">b</span> : A m) =&gt;
-          nat_rect
+          Overture.nat_rect
             (<span class="kr">fun</span> <span class="nv">m0</span> : nat =&gt;
              <span class="kr">forall</span> <span class="nv">A0</span> : Sequence,
              (<span class="kr">forall</span> <span class="nv">n0</span> : Graph.graph0 sequence_graph,
@@ -5290,7 +5291,7 @@ transport
                ((<span class="kr">fun</span>
                    (<span class="nv">m0</span> : Graph.graph0 sequence_graph)
                    (<span class="nv">b0</span> : A m0) =&gt;
-                 nat_rect
+                 Overture.nat_rect
                    (<span class="kr">fun</span> <span class="nv">m1</span> : nat =&gt;
                     <span class="kr">forall</span> <span class="nv">A0</span> : Sequence,
                     (<span class="kr">forall</span> ..., ...) -&gt;
@@ -5316,7 +5317,7 @@ transport
                        inj A0 ...%nat b1)
                       (equiv_concat_l (...) (...))^-<span class="mi">1</span>)
                    m0 A trH a b0) m ((A _f p) b)))
-            (nat_rect
+            (Overture.nat_rect
                (<span class="kr">fun</span> <span class="nv">m0</span> : nat =&gt;
                 <span class="kr">forall</span> <span class="nv">A0</span> : Sequence,
                 (<span class="kr">forall</span>
@@ -5399,7 +5400,7 @@ transport
                (inj (succ_seq A) n0 a) x0))) n A trH)
      j ((A _f g) x)) =
 (<span class="kr">fun</span> <span class="nv">n</span> : Graph.graph0 sequence_graph =&gt;
- nat_rect
+ Overture.nat_rect
    (<span class="kr">fun</span> <span class="nv">n0</span> : nat =&gt;
     <span class="kr">forall</span> <span class="nv">A</span> : Sequence,
     (<span class="kr">forall</span> <span class="nv">n1</span> : Graph.graph0 sequence_graph,
@@ -5430,7 +5431,7 @@ transport
           <span class="kr">end</span>) k (inj A <span class="mi">0</span>%nat a = w))
       (<span class="kr">fun</span> (<span class="nv">m</span> : Graph.graph0 sequence_graph) (<span class="nv">b</span> : A m)
        =&gt;
-       nat_rect
+       Overture.nat_rect
          (<span class="kr">fun</span> <span class="nv">m0</span> : nat =&gt;
           <span class="kr">forall</span> <span class="nv">A0</span> : Sequence,
           (<span class="kr">forall</span> <span class="nv">n0</span> : Graph.graph0 sequence_graph,
@@ -5499,7 +5500,7 @@ transport
             (colimp n0 m p b)
             ((<span class="kr">fun</span> (<span class="nv">m0</span> : Graph.graph0 sequence_graph)
                 (<span class="nv">b0</span> : A m0) =&gt;
-              nat_rect
+              Overture.nat_rect
                 (<span class="kr">fun</span> <span class="nv">m1</span> : nat =&gt;
                  <span class="kr">forall</span> <span class="nv">A0</span> : Sequence,
                  (<span class="kr">forall</span>
@@ -5534,7 +5535,7 @@ transport
                    (equiv_concat_l (glue A0 <span class="mi">0</span>%nat a0)
                       (inj A0 (m1.+<span class="mi">1</span>)%nat b1))^-<span class="mi">1</span>) m0
                 A trH a b0) m ((A _f p) b)))
-         (nat_rect
+         (Overture.nat_rect
             (<span class="kr">fun</span> <span class="nv">m0</span> : nat =&gt;
              <span class="kr">forall</span> <span class="nv">A0</span> : Sequence,
              (<span class="kr">forall</span> <span class="nv">n1</span> : Graph.graph0 sequence_graph,

@@ -99,22 +99,6 @@
 </span></span><span class="alectryon-wsp"><span class="highlight">
 </span></span><span class="alectryon-sentence"><span class="alectryon-input"><span class="highlight"><span class="kn">Notation</span> <span class="s2">&quot;A &lt;-&gt; B&quot;</span> := (iff A B) : type_scope.</span></span><span class="alectryon-wsp">
 </span></span><span class="alectryon-wsp"><span class="highlight">
-<span class="c">(* Natural numbers. *)</span>
-
-</span></span><span class="alectryon-sentence"><span class="alectryon-input"><span class="highlight"><span class="kn">Inductive</span> <span class="nf">nat</span> : <span class="kt">Type</span> :=
-  | O : nat
-  | S : nat -&gt; nat.</span></span><span class="alectryon-wsp">
-</span></span><span class="alectryon-wsp"><span class="highlight">
-</span></span><span class="alectryon-sentence"><span class="alectryon-input"><span class="highlight"><span class="kn">Scheme</span> <span class="nf">nat_rect</span> := <span class="kn">Induction for</span> nat <span class="kn">Sort</span> <span class="kt">Type</span>.</span></span><span class="alectryon-wsp">
-</span></span><span class="alectryon-wsp"><span class="highlight">
-<span class="c">(* It would be nice not to need this, but the tactic [induction] requires it when the target is in [Set], and the above definition of [nat] puts it in [Set]. *)</span>
-</span></span><span class="alectryon-sentence"><span class="alectryon-input"><span class="highlight"><span class="kn">Scheme</span> <span class="nf">nat_rec</span> := <span class="kn">Induction for</span> nat <span class="kn">Sort</span> <span class="kt">Set</span>.</span></span><span class="alectryon-wsp">
-</span></span><span class="alectryon-wsp"><span class="highlight">
-</span></span><span class="alectryon-sentence"><span class="alectryon-input"><span class="highlight"><span class="kn">Declare Scope</span> nat_scope.</span></span><span class="alectryon-wsp">
-</span></span><span class="alectryon-sentence"><span class="alectryon-input"><span class="highlight"><span class="kn">Delimit Scope</span> nat_scope <span class="kr">with</span> nat.</span></span><span class="alectryon-wsp">
-</span></span><span class="alectryon-sentence"><span class="alectryon-input"><span class="highlight"><span class="kn">Bind Scope</span> nat_scope <span class="kr">with</span> nat.</span></span><span class="alectryon-wsp">
-</span></span><span class="alectryon-sentence"><span class="alectryon-input"><span class="highlight"><span class="kn">Arguments</span> S _%nat.</span></span><span class="alectryon-wsp">
-</span></span><span class="alectryon-wsp"><span class="highlight">
 <span class="sd">(** Another way of interpreting booleans as propositions *)</span>
 
 <span class="c">(* Definition is_true b := b = true. *)</span>
