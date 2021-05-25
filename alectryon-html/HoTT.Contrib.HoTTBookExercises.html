@@ -2310,7 +2310,7 @@ Contr
 <span class="sd">(** Exercise 7.9 *)</span>
 
 <span class="sd">(** Solution for the case (oo,-1). *)</span>
-</span></span><span class="alectryon-sentence"><span class="alectryon-input"><span class="highlight"><span class="kn">Definition</span> <span class="nf">Book_7_9_oo_neg1</span> `{Univalence} (AC_oo_neg1 : <span class="kr">forall</span> <span class="nv">X</span> : HSet, IsProjective&#39; X) (A : <span class="kt">Type</span>)
+</span></span><span class="alectryon-sentence"><span class="alectryon-input"><span class="highlight"><span class="kn">Definition</span> <span class="nf">Book_7_9_oo_neg1</span> `{Univalence} (AC_oo_neg1 : <span class="kr">forall</span> <span class="nv">X</span> : HSet, HasChoice X) (A : <span class="kt">Type</span>)
   : merely (<span class="kr">exists</span> <span class="nv">X</span> : HSet, <span class="kr">exists</span> <span class="nv">p</span> : X -&gt; A, IsSurjection p)
   := @HoTT.Projective.projective_cover_AC AC_oo_neg1 _ A.</span></span><span class="alectryon-wsp">
 </span></span><span class="alectryon-wsp"><span class="highlight">

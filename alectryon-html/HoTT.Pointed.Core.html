@@ -69,7 +69,7 @@
   := trunc_pfam_is_trunc : <span class="kr">forall</span> <span class="nv">x</span>, IsTrunc n (X.<span class="mi">1</span> x).</span></span><span class="alectryon-wsp">
 </span></span><span class="alectryon-wsp"><span class="highlight">
 <span class="sd">(** Pointed dependent functions *)</span>
-</span></span><span class="alectryon-sentence"><span class="alectryon-input"><span class="highlight"><span class="kn">Record</span> <span class="nf">pForall</span> (<span class="nv">A</span> : pType) (<span class="nv">P</span> : pFam A) := {
+</span></span><span class="alectryon-sentence"><span class="alectryon-input"><span class="highlight"><span class="kn">Cumulative</span> <span class="kn">Record</span> <span class="nf">pForall</span> (<span class="nv">A</span> : pType) (<span class="nv">P</span> : pFam A) := {
   pointed_fun : <span class="kr">forall</span> <span class="nv">x</span>, P x ;
   dpoint_eq : pointed_fun (point A) = dpoint P ;
 }.</span></span><span class="alectryon-wsp">

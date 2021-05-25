@@ -23,6 +23,9 @@
 </span></span><span class="alectryon-sentence"><span class="alectryon-input"><span class="highlight"><span class="kn">Require Import</span> Basics.</span></span><span class="alectryon-wsp">
 </span></span><span class="alectryon-sentence"><span class="alectryon-input"><span class="highlight"><span class="kn">Require Import</span> WildCat.Core.</span></span><span class="alectryon-wsp">
 </span></span><span class="alectryon-wsp"><span class="highlight">
+<span class="sd">(** We declare a scope for printing [CatEquiv] as [≅] *)</span>
+</span></span><span class="alectryon-sentence"><span class="alectryon-input"><span class="highlight"><span class="kn">Declare Scope</span> wc_iso_scope.</span></span><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp"><span class="highlight">
 <span class="sd">(** * Equivalences in wild categories *)</span>
 
 <span class="sd">(** We could define equivalences in any wild 2-category as bi-invertible maps, or in a wild 3-category as half-adjoint equivalences.  However, in concrete cases there is often an equivalent definition of equivalences that we want to use instead, and the important property we need is that it&#39;s logically equivalent to (quasi-)isomorphism. *)</span>
@@ -51,6 +54,7 @@
   := @CatEquiv&#39; A _ _ _ _ a b.</span></span><span class="alectryon-wsp">
 </span></span><span class="alectryon-wsp"><span class="highlight">
 </span></span><span class="alectryon-sentence"><span class="alectryon-input"><span class="highlight"><span class="kn">Notation</span> <span class="s2">&quot;a $&lt;~&gt; b&quot;</span> := (CatEquiv a b).</span></span><span class="alectryon-wsp">
+</span></span><span class="alectryon-sentence"><span class="alectryon-input"><span class="highlight"><span class="kn">Infix</span> <span class="s2">&quot;≅&quot;</span> := CatEquiv : wc_iso_scope.</span></span><span class="alectryon-wsp">
 </span></span><span class="alectryon-sentence"><span class="alectryon-input"><span class="highlight"><span class="kn">Arguments</span> CatEquiv : <span class="nb">simpl</span> never.</span></span><span class="alectryon-wsp">
 </span></span><span class="alectryon-wsp"><span class="highlight">
 </span></span><span class="alectryon-sentence"><span class="alectryon-input"><span class="highlight"><span class="kn">Definition</span> <span class="nf">cate_fun</span> {<span class="nv">A</span>} `{HasEquivs A} {a b : A} (f : a $&lt;~&gt; b)

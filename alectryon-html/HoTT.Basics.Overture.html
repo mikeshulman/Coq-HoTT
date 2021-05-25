@@ -33,6 +33,9 @@
 </span></span><span class="alectryon-sentence"><span class="alectryon-input"><span class="highlight">#[export] <span class="kn">Hint Variables Opaque</span> : <span class="nb">rewrite</span>.</span></span><span class="alectryon-wsp">
 </span></span><span class="alectryon-sentence"><span class="alectryon-input"><span class="highlight"><span class="kn">Create HintDb</span> typeclass_instances <span class="kn">discriminated</span>.</span></span><span class="alectryon-wsp">
 </span></span><span class="alectryon-wsp"><span class="highlight">
+<span class="sd">(** We disable the [deprecated-hint-rewrite-without-locality] warning until we update to coq V8.14.0 *)</span>
+</span></span><span class="alectryon-sentence"><span class="alectryon-input"><span class="highlight"><span class="kn">Global Set Warnings</span> Append <span class="s2">&quot;-deprecated-hint-rewrite-without-locality&quot;</span>.</span></span><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp"><span class="highlight">
 <span class="sd">(** ** Type classes *)</span>
 
 <span class="sd">(** This command prevents Coq from trying to guess the values of existential variables while doing typeclass resolution.  If you don&#39;t know what that means, ignore it. *)</span>
@@ -787,7 +790,7 @@ pointwise_paths A P g h -&gt; pointwise_paths A P f h</span></div></blockquote><
 </span></span><span class="alectryon-wsp"><span class="highlight">
 </span></span><span class="alectryon-sentence"><span class="alectryon-input"><span class="highlight"><span class="kn">Arguments</span> point A {_}.</span></span><span class="alectryon-wsp">
 </span></span><span class="alectryon-wsp"><span class="highlight">
-</span></span><span class="alectryon-sentence"><span class="alectryon-input"><span class="highlight"><span class="kn">Record</span> <span class="nf">pType</span> :=
+</span></span><span class="alectryon-sentence"><span class="alectryon-input"><span class="highlight"><span class="kn">Cumulative</span> <span class="kn">Record</span> <span class="nf">pType</span> :=
   { pointed_type : <span class="kt">Type</span> ;
     ispointed_type : IsPointed pointed_type }.</span></span><span class="alectryon-wsp">
 </span></span><span class="alectryon-wsp"><span class="highlight">
