@@ -33,7 +33,6 @@
 </span></span><span class="alectryon-wsp"><span class="highlight">
 </span></span><span class="alectryon-sentence"><span class="alectryon-input"><span class="highlight"><span class="kn">Declare Scope</span> Algebra_scope.</span></span><span class="alectryon-wsp">
 </span></span><span class="alectryon-sentence"><span class="alectryon-input"><span class="highlight"><span class="kn">Delimit Scope</span> Algebra_scope <span class="kr">with</span> Algebra.</span></span><span class="alectryon-wsp">
-</span></span><span class="alectryon-sentence"><span class="alectryon-input"><span class="highlight"><span class="kn">Open Scope</span> Algebra_scope.</span></span><span class="alectryon-wsp">
 </span></span><span class="alectryon-wsp"><span class="highlight">
 <span class="sd">(** The below definition [SymbolTypeOf] is used to specify algebra</span>
 <span class="sd">    operations. See [SymbolType] and [Operation] below. *)</span>
@@ -98,9 +97,8 @@
 <span class="sd">    carriers [Carriers σ], and for each symbol [u : Symbol σ], an</span>
 <span class="sd">    operation/function of type [Operation carriers (σ u)],</span>
 <span class="sd">    where [σ u : SymbolType σ] is the symbol type of [u].</span>
-<span class="sd">    Notice that [Algebra] cannot specify equations involving the</span>
-<span class="sd">    carriers and operations. See [HoTT.Algebra.Universal.Equational]</span>
-<span class="sd">    for equations. *)</span>
+<span class="sd">    Notice that [Algebra] does not specify equations involving</span>
+<span class="sd">    carriers and operations. Equations are defined elsewhere. *)</span>
 
 </span></span><span class="alectryon-sentence"><span class="alectryon-input"><span class="highlight"><span class="kn">Record</span> <span class="nf">Algebra</span> {<span class="nv">σ</span> : Signature} : <span class="kt">Type</span> := Build_Algebra
   { carriers : Carriers σ
@@ -467,11 +465,7 @@ ap (issig_algebra σ)^-<span class="mi">1</span> q</span></span></span></span></
 </span></span><span class="alectryon-wsp"><span class="highlight">
 </span></span><span class="alectryon-sentence"><span class="alectryon-input"><span class="highlight"><span class="kn">Arguments</span> path_path_algebra {_} {σ} {A B}%Algebra_scope (p q r)%path_scope.</span></span><span class="alectryon-wsp">
 </span></span><span class="alectryon-wsp"><span class="highlight">
-</span></span><span class="alectryon-sentence"><span class="alectryon-input"><span class="highlight"><span class="kn">Module</span> <span class="nf">notations_algebra</span>.</span></span><span class="alectryon-wsp">
-</span></span><span class="alectryon-wsp"><span class="highlight">
-</span></span><span class="alectryon-wsp">  </span><span class="alectryon-sentence"><span class="alectryon-input"><span class="highlight"><span class="kn">Global</span> <span class="kn">Notation</span> <span class="s2">&quot;u .# A&quot;</span> := (operations A u) : Algebra_scope.</span></span><span class="alectryon-wsp">
-</span></span><span class="alectryon-wsp"><span class="highlight">
-</span></span><span class="alectryon-sentence"><span class="alectryon-input"><span class="highlight"><span class="kn">End</span> <span class="nf">notations_algebra</span>.</span></span></span></pre>
+</span></span><span class="alectryon-sentence"><span class="alectryon-input"><span class="highlight"><span class="kn">Global</span> <span class="kn">Notation</span> <span class="s2">&quot;u .# A&quot;</span> := (operations A u) : Algebra_scope.</span></span></span></pre>
 </div>
 </div></body>
 </html>

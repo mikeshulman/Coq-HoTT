@@ -261,6 +261,8 @@
 </span></span><span class="alectryon-sentence"><span class="alectryon-input"><span class="highlight"><span class="kn">Class</span> <span class="nf">Commutative</span> {<span class="nv">B</span> <span class="nv">A</span>} (<span class="nv">f</span> : A -&gt; A -&gt; B) : <span class="kt">Type</span>
   := commutativity: <span class="kr">forall</span> <span class="nv">x</span> <span class="nv">y</span>, f x y = f y x.</span></span><span class="alectryon-wsp">
 </span></span><span class="alectryon-wsp"><span class="highlight">
+</span></span><span class="alectryon-sentence"><span class="alectryon-input"><span class="highlight"><span class="kn">Global</span> <span class="kn">Hint Unfold</span> Commutative : typeclass_instances.</span></span><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp"><span class="highlight">
 </span></span><span class="alectryon-sentence"><span class="alectryon-input"><span class="highlight"><span class="kn">Class</span> <span class="nf">HeteroAssociative</span> {<span class="nv">A</span> <span class="nv">B</span> <span class="nv">C</span> <span class="nv">AB</span> <span class="nv">BC</span> <span class="nv">ABC</span>}
   (<span class="nv">fA_BC</span>: A -&gt; BC -&gt; ABC) (<span class="nv">fBC</span>: B -&gt; C -&gt; BC)
   (<span class="nv">fAB_C</span>: AB -&gt; C -&gt; ABC) (<span class="nv">fAB</span> : A -&gt; B -&gt; AB): <span class="kt">Type</span>

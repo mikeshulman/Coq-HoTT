@@ -875,6 +875,10 @@ transport (<span class="kr">fun</span> <span class="nv">x</span> : A =&gt; P x)
 </span></span><span class="alectryon-wsp">  </span><span class="alectryon-sentence"><span class="alectryon-input"><span class="highlight">make_equiv.</span></span><span class="alectryon-wsp">
 </span></span><span class="alectryon-sentence"><span class="alectryon-input"><span class="highlight"><span class="kn">Defined</span>.</span></span><span class="alectryon-wsp">
 </span></span><span class="alectryon-wsp"><span class="highlight">
+</span></span><span class="alectryon-sentence"><span class="alectryon-input"><span class="highlight"><span class="kn">Definition</span> <span class="nf">equiv_sigma_prod1</span> (<span class="nv">A</span> <span class="nv">B</span> <span class="nv">C</span> : <span class="kt">Type</span>)
+  : {a : A &amp; {b : B &amp; C}} &lt;~&gt; A * B * C
+  := <span class="kp">ltac</span>:(make_equiv).</span></span><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp"><span class="highlight">
 <span class="sd">(** ** Symmetry *)</span>
 
 </span></span><span class="alectryon-sentence"><input class="alectryon-toggle" id="sigma-v-chk6f" style="display: none" type="checkbox"><label class="alectryon-input" for="sigma-v-chk6f"><span class="highlight"><span class="kn">Definition</span> <span class="nf">equiv_sigma_symm</span> `(P : A -&gt; B -&gt; <span class="kt">Type</span>)
